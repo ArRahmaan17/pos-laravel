@@ -287,6 +287,46 @@ if (!function_exists('buildTreeMenu')) {
         return $branch;
     }
 }
+function getSql($model)
+{
+    $replace = function ($sql, $bindings) {
+        $needle = '?';
+        foreach ($bindings as $replace) {
+            $pos = strpos($sql, $needle);
+            if ($pos !== false) {
+                if (gettype($replace) === "string") {
+                    $replace = ' "' . addslashes($replace) . '" ';
+                }
+                $sql = substr_replace($sql, $replace, $pos, strlen($needle));
+            }
+        }
+        return $sql;
+    };
+    $sql = $replace($model->toSql(), $model->getBindings());
+
+    return $sql;
+}
+function formatIndonesianPhoneNumber($phoneNumber)
+{
+    // Remove any non-digit characters
+    $cleaned = preg_replace('/\D/', '', $phoneNumber);
+
+    // Check if the number starts with the country code and remove it
+    if (strpos($cleaned, '62') === 0) {
+        $cleaned = substr($cleaned, 2);
+    }
+
+    // Ensure the number starts with 0
+    if ($cleaned[0] !== '+62') {
+        $cleaned = '+62' . $cleaned;
+    }
+
+    // Format the number (e.g., (021) 123-4567 or 0812-345-6789)
+    // This is just a basic example; you may need to adjust formatting based on specific needs
+    $formatted = preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})/', '$1 $2-$3-$4', $cleaned);
+
+    return $formatted;
+}
 if (!function_exists('buildTreeOrganisasi')) {
     function buildTreeOrganisasi(array &$elements, $idParent = '0')
     {

@@ -13,64 +13,84 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        \App\Models\User::create(
+        $users = [
             [
-                [
-                    'name' => 'maman developer',
-                    'username' => 'dev.rahmaan',
-                    'email' => 'rahmaan@ms.dev',
-                    'phone_number' => '89522983270',
-                    'password' => Hash::make('mamanrecing'),
-                ],
-                [
-                    'name' => 'maman manager',
-                    'username' => 'manager.rahmaan',
-                    'email' => 'rahmaan@ms.man',
-                    'phone_number' => '89522983271',
-                    'password' => Hash::make('mamanrecing'),
-                ],
-                [
-                    'name' => 'maman cashier',
-                    'username' => 'cashier.rahmaan',
-                    'email' => 'rahmaan@ms.cash',
-                    'phone_number' => '89522983272',
-                    'password' => Hash::make('mamanrecing'),
-                ]
+                'name' => 'maman developer',
+                'username' => 'dev.rahmaan',
+                'email' => 'rahmaan@ms.dev',
+                'phone_number' => '89522983270',
+                'password' => Hash::make('mamanrecing'),
+                'hr' => true,
+                'created_at' => now('Asia/Jakarta'),
+                'updated_at' => now('Asia/Jakarta')
+            ],
+            [
+                'name' => 'maman manager',
+                'username' => 'manager.rahmaan',
+                'email' => 'rahmaan@ms.man',
+                'phone_number' => '89522983271',
+                'password' => Hash::make('mamanrecing'),
+                'hr' => true,
+                'created_at' => now('Asia/Jakarta'),
+                'updated_at' => now('Asia/Jakarta')
+            ],
+            [
+                'name' => 'maman cashier',
+                'username' => 'cashier.rahmaan',
+                'email' => 'rahmaan@ms.cash',
+                'phone_number' => '89522983272',
+                'password' => Hash::make('mamanrecing'),
+                'hr' => false,
+                'created_at' => now('Asia/Jakarta'),
+                'updated_at' => now('Asia/Jakarta')
             ]
+        ];
+        \App\Models\User::insert(
+            $users
         );
-        \App\Models\AppRole::create([
+        \App\Models\AppRole::insert([
             [
                 'name' => 'Developer',
-                'description' => 'Developer App'
+                'description' => 'Developer App',
+                'created_at' => now('Asia/Jakarta'),
+                'updated_at' => now('Asia/Jakarta')
             ],
             [
                 'name' => 'Manager',
-                'description' => 'Customer Manager'
+                'description' => 'Customer Manager',
+                'created_at' => now('Asia/Jakarta'),
+                'updated_at' => now('Asia/Jakarta')
             ]
         ]);
-        \App\Models\UserRole::create(
+        \App\Models\UserRole::insert(
             [
                 [
                     'userId' => 1,
-                    'roleId' => 1
+                    'roleId' => 1,
+                    'created_at' => now('Asia/Jakarta'),
+                    'updated_at' => now('Asia/Jakarta')
                 ],
                 [
                     'userId' => 2,
-                    'roleId' => 2
+                    'roleId' => 2,
+                    'created_at' => now('Asia/Jakarta'),
+                    'updated_at' => now('Asia/Jakarta')
                 ]
             ]
         );
-        \App\Models\CustomerRole::create([
+        \App\Models\CustomerRole::insert([
             'userId' => 2,
             'name' => 'Cashier',
-            'description' => 'Customer Cashier'
+            'description' => 'Customer Cashier',
+            'created_at' => now('Asia/Jakarta'),
+            'updated_at' => now('Asia/Jakarta')
         ]);
-        \App\Models\UserCustomerRole::create(
+        \App\Models\UserCustomerRole::insert(
             [
                 'userId' => 3,
-                'customerRoleId' => 1
+                'customerRoleId' => 1,
+                'created_at' => now('Asia/Jakarta'),
+                'updated_at' => now('Asia/Jakarta')
             ],
         );
     }

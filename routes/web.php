@@ -3,8 +3,9 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dev\AppRoleController;
 use App\Http\Controllers\Dev\CustomerRoleController;
-use App\Http\Controllers\Dev\RoleController;
+use App\Http\Controllers\Dev\UserCustomerController;
 use App\Http\Middleware\loggedInUser;
+use App\Models\UserCustomerRole;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -44,6 +45,14 @@ Route::middleware([loggedInUser::class])->group(function () {
             Route::get('/data-table', [CustomerRoleController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerRoleController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerRoleController::class, 'destroy'])->name('delete');
+        });
+        Route::name('user-customer')->as('user-customer.')->prefix('user-customer')->group(function () {
+            Route::get('/', [UserCustomerController::class, 'index'])->name('index');
+            Route::post('/', [UserCustomerController::class, 'store'])->name('store');
+            Route::put('/{id?}', [UserCustomerController::class, 'update'])->name('update');
+            Route::get('/data-table', [UserCustomerController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [UserCustomerController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [UserCustomerController::class, 'destroy'])->name('delete');
         });
     });
 });
