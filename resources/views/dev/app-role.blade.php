@@ -113,7 +113,7 @@
                                         .name])
                                 }
                             });
-                    }
+                    },
                     error: function(error) {
                         iziToast.error({
                             id: 'alert-app-role-action',
