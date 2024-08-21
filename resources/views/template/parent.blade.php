@@ -6,11 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    @if (session('app') == 'aset')
-        <title>{{ env('APP_NAME') }}</title>
-    @elseif (session('app') == 'ssh')
-        <title>{{ env('APP_NAME_2') }}</title>
-    @endif
+    <title>{{ env('APP_NAME') }} | @yield('title')</title>
     {{-- <title>{{ (session('app') == 'aset' ? env('APP_NAME') : session('app') == 'ssh') ? env('APP_NAME_2') : '' }}</title> --}}
     <style>
         *::-webkit-scrollbar {
@@ -50,7 +46,6 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
         rel="stylesheet" />
-
     <!-- Icons. Uncomment required icon fonts -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />
 
@@ -87,7 +82,7 @@
                     <a href="{{ route('home') }}" class="app-brand-link">
                         @if (session('app') == 'aset')
                             <span
-                                class="app-brand-text demo menu-text fw-bolder ms-2 text-capitalize text-wrap col-12">{{ env('APP_NAME') }}</span>
+                                class="app-brand-text demo menu-text fw-bolder ms-2 text-capitalize text-wrap col-12">@yield('title')</span>
                         @elseif (session('app') == 'ssh')
                             <span
                                 class="app-brand-text demo menu-text fw-bolder ms-2 text-capitalize text-wrap col-12">{{ env('APP_NAME_2') }}</span>
@@ -124,7 +119,12 @@
                         <div class="navbar-nav align-items-center">
                             <div class="nav-item d-flex align-items-center">
                                 <i class='bx bxs-user-account'></i>
-                                {{ session('userLogged')->role->name ?? 'Login as :' }}
+                                {!! ' Logged in&nbsp;<i>' .
+                                    session('userLogged')->user->name .
+                                    '</i> &nbsp;as&nbsp;<i>' .
+                                    session('userLogged')->role->name .
+                                    '</i>' ??
+                                    'Login as :' !!}
                             </div>
                         </div>
 
@@ -182,7 +182,6 @@
                 <!-- Content wrapper -->
                 <div class="content-wrapper">
                     <!-- Content -->
-
                     <div class="container-fluid flex-grow-1 container-p-y">
                         @yield('content')
                     </div>

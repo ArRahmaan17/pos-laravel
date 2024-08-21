@@ -2,16 +2,10 @@
 
 use Illuminate\Support\Facades\DB;
 
-if (!function_exists('getRoleId')) {
-    function getRoleId()
-    {
-        return session('user')->idrole;
-    }
-}
 if (!function_exists('getRole')) {
     function getRole()
     {
-        return DB::table('auth.role')->where('idrole', session('user')->idrole)->first()->role;
+        return session('userLogged')->role->name;
     }
 }
 if (!function_exists('splitKodeGolongan')) {

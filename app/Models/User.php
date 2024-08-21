@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -43,4 +44,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    static public function user_manager()
+    {
+        return self::select('users.*')
+            ->join('user_roles as ur', 'users.id', '=', 'ur.userId')
+            ->join('app_roles as ap', 'ur.roleId', '=', 'ap.id')->where('ap.id', 2)->get();
+    }
 }
