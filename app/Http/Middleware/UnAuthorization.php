@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class loggedInUser
+class UnAuthorization
 {
     /**
      * Handle an incoming request.
@@ -15,10 +15,10 @@ class loggedInUser
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (session('userLogged')) {
+        if (!session('userLogged')) {
             return $next($request);
         } else {
-            return redirect()->route('auth.login');
+            return redirect()->route('home');
         }
     }
 }

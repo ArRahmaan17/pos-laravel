@@ -20,6 +20,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
         'phone_number',
@@ -44,10 +45,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    static public function user_manager()
+    static public function user_manager($id = null)
     {
         return self::select('users.*')
             ->join('user_roles as ur', 'users.id', '=', 'ur.userId')
-            ->join('app_roles as ap', 'ur.roleId', '=', 'ap.id')->where('ap.id', 2)->get();
+            ->join('app_roles as ap', 'ur.roleId', '=', 'ap.id')
+            ->where('ap.id', 2)->where(($id == null) ? [['users.id', '<>', $id]] : [['users.id', '=', $id]])->get();
     }
 }

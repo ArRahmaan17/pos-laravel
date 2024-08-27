@@ -148,7 +148,7 @@
                     position: 'center',
                     icon: 'bx bx-question-mark',
                     buttons: [
-                        ['<button><b>IYA</b></button>', function(instance, toast) {
+                        ['<button><b>OK</b></button>', function(instance, toast) {
                             instance.hide({
                                 transitionOut: 'fadeOut'
                             }, toast, 'button');
@@ -183,7 +183,7 @@
                                 }
                             });
                         }, true],
-                        ['<button>TIDAK</button>', function(instance, toast) {
+                        ['<button>CANCEL</button>', function(instance, toast) {
                             instance.hide({
                                 transitionOut: 'fadeOut'
                             }, toast, 'button');

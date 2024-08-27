@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppRole;
+use App\Models\CustomerRole;
 use App\Models\User;
 use App\Models\UserCustomerRole;
 use App\Models\UserRole;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -41,9 +42,16 @@ class AuthController extends Controller
             ->with('error', "Your provide <i><b>Username/Email/Phone Number</b></i> or <i><b>Password</b></i> dons't match to our record")
             ->withInput();
     }
-    public function register()
+    public function register(Request $request)
     {
-        return view('auth.registration.index');
+        if ($request->action) {
+            [$managerId, $lifetime, $customerRoleId, $secret] = explode('|', base64_decode($request->action));
+            if ($secret != env('APP_SECRET') || empty(User::find($managerId)) || empty(CustomerRole::find($customerRoleId)) || now('Asia/Jakarta')->format('Y-m-d H:i:s') >  date('Y-m-d H:i:s', strtotime($lifetime))) {
+                abort(401, "Token invalid");
+            }
+            return view('auth.registration.index', compact('managerId', 'lifetime', 'customerRoleId'));
+        }
+        return view('auth.registration.index',);
     }
     public function registration(Request $request)
     {
@@ -51,8 +59,34 @@ class AuthController extends Controller
             'name' => ['required', 'min:5', 'max:30'],
             'username' => ['required', 'min:8', 'max:15'],
             'email' => ['required', 'email', 'unique:users,email,id'],
-            'phone_number' => ['required', 'min:10', 'max:13', 'unique:users,phone_number,id'],
-            'password' => ['required', 'min:8', 'max:15', 'regex:/^\*[^\w\s]\S{8,16}$/']
+            'phone_number' => ['required', 'min:10', 'max:19', 'unique:users,phone_number,id'],
+            'password' => ['required', 'min:8', 'max:15', 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/'],
         ], ['password.regex' => 'The password field must mixed-case letters, numbers and symbols']);
+        DB::beginTransaction();
+        try {
+            $data = $request->except('_token', 'customerRoleId', 'managerId');
+            $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);
+            if ($request->has('managerId')) {
+                $dataUser = User::user_manager($request->managerId);
+            }
+            if ($request->has('customerRoleId')) {
+                $dataCustomerRole = CustomerRole::customer_roles($request->managerId, $request->customerRoleId);
+            }
+            $user_register = User::create($data);
+            if (empty($dataUser) || empty($dataCustomerRole)) {
+                abort(401, 'Unauthorized');
+            } else {
+                UserCustomerRole::create([
+                    'userId' => $user_register->id,
+                    'customerRoleId' => $dataCustomerRole[0]->id
+                ]);
+            }
+            DB::commit();
+            return redirect()->route('home');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->back();
+            //throw $th;
+        }
     }
 }

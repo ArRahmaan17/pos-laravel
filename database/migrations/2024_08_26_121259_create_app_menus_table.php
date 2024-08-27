@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('app_menus', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('username')->nullable(false)->unique();
-            $table->string('email')->nullable(true)->unique();
-            $table->string('phone_number')->nullable(true)->unique();
-            $table->string('password');
-            $table->boolean('hr')->default(false);
-            $table->string('affiliate_code')->nullable(true);
+            $table->string('route');
+            $table->string('icon');
+            $table->integer('parent')->default(0);
+            $table->smallInteger('dev_only')->default(0);
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('app_menus');
     }
 };

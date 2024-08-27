@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'Store Role')
+@section('title', 'App Menu')
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
@@ -13,18 +13,18 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-role" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-role">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-success" id="add-app-menu" data-bs-toggle="modal"
+                            data-bs-target="#modal-app-menu">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table-customer-role">
+                        <table class="table" id="table-app-menu">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col">Description</th>
+                                    <th scope="col">Menu</th>
+                                    <th scope="col">child</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -36,46 +36,73 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-role" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade" id="modal-app-menu" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-lg" menu="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel3">Add New @yield('title')</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-customer-role">
+                    <form action="#" id="form-app-menu">
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="userId" class="form-label">Customer User</label>
-                                @if (getRole() === 'Developer')
-                                    <select class="form-control select2" name="userId" id="userId">
-                                        <option value="">Select User</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->username }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <input type="hidden" name="userId" value="{{ session('userLogged')->user->id }}">
-                                @endif
+                                <label for="parent" class="form-label">Menu Parent</label>
+                                <select name="parent" id="parent" class="form-control select2">
+                                    <option value="0">Kosong</option>
+                                    @foreach ($menus as $menu)
+                                        <option value="{{ $menu->id }}">{{ $menu->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="name" class="form-label">Role Name</label>
+                                <label for="name" class="form-label">Menu Name</label>
                                 <input type="text" id="name" name="name" class="form-control"
-                                    placeholder="Enter Role Name" />
+                                    placeholder="Enter Menu Name" />
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col mb-0">
-                                <label for="description" class="form-label">Role Description</label>
-                                <textarea name="description" placeholder="Enter Description Role" class="form-control" style="resize:none"
-                                    id="description" cols="10" rows="3"></textarea>
+                            <div class="col mb-3">
+                                <label for="route" class="form-label">Menu Route</label>
+                                <input list="routes" type="text" id="route" name="route" class="form-control"
+                                    placeholder="Enter Menu Route" />
+                                <datalist id="routes">
+                                    @foreach ($routes as $route)
+                                        <option value="{{ $route->getName() }}">{{ url($route->uri()) }}</option>
+                                    @endforeach
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="icon" class="form-label">Menu Icon</label>
+                                <input type="text" id="icon" name="icon" class="form-control"
+                                    placeholder="Enter Menu Icon" />
+                                <div id="passwordHelpBlock" class="form-text">
+                                    compatible icon is on <a href="https://boxicons.com/">boxicons</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label class="form-label">Menu Accessibility</label>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="dev_only" id="dev_only"
+                                        checked="">
+                                    <label class="form-check-label" for="dev_only">Only Developer</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="container-child-list" class="row container">
+                            <div class="col-12 row">
+                                Menu Child
+                            </div>
+                            <div id="child-menu-container" class="col-12 row">
                             </div>
                         </div>
                     </form>
@@ -84,9 +111,9 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-role" class="btn btn-success">Save
+                    <button type="button" id="save-app-menu" class="btn btn-success">Save
                         changes</button>
-                    <button type="button" id="edit-customer-role" class="btn btn-warning d-none">Update
+                    <button type="button" id="edit-app-menu" class="btn btn-warning d-none">Update
                         changes</button>
                 </div>
             </div>
@@ -95,8 +122,8 @@
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
+    <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script>
         window.datatableAppRole = null;
         window.state = 'add';
@@ -104,36 +131,97 @@
         function actionData() {
             $('.edit').click(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("customer-role");
-                $("#edit-customer-role").data("customer-role", idAppRole);
+                let idAppMenu = $(this).data("app-menu");
+                $("#edit-app-menu").data("app-menu", idAppMenu);
                 if (window.datatableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-customer-role tbody').find('tr').removeClass('selected');
+                    $('#table-app-menu tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
                 var data = window.datatableAppRole.rows('.selected').data()[0];
 
-                $('#modal-customer-role').modal('show');
-                $('#modal-customer-role').find('.modal-title').html(`Edit @yield('title')`);
-                $('#save-customer-role').addClass('d-none');
-                $('#edit-customer-role').removeClass('d-none');
+                $('#modal-app-menu').modal('show');
+                $('#modal-app-menu').find('.modal-title').html(`Edit @yield('title')`);
+                $('#save-app-menu').addClass('d-none');
+                $('#edit-app-menu').removeClass('d-none');
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('dev.customer-role.show') }}/" + idAppRole,
+                    url: "{{ route('dev.app-menu.show') }}/" + idAppMenu,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role').find("form")
-                            .find('select, input, textarea').map(function(index, element) {
+                        let childHtml = '';
+                        $('#modal-app-menu').find("form")
+                            .find('input, select').map(function(index, element) {
                                 if (response.data[element.name]) {
                                     $(`[name=${element.name}]`).val(response.data[element
                                         .name])
                                 }
                             });
+                        if (response.data.child.length != 0) {
+                            response.data.child.map((element) => {
+                                childHtml += `<div class="col-12">${element.name}</div>`;
+                            })
+                        } else {
+                            childHtml += `<div class="col-12">Not Found</div>`;
+                        }
+                        $('#child-menu-container').html(childHtml)
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-customer-role-action',
+                            id: 'alert-app-menu-action',
+                            title: 'Error',
+                            message: error.responseJSON.message,
+                            position: 'topRight',
+                            layout: 2,
+                            displayMode: 'replace'
+                        });
+                    }
+                });
+            });
+            $('.parent').click(function() {
+                window.state = 'update';
+                let idAppMenu = $(this).data("app-menu");
+                $("#edit-app-menu").data("app-menu", idAppMenu);
+                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                    $('#table-app-menu tbody').find('tr').removeClass('selected');
+                    $(this).parents('tr').addClass('selected')
+                }
+
+                var data = window.datatableAppRole.rows('.selected').data()[0];
+
+                $('#modal-app-menu').modal('show');
+                $('#modal-app-menu').find('.modal-title').html(`Add Child @yield('title')`);
+                $('#save-app-menu').addClass('d-none');
+                $('#edit-app-menu').removeClass('d-none');
+                $('#modal-app-menu')
+                    .find('form select')
+                    .val(idAppMenu)
+                    .trigger('change');
+                setTimeout(() => {
+                    $('#modal-app-menu')
+                        .find('form select')
+                        .prop("disabled", true);
+                }, 200);
+                $.ajax({
+                    type: "GET",
+                    url: "{{ route('dev.app-menu.show') }}/" + idAppMenu,
+                    dataType: "json",
+                    success: function(response) {
+                        let childHtml = '';
+
+                        if (response.data.child.length != 0) {
+                            response.data.child.map((element) => {
+                                childHtml += `<div class="col-12">${element.name}</div>`;
+                            })
+                        } else {
+                            childHtml += `<div class="col-12">Not Found</div>`;
+                        }
+                        $('#child-menu-container').html(childHtml)
+                    },
+                    error: function(error) {
+                        iziToast.error({
+                            id: 'alert-app-menu-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -146,10 +234,10 @@
 
             $('.delete').click(function() {
                 if (window.datatableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-customer-role tbody').find('tr').removeClass('selected');
+                    $('#table-app-menu tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("customer-role");
+                let idAppMenu = $(this).data("app-menu");
                 var data = window.datatableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
@@ -161,25 +249,25 @@
                     id: 'question',
                     zindex: 9999,
                     title: 'Confirmation',
-                    message: "Are you sure you want to delete this application's role data?",
+                    message: "Are you sure you want to delete this application's menu data?",
                     position: 'center',
                     icon: 'bx bx-question-mark',
                     buttons: [
-                        ['<button><b>IYA</b></button>', function(instance, toast) {
+                        ['<button><b>OK</b></button>', function(instance, toast) {
                             instance.hide({
                                 transitionOut: 'fadeOut'
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('dev.customer-role.delete') }}/" +
-                                    idAppRole,
+                                url: "{{ route('dev.app-menu.delete') }}/" +
+                                    idAppMenu,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
                                 },
                                 dataType: "json",
                                 success: function(response) {
                                     iziToast.success({
-                                        id: 'alert-customer-role-action',
+                                        id: 'alert-app-menu-form',
                                         title: 'Success',
                                         message: response.message,
                                         position: 'topRight',
@@ -190,7 +278,7 @@
                                 },
                                 error: function(error) {
                                     iziToast.error({
-                                        id: 'alert-customer-role-action',
+                                        id: 'alert-app-menu-action',
                                         title: 'Error',
                                         message: error.responseJSON.message,
                                         position: 'topRight',
@@ -200,7 +288,7 @@
                                 }
                             });
                         }, true],
-                        ['<button>TIDAK</button>', function(instance, toast) {
+                        ['<button>CANCEL</button>', function(instance, toast) {
                             instance.hide({
                                 transitionOut: 'fadeOut'
                             }, toast, 'button');
@@ -210,8 +298,8 @@
             });
         }
         $(function() {
-            window.datatableAppRole = $("#table-customer-role").DataTable({
-                ajax: "{{ route('dev.customer-role.data-table') }}",
+            window.datatableAppRole = $("#table-app-menu").DataTable({
+                ajax: "{{ route('dev.app-menu.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -237,12 +325,14 @@
                     }
                 }, {
                     target: 2,
-                    name: 'description',
-                    data: 'description',
-                    orderable: true,
-                    searchable: true,
+                    name: 'child',
+                    data: 'child',
+                    orderable: false,
+                    searchable: false,
                     render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'>${data}</div>`
+                        return `<div class='text-wrap'><div class='row'>${data.map((element, index)=>{
+                                return `<div class='col-12 border-bottom'>${index+1}. ${element.name}</div>`
+                            })}</div></div>`
                     }
                 }, {
                     target: 3,
@@ -258,17 +348,17 @@
             window.datatableAppRole.on('draw.dt', function() {
                 actionData();
             });
-            $('#save-customer-role').click(function() {
-                let data = serializeObject($('#form-customer-role'));
+            $('#save-app-menu').click(function() {
+                let data = serializeObject($('#form-app-menu'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('dev.customer-role.store') }}`,
+                    url: `{{ route('dev.app-menu.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role').modal('hide')
+                        $('#modal-app-menu').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-app-menu-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -279,14 +369,14 @@
 
                     },
                     error: function(error) {
-                        $('#modal-customer-role .is-invalid').removeClass('is-invalid')
+                        $('#modal-app-menu .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-role').find('[name=' + indexInArray +
+                            $('#modal-app-menu').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-app-menu-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -296,17 +386,17 @@
                     }
                 });
             });
-            $('#edit-customer-role').click(function() {
-                let data = serializeObject($('#form-customer-role'));
+            $('#edit-app-menu').click(function() {
+                let data = serializeObject($('#form-app-menu'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('dev.customer-role.update') }}/${data.id}`,
+                    url: `{{ route('dev.app-menu.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role').modal('hide')
+                        $('#modal-app-menu').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-app-menu-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -316,14 +406,14 @@
                         window.datatableAppRole.ajax.reload()
                     },
                     error: function(error) {
-                        $('#modal-customer-role .is-invalid').removeClass('is-invalid')
+                        $('#modal-app-menu .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-role').find('[name=' + indexInArray +
+                            $('#modal-app-menu').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-app-menu-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -333,18 +423,25 @@
                     }
                 });
             });
-            $('#modal-customer-role').on('hidden.bs.modal', function() {
+            $('#modal-app-menu').on('hidden.bs.modal', function() {
+                window.state = 'add';
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
-                $('#save-customer-role').removeClass('d-none');
-                $('#edit-customer-role').addClass('d-none');
-                $('#modal-customer-role .is-invalid').removeClass('is-invalid')
-                $('#table-customer-role tbody').find('tr').removeClass('selected');
+                $('#save-app-menu').removeClass('d-none');
+                $('#edit-app-menu').addClass('d-none');
+                $('#modal-app-menu .is-invalid').removeClass('is-invalid')
+                $('#modal-app-menu select[disabled]').prop("disabled", false);
+                $('#table-app-menu tbody').find('tr').removeClass('selected');
             });
-            $('#modal-customer-role').on('shown.bs.modal', function() {
+            $('#modal-app-menu').on('shown.bs.modal', function() {
+                if (window.state == 'add') {
+                    $('#container-child-list').addClass('d-none');
+                } else {
+                    $('#container-child-list').removeClass('d-none');
+                }
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-customer-role')
+                        dropdownParent: $('#modal-app-menu')
                     });
                 }, 140);
             });

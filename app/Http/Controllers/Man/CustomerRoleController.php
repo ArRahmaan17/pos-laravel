@@ -1,28 +1,45 @@
 <?php
 
-namespace App\Http\Controllers\Dev;
+namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppRole;
+use App\Models\CustomerRole;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class AppRoleController extends Controller
+class CustomerRoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('dev.app-role');
+        $users = User::user_manager();
+        return view('man.customer-role', compact('users'));
+    }
+    public function role($id)
+    {
+        $data = CustomerRole::where('userId', $id)->get();
+        $response = ['message' => 'Showing resource successfully', 'data' => $data];
+        $code = 200;
+        if (empty($data)) {
+            $response = ['message' => 'Failed showing resource', 'data' => dataToOption($data)];
+            $code = 404;
+        }
+        return response()->json($response, $code);
     }
     public function dataTable(Request $request)
     {
-        $totalData = AppRole::orderBy('id', 'asc')
+        $where = [['userId', '=', session('userLogged')->user->id]];
+        if (getRole() === "Developer") {
+            $where = [['userId', '<>', 0]];
+        }
+        $totalData = CustomerRole::where($where)->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = AppRole::select('*');
+            $assets = CustomerRole::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -31,9 +48,9 @@ class AppRoleController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $assets = $assets->get();
+            $assets = $assets->where($where)->get();
         } else {
-            $assets = AppRole::select('*')
+            $assets = CustomerRole::select('*')
                 ->where('name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
@@ -44,16 +61,16 @@ class AppRoleController extends Controller
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->get();
+            $assets = $assets->where($where)->get();
 
-            $totalFiltered = AppRole::select('*')
+            $totalFiltered = CustomerRole::select('*')
                 ->where('name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->count();
+            $totalFiltered = $totalFiltered->where($where)->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
@@ -61,7 +78,7 @@ class AppRoleController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['description'] = $item->description;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-app-role='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-app-role='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-role='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -79,20 +96,21 @@ class AppRoleController extends Controller
      */
     public function store(Request $request)
     {
-        DB::beginTransaction();
         $request->validate([
-            'name' => 'required|min:2|max:10|unique:app_roles,name',
-            'description' => 'required|min:6|max:100'
-        ]);
+            'userId' => 'required',
+            'name' => 'required|min:2|max:10|unique:customer_roles,name',
+            'description' => 'required|min:6|max:100',
+        ], ['userId.required' => 'The customer user field is required']);
+        DB::beginTransaction();
         try {
-            AppRole::create($request->except('_token', 'id'));
-            DB::commit();
-            $response = ['message' => 'App Role create successfully'];
+            CustomerRole::create($request->except('_token'));
+            $response = ['message' => 'Creating resources successfully'];
             $code = 200;
+            DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
+            $response = ['message' => 'Failed creating resources'];
             $code = 422;
-            $response = ['message' => 'Failed creating App Role'];
         }
         return response()->json($response, $code);
     }
@@ -102,11 +120,11 @@ class AppRoleController extends Controller
      */
     public function show(string $id)
     {
-        $data = AppRole::find($id);
-        $response = ['message' => 'showing resource successfully', 'data' => $data];
+        $data = CustomerRole::where('id', $id)->first();
+        $response = ['message' => 'Showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
-            $response = ['message' => 'failed showing resource', 'data' => $data];
+            $response = ['message' => 'Failed showing resource', 'data' => $data];
             $code = 404;
         }
         return response()->json($response, $code);
@@ -119,12 +137,13 @@ class AppRoleController extends Controller
     {
         $request->validate([
             'id' => 'required',
+            'userId' => 'required',
             'name' => 'required|unique:app_roles,name,' . $id,
             'description' => 'required|min:6|max:100',
         ]);
         DB::beginTransaction();
         try {
-            AppRole::find($id)->update($request->except('_token', 'id'));
+            CustomerRole::find($id)->update($request->except('_token', 'id'));
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -143,8 +162,8 @@ class AppRoleController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (empty(collect(AppRole::with('role_users')->find($id)->role_users)->toArray())) {
-                AppRole::destroy($id);
+            if (empty(collect(CustomerRole::with('role_users')->find($id)->role_users)->toArray())) {
+                CustomerRole::destroy($id);
                 DB::commit();
                 $response = ['message' => 'deleting resource successfully'];
                 $code = 200;

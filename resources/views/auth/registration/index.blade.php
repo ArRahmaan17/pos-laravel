@@ -123,35 +123,61 @@
                         <form id="formAuthentication" class="mb-3" action="{{ route('auth.registration.process') }}"
                             method="POST">
                             @csrf
+                            @isset($managerId)
+                                <input type="hidden" name="managerId" value="{{ $managerId }}">
+                            @endisset
+                            @isset($customerRoleId)
+                                <input type="hidden" name="customerRoleId" value="{{ $customerRoleId }}">
+                            @endisset
                             <div class="mb-3">
-                                <label for="email" class="form-label">NIP</label>
-                                <input type="text" class="form-control" id="username" name="username"
-                                    value="{{ old('username') }}" placeholder="Masukan NIP Anda" autofocus />
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                    id="name" name="name" value="{{ old('name') }}" autofocus />
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control @error('username') is-invalid @enderror"
+                                    id="username" name="username" value="{{ old('username') }}" autofocus />
+                                @error('username')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="text" class="form-control  email @error('email') is-invalid @enderror"
+                                    id="email" name="email" value="{{ old('email') }}" />
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone_number" class="form-label">Phone number</label>
+                                <input type="text"
+                                    class="form-control phone_number @error('phone_number') is-invalid @enderror"
+                                    id="phone_number" name="phone_number" value="{{ old('phone_number') }}" />
+                                @error('phone_number')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="mb-3 form-password-toggle">
                                 <label class="form-label" for="password">Password</label>
                                 <div class="input-group input-group-merge">
-                                    <input type="password" id="password" class="form-control" name="password"
+                                    <input type="password" id="password"
+                                        class="form-control @error('password') is-invalid @enderror" name="password"
                                         placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                                         aria-describedby="password" />
                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
+                                    @error('password')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <div class="d-flex justify-content-between">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="remember-me"
-                                            name="remember_me" />
-                                        <label class="form-check-label" for="remember-me"> Remember Me </label>
-                                    </div>
-                                    <a href="auth-forgot-password-basic.html">
-                                        <small>Forgot Password?</small>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <button class="btn btn-primary w-100 py-2" type="submit">
-                                    Masuk
+                                <button class="btn btn-success w-100 py-2" type="submit">
+                                    Daftar
                                     <span class='tf-icons bx bx-right-arrow-circle bx-tada bx-sm'></span>
                                 </button>
                             </div>
@@ -175,6 +201,7 @@
     <!-- endbuild -->
 
     <!-- Vendors JS -->
+    <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
 
     <!-- Main JS -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
@@ -183,6 +210,11 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script>
+        $(function() {
+            formattedInput();
+        });
+    </script>
 </body>
 
 </html>

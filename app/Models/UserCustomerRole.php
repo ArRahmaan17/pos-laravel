@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class UserCustomerRole extends Model
 {
     use HasFactory;
-    protected $fillable = ['userId', 'roleId'];
-
+    protected $fillable = ['userId', 'customerRoleId'];
     public function user(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'userId');

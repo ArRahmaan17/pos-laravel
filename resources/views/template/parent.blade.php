@@ -107,13 +107,25 @@
                     <li class="menu-item">
                         <a href="{{ route('dev.app-role.index') }}" class="menu-link ">
                             <i class="menu-icon tf-icons"></i>
-                            <div data-i18n="Role">Role</div>
+                            <div data-i18n="App Role">App Role</div>
                         </a>
                     </li>
                     <li class="menu-item">
-                        <a href="{{ route('dev.customer-role.index') }}" class="menu-link ">
+                        <a href="{{ route('man.customer-role.index') }}" class="menu-link ">
                             <i class="menu-icon tf-icons"></i>
-                            <div data-i18n="Customer Role">Customer Role</div>
+                            <div data-i18n="Role Management">Role Management</div>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('man.role-accessibility.index') }}" class="menu-link ">
+                            <i class="menu-icon tf-icons"></i>
+                            <div data-i18n="Role Accessibility">Role Accessibility</div>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="{{ route('man.user-customer.index') }}" class="menu-link ">
+                            <i class="menu-icon tf-icons"></i>
+                            <div data-i18n="User Customer">User Customer</div>
                         </a>
                     </li>
                     <li class="menu-item">
@@ -304,6 +316,24 @@
                 }
             });
             return branch
+        }
+
+        function formattedInput() {
+            $('.phone_number').inputmask('(+62) 999-999-9999[9]')
+            $('.email').inputmask({
+                mask: "*{1,15}[.*{1,15}][.*{1,15}][.*{1,15}]@*{1,15}[.*{2,6}][.*{1,2}]",
+                greedy: false,
+                onBeforePaste: function(pastedValue, opts) {
+                    pastedValue = pastedValue.toLowerCase();
+                    return pastedValue.replace("mailto:", "");
+                },
+                definitions: {
+                    '*': {
+                        validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
+                        casing: "lower"
+                    }
+                }
+            });
         }
         $(function() {
             $(".menu-sub").find('.menu-item.active').parents('.menu-item').addClass('active open')

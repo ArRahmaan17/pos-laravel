@@ -20,6 +20,19 @@ if (!function_exists('stringPad')) {
         return str_pad($word, $length, $pad, $type);
     }
 }
+
+function unFormattedPhoneNumber($formattedNumber)
+{
+    // Remove any characters that are not digits
+    $unformattedNumber = preg_replace('/\D/', '', $formattedNumber);
+
+    // Ensure the number starts with '62' after removing non-digit characters
+    if (substr($unformattedNumber, 0, 2) !== "62") {
+        return "Invalid Indonesian phone number.";
+    }
+
+    return $unformattedNumber;
+}
 if (!function_exists('dataToOption')) {
     function dataToOption($allData, $attr = false)
     {
