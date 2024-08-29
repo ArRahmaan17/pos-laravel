@@ -22,7 +22,7 @@ class UserCustomerController extends Controller
             $where = [['userId', '<>', 0]];
         }
         $customer_roles = CustomerRole::exists_role($where);
-        return view('man.user-customer', compact('users', 'customer_roles'));
+        return view('man.customer-user', compact('users', 'customer_roles'));
     }
     public function generateRegistrationLink(Request $request)
     {

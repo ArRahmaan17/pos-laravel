@@ -335,6 +335,23 @@
                 }
             });
         }
+
+        function serializeFiles(node) {
+            let form = $(node),
+                formData = new FormData(),
+                formParams = form.serializeArray();
+
+            $.each(form.find('input[type="file"]'), function(i, tag) {
+                $.each($(tag)[0].files, function(i, file) {
+                    formData.append(tag.name, file);
+                });
+            });
+
+            $.each(formParams, function(i, val) {
+                formData.append(val.name, val.value);
+            });
+            return formData;
+        };
         $(function() {
             $(".menu-sub").find('.menu-item.active').parents('.menu-item').addClass('active open')
             $.extend($.fn.dataTable.defaults, {

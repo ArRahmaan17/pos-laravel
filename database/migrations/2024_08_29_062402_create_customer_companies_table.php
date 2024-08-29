@@ -11,14 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_companies', function (Blueprint $table) {
+        Schema::create('customer_companies', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('userId')->unsigned();
             $table->string('name')->nullable(false);
-            $table->string('picture')->nullable(false);
+            $table->string('picture')->nullable(true);
             $table->string('phone_number')->nullable(false)->unique();
             $table->string('email')->nullable(false)->unique();
-            $table->string('affiliate_code');
+            $table->bigInteger('businessId')->unsigned();
+            $table->string('affiliate_code')->nullable(false);
+            $table->foreign('userId')
+                ->on('users')
+                ->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreign('businessId')
+                ->on('business_types')
+                ->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
         });
     }
@@ -28,6 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_companies');
+        Schema::dropIfExists('customer_companies');
     }
 };

@@ -180,7 +180,7 @@
                 });
             });
             $('.parent').click(function() {
-                window.state = 'update';
+                window.state = 'add';
                 let idAppMenu = $(this).data("app-menu");
                 $("#edit-app-menu").data("app-menu", idAppMenu);
                 if (window.datatableAppRole.rows('.selected').data().length == 0) {
@@ -192,8 +192,8 @@
 
                 $('#modal-app-menu').modal('show');
                 $('#modal-app-menu').find('.modal-title').html(`Add Child @yield('title')`);
-                $('#save-app-menu').addClass('d-none');
-                $('#edit-app-menu').removeClass('d-none');
+                $('#save-app-menu').removeClass('d-none');
+                $('#edit-app-menu').addClass('d-none');
                 $('#modal-app-menu')
                     .find('form select')
                     .val(idAppMenu)
@@ -349,6 +349,9 @@
                 actionData();
             });
             $('#save-app-menu').click(function() {
+                $('#modal-app-menu')
+                    .find('form select')
+                    .prop("disabled", false);
                 let data = serializeObject($('#form-app-menu'));
                 $.ajax({
                     type: "POST",

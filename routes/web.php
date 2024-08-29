@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dev\AppMenuController;
 use App\Http\Controllers\Dev\AppRoleController;
+use App\Http\Controllers\Man\CustomerCompanyController;
 use App\Http\Controllers\Man\CustomerRoleAccessibilityController;
 use App\Http\Controllers\Man\CustomerRoleController;
 use App\Http\Controllers\Man\UserCustomerController;
@@ -50,6 +51,14 @@ Route::middleware([Authorization::class])->group(function () {
         });
     });
     Route::name('man')->as('man.')->prefix('man')->group(function () {
+        Route::name('customer-company')->as('customer-company.')->prefix('customer-company')->group(function () {
+            Route::get('/', [CustomerCompanyController::class, 'index'])->name('index');
+            Route::post('/', [CustomerCompanyController::class, 'store'])->name('store');
+            Route::put('/{id?}', [CustomerCompanyController::class, 'update'])->name('update');
+            Route::get('/data-table', [CustomerCompanyController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [CustomerCompanyController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [CustomerCompanyController::class, 'destroy'])->name('delete');
+        });
         Route::name('role-accessibility')->as('role-accessibility.')->prefix('role-accessibility')->group(function () {
             Route::get('/', [CustomerRoleAccessibilityController::class, 'index'])->name('index');
             Route::post('/', [CustomerRoleAccessibilityController::class, 'store'])->name('store');
