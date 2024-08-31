@@ -70,7 +70,7 @@
                             @endif
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
-                            <img src="{{ asset('/assets/img/avatars/1.png') }}" alt="user-avatar" class="d-block rounded"
+                            <img src="{{ asset('/cp/default-picture.png') }}" alt="user-avatar" class="d-block rounded"
                                 height="100" width="100" id="uploadedAvatar" />
                             <div class="button-wrapper">
                                 <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
@@ -197,24 +197,35 @@
                     dataType: "json",
                     success: function(response) {
                         let formElement = $('#modal-customer-company').find("form");
-                        formElement.find('[name=id]')
-                            .val(response.data[0].user.id)
+                        $('#modal-customer-company').find("form")
+                            .find('select, input').map(function(index, element) {
+                                let name = (element.name.split('[').length > 1) ? '.' + element.name
+                                    .split('[').join('.').split(']').join('') : element.name;
+                                if (response.data[name] !== undefined && $("[name='" + element
+                                        .name + "']").length != 0) {
+                                    if (name == 'picture') {
+                                        $("#uploadedAvatar").prop('src',
+                                            `{{ url('/') }}/cp/` + response.data[name])
+                                    } else {
+                                        $("[name='" + element.name + "']").val(response.data[name])
+                                    }
+                                }
+                            });
+                        formElement.find("[name='address[place]']")
+                            .val(response.data.address.place)
                             .trigger('change');
-                        formElement.find('[name=name]')
-                            .val(response.data[0].user.name)
+                        formElement.find("[name='address[address]']")
+                            .val(response.data.address.address)
                             .trigger('change');
-                        formElement.find('[name=username]')
-                            .val(response.data[0].user.username)
+                        formElement.find("[name='address[city]']")
+                            .val(response.data.address.city)
                             .trigger('change');
-                        formElement.find('[name=email]')
-                            .val(response.data[0].user.email)
+                        formElement.find("[name='address[province]']")
+                            .val(response.data.address.province)
                             .trigger('change');
-                        formElement.find('[name=phone_number]')
-                            .val(response.data[0].user.phone_number)
+                        formElement.find("[name='address[zipCode]']")
+                            .val(response.data.address.zipCode)
                             .trigger('change');
-                        formElement.find('[name=customerRoleId]')
-                            .val(response.data[0].role.id)
-                            .trigger('change')
                     },
                     error: function(error) {
                         iziToast.error({
@@ -225,6 +236,9 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
+                        setTimeout(() => {
+                            $('#modal-customer-company').modal('hide');
+                        }, 400);
                     }
                 });
             })
@@ -246,7 +260,7 @@
                     id: 'question',
                     zindex: 9999,
                     title: 'Confirmation',
-                    message: "Are you sure you want to delete this user data?",
+                    message: "Are you sure you want to delete this company data?",
                     position: 'center',
                     icon: 'bx bx-question-mark',
                     buttons: [
@@ -295,22 +309,6 @@
             });
         }
 
-        function copyToClipboard() {
-            const codeSnippet = document.getElementById('registration-link-code').innerText;
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = codeSnippet;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            navigator.clipboard.writeText(tempTextArea.value);
-            iziToast.success({
-                id: 'alert-create-registration-link-action',
-                title: 'Success',
-                message: `Coppied text`,
-                position: 'topRight',
-                layout: 1,
-                displayMode: 'replace'
-            });
-        }
         $(function() {
             window.datatableCustomerCompany = $("#table-customer-company").DataTable({
                 ajax: "{{ route('man.customer-company.data-table') }}",
@@ -427,11 +425,14 @@
                 });
             });
             $('#edit-customer-company').click(function() {
-                let data = serializeObject($('#form-customer-company'));
+                let data = serializeFiles($('#form-customer-company'));
                 $.ajax({
-                    type: "PUT",
-                    url: `{{ route('man.customer-company.update') }}/${data.id}`,
+                    type: "POST",
+                    url: `{{ route('man.customer-company.update') }}/${$('#form-customer-company').find('[name=id]').val()}`,
                     data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
                     dataType: "json",
                     success: function(response) {
                         $('#modal-customer-company').modal('hide')
@@ -449,8 +450,15 @@
                         $('#modal-customer-company .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-company').find('[name=' + indexInArray +
-                                ']').addClass('is-invalid')
+                            let name = (indexInArray
+                                    .split('.').length > 1) ?
+                                `${indexInArray.split('.').join('[')}]` :
+                                indexInArray
+                            $('#modal-customer-company').find("[name='" + name +
+                                "']").addClass('is-invalid');
+                            $('#modal-customer-company').find("[name='" + name +
+                                "']").siblings('.invalid-feedback').html(
+                                valueOfElement[0])
                         });
                         iziToast.error({
                             id: 'alert-customer-company-form',
@@ -470,6 +478,7 @@
                 $('#edit-customer-company').addClass('d-none');
                 $('#modal-customer-company .is-invalid').removeClass('is-invalid')
                 $('#table-customer-company tbody').find('tr').removeClass('selected');
+                $('#uploadedAvatar').prop('src', `{{ asset('cp/default-picture.png') }}`);
             });
             $('#modal-customer-company').on('shown.bs.modal', function() {
                 setTimeout(() => {

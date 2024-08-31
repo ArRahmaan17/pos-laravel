@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class AppMenu extends Model
 {
     use HasFactory;
-    protected $fillable = ['name', 'route', 'icon', 'parent', 'dev_only'];
+    protected $fillable = ['name', 'route', 'icon', 'parent', 'dev_only', 'place'];
 
     static public function getChildMenu($id)
     {

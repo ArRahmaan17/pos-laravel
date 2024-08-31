@@ -96,46 +96,7 @@
                 </div>
 
                 <div class="menu-inner-shadow"></div>
-
-                <ul class="menu-inner py-1">
-                    <li class="menu-item active">
-                        <a href="{{ route('home') }}" class="menu-link ">
-                            <i class="menu-icon tf-icons"></i>
-                            <div data-i18n="Home">Home</div>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="{{ route('dev.app-role.index') }}" class="menu-link ">
-                            <i class="menu-icon tf-icons"></i>
-                            <div data-i18n="App Role">App Role</div>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="{{ route('man.customer-role.index') }}" class="menu-link ">
-                            <i class="menu-icon tf-icons"></i>
-                            <div data-i18n="Role Management">Role Management</div>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="{{ route('man.role-accessibility.index') }}" class="menu-link ">
-                            <i class="menu-icon tf-icons"></i>
-                            <div data-i18n="Role Accessibility">Role Accessibility</div>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="{{ route('man.user-customer.index') }}" class="menu-link ">
-                            <i class="menu-icon tf-icons"></i>
-                            <div data-i18n="User Customer">User Customer</div>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="#" class="menu-link ">
-                            <i class="menu-icon tf-icons"></i>
-                            <div data-i18n="Store Good">Store Good</div>
-                        </a>
-                    </li>
-                    {{-- {!! buildMenu($menu_sidebar, session('app')) !!} --}}
-                </ul>
+                {!! buildMenu($sidebarAppMenu, session('app')) !!}
             </aside>
             <!-- / Menu -->
 
@@ -342,9 +303,11 @@
                 formParams = form.serializeArray();
 
             $.each(form.find('input[type="file"]'), function(i, tag) {
-                $.each($(tag)[0].files, function(i, file) {
-                    formData.append(tag.name, file);
-                });
+                if ($(tag)[0].files.length > 0) {
+                    $.each($(tag)[0].files, function(i, file) {
+                        formData.append(tag.name, file);
+                    });
+                }
             });
 
             $.each(formParams, function(i, val) {

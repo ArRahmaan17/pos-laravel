@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 if (!function_exists('getRole')) {
     function getRole()
@@ -30,8 +31,13 @@ function unFormattedPhoneNumber($formattedNumber)
     if (substr($unformattedNumber, 0, 2) !== "62") {
         return "Invalid Indonesian phone number.";
     }
-
+    str_replace('62', '', $unformattedNumber);
     return $unformattedNumber;
+}
+
+function company_profile_asset($filename)
+{
+    return Storage::disk('company-profile')->get($filename);
 }
 if (!function_exists('dataToOption')) {
     function dataToOption($allData, $attr = false)
@@ -368,7 +374,7 @@ if (!function_exists('checkPermissionMenu')) {
 }
 if (!function_exists('buildMenu')) {
 
-    function buildMenu(array &$elements, $app = 'aset', $place = 'sidebar')
+    function buildMenu(array &$elements, $app = 'aset', $place = 0)
     {
         $html = '';
         foreach ($elements as $element) {
@@ -393,7 +399,7 @@ if (!function_exists('buildMenu')) {
                     </a>
                 </li>';
                     }
-                } elseif ($place == 'profile' && $app == $element['app']) {
+                } elseif ($place == 1 && $app == $element['app']) {
                     $html .= '<li>
                         <a class="dropdown-item ' . (app('request')->route()->named($element['link']) ? 'active' : '') . '" href="' . route($element['link']) . '">
                             <span class="d-flex align-items-center align-middle">

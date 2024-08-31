@@ -54,7 +54,7 @@ Route::middleware([Authorization::class])->group(function () {
         Route::name('customer-company')->as('customer-company.')->prefix('customer-company')->group(function () {
             Route::get('/', [CustomerCompanyController::class, 'index'])->name('index');
             Route::post('/', [CustomerCompanyController::class, 'store'])->name('store');
-            Route::put('/{id?}', [CustomerCompanyController::class, 'update'])->name('update');
+            Route::post('/{id?}', [CustomerCompanyController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerCompanyController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerCompanyController::class, 'destroy'])->name('delete');
