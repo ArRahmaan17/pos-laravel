@@ -96,7 +96,9 @@
                 </div>
 
                 <div class="menu-inner-shadow"></div>
-                {!! buildMenu($sidebarAppMenu, session('app')) !!}
+                <div class="menu-inner">
+                    {!! buildMenu($sidebarAppMenu) !!}
+                </div>
             </aside>
             <!-- / Menu -->
 

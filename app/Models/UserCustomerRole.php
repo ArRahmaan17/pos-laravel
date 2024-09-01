@@ -16,6 +16,6 @@ class UserCustomerRole extends Model
     }
     public function role(): HasOne
     {
-        return $this->hasOne(CustomerRole::class, 'id', 'customerRoleId');
+        return $this->hasOne(CustomerRole::class, 'id', 'roleId');
     }
 }

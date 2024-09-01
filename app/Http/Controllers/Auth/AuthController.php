@@ -30,7 +30,7 @@ class AuthController extends Controller
             ->first();
         if (!empty($user) && Hash::check($request->password, $user->password)) {
             $role = UserRole::with('user', 'role')->where('userId', $user->id)->first();
-            if (empty($role)) {
+            if (empty($role) || empty($role->user) || empty($role->role)) {
                 $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
             }
             session()->flush();

@@ -11,20 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_customer_roles', function (Blueprint $table) {
+        Schema::create('role_menus', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('userId')->unsigned();
-            $table->foreign('userId')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->bigInteger('roleId')->unsigned();
+            $table->bigInteger('roleId')
+                ->unsigned();
+            $table->bigInteger('menuId')
+                ->unsigned();
             $table->foreign('roleId')
                 ->references('id')
                 ->on('customer_roles')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->foreign('menuId')
+                ->references('id')
+                ->on('app_menus')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -34,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_customer_roles');
+        Schema::dropIfExists('role_menus');
     }
 };

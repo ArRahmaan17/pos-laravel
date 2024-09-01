@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 if (!function_exists('getRole')) {
@@ -369,42 +370,42 @@ if (!function_exists('buildTreeOrganisasi')) {
 if (!function_exists('checkPermissionMenu')) {
     function checkPermissionMenu($id, $role)
     {
-        return DB::table('auth.role_menu')->where(['idmenu' => $id, 'idrole' => $role])->count() > 0 ? true : false;
+        return DB::table('role_menus')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false;
     }
 }
 if (!function_exists('buildMenu')) {
 
-    function buildMenu(array &$elements, $app = 'aset', $place = 0)
+    function buildMenu(array &$elements, $place = 0)
     {
         $html = '';
         foreach ($elements as $element) {
             $element = (array) $element;
-            if (checkPermissionMenu($element['id'], session('user')->idrole, $app)) {
-                if ($place == 'sidebar' && $app == $element['app']) {
+            if (getRole() == "Developer" || (getRole() == "Manager" && $element['dev_only'] == 0) || checkPermissionMenu($element['id'], session('userLogged')->roleId)) {
+                if ($place == 0) {
                     if (isset($element['children'])) {
-                        $children = buildMenu($element['children'], $app);
+                        $children = buildMenu($element['children']);
                         $html .= '<li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons ' . $element['icons'] . '"></i>
-                            <div data-i18n="Layouts">' . $element['nama'] . '</div>
+                            <i class="menu-icon tf-icons ' . $element['icon'] . '"></i>
+                            <div data-i18n="Layouts">' . $element['name'] . '</div>
                         </a>
 
                         <ul class="menu-sub">' . $children . '</ul>
                     </li>';
                     } else {
-                        $html .= '<li class="menu-item ' . (app('request')->route()->named($element['link']) ? 'active' : '') . '">
-                    <a href="' . route($element['link']) . '" class="menu-link ">
-                        <i class="menu-icon tf-icons ' . $element['icons'] . '"></i>
-                        <div data-i18n="Analytics">' . $element['nama'] . '</div>
+                        $html .= '<li class="menu-item ' . (Route::is($element['route']) ? 'active' : '') . '">
+                    <a href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '" class="menu-link ">
+                        <i class="menu-icon tf-icons ' . $element['icon'] . '"></i>
+                        <div data-i18n="' . $element['name'] . '">' . $element['name'] . '</div>
                     </a>
                 </li>';
                     }
-                } elseif ($place == 1 && $app == $element['app']) {
+                } elseif ($place == 1) {
                     $html .= '<li>
-                        <a class="dropdown-item ' . (app('request')->route()->named($element['link']) ? 'active' : '') . '" href="' . route($element['link']) . '">
+                        <a class="dropdown-item ' . (Route::is($element['route']) ? 'active' : '') . '" href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '">
                             <span class="d-flex align-items-center align-middle">
-                                <i class="flex-shrink-0 me-2 ' . $element['icons'] . '"></i>
-                                <span class="flex-grow-1 align-middle">' . $element['nama'] . '</span>
+                                <i class="flex-shrink-0 me-2 ' . $element['icon'] . '"></i>
+                                <span class="flex-grow-1 align-middle">' . $element['name'] . '</span>
                             </span>
                         </a>
                     </li>';
