@@ -59,7 +59,7 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/{id?}', [CustomerCompanyController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerCompanyController::class, 'destroy'])->name('delete');
         });
-        Route::name('role-accessibility')->as('role-accessibility.')->prefix('role-accessibility')->group(function () {
+        Route::name('customer-role-accessibility')->as('customer-role-accessibility.')->prefix('customer-role-accessibility')->group(function () {
             Route::get('/', [CustomerRoleAccessibilityController::class, 'index'])->name('index');
             Route::post('/', [CustomerRoleAccessibilityController::class, 'store'])->name('store');
             Route::put('/{id?}', [CustomerRoleAccessibilityController::class, 'update'])->name('update');
@@ -76,7 +76,7 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/role/{userId?}', [CustomerRoleController::class, 'role'])->name('role');
             Route::delete('/{id?}', [CustomerRoleController::class, 'destroy'])->name('delete');
         });
-        Route::name('user-customer')->as('user-customer.')->prefix('user-customer')->group(function () {
+        Route::name('customer-user')->as('customer-user.')->prefix('customer-user')->group(function () {
             Route::get('/', [UserCustomerController::class, 'index'])->name('index');
             Route::post('/', [UserCustomerController::class, 'store'])->name('store');
             Route::post('/generate-link', [UserCustomerController::class, 'generateRegistrationLink'])->name('registration-link');

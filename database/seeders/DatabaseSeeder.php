@@ -88,7 +88,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\UserCustomerRole::insert(
             [
                 'userId' => 3,
-                'customerRoleId' => 1,
+                'roleId' => 1,
                 'created_at' => now('Asia/Jakarta'),
                 'updated_at' => now('Asia/Jakarta')
             ],

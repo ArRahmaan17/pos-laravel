@@ -45,8 +45,8 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-user-customer" data-bs-toggle="modal"
-                            data-bs-target="#modal-user-customer">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-success" id="add-customer-user" data-bs-toggle="modal"
+                            data-bs-target="#modal-customer-user">Add <i class='bx bxs-file-plus pb-1'></i></button>
                         <button class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#modal-create-registration-link">Generate Registration Link <i
                                 class='bx bx-link-alt pb-1'></i></button>
@@ -54,7 +54,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table-user-customer">
+                        <table class="table" id="table-customer-user">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
@@ -72,7 +72,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-user-customer" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    <div class="modal fade" id="modal-customer-user" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -81,7 +81,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-user-customer">
+                    <form action="#" id="form-customer-user">
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
@@ -115,8 +115,8 @@
                         <div class="row">
                             <div class="col mb-3">
                                 @if (in_array(getRole(), ['Manager', 'Developer']))
-                                    <label for="customerRoleId" class="form-label">Role User</label>
-                                    <select class="form-control select2" name="customerRoleId" id="customerRoleId">
+                                    <label for="roleId" class="form-label">Role User</label>
+                                    <select class="form-control select2" name="roleId" id="roleId">
                                         <option value="">Select Role</option>
                                         @foreach ($customer_roles as $role)
                                             <option value="{{ $role->id }}">{{ $role->name }}
@@ -124,8 +124,7 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="customerRoleId"
-                                        value="{{ session('userLogged')->user->id }}">
+                                    <input type="hidden" name="roleId" value="{{ session('userLogged')->user->id }}">
                                 @endif
                             </div>
                         </div>
@@ -135,9 +134,9 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-user-customer" class="btn btn-success">Save
+                    <button type="button" id="save-customer-user" class="btn btn-success">Save
                         changes</button>
-                    <button type="button" id="edit-user-customer" class="btn btn-warning d-none">Update
+                    <button type="button" id="edit-customer-user" class="btn btn-warning d-none">Update
                         changes</button>
                 </div>
             </div>
@@ -220,26 +219,26 @@
         function actionData() {
             $('.edit').click(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("user-customer");
-                $("#edit-user-customer").data("user-customer", idAppRole);
+                let idAppRole = $(this).data("customer-user");
+                $("#edit-customer-user").data("customer-user", idAppRole);
                 if (window.datatableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-user-customer tbody').find('tr').removeClass('selected');
+                    $('#table-customer-user tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
                 var data = window.datatableAppRole.rows('.selected').data()[0];
 
-                $('#modal-user-customer').modal('show');
-                $('#modal-user-customer').find('.modal-title').html(`Edit @yield('title')`);
-                $('#save-user-customer').addClass('d-none');
-                $('#edit-user-customer').removeClass('d-none');
+                $('#modal-customer-user').modal('show');
+                $('#modal-customer-user').find('.modal-title').html(`Edit @yield('title')`);
+                $('#save-customer-user').addClass('d-none');
+                $('#edit-customer-user').removeClass('d-none');
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('man.user-customer.show') }}/" + idAppRole,
+                    url: "{{ route('man.customer-user.show') }}/" + idAppRole,
                     dataType: "json",
                     success: function(response) {
-                        let formElement = $('#modal-user-customer').find("form");
+                        let formElement = $('#modal-customer-user').find("form");
                         formElement.find('[name=id]')
                             .val(response.data[0].user.id)
                             .trigger('change');
@@ -255,13 +254,13 @@
                         formElement.find('[name=phone_number]')
                             .val(response.data[0].user.phone_number)
                             .trigger('change');
-                        formElement.find('[name=customerRoleId]')
+                        formElement.find('[name=roleId]')
                             .val(response.data[0].role.id)
                             .trigger('change')
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-user-customer-action',
+                            id: 'alert-customer-user-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -274,10 +273,10 @@
 
             $('.delete').click(function() {
                 if (window.datatableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-user-customer tbody').find('tr').removeClass('selected');
+                    $('#table-customer-user tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("user-customer");
+                let idAppRole = $(this).data("customer-user");
                 var data = window.datatableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
@@ -299,7 +298,7 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('man.user-customer.delete') }}/" +
+                                url: "{{ route('man.customer-user.delete') }}/" +
                                     idAppRole,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
@@ -307,7 +306,7 @@
                                 dataType: "json",
                                 success: function(response) {
                                     iziToast.success({
-                                        id: 'alert-user-customer-action',
+                                        id: 'alert-customer-user-action',
                                         title: 'Success',
                                         message: response.message,
                                         position: 'topRight',
@@ -318,7 +317,7 @@
                                 },
                                 error: function(error) {
                                     iziToast.error({
-                                        id: 'alert-user-customer-action',
+                                        id: 'alert-customer-user-action',
                                         title: 'Error',
                                         message: error.responseJSON.message,
                                         position: 'topRight',
@@ -355,8 +354,8 @@
             });
         }
         $(function() {
-            window.datatableAppRole = $("#table-user-customer").DataTable({
-                ajax: "{{ route('man.user-customer.data-table') }}",
+            window.datatableAppRole = $("#table-customer-user").DataTable({
+                ajax: "{{ route('man.customer-user.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -412,17 +411,17 @@
             window.datatableAppRole.on('draw.dt', function() {
                 actionData();
             });
-            $('#save-user-customer').click(function() {
-                let data = serializeObject($('#form-user-customer'));
+            $('#save-customer-user').click(function() {
+                let data = serializeObject($('#form-customer-user'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.user-customer.store') }}`,
+                    url: `{{ route('man.customer-user.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-user-customer').modal('hide')
+                        $('#modal-customer-user').modal('hide')
                         iziToast.success({
-                            id: 'alert-user-customer-form',
+                            id: 'alert-customer-user-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -433,14 +432,14 @@
 
                     },
                     error: function(error) {
-                        $('#modal-user-customer .is-invalid').removeClass('is-invalid')
+                        $('#modal-customer-user .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-user-customer').find('[name=' + indexInArray +
+                            $('#modal-customer-user').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-user-customer-form',
+                            id: 'alert-customer-user-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -454,7 +453,7 @@
                 let data = serializeObject($('#form-create-registration-link'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.user-customer.registration-link') }}`,
+                    url: `{{ route('man.customer-user.registration-link') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
@@ -481,17 +480,17 @@
                     }
                 });
             });
-            $('#edit-user-customer').click(function() {
-                let data = serializeObject($('#form-user-customer'));
+            $('#edit-customer-user').click(function() {
+                let data = serializeObject($('#form-customer-user'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('man.user-customer.update') }}/${data.id}`,
+                    url: `{{ route('man.customer-user.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-user-customer').modal('hide')
+                        $('#modal-customer-user').modal('hide')
                         iziToast.success({
-                            id: 'alert-user-customer-form',
+                            id: 'alert-customer-user-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -501,14 +500,14 @@
                         window.datatableAppRole.ajax.reload()
                     },
                     error: function(error) {
-                        $('#modal-user-customer .is-invalid').removeClass('is-invalid')
+                        $('#modal-customer-user .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-user-customer').find('[name=' + indexInArray +
+                            $('#modal-customer-user').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-user-customer-form',
+                            id: 'alert-customer-user-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -518,18 +517,18 @@
                     }
                 });
             });
-            $('#modal-user-customer').on('hidden.bs.modal', function() {
+            $('#modal-customer-user').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
-                $('#save-user-customer').removeClass('d-none');
-                $('#edit-user-customer').addClass('d-none');
-                $('#modal-user-customer .is-invalid').removeClass('is-invalid')
-                $('#table-user-customer tbody').find('tr').removeClass('selected');
+                $('#save-customer-user').removeClass('d-none');
+                $('#edit-customer-user').addClass('d-none');
+                $('#modal-customer-user .is-invalid').removeClass('is-invalid')
+                $('#table-customer-user tbody').find('tr').removeClass('selected');
             });
-            $('#modal-user-customer').on('shown.bs.modal', function() {
+            $('#modal-customer-user').on('shown.bs.modal', function() {
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-user-customer')
+                        dropdownParent: $('#modal-customer-user')
                     });
                 }, 140);
             });

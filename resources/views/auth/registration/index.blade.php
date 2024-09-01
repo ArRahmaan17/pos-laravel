@@ -126,8 +126,8 @@
                             @isset($managerId)
                                 <input type="hidden" name="managerId" value="{{ $managerId }}">
                             @endisset
-                            @isset($customerRoleId)
-                                <input type="hidden" name="customerRoleId" value="{{ $customerRoleId }}">
+                            @isset($roleId)
+                                <input type="hidden" name="roleId" value="{{ $roleId }}">
                             @endisset
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name</label>

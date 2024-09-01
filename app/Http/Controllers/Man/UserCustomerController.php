@@ -29,17 +29,17 @@ class UserCustomerController extends Controller
 
         $request->validate([
             'managerId' => 'required',
-            'customerRoleId' => 'required',
+            'roleId' => 'required',
         ], [
             'managerId.required' => 'The customer user field is required',
-            'customerRoleId.required' => 'The customer user role field is required'
+            'roleId.required' => 'The customer user role field is required'
         ]);
         if (getRole() === "Developer") {
             $id = $request->managerId;
         } else {
             $id = session('userLogged')->user->id;
         }
-        $role = $request->customerRoleId;
+        $role = $request->roleId;
         $link = route('auth.registration') . '?action=' . base64_encode($id . '|' . now('Asia/Jakarta')->add($request->time_limit) . '|' . $role . '|' . env('APP_SECRET'));
         return response()->json(['message' => 'registration link created successfully', 'link' => $link]);
     }
@@ -47,14 +47,14 @@ class UserCustomerController extends Controller
     public function dataTable(Request $request)
     {
         $totalData = User::join('customer_roles as cr', 'cr.userId', '=', 'users.id')
-            ->join('user_customer_roles as ucr', 'ucr.customerRoleId', '=', 'cr.id')
+            ->join('user_customer_roles as ucr', 'ucr.roleId', '=', 'cr.id')
             ->join('users as uc', 'ucr.userId', '=', 'uc.id')
             ->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
             $assets = User::join('customer_roles as cr', 'cr.userId', '=', 'users.id')
-                ->join('user_customer_roles as ucr', 'ucr.customerRoleId', '=', 'cr.id')
+                ->join('user_customer_roles as ucr', 'ucr.roleId', '=', 'cr.id')
                 ->join('users as uc', 'ucr.userId', '=', 'uc.id')
                 ->select('uc.name', 'uc.phone_number', 'cr.name as role_name', 'uc.username', 'uc.id');
 
@@ -68,7 +68,7 @@ class UserCustomerController extends Controller
             $assets = $assets->get();
         } else {
             $assets = User::join('customer_roles as cr', 'cr.userId', '=', 'users.id')
-                ->join('user_customer_roles as ucr', 'ucr.customerRoleId', '=', 'cr.id')
+                ->join('user_customer_roles as ucr', 'ucr.roleId', '=', 'cr.id')
                 ->join('users as uc', 'ucr.userId', '=', 'uc.id')
                 ->select('uc.name', 'uc.phone_number', 'cr.name as role_name', 'uc.username', 'uc.id')
                 ->where('uc.name', 'like', '%' . $request['search']['value'] . '%')
@@ -85,7 +85,7 @@ class UserCustomerController extends Controller
             $assets = $assets->get();
 
             $totalFiltered = User::join('customer_roles as cr', 'cr.userId', '=', 'users.id')
-                ->join('user_customer_roles as ucr', 'ucr.customerRoleId', '=', 'cr.id')
+                ->join('user_customer_roles as ucr', 'ucr.roleId', '=', 'cr.id')
                 ->join('users as uc', 'ucr.userId', '=', 'uc.id')
                 ->select('uc.name', 'uc.phone_number', 'cr.name as role_name', 'uc.username', 'uc.id')
                 ->where('uc.name', 'like', '%' . $request['search']['value'] . '%')
@@ -167,12 +167,12 @@ class UserCustomerController extends Controller
             'username' => 'required|unique:users,username,' . $id,
             'email' => 'required|unique:users,email,' . $id,
             'phone_number' => 'required|unique:users,phone_number,' . $id,
-            'customerRoleId' => 'required',
+            'roleId' => 'required',
         ]);
         DB::beginTransaction();
         try {
-            User::where('id', $id)->update($request->except('_token', 'id', 'managerId', 'customerRoleId'));
-            UserCustomerRole::where('userId', $id)->update($request->only('customerRoleId'));
+            User::where('id', $id)->update($request->except('_token', 'id', 'managerId', 'roleId'));
+            UserCustomerRole::where('userId', $id)->update($request->only('roleId'));
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();

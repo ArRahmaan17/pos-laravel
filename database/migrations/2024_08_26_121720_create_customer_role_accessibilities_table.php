@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('customer_role_accessibilities', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('customerRoleId')->unsigned();
-            $table->foreign('customerRoleId')
+            $table->bigInteger('roleId')->unsigned();
+            $table->foreign('roleId')
                 ->on('customer_roles')
                 ->references('id')
                 ->cascadeOnDelete()
@@ -22,6 +22,12 @@ return new class extends Migration
             $table->bigInteger('menuId')->unsigned();
             $table->foreign('menuId')
                 ->on('app_menus')
+                ->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->bigInteger('userId')->unsigned();
+            $table->foreign('userId')
+                ->on('users')
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();

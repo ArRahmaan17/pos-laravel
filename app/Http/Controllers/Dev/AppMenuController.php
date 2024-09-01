@@ -84,7 +84,7 @@ class AppMenuController extends Controller
     {
         DB::beginTransaction();
         $request->validate([
-            'name' => 'required|min:2|max:10|unique:app_menus,name',
+            'name' => 'required|min:2|max:15|unique:app_menus,name',
             'route' => 'required',
             'icon' => 'required',
             'parent' => 'required',
@@ -126,7 +126,7 @@ class AppMenuController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'name' => 'required|unique:app_menus,name,' . $id,
+            'name' => 'required|min:2|max:15|unique:app_menus,name,' . $id,
             'route' => 'required',
             'icon' => 'required',
             'parent' => 'required',

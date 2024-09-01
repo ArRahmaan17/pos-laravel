@@ -45,11 +45,11 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         if ($request->action) {
-            [$managerId, $lifetime, $customerRoleId, $secret] = explode('|', base64_decode($request->action));
-            if ($secret != env('APP_SECRET') || empty(User::find($managerId)) || empty(CustomerRole::find($customerRoleId)) || now('Asia/Jakarta')->format('Y-m-d H:i:s') >  date('Y-m-d H:i:s', strtotime($lifetime))) {
+            [$managerId, $lifetime, $roleId, $secret] = explode('|', base64_decode($request->action));
+            if ($secret != env('APP_SECRET') || empty(User::find($managerId)) || empty(CustomerRole::find($roleId)) || now('Asia/Jakarta')->format('Y-m-d H:i:s') >  date('Y-m-d H:i:s', strtotime($lifetime))) {
                 abort(401, "Token invalid");
             }
-            return view('auth.registration.index', compact('managerId', 'lifetime', 'customerRoleId'));
+            return view('auth.registration.index', compact('managerId', 'lifetime', 'roleId'));
         }
         return view('auth.registration.index',);
     }
@@ -64,13 +64,13 @@ class AuthController extends Controller
         ], ['password.regex' => 'The password field must mixed-case letters, numbers and symbols']);
         DB::beginTransaction();
         try {
-            $data = $request->except('_token', 'customerRoleId', 'managerId');
+            $data = $request->except('_token', 'roleId', 'managerId');
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);
             if ($request->has('managerId')) {
                 $dataUser = User::user_manager($request->managerId);
             }
-            if ($request->has('customerRoleId')) {
-                $dataCustomerRole = CustomerRole::customer_roles($request->managerId, $request->customerRoleId);
+            if ($request->has('roleId')) {
+                $dataCustomerRole = CustomerRole::customer_roles($request->managerId, $request->roleId);
             }
             $user_register = User::create($data);
             if (empty($dataUser) || empty($dataCustomerRole)) {
@@ -78,7 +78,7 @@ class AuthController extends Controller
             } else {
                 UserCustomerRole::create([
                     'userId' => $user_register->id,
-                    'customerRoleId' => $dataCustomerRole[0]->id
+                    'roleId' => $dataCustomerRole[0]->id
                 ]);
             }
             DB::commit();

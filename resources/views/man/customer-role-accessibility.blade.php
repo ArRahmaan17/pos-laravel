@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'Employee Role')
+@section('title', 'Role Permission')
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
@@ -13,13 +13,14 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-role" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-role">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-success" id="add-customer-role-accessibility" data-bs-toggle="modal"
+                            data-bs-target="#modal-customer-role-accessibility">Add <i
+                                class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table-customer-role">
+                        <table class="table" id="table-customer-role-accessibility">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
@@ -36,8 +37,8 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-role" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
+    <div class="modal fade" id="modal-customer-role-accessibility" tabindex="-1" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -45,7 +46,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-customer-role">
+                    <form action="#" id="form-customer-role-accessibility">
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
@@ -84,9 +85,9 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-role" class="btn btn-success">Save
+                    <button type="button" id="save-customer-role-accessibility" class="btn btn-success">Save
                         changes</button>
-                    <button type="button" id="edit-customer-role" class="btn btn-warning d-none">Update
+                    <button type="button" id="edit-customer-role-accessibility" class="btn btn-warning d-none">Update
                         changes</button>
                 </div>
             </div>
@@ -104,26 +105,26 @@
         function actionData() {
             $('.edit').click(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("customer-role");
-                $("#edit-customer-role").data("customer-role", idAppRole);
+                let idAppRole = $(this).data("customer-role-accessibility");
+                $("#edit-customer-role-accessibility").data("customer-role-accessibility", idAppRole);
                 if (window.datatableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-customer-role tbody').find('tr').removeClass('selected');
+                    $('#table-customer-role-accessibility tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
                 var data = window.datatableAppRole.rows('.selected').data()[0];
 
-                $('#modal-customer-role').modal('show');
-                $('#modal-customer-role').find('.modal-title').html(`Edit @yield('title')`);
-                $('#save-customer-role').addClass('d-none');
-                $('#edit-customer-role').removeClass('d-none');
+                $('#modal-customer-role-accessibility').modal('show');
+                $('#modal-customer-role-accessibility').find('.modal-title').html(`Edit @yield('title')`);
+                $('#save-customer-role-accessibility').addClass('d-none');
+                $('#edit-customer-role-accessibility').removeClass('d-none');
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('man.customer-role.show') }}/" + idAppRole,
+                    url: "{{ route('man.customer-role-accessibility.show') }}/" + idAppRole,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role').find("form")
+                        $('#modal-customer-role-accessibility').find("form")
                             .find('select, input, textarea').map(function(index, element) {
                                 if (response.data[element.name]) {
                                     $(`[name=${element.name}]`).val(response.data[element
@@ -133,7 +134,7 @@
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-customer-role-action',
+                            id: 'alert-customer-role-accessibility-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -146,10 +147,10 @@
 
             $('.delete').click(function() {
                 if (window.datatableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-customer-role tbody').find('tr').removeClass('selected');
+                    $('#table-customer-role-accessibility tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("customer-role");
+                let idAppRole = $(this).data("customer-role-accessibility");
                 var data = window.datatableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
@@ -171,7 +172,7 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('man.customer-role.delete') }}/" +
+                                url: "{{ route('man.customer-role-accessibility.delete') }}/" +
                                     idAppRole,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
@@ -179,7 +180,7 @@
                                 dataType: "json",
                                 success: function(response) {
                                     iziToast.success({
-                                        id: 'alert-customer-role-action',
+                                        id: 'alert-customer-role-accessibility-action',
                                         title: 'Success',
                                         message: response.message,
                                         position: 'topRight',
@@ -190,7 +191,7 @@
                                 },
                                 error: function(error) {
                                     iziToast.error({
-                                        id: 'alert-customer-role-action',
+                                        id: 'alert-customer-role-accessibility-action',
                                         title: 'Error',
                                         message: error.responseJSON.message,
                                         position: 'topRight',
@@ -210,8 +211,8 @@
             });
         }
         $(function() {
-            window.datatableAppRole = $("#table-customer-role").DataTable({
-                ajax: "{{ route('man.customer-role.data-table') }}",
+            window.datatableAppRole = $("#table-customer-role-accessibility").DataTable({
+                ajax: "{{ route('man.customer-role-accessibility.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -258,17 +259,17 @@
             window.datatableAppRole.on('draw.dt', function() {
                 actionData();
             });
-            $('#save-customer-role').click(function() {
-                let data = serializeObject($('#form-customer-role'));
+            $('#save-customer-role-accessibility').click(function() {
+                let data = serializeObject($('#form-customer-role-accessibility'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-role.store') }}`,
+                    url: `{{ route('man.customer-role-accessibility.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role').modal('hide')
+                        $('#modal-customer-role-accessibility').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-customer-role-accessibility-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -279,14 +280,16 @@
 
                     },
                     error: function(error) {
-                        $('#modal-customer-role .is-invalid').removeClass('is-invalid')
+                        $('#modal-customer-role-accessibility .is-invalid').removeClass(
+                            'is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-role').find('[name=' + indexInArray +
+                            $('#modal-customer-role-accessibility').find('[name=' +
+                                indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-customer-role-accessibility-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -296,17 +299,17 @@
                     }
                 });
             });
-            $('#edit-customer-role').click(function() {
-                let data = serializeObject($('#form-customer-role'));
+            $('#edit-customer-role-accessibility').click(function() {
+                let data = serializeObject($('#form-customer-role-accessibility'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('man.customer-role.update') }}/${data.id}`,
+                    url: `{{ route('man.customer-role-accessibility.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role').modal('hide')
+                        $('#modal-customer-role-accessibility').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-customer-role-accessibility-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -316,14 +319,16 @@
                         window.datatableAppRole.ajax.reload()
                     },
                     error: function(error) {
-                        $('#modal-customer-role .is-invalid').removeClass('is-invalid')
+                        $('#modal-customer-role-accessibility .is-invalid').removeClass(
+                            'is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-role').find('[name=' + indexInArray +
+                            $('#modal-customer-role-accessibility').find('[name=' +
+                                indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-customer-role-accessibility-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -333,18 +338,18 @@
                     }
                 });
             });
-            $('#modal-customer-role').on('hidden.bs.modal', function() {
+            $('#modal-customer-role-accessibility').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
-                $('#save-customer-role').removeClass('d-none');
-                $('#edit-customer-role').addClass('d-none');
-                $('#modal-customer-role .is-invalid').removeClass('is-invalid')
-                $('#table-customer-role tbody').find('tr').removeClass('selected');
+                $('#save-customer-role-accessibility').removeClass('d-none');
+                $('#edit-customer-role-accessibility').addClass('d-none');
+                $('#modal-customer-role-accessibility .is-invalid').removeClass('is-invalid')
+                $('#table-customer-role-accessibility tbody').find('tr').removeClass('selected');
             });
-            $('#modal-customer-role').on('shown.bs.modal', function() {
+            $('#modal-customer-role-accessibility').on('shown.bs.modal', function() {
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-customer-role')
+                        dropdownParent: $('#modal-customer-role-accessibility')
                     });
                 }, 140);
             });
