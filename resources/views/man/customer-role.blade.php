@@ -51,7 +51,7 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="userId" class="form-label">Customer User</label>
-                                @if (getRole() === 'maneloper')
+                                @if (getRole() === 'Developer')
                                     <select class="form-control select2" name="userId" id="userId">
                                         <option value="">Select User</option>
                                         @foreach ($users as $user)

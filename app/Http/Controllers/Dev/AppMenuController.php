@@ -109,7 +109,7 @@ class AppMenuController extends Controller
      */
     public function show(string $id)
     {
-        $data = AppMenu::with(['child'])->find($id);
+        $data = AppMenu::with(['child'])->find($id)->setHidden([]);
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {

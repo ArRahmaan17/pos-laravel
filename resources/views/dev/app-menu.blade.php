@@ -92,8 +92,7 @@
                             <div class="col mb-3">
                                 <label class="form-label">Menu Accessibility</label>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" name="dev_only" id="dev_only"
-                                        checked="">
+                                    <input class="form-check-input" type="checkbox" name="dev_only" id="dev_only">
                                     <label class="form-check-label" for="dev_only">Only Developer</label>
                                 </div>
                             </div>
@@ -154,8 +153,14 @@
                         $('#modal-app-menu').find("form")
                             .find('input, select').map(function(index, element) {
                                 if (response.data[element.name]) {
-                                    $(`[name=${element.name}]`).val(response.data[element
-                                        .name])
+                                    if (element.name === 'dev_only') {
+                                        $(`[name=${element.name}]`)
+                                            .prop('checked', response.data[element
+                                                .name] == 1 ? true : false)
+                                    } else {
+                                        $(`[name=${element.name}]`).val(response.data[element
+                                            .name]);
+                                    }
                                 }
                             });
                         if (response.data.child.length != 0) {

@@ -318,7 +318,10 @@
             return formData;
         };
         $(function() {
-            $(".menu-sub").find('.menu-item.active').parents('.menu-item').addClass('active open')
+            $(".menu-sub").find('.menu-link.bg-primary').parents('.menu-item:not(:first)').map((index, element) => {
+                $(element).addClass('open');
+                $(element).children('.menu-link.menu-toggle').addClass('bg-primary text-white')
+            });
             $.extend($.fn.dataTable.defaults, {
                 "pageLength": 5,
                 "aLengthMenu": [

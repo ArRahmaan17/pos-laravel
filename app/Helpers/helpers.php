@@ -393,8 +393,8 @@ if (!function_exists('buildMenu')) {
                         <ul class="menu-sub">' . $children . '</ul>
                     </li>';
                     } else {
-                        $html .= '<li class="menu-item ' . (Route::is($element['route']) ? 'active' : '') . '">
-                    <a href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '" class="menu-link ">
+                        $html .= '<li class="menu-item">
+                    <a href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '" class="menu-link ' . (Route::is($element['route']) ? 'bg-primary rounded-sm text-white' : '') . '">
                         <i class="menu-icon tf-icons ' . $element['icon'] . '"></i>
                         <div data-i18n="' . $element['name'] . '">' . $element['name'] . '</div>
                     </a>
@@ -402,8 +402,8 @@ if (!function_exists('buildMenu')) {
                     }
                 } elseif ($place == 1) {
                     $html .= '<li>
-                        <a class="dropdown-item ' . (Route::is($element['route']) ? 'active' : '') . '" href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '">
-                            <span class="d-flex align-items-center align-middle">
+                        <a class="dropdown-item ' . (Route::is($element['route']) ? 'bg-primary' : '') . '" href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '">
+                            <span class="d-flex align-items-center align-middle ' . (Route::is($element['route']) ? 'bg-primary rounded-sm text-white' : '') . '">
                                 <i class="flex-shrink-0 me-2 ' . $element['icon'] . '"></i>
                                 <span class="flex-grow-1 align-middle">' . $element['name'] . '</span>
                             </span>

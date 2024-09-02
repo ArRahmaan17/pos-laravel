@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomerRole;
 use App\Models\CustomerRoleAccessibility;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CustomerRoleAccessibilityController extends Controller
@@ -13,20 +15,25 @@ class CustomerRoleAccessibilityController extends Controller
      */
     public function index()
     {
-        return view('man.customer-role-accessibility');
+        $users = User::user_manager();
+        return view('man.customer-role-accessibility', compact('users'));
     }
 
     public function dataTable(Request $request)
     {
-        $where = [['userId', '=', session('userLogged')->user->id]];
+        $where = [['cr.userId', '=', session('userLogged')->user->id]];
         if (getRole() === "Developer") {
-            $where = [['userId', '<>', 0]];
+            $where = [['cr.userId', '<>', 0]];
         }
-        $totalData = CustomerRoleAccessibility::where($where)->orderBy('id', 'asc')
+        $totalData = CustomerRoleAccessibility::join('customer_roles as cr', 'cr.id', '=', 'customer_role_accessibilities.roleId')
+
+            ->where($where)
+            ->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerRoleAccessibility::select('*');
+            $assets = CustomerRoleAccessibility::with('menu')->join('customer_roles as cr', 'cr.id', '=', 'customer_role_accessibilities.roleId')
+                ->select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -37,8 +44,9 @@ class CustomerRoleAccessibilityController extends Controller
             }
             $assets = $assets->where($where)->get();
         } else {
-            $assets = CustomerRoleAccessibility::select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
+            $assets = CustomerRoleAccessibility::with('menu')->join('customer_roles as cr', 'cr.id', '=', 'customer_role_accessibilities.roleId')
+                ->select('*')
+                ->where('cr.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
@@ -50,8 +58,9 @@ class CustomerRoleAccessibilityController extends Controller
             }
             $assets = $assets->where($where)->get();
 
-            $totalFiltered = CustomerRoleAccessibility::select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
+            $totalFiltered = CustomerRoleAccessibility::join('customer_roles as cr', 'cr.id', '=', 'customer_role_accessibilities.roleId')
+                ->select('*')
+                ->where('cr.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
@@ -64,7 +73,7 @@ class CustomerRoleAccessibilityController extends Controller
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
-            $row['description'] = $item->description;
+            $row['menu'] = $item->menu;
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-role='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
@@ -76,14 +85,6 @@ class CustomerRoleAccessibilityController extends Controller
         ];
 
         return Response()->json($response, 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**

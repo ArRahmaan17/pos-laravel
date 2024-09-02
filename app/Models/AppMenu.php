@@ -10,7 +10,7 @@ class AppMenu extends Model
 {
     use HasFactory;
     protected $fillable = ['name', 'route', 'icon', 'parent', 'dev_only', 'place'];
-
+    protected $hidden = ['dev_only', 'id', 'place', 'parent'];
     static public function getChildMenu($id)
     {
         return self::where('parent', $id)->get();

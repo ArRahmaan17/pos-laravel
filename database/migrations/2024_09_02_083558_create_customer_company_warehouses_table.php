@@ -11,18 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_role_accessibilities', function (Blueprint $table) {
+        Schema::create('customer_company_warehouses', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('roleId')->unsigned();
-            $table->foreign('roleId')
-                ->on('customer_roles')
+            $table->string('name')
+                ->nullable(false)
+                ->unique();
+            $table->string('description')
+                ->nullable(false);
+            $table->bigInteger('companyId')
+                ->unsigned()
+                ->nullable(false);
+            $table->foreign('companyId')
                 ->references('id')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->bigInteger('menuId')->unsigned();
-            $table->foreign('menuId')
-                ->on('app_menus')
-                ->references('id')
+                ->on('customer_companies')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->timestamps();
@@ -34,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_role_accessibilities');
+        Schema::dropIfExists('customer_company_warehouses');
     }
 };

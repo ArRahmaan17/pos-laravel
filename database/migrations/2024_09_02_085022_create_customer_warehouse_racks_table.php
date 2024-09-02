@@ -11,20 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_role_accessibilities', function (Blueprint $table) {
+        Schema::create('customer_warehouse_racks', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('roleId')->unsigned();
-            $table->foreign('roleId')
-                ->on('customer_roles')
+            $table->bigInteger('warehouseId')->unsigned();
+            $table->foreign('warehouseId')
                 ->references('id')
+                ->on('customer_company_warehouses')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('menuId')->unsigned();
-            $table->foreign('menuId')
-                ->on('app_menus')
-                ->references('id')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+            $table->string('name')->nullable(false);
+            $table->string('description')->nullable(false);
             $table->timestamps();
         });
     }
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_role_accessibilities');
+        Schema::dropIfExists('customer_warehouse_racks');
     }
 };

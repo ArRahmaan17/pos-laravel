@@ -25,7 +25,7 @@
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Role</th>
-                                    <th scope="col">Description</th>
+                                    <th scope="col">Application Menus</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -51,8 +51,8 @@
                         <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="userId" class="form-label">Customer User</label>
-                                @if (getRole() === 'maneloper')
+                                @if (getRole() === 'Developer')
+                                    <label for="userId" class="form-label">Customer User</label>
                                     <select class="form-control select2" name="userId" id="userId">
                                         <option value="">Select User</option>
                                         @foreach ($users as $user)
@@ -67,9 +67,10 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="name" class="form-label">Role Name</label>
-                                <input type="text" id="name" name="name" class="form-control"
-                                    placeholder="Enter Role Name" />
+                                <label for="roleId" class="form-label">Customer User</label>
+                                <select class="form-control select2" name="roleId" id="roleId">
+                                    <option value="">Select Role</option>
+                                </select>
                             </div>
                         </div>
                         <div class="row">
@@ -238,12 +239,12 @@
                     }
                 }, {
                     target: 2,
-                    name: 'description',
-                    data: 'description',
+                    name: 'menu',
+                    data: 'menu',
                     orderable: true,
                     searchable: true,
                     render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'>${data}</div>`
+                        return `<div class='text-wrap'><ol>${data.map((element)=>{return `<li>${element.name}</li>`})}</ol></div>`
                     }
                 }, {
                     target: 3,
