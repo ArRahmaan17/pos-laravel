@@ -1,7 +1,6 @@
 @extends('template.parent')
 @section('title', 'Role Permission')
 @push('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
 @endpush
 @section('content')
@@ -48,7 +47,6 @@
                 <div class="modal-body">
                     <form action="#" id="form-customer-role-accessibility">
                         @csrf
-                        <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
                                 @if (getRole() === 'Developer')
@@ -67,17 +65,57 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="roleId" class="form-label">Customer User</label>
+                                <label for="roleId" class="form-label">Customer Role</label>
                                 <select class="form-control select2" name="roleId" id="roleId">
                                     <option value="">Select Role</option>
                                 </select>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col mb-0">
-                                <label for="description" class="form-label">Role Description</label>
-                                <textarea name="description" placeholder="Enter Description Role" class="form-control" style="resize:none"
-                                    id="description" cols="10" rows="3"></textarea>
+                            <div class="col-12">
+                                <h5 class="mb-6">Role Permissions</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-flush-spacing mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-nowrap fw-medium text-heading">Manager Access <i
+                                                        class="bx bx-info-circle" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        aria-label="Allows a full access to the system"
+                                                        data-bs-original-title="Allows a full access to the system"></i>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex justify-content-end">
+                                                        <div class="form-check mb-0 form-check-reverse">
+                                                            <label class="form-check-label" for="selectAll">
+                                                                All
+                                                            </label>
+                                                            <input class="form-check-input" type="checkbox" id="selectAll">
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            @foreach ($menus as $menu)
+                                                <tr>
+                                                    <td class="text-nowrap fw-medium text-heading">{{ $menu->name }}</td>
+                                                    <td>
+                                                        <div class="d-flex justify-content-end">
+                                                            <div class="form-check form-check-reverse mb-0">
+                                                                <label class="form-check-label"
+                                                                    for="access{{ $menu->id }}">
+                                                                    Access
+                                                                </label>
+                                                                <input class="form-check-input menu-access" name="menuId[]"
+                                                                    type="checkbox" value="{{ $menu->id }}"
+                                                                    id="access{{ $menu->id }}">
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -114,7 +152,6 @@
                 }
 
                 var data = window.datatableAppRole.rows('.selected').data()[0];
-
                 $('#modal-customer-role-accessibility').modal('show');
                 $('#modal-customer-role-accessibility').find('.modal-title').html(`Edit @yield('title')`);
                 $('#save-customer-role-accessibility').addClass('d-none');
@@ -125,11 +162,28 @@
                     url: "{{ route('man.customer-role-accessibility.show') }}/" + idAppRole,
                     dataType: "json",
                     success: function(response) {
+                        if (response.data.role_menus.length == $('#modal-customer-role-accessibility')
+                            .find("form").find('input.menu-access').length) {
+                            $('#selectAll').click();
+                        } else {
+                            response.data.role_menus.map((menu) => {
+                                $('#modal-customer-role-accessibility')
+                                    .find("form").find(`input#access${menu.menuId}`)
+                                    .click()
+                            })
+                        }
                         $('#modal-customer-role-accessibility').find("form")
-                            .find('select, input, textarea').map(function(index, element) {
-                                if (response.data[element.name]) {
-                                    $(`[name=${element.name}]`).val(response.data[element
-                                        .name])
+                            .find('select, input').map(function(index, element) {
+                                if (response.data[`${element.name}`] != undefined) {
+                                    if (element.name == 'roleId') {
+                                        setTimeout(() => {
+                                            $(`[name="${element.name}"]`).val(response.data[
+                                                `${element.name}`]).trigger('change');
+                                        }, 500);
+                                    } else {
+                                        $(`[name="${element.name}"]`).val(response.data[
+                                            `${element.name}`]).trigger('change');
+                                    }
                                 }
                             });
                     },
@@ -241,10 +295,12 @@
                     target: 2,
                     name: 'menu',
                     data: 'menu',
-                    orderable: true,
-                    searchable: true,
+                    orderable: false,
+                    searchable: false,
                     render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'><ol>${data.map((element)=>{return `<li>${element.name}</li>`})}</ol></div>`
+                        return `<div class='text-wrap'>${data.map((element)=>{
+                                    return `<div class='d-inline'>${element.name}</div>`
+                                })}</div>`
                     }
                 }, {
                     target: 3,
@@ -259,6 +315,21 @@
             });
             window.datatableAppRole.on('draw.dt', function() {
                 actionData();
+            });
+            $('#userId').change(function() {
+                $.ajax({
+                    type: "GET",
+                    url: `{{ route('man.customer-role.role') }}/${this.value}`,
+                    dataType: "json",
+                    success: function(response) {
+                        $('#roleId').html(response.data)
+                    }
+                });
+            });
+            $('#selectAll').click(function(e) {
+                $('#form-customer-role-accessibility').find('[type=checkbox]').map((index, element) => {
+                    $(element).attr('checked', this.checked);
+                })
             });
             $('#save-customer-role-accessibility').click(function() {
                 let data = serializeObject($('#form-customer-role-accessibility'));
@@ -304,7 +375,7 @@
                 let data = serializeObject($('#form-customer-role-accessibility'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('man.customer-role-accessibility.update') }}/${data.id}`,
+                    url: `{{ route('man.customer-role-accessibility.update') }}/${data.roleId}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
@@ -350,7 +421,7 @@
             $('#modal-customer-role-accessibility').on('shown.bs.modal', function() {
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-customer-role-accessibility')
+                        dropdownParent: $('#modal-customer-role-accessibility'),
                     });
                 }, 140);
             });

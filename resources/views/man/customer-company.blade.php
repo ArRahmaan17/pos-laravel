@@ -1,7 +1,6 @@
 @extends('template.parent')
 @section('title', 'Company')
 @push('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
 @endpush
 @section('content')
@@ -483,8 +482,9 @@
             $('#modal-customer-company').on('shown.bs.modal', function() {
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-customer-company')
+                        dropdownParent: $('#modal-customer-company'),
                     });
+                    $('.select2-container').addClass('form-control')
                 }, 140);
             });
             formattedInput();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppMenu;
 use App\Models\CustomerRole;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class CustomerRoleController extends Controller
     public function role($id)
     {
         $data = CustomerRole::where('userId', $id)->get();
-        $response = ['message' => 'Showing resource successfully', 'data' => $data];
+        $response = ['message' => 'Showing resource successfully', 'data' => dataToOption($data)];
         $code = 200;
         if (empty($data)) {
             $response = ['message' => 'Failed showing resource', 'data' => dataToOption($data)];
@@ -98,7 +99,7 @@ class CustomerRoleController extends Controller
     {
         $request->validate([
             'userId' => 'required',
-            'name' => 'required|min:2|max:10|unique:customer_roles,name',
+            'name' => 'required|min:2|max:30|unique:customer_roles,name',
             'description' => 'required|min:6|max:100',
         ], ['userId.required' => 'The customer user field is required']);
         DB::beginTransaction();

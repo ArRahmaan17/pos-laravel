@@ -1,7 +1,6 @@
 @extends('template.parent')
 @section('title', 'App Menu')
 @push('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
 @endpush
 @section('content')
@@ -449,7 +448,8 @@
                 }
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-app-menu')
+                        dropdownParent: $('#modal-app-menu'),
+
                     });
                 }, 140);
             });

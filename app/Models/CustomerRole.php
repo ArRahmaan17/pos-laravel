@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class CustomerRole extends Model
 {
@@ -37,6 +38,17 @@ class CustomerRole extends Model
             UserRole::class,
             'roleId',
             'id'
+        );
+    }
+    public function role_menus(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            AppMenu::class,
+            CustomerRoleAccessibility::class,
+            'roleId',
+            'id',
+            'id',
+            'menuId'
         );
     }
 }

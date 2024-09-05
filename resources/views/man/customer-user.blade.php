@@ -1,7 +1,6 @@
 @extends('template.parent')
 @section('title', 'User Management')
 @push('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
     <style>
         .code-container {
@@ -528,14 +527,16 @@
             $('#modal-customer-user').on('shown.bs.modal', function() {
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-customer-user')
+                        dropdownParent: $('#modal-customer-user'),
+
                     });
                 }, 140);
             });
             $('#modal-create-registration-link').on('shown.bs.modal', function() {
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-create-registration-link')
+                        dropdownParent: $('#modal-create-registration-link'),
+
                     });
                 }, 140);
             });

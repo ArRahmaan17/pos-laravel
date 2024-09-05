@@ -15,6 +15,10 @@ class AppMenu extends Model
     {
         return self::where('parent', $id)->get();
     }
+    static public function customer_menu()
+    {
+        return self::where('dev_only', 0)->get();
+    }
     public function child(): HasMany
     {
         return $this->hasMany(AppMenu::class, 'parent', 'id');
