@@ -160,7 +160,7 @@
                     id: 'question',
                     zindex: 9999,
                     title: 'Confirmation',
-                    message: "Are you sure you want to delete this application's role data?",
+                    message: "Are you sure you want to delete this role data?",
                     position: 'center',
                     icon: 'bx bx-question-mark',
                     buttons: [

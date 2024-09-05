@@ -162,6 +162,21 @@ class CustomerCompanyController extends Controller
         }
         return response()->json($response, $code);
     }
+    public function company($userId)
+    {
+        $where = [['userId', '=', session('userLogged')->user->id]];
+        if (getRole() === "Developer") {
+            $where = [['userId', '=', $userId]];
+        }
+        $data = CustomerCompany::with('address', 'type')->where($where)->get();
+        $code = 200;
+        $response = ['message' => 'Showing resource successfully', 'data' => dataToOption($data)];
+        if (empty($data)) {
+            $code = 404;
+            $response = ['message' => 'Failed showing resource', 'data' => dataToOption($data)];
+        }
+        return response()->json($response, $code);
+    }
 
     /**
      * Update the specified resource in storage.

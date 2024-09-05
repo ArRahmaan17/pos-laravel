@@ -4,8 +4,10 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dev\AppMenuController;
 use App\Http\Controllers\Dev\AppRoleController;
 use App\Http\Controllers\Man\CustomerCompanyController;
+use App\Http\Controllers\Man\CustomerCompanyWarehouseController;
 use App\Http\Controllers\Man\CustomerRoleAccessibilityController;
 use App\Http\Controllers\Man\CustomerRoleController;
+use App\Http\Controllers\Man\CustomerWarehouseController;
 use App\Http\Controllers\Man\UserCustomerController;
 use App\Http\Middleware\Authorization;
 use App\Http\Middleware\UnAuthorization;
@@ -57,6 +59,7 @@ Route::middleware([Authorization::class])->group(function () {
             Route::post('/{id?}', [CustomerCompanyController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerCompanyController::class, 'show'])->name('show');
+            Route::get('/company/{userId?}', [CustomerCompanyController::class, 'company'])->name('company');
             Route::delete('/{id?}', [CustomerCompanyController::class, 'destroy'])->name('delete');
         });
         Route::name('customer-role-accessibility')->as('customer-role-accessibility.')->prefix('customer-role-accessibility')->group(function () {
@@ -84,6 +87,14 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/data-table', [UserCustomerController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [UserCustomerController::class, 'show'])->name('show');
             Route::delete('/{id?}', [UserCustomerController::class, 'destroy'])->name('delete');
+        });
+        Route::name('customer-company-warehouse')->as('customer-company-warehouse.')->prefix('customer-company-warehouse')->group(function () {
+            Route::get('/', [CustomerCompanyWarehouseController::class, 'index'])->name('index');
+            Route::post('/', [CustomerCompanyWarehouseController::class, 'store'])->name('store');
+            Route::put('/{id?}', [CustomerCompanyWarehouseController::class, 'update'])->name('update');
+            Route::get('/data-table', [CustomerCompanyWarehouseController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [CustomerCompanyWarehouseController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [CustomerCompanyWarehouseController::class, 'destroy'])->name('delete');
         });
     });
 });

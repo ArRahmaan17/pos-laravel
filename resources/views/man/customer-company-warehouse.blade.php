@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'Role Permission')
+@section('title', 'Warehouse')
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
 @endpush
@@ -12,14 +12,14 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-role-accessibility" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-role-accessibility">Add <i
+                        <button class="btn btn-success" id="add-customer-company-warehouse" data-bs-toggle="modal"
+                            data-bs-target="#modal-customer-company-warehouse">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table-customer-role-accessibility">
+                        <table class="table" id="table-customer-company-warehouse">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
@@ -36,7 +36,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-role-accessibility" tabindex="-1" aria-hidden="true"
+    <div class="modal fade" id="modal-customer-company-warehouse" tabindex="-1" aria-hidden="true"
         data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -45,7 +45,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-customer-role-accessibility">
+                    <form action="#" id="form-customer-company-warehouse">
+                        <div class="divider">
+                            <div class="divider-text">Warehouse</div>
+                        </div>
                         @csrf
                         <div class="row">
                             <div class="col mb-3">
@@ -65,58 +68,50 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="roleId" class="form-label">Customer Role</label>
-                                <select class="form-control select2" name="roleId" id="roleId">
-                                    <option value="">Select Role</option>
+                                <label for="companyId" class="form-label">Your Company</label>
+                                <select class="form-control select2" name="companyId" id="companyId">
+                                    <option value=''>Mohon Pilih</option>
                                 </select>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12">
-                                <h5 class="mb-6">Role Permissions</h5>
-                                <div class="table-responsive">
-                                    <table class="table table-flush-spacing mb-0">
-                                        <tbody>
-                                            <tr>
-                                                <td class="text-nowrap fw-medium text-heading">Manager Access <i
-                                                        class="bx bx-info-circle" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top"
-                                                        aria-label="Allows a full access to the system"
-                                                        data-bs-original-title="Allows a full access to the system"></i>
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex justify-content-end">
-                                                        <div class="form-check mb-0 form-check-reverse">
-                                                            <label class="form-check-label" for="selectAll">
-                                                                All
-                                                            </label>
-                                                            <input class="form-check-input" type="checkbox" id="selectAll">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            @foreach ($menus as $menu)
-                                                <tr>
-                                                    <td class="text-nowrap fw-medium text-heading">{{ $menu->name }}</td>
-                                                    <td>
-                                                        <div class="d-flex justify-content-end">
-                                                            <div class="form-check form-check-reverse mb-0">
-                                                                <label class="form-check-label"
-                                                                    for="access{{ $menu->id }}">
-                                                                    Access
-                                                                </label>
-                                                                <input class="form-check-input menu-access" name="menuId[]"
-                                                                    type="checkbox" value="{{ $menu->id }}"
-                                                                    id="access{{ $menu->id }}">
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                            <div class="col mb-3">
+                                <label for="name" class="form-label">Warehouse Name</label>
+                                <input type="text" id="name" name="name" class="form-control"
+                                    placeholder="Enter Warehouse Name" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-0">
+                                <label for="description" class="form-label">Warehouse Description</label>
+                                <textarea name="description" placeholder="Enter Description Warehouse" class="form-control" style="resize:none"
+                                    id="description" cols="10" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="divider">
+                            <div class="divider-text">Warehouse Racks</div>
+                        </div>
+                        <div class="mx-3">
+                            <div id="container-rack" class="list-group mb-3">
+                            </div>
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <label for="rack[name]" class="form-label">Rack Name</label>
+                                    <input type="text" id="rack[name]" name="rack[name]" class="form-control"
+                                        placeholder="Enter Rack Name" />
                                 </div>
                             </div>
+                            <div class="row mb-2">
+                                <div class="col mb-0">
+                                    <label for="rack[description]" class="form-label">Rack Description</label>
+                                    <textarea name="rack[description]" placeholder="Enter Description Rack" class="form-control" style="resize:none"
+                                        id="rack[description]" cols="10" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <button id="add-rack" type="button" class="btn btn-icon btn-success"><i
+                                    class='bx bx-add-to-queue'></i></button>
+                            <button id="remove-rack" type="button" class="btn btn-icon btn-danger d-none"><i
+                                    class='bx bx-trash'></i></button>
                         </div>
                     </form>
                 </div>
@@ -124,9 +119,9 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-role-accessibility" class="btn btn-success">Save
+                    <button type="button" id="save-customer-company-warehouse" class="btn btn-success">Save
                         changes</button>
-                    <button type="button" id="edit-customer-role-accessibility" class="btn btn-warning d-none">Update
+                    <button type="button" id="edit-customer-company-warehouse" class="btn btn-warning d-none">Update
                         changes</button>
                 </div>
             </div>
@@ -144,35 +139,35 @@
         function actionData() {
             $('.edit').click(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("customer-role-accessibility");
-                $("#edit-customer-role-accessibility").data("customer-role-accessibility", idAppRole);
+                let idAppRole = $(this).data("customer-company-warehouse");
+                $("#edit-customer-company-warehouse").data("customer-company-warehouse", idAppRole);
                 if (window.datatableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-customer-role-accessibility tbody').find('tr').removeClass('selected');
+                    $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
                 var data = window.datatableAppRole.rows('.selected').data()[0];
-                $('#modal-customer-role-accessibility').modal('show');
-                $('#modal-customer-role-accessibility').find('.modal-title').html(`Edit @yield('title')`);
-                $('#save-customer-role-accessibility').addClass('d-none');
-                $('#edit-customer-role-accessibility').removeClass('d-none');
+                $('#modal-customer-company-warehouse').modal('show');
+                $('#modal-customer-company-warehouse').find('.modal-title').html(`Edit @yield('title')`);
+                $('#save-customer-company-warehouse').addClass('d-none');
+                $('#edit-customer-company-warehouse').removeClass('d-none');
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('man.customer-role-accessibility.show') }}/" + idAppRole,
+                    url: "{{ route('man.customer-company-warehouse.show') }}/" + idAppRole,
                     dataType: "json",
                     success: function(response) {
-                        if (response.data.role_menus.length == $('#modal-customer-role-accessibility')
+                        if (response.data.role_menus.length == $('#modal-customer-company-warehouse')
                             .find("form").find('input.menu-access').length) {
                             $('#selectAll').click();
                         } else {
                             response.data.role_menus.map((menu) => {
-                                $('#modal-customer-role-accessibility')
+                                $('#modal-customer-company-warehouse')
                                     .find("form").find(`input#access${menu.menuId}`)
                                     .click()
                             })
                         }
-                        $('#modal-customer-role-accessibility').find("form")
+                        $('#modal-customer-company-warehouse').find("form")
                             .find('select, input').map(function(index, element) {
                                 if (response.data[`${element.name}`] != undefined) {
                                     if (element.name == 'roleId') {
@@ -189,7 +184,7 @@
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-customer-role-accessibility-action',
+                            id: 'alert-customer-company-warehouse-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -202,10 +197,10 @@
 
             $('.delete').click(function() {
                 if (window.datatableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-customer-role-accessibility tbody').find('tr').removeClass('selected');
+                    $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("customer-role-accessibility");
+                let idAppRole = $(this).data("customer-company-warehouse");
                 var data = window.datatableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
@@ -227,7 +222,7 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('man.customer-role-accessibility.delete') }}/" +
+                                url: "{{ route('man.customer-company-warehouse.delete') }}/" +
                                     idAppRole,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
@@ -235,7 +230,7 @@
                                 dataType: "json",
                                 success: function(response) {
                                     iziToast.success({
-                                        id: 'alert-customer-role-accessibility-action',
+                                        id: 'alert-customer-company-warehouse-action',
                                         title: 'Success',
                                         message: response.message,
                                         position: 'topRight',
@@ -246,7 +241,7 @@
                                 },
                                 error: function(error) {
                                     iziToast.error({
-                                        id: 'alert-customer-role-accessibility-action',
+                                        id: 'alert-customer-company-warehouse-action',
                                         title: 'Error',
                                         message: error.responseJSON.message,
                                         position: 'topRight',
@@ -266,8 +261,8 @@
             });
         }
         $(function() {
-            window.datatableAppRole = $("#table-customer-role-accessibility").DataTable({
-                ajax: "{{ route('man.customer-role-accessibility.data-table') }}",
+            window.datatableAppRole = $("#table-customer-company-warehouse").DataTable({
+                ajax: "{{ route('man.customer-company-warehouse.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -319,29 +314,29 @@
             $('#userId').change(function() {
                 $.ajax({
                     type: "GET",
-                    url: `{{ route('man.customer-role.role') }}/${this.value}`,
+                    url: `{{ route('man.customer-company.company') }}/${this.value}`,
                     dataType: "json",
                     success: function(response) {
-                        $('#roleId').html(response.data)
+                        $('#companyId').html(response.data)
                     }
                 });
             });
             $('#selectAll').click(function(e) {
-                $('#form-customer-role-accessibility').find('[type=checkbox]').map((index, element) => {
+                $('#form-customer-company-warehouse').find('[type=checkbox]').map((index, element) => {
                     $(element).attr('checked', this.checked);
                 })
             });
-            $('#save-customer-role-accessibility').click(function() {
-                let data = serializeObject($('#form-customer-role-accessibility'));
+            $('#save-customer-company-warehouse').click(function() {
+                let data = serializeObject($('#form-customer-company-warehouse'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-role-accessibility.store') }}`,
+                    url: `{{ route('man.customer-company-warehouse.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role-accessibility').modal('hide')
+                        $('#modal-customer-company-warehouse').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-role-accessibility-form',
+                            id: 'alert-customer-company-warehouse-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -352,16 +347,16 @@
 
                     },
                     error: function(error) {
-                        $('#modal-customer-role-accessibility .is-invalid').removeClass(
+                        $('#modal-customer-company-warehouse .is-invalid').removeClass(
                             'is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-role-accessibility').find('[name=' +
+                            $('#modal-customer-company-warehouse').find('[name=' +
                                 indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-role-accessibility-form',
+                            id: 'alert-customer-company-warehouse-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -371,17 +366,17 @@
                     }
                 });
             });
-            $('#edit-customer-role-accessibility').click(function() {
-                let data = serializeObject($('#form-customer-role-accessibility'));
+            $('#edit-customer-company-warehouse').click(function() {
+                let data = serializeObject($('#form-customer-company-warehouse'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('man.customer-role-accessibility.update') }}/${data.roleId}`,
+                    url: `{{ route('man.customer-company-warehouse.update') }}/${data.roleId}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role-accessibility').modal('hide')
+                        $('#modal-customer-company-warehouse').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-role-accessibility-form',
+                            id: 'alert-customer-company-warehouse-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -391,16 +386,16 @@
                         window.datatableAppRole.ajax.reload()
                     },
                     error: function(error) {
-                        $('#modal-customer-role-accessibility .is-invalid').removeClass(
+                        $('#modal-customer-company-warehouse .is-invalid').removeClass(
                             'is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-role-accessibility').find('[name=' +
+                            $('#modal-customer-company-warehouse').find('[name=' +
                                 indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-role-accessibility-form',
+                            id: 'alert-customer-company-warehouse-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -410,18 +405,54 @@
                     }
                 });
             });
-            $('#modal-customer-role-accessibility').on('hidden.bs.modal', function() {
+            $('#add-rack').click(function() {
+                $('.is-invalid').removeClass('is-invalid')
+                let data = {
+                    name: $('[name="rack[name]"]').val(),
+                    description: $('[name="rack[description]"]').val(),
+                }
+                if (data.name != '' && data.description != '') {
+                    $('#container-rack').append(`<label data-rack=${data} class="list-group-item">
+                                    <input class="form-check-input me-3 rack-action" type="checkbox">
+                                    ${data.name} (${data.description})
+                                </label>`);
+                    $('[name="rack[name]"]').val('');
+                    $('[name="rack[description]"]').val('');
+                    $('.rack-action').click(function() {
+                        if ($('input.rack-action:checked').length != 0) {
+                            $('#remove-rack').removeClass('d-none');
+                        } else {
+                            $('#remove-rack').addClass('d-none');
+                        }
+                    })
+                } else {
+                    if (data.name == '') {
+                        $('[name="rack[name]"]').addClass('is-invalid')
+                    } else if (data.description == '') {
+                        $('[name="rack[description]"]').addClass('is-invalid')
+                    }
+                }
+            });
+            $('#remove-rack').click(function() {
+                $('.rack-action:checked').parent('label.list-group-item').remove();
+                if ($('input.rack-action:checked').length != 0) {
+                    $('#remove-rack').removeClass('d-none');
+                } else {
+                    $('#remove-rack').addClass('d-none');
+                }
+            })
+            $('#modal-customer-company-warehouse').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
-                $('#save-customer-role-accessibility').removeClass('d-none');
-                $('#edit-customer-role-accessibility').addClass('d-none');
-                $('#modal-customer-role-accessibility .is-invalid').removeClass('is-invalid')
-                $('#table-customer-role-accessibility tbody').find('tr').removeClass('selected');
+                $('#save-customer-company-warehouse').removeClass('d-none');
+                $('#edit-customer-company-warehouse').addClass('d-none');
+                $('#modal-customer-company-warehouse .is-invalid').removeClass('is-invalid')
+                $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
             });
-            $('#modal-customer-role-accessibility').on('shown.bs.modal', function() {
+            $('#modal-customer-company-warehouse').on('shown.bs.modal', function() {
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-customer-role-accessibility'),
+                        dropdownParent: $('#modal-customer-company-warehouse'),
                     });
                 }, 140);
             });

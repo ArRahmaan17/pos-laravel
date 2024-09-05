@@ -200,6 +200,17 @@ class CustomerRoleAccessibilityController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            CustomerRoleAccessibility::where('roleId', $id)->delete();
+            DB::commit();
+            $response = ['message' => 'Successfully destroy resource'];
+            $code = 200;
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $response = ['message' => 'Failed destroy resource'];
+            $code = 422;
+        }
+        return response()->json($response, $code);
     }
 }
