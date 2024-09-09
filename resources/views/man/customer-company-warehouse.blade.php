@@ -23,8 +23,9 @@
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col">Application Menus</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Racks</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -50,6 +51,7 @@
                             <div class="divider-text">Warehouse</div>
                         </div>
                         @csrf
+                        <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
                                 @if (getRole() === 'Developer')
@@ -88,32 +90,35 @@
                                     id="description" cols="10" rows="3"></textarea>
                             </div>
                         </div>
-                        <div class="divider">
-                            <div class="divider-text">Warehouse Racks</div>
-                        </div>
-                        <div class="mx-3">
-                            <div id="container-rack" class="list-group mb-3">
-                            </div>
-                            <div class="row">
-                                <div class="col mb-3">
-                                    <label for="rack[name]" class="form-label">Rack Name</label>
-                                    <input type="text" id="rack[name]" name="rack[name]" class="form-control"
-                                        placeholder="Enter Rack Name" />
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col mb-0">
-                                    <label for="rack[description]" class="form-label">Rack Description</label>
-                                    <textarea name="rack[description]" placeholder="Enter Description Rack" class="form-control" style="resize:none"
-                                        id="rack[description]" cols="10" rows="3"></textarea>
-                                </div>
-                            </div>
-                            <button id="add-rack" type="button" class="btn btn-icon btn-success"><i
-                                    class='bx bx-add-to-queue'></i></button>
-                            <button id="remove-rack" type="button" class="btn btn-icon btn-danger d-none"><i
-                                    class='bx bx-trash'></i></button>
-                        </div>
                     </form>
+                    <div class="mx-1 divider">
+                        <div class="divider-text">Warehouse Racks</div>
+                    </div>
+                    <div class="mx-1">
+                        <div id="container-rack" class="list-group mb-3">
+                        </div>
+                        <input type="hidden" name="rack[id]" id="rack[id]">
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="rack[name]" class="form-label">Rack Name</label>
+                                <input type="text" id="rack[name]" name="rack[name]" class="form-control"
+                                    placeholder="Enter Rack Name" />
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col mb-0">
+                                <label for="rack[description]" class="form-label">Rack Description</label>
+                                <textarea name="rack[description]" placeholder="Enter Description Rack" class="form-control" style="resize:none"
+                                    id="rack[description]" cols="10" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <button id="add-rack" type="button" class="btn btn-icon btn-success"><i
+                                class='bx bx-add-to-queue'></i></button>
+                        <button id="remove-rack" type="button" class="btn btn-icon btn-danger d-none"><i
+                                class='bx bx-trash'></i></button>
+                        <button id="edit-rack" type="button" class="btn btn-icon btn-warning d-none"><i
+                                class='bx bx-pencil'></i></button>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
@@ -157,30 +162,20 @@
                     url: "{{ route('man.customer-company-warehouse.show') }}/" + idAppRole,
                     dataType: "json",
                     success: function(response) {
-                        if (response.data.role_menus.length == $('#modal-customer-company-warehouse')
-                            .find("form").find('input.menu-access').length) {
-                            $('#selectAll').click();
-                        } else {
-                            response.data.role_menus.map((menu) => {
-                                $('#modal-customer-company-warehouse')
-                                    .find("form").find(`input#access${menu.menuId}`)
-                                    .click()
-                            })
-                        }
-                        $('#modal-customer-company-warehouse').find("form")
-                            .find('select, input').map(function(index, element) {
-                                if (response.data[`${element.name}`] != undefined) {
-                                    if (element.name == 'roleId') {
-                                        setTimeout(() => {
-                                            $(`[name="${element.name}"]`).val(response.data[
-                                                `${element.name}`]).trigger('change');
-                                        }, 500);
-                                    } else {
-                                        $(`[name="${element.name}"]`).val(response.data[
-                                            `${element.name}`]).trigger('change');
-                                    }
-                                }
-                            });
+                        $('#userId').val(response.data.company.userId).trigger('change')
+                        setTimeout(() => {
+                            $('#companyId').val(response.data.company.id).trigger('change')
+                        }, 750);
+                        $('#name').val(response.data.name).trigger('change')
+                        $('[name=id]').val(response.data.id).trigger('change')
+                        $('#description').val(response.data.description).trigger('change')
+                        response.data.racks.forEach(element => {
+                            $('[name="rack[name]"]').val(element.name).trigger('change')
+                            $('[name="rack[id]"]').val(element.id).trigger('change')
+                            $('[name="rack[description]"]').val(element.description).trigger(
+                                'change')
+                            $('#add-rack').click()
+                        });
                     },
                     error: function(error) {
                         iziToast.error({
@@ -288,17 +283,26 @@
                     }
                 }, {
                     target: 2,
-                    name: 'menu',
-                    data: 'menu',
+                    name: 'description',
+                    data: 'description',
+                    orderable: true,
+                    searchable: true,
+                    render: (data, type, row, meta) => {
+                        return `<div class='text-wrap'>${data}</div>`
+                    }
+                }, {
+                    target: 3,
+                    name: 'racks',
+                    data: 'racks',
                     orderable: false,
                     searchable: false,
                     render: (data, type, row, meta) => {
                         return `<div class='text-wrap'>${data.map((element)=>{
-                                    return `<div class='d-inline'>${element.name}</div>`
-                                })}</div>`
+                            return `<span>${element.name}</span>`
+                        })}</div>`
                     }
                 }, {
-                    target: 3,
+                    target: 4,
                     name: 'action',
                     data: 'action',
                     orderable: false,
@@ -321,13 +325,15 @@
                     }
                 });
             });
-            $('#selectAll').click(function(e) {
-                $('#form-customer-company-warehouse').find('[type=checkbox]').map((index, element) => {
-                    $(element).attr('checked', this.checked);
-                })
-            });
             $('#save-customer-company-warehouse').click(function() {
                 let data = serializeObject($('#form-customer-company-warehouse'));
+                let racks = [];
+                $('#container-rack').find('.list-group-item').map((index, element) => {
+                    racks.push($(element).data('rack'));
+                });
+                if (racks.length > 0) {
+                    data.racks = racks
+                }
                 $.ajax({
                     type: "POST",
                     url: `{{ route('man.customer-company-warehouse.store') }}`,
@@ -344,16 +350,27 @@
                             displayMode: 'replace'
                         });
                         window.datatableAppRole.ajax.reload();
-
                     },
                     error: function(error) {
-                        $('#modal-customer-company-warehouse .is-invalid').removeClass(
-                            'is-invalid')
+                        $('#modal-customer-company-warehouse .is-invalid')
+                            .removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-company-warehouse').find('[name=' +
-                                indexInArray +
-                                ']').addClass('is-invalid')
+                            if (indexInArray.split('racks.').length > 1) {
+                                $('#modal-customer-company-warehouse .border-danger')
+                                    .removeClass('border-danger')
+                                let index = indexInArray.split('racks.').join('').split(
+                                    '.name').join('');
+                                $('#container-rack')
+                                    .find(
+                                        `.list-group-item:nth-child(${parseInt(index)+1})`
+                                    )
+                                    .addClass('border border-danger')
+                            } else {
+                                $('#modal-customer-company-warehouse').find('[name=' +
+                                    indexInArray +
+                                    ']').addClass('is-invalid')
+                            }
                         });
                         iziToast.error({
                             id: 'alert-customer-company-warehouse-form',
@@ -368,9 +385,16 @@
             });
             $('#edit-customer-company-warehouse').click(function() {
                 let data = serializeObject($('#form-customer-company-warehouse'));
+                let racks = [];
+                $('#container-rack').find('.list-group-item').map((index, element) => {
+                    racks.push($(element).data('rack'));
+                });
+                if (racks.length > 0) {
+                    data.racks = racks
+                }
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('man.customer-company-warehouse.update') }}/${data.roleId}`,
+                    url: `{{ route('man.customer-company-warehouse.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
@@ -408,23 +432,30 @@
             $('#add-rack').click(function() {
                 $('.is-invalid').removeClass('is-invalid')
                 let data = {
+                    id: $('[name="rack[id]"]').val() ?? null,
                     name: $('[name="rack[name]"]').val(),
                     description: $('[name="rack[description]"]').val(),
                 }
                 if (data.name != '' && data.description != '') {
-                    $('#container-rack').append(`<label data-rack=${data} class="list-group-item">
+                    $('#container-rack').append(`<label data-rack='${JSON.stringify(data)}' class="list-group-item">
                                     <input class="form-check-input me-3 rack-action" type="checkbox">
                                     ${data.name} (${data.description})
                                 </label>`);
                     $('[name="rack[name]"]').val('');
                     $('[name="rack[description]"]').val('');
+                    $('[name="rack[id]"]').val('');
                     $('.rack-action').click(function() {
-                        if ($('input.rack-action:checked').length != 0) {
+                        if ($('input.rack-action:checked').length == 1) {
                             $('#remove-rack').removeClass('d-none');
+                            $('#edit-rack').removeClass('d-none');
+                        } else if ($('input.rack-action:checked').length != 0) {
+                            $('#remove-rack').removeClass('d-none');
+                            $('#edit-rack').addClass('d-none');
                         } else {
                             $('#remove-rack').addClass('d-none');
+                            $('#edit-rack').addClass('d-none');
                         }
-                    })
+                    });
                 } else {
                     if (data.name == '') {
                         $('[name="rack[name]"]').addClass('is-invalid')
@@ -440,7 +471,15 @@
                 } else {
                     $('#remove-rack').addClass('d-none');
                 }
-            })
+            });
+            $('#edit-rack').click(function() {
+                $('#remove-rack').addClass('d-none');
+                $('#edit-rack').addClass('d-none');
+                let data = $('.rack-action:checked').parent('label.list-group-item').data('rack');
+                $('[name="rack[name]"]').val(data.name);
+                $('[name="rack[description]"]').val(data.description);
+                $('.rack-action:checked').parent('label.list-group-item').remove();
+            });
             $('#modal-customer-company-warehouse').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
