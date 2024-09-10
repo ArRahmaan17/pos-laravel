@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('app_menus', function (Blueprint $table) {
-            $table->integer('place')->default(0)->comment('0 as sidebar and 1 as profile');
+        Schema::table('customer_company_goods', function (Blueprint $table) {
+            $table->bigInteger('companyId')->unsigned();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('app_menus', function (Blueprint $table) {
-            $table->removeColumn('place');
+        Schema::table('customer_company_goods', function (Blueprint $table) {
+            $table->removeColumn('companyId');
         });
     }
 };

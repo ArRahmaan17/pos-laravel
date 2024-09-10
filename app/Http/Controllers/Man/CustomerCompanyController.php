@@ -162,6 +162,7 @@ class CustomerCompanyController extends Controller
         }
         return response()->json($response, $code);
     }
+
     public function company($userId)
     {
         $where = [['userId', '=', session('userLogged')->user->id]];

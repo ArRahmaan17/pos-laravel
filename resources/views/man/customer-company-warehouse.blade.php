@@ -207,7 +207,7 @@
                     id: 'question',
                     zindex: 9999,
                     title: 'Confirmation',
-                    message: "Are you sure you want to delete this role accessibility data?",
+                    message: "Are you sure you want to delete this warehouse data?",
                     position: 'center',
                     icon: 'bx bx-question-mark',
                     buttons: [

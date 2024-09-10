@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dev\AppMenuController;
 use App\Http\Controllers\Dev\AppRoleController;
 use App\Http\Controllers\Man\CustomerCompanyController;
+use App\Http\Controllers\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Man\CustomerCompanyWarehouseController;
 use App\Http\Controllers\Man\CustomerRoleAccessibilityController;
 use App\Http\Controllers\Man\CustomerRoleController;
@@ -95,6 +96,14 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/data-table', [CustomerCompanyWarehouseController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerCompanyWarehouseController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerCompanyWarehouseController::class, 'destroy'])->name('delete');
+        });
+        Route::name('customer-company-good')->as('customer-company-good.')->prefix('customer-company-good')->group(function () {
+            Route::get('/', [CustomerCompanyGoodController::class, 'index'])->name('index');
+            Route::post('/', [CustomerCompanyGoodController::class, 'store'])->name('store');
+            Route::put('/{id?}', [CustomerCompanyGoodController::class, 'update'])->name('update');
+            Route::get('/data-table', [CustomerCompanyGoodController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [CustomerCompanyGoodController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [CustomerCompanyGoodController::class, 'destroy'])->name('delete');
         });
     });
 });

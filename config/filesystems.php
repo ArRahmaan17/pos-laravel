@@ -42,6 +42,13 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+        'customer-product' => [
+            'driver' => 'local',
+            'root' => public_path('customer-product'),
+            'url' => env('APP_URL') . '/customer-product',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
