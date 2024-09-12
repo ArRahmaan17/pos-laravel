@@ -36,7 +36,7 @@
     </style>
 @endpush
 @section('content')
-    <div class="row">
+    <div class="card-body">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex align-middle">
@@ -58,6 +58,7 @@
                                     <th scope="col">Stock</th>
                                     <th scope="col">Price</th>
                                     <th scope="col">Units</th>
+                                    <th scope="col">Status</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -82,6 +83,23 @@
                         @csrf
                         <input type="hidden" name="id">
                         <input type="hidden" name="companyId" value="{{ session('userLogged')->company->id ?? 10 }}">
+                        <div class="row">
+                            <label class="form-label" for="">Status</label>
+                            <div class="col">
+                                <div class="btn-group col-12" role="group" aria-label="Basic radio toggle button group">
+                                    <input type="radio" class="btn-check" name="status" value="archive" id="archive-btn">
+                                    <label class="btn btn-outline-danger" for="archive-btn"><i class='bx bx-archive-in'></i>
+                                        Archive</label>
+                                    <input type="radio" class="btn-check" name="status" value="draft" id="draft-btn"
+                                        checked="">
+                                    <label class="btn btn-outline-warning" for="draft-btn"><i
+                                            class='bx bx-hourglass'></i>Draft</label>
+                                    <input type="radio" class="btn-check" name="status" value="publish" id="publish-btn">
+                                    <label class="btn btn-outline-success" for="publish-btn"><i
+                                            class='bx bxs-slideshow'></i>Publish</label>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="name" class="form-label">Name</label>
@@ -124,8 +142,8 @@
                                         <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
                                             <span class="d-none d-sm-block">Upload new photo</span>
                                             <i class="bx bx-upload d-block d-sm-none"></i>
-                                            <input type="file" id="upload" name="picture" class="account-file-input"
-                                                hidden accept="image/png, image/jpeg" />
+                                            <input type="file" id="upload" name="picture"
+                                                class="account-file-input" hidden accept="image/png, image/jpeg" />
                                         </label>
                                         <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
                                             <i class="bx bx-reset d-block d-sm-none"></i>
@@ -194,7 +212,7 @@
                             .val(response.data.stock)
                             .trigger('change');
                         formElement.find('[name=price]')
-                            .val(response.data.price)
+                            .val(parseInt(response.data.price))
                             .trigger('change');
                         formElement.find('[name=unitId]')
                             .val(response.data.unitId)
@@ -202,8 +220,15 @@
                         formElement.find('[name=companyId]')
                             .val(response.data.companyId)
                             .trigger('change');
+                        formElement.find('[name=status]').map((key, element) => {
+                            if ($(element).val() == response.data.status) {
+                                $(element).prop('checked', true);
+                            } else {
+                                $(element).prop('checked', false);
+                            }
+                        })
                         $("#uploadedAvatar").prop('src',
-                            `{{ url('/') }}/` + response.data.picture)
+                            `{{ url('/') }}/customer-product/` + response.data.picture)
                     },
                     error: function(error) {
                         iziToast.error({
@@ -335,6 +360,15 @@
                     }
                 }, {
                     target: 5,
+                    name: 'status',
+                    data: 'status',
+                    orderable: true,
+                    searchable: true,
+                    render: (data, type, row, meta) => {
+                        return `<div class='d-flex gap-1'>${data}</div>`
+                    }
+                }, {
+                    target: 6,
                     name: 'action',
                     data: 'action',
                     orderable: false,
@@ -390,12 +424,15 @@
                 });
             });
             $('#edit-customer-company-good').click(function() {
-                let data = serializeObject($('#form-customer-company-good'));
+                let data = serializeFiles($('#form-customer-company-good'));
                 $.ajax({
-                    type: "PUT",
-                    url: `{{ route('man.customer-company-good.update') }}/${data.id}`,
+                    type: "POST",
+                    url: `{{ route('man.customer-company-good.update') }}/${$('#form-customer-company-good').find('input[name=id]').val()}`,
                     data: data,
                     dataType: "json",
+                    cache: false,
+                    contentType: false,
+                    processData: false,
                     success: function(response) {
                         $('#modal-customer-company-good').modal('hide')
                         iziToast.success({
@@ -434,6 +471,7 @@
                 $('#edit-customer-company-good').addClass('d-none');
                 $('#modal-customer-company-good .is-invalid').removeClass('is-invalid')
                 $('#table-customer-company-good tbody').find('tr').removeClass('selected');
+                $('#uploadedAvatar').prop('src', `{{ asset('customer-product/default-product.webp') }}`);
             });
             $('#modal-customer-company-good').on('shown.bs.modal', function() {
                 setTimeout(() => {

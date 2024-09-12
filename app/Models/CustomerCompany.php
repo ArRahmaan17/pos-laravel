@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CustomerCompany extends Model
@@ -17,5 +18,9 @@ class CustomerCompany extends Model
     public function type(): HasOne
     {
         return $this->hasOne(BusinessType::class, 'id', 'businessId');
+    }
+    public function racks(): HasMany
+    {
+        return $this->hasMany(CustomerWarehouseRack::class, 'id', 'warehouseId');
     }
 }

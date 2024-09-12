@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('customer_company_goods', function (Blueprint $table) {
             $table->bigInteger('companyId')->unsigned();
+            $table->enum('status', ['draft', 'archive', 'publish']);
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('customer_company_goods', function (Blueprint $table) {
             $table->removeColumn('companyId');
+            $table->removeColumn('status');
         });
     }
 };

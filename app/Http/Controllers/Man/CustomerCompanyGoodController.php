@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Man;
 use App\Http\Controllers\Controller;
 use App\Models\AppGoodUnit;
 use App\Models\CustomerCompanyGood;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -67,6 +68,7 @@ class CustomerCompanyGoodController extends Controller
             $row['price'] = $item->price;
             $row['stock'] = $item->stock;
             $row['unit'] = $item->unit->name;
+            $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">' . $item->status . '</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">' . $item->status . '</span>' : '<span class="badge bg-label-success">' . $item->status . '</span>');
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
@@ -88,16 +90,21 @@ class CustomerCompanyGoodController extends Controller
             'name' => 'required|min:6|max:40',
             'stock' => 'required|numeric|max_digits:8',
             'price' => 'required|numeric|max_digits:16',
+            'status' => 'required|in:archive,draft,publish',
+            'companyId' => 'required',
             'unitId' => 'required',
             'picture' => 'image|between:50,800|dimensions:ratio=1/1',
-        ], ['unitId' => 'The unit field is required.']);
+        ], [
+            'unitId' => 'The unit field is required.',
+            'companyId' => 'The company field is required.',
+        ]);
         DB::beginTransaction();
         try {
             $data = $request->except('_token', 'id');
             $data['picture'] = 'customer-product/default-product.webp';
             if ($request->picture) {
                 $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
-                $data['picture'] = 'customer-product/' . $filename;
+                $data['picture'] = $filename;
                 Storage::disk('customer-product')->putFileAs('/', $request->picture, $filename);
             }
             CustomerCompanyGood::create($data);
@@ -127,20 +134,47 @@ class CustomerCompanyGoodController extends Controller
         return response()->json($response, $code);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:6|max:40',
+            'id' => 'required|numeric',
+            'stock' => 'required|numeric|max_digits:8',
+            'price' => 'required|numeric|max_digits:16',
+            'status' => 'required|in:archive,draft,publish',
+            'unitId' => 'required',
+            'companyId' => 'required',
+            'picture' => 'image|between:50,800|dimensions:ratio=1/1',
+        ], [
+            'unitId' => 'The unit field is required.',
+            'companyId' => 'The unit field is required.',
+        ]);
+        DB::beginTransaction();
+        try {
+            $data = $request->except('_token', 'id');
+            if ($request->file('picture')) {
+                Storage::disk('customer-product')->delete(CustomerCompanyGood::find($id)->picture);
+                $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
+                $data['picture'] = $filename;
+                Storage::disk('customer-product')->putFileAs('/', $request->file('picture'), $filename);
+            }
+            CustomerCompanyGood::where([
+                ['id', $id],
+                ['companyId', session('userLogged')->company->id ?? 10]
+            ])->update($data);
+            $response = ['message' => 'updating resource successfully'];
+            $code = 200;
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $response = ['message' => 'failed updating resource'];
+            $code = 422;
+        }
+        return response()->json($response, $code);
     }
 
     /**
@@ -148,6 +182,21 @@ class CustomerCompanyGoodController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            Storage::disk('customer-product')->delete(CustomerCompanyGood::find($id)->picture);
+            CustomerCompanyGood::where([
+                ['id', $id],
+                ['companyId', session('userLogged')->company->id ?? 10]
+            ])->delete();
+            $response = ['message' => 'deleting resource successfully'];
+            $code = 200;
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $response = ['message' => 'failed deleting resource'];
+            $code = 422;
+        }
+        return response()->json($response, $code);
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CustomerCompanyGood extends Model
 {
-    protected $fillable = ['name', 'price', 'stock', 'picture', 'companyId', 'unitId'];
+    protected $fillable = ['name', 'price', 'stock', 'picture', 'companyId', 'unitId', 'status'];
     use HasFactory;
     public function unit(): HasOne
     {

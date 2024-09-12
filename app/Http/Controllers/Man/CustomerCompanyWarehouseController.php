@@ -112,9 +112,13 @@ class CustomerCompanyWarehouseController extends Controller
             $warehouse = CustomerCompanyWarehouse::create($request->except('_token', 'userId', 'racks'));
             $racks = [];
             foreach ($request->only('racks')['racks'] as $index => $rack) {
-                $racks[] = array_merge($rack, ['warehouseId' => $warehouse->id]);
+                $racks[] = array_merge($rack, [
+                    'warehouseId' => $warehouse['id'],
+                    'created_at' => now('Asia/Jakarta'),
+                    'updated_at' => now('Asia/Jakarta'),
+                ]);
             }
-            CustomerWarehouseRack::create($racks);
+            CustomerWarehouseRack::insert($racks);
             $response = ['message' => 'Creating resources successfully'];
             $code = 200;
             DB::commit();

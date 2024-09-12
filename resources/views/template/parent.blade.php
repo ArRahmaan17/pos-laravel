@@ -299,6 +299,18 @@
             });
         }
 
+        function debounce(func, delay) {
+            let timeoutId;
+            return function(...args) {
+                if (timeoutId) {
+                    clearTimeout(timeoutId); // Hapus timeout sebelumnya
+                }
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args); // Panggil fungsi dengan argumen
+                }, delay);
+            };
+        }
+
         function serializeFiles(node) {
             let form = $(node),
                 formData = new FormData(),

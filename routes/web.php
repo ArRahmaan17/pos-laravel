@@ -6,9 +6,11 @@ use App\Http\Controllers\Dev\AppRoleController;
 use App\Http\Controllers\Man\CustomerCompanyController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Man\CustomerCompanyWarehouseController;
+use App\Http\Controllers\Man\CustomerGoodWarehouseController;
 use App\Http\Controllers\Man\CustomerRoleAccessibilityController;
 use App\Http\Controllers\Man\CustomerRoleController;
 use App\Http\Controllers\Man\CustomerWarehouseController;
+use App\Http\Controllers\Man\CustomerWareHouseRackGoodController;
 use App\Http\Controllers\Man\UserCustomerController;
 use App\Http\Middleware\Authorization;
 use App\Http\Middleware\UnAuthorization;
@@ -97,10 +99,18 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/{id?}', [CustomerCompanyWarehouseController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerCompanyWarehouseController::class, 'destroy'])->name('delete');
         });
+        Route::name('customer-warehouse-rack-good')->as('customer-warehouse-rack-good.')->prefix('customer-warehouse-rack-good')->group(function () {
+            Route::get('/', [CustomerWareHouseRackGoodController::class, 'index'])->name('index');
+            Route::post('/', [CustomerWareHouseRackGoodController::class, 'store'])->name('store');
+            Route::put('/{rackId?}/{id?}', [CustomerWareHouseRackGoodController::class, 'update'])->name('update');
+            Route::get('/data-table', [CustomerWareHouseRackGoodController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [CustomerWareHouseRackGoodController::class, 'racks'])->name('show');
+            Route::delete('/{id?}', [CustomerWareHouseRackGoodController::class, 'destroy'])->name('delete');
+        });
         Route::name('customer-company-good')->as('customer-company-good.')->prefix('customer-company-good')->group(function () {
             Route::get('/', [CustomerCompanyGoodController::class, 'index'])->name('index');
             Route::post('/', [CustomerCompanyGoodController::class, 'store'])->name('store');
-            Route::put('/{id?}', [CustomerCompanyGoodController::class, 'update'])->name('update');
+            Route::post('/{id?}', [CustomerCompanyGoodController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyGoodController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerCompanyGoodController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerCompanyGoodController::class, 'destroy'])->name('delete');
