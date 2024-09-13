@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\DB;
 
 class CustomerCompanyGood extends Model
 {
@@ -13,5 +14,12 @@ class CustomerCompanyGood extends Model
     public function unit(): HasOne
     {
         return $this->hasOne(AppGoodUnit::class, 'id', 'unitId');
+    }
+    static public function shelf_less($companyId)
+    {
+        return self::whereRaw(
+            DB::raw('id not in (select goodId from customer_warehouse_rack_goods)')
+        )->where('customer_company_goods.companyId', $companyId)
+            ->get();
     }
 }

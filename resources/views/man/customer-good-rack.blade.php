@@ -12,17 +12,99 @@
                 <h3>@yield('title')</h3>
             </div>
             <div class="col-2">
-                <select id="warehouseId" class="form-control select2">
-                    <option value="">Select Warehouse</option>
-                    @foreach ($warehouses as $warehouse)
-                        <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                <select id="companyId" class="form-control select2">
+                    <option value="">Select Company</option>
+                    @foreach ($companies as $company)
+                        <option value="{{ $company->id }}">{{ $company->name }}</option>
                     @endforeach
                 </select>
             </div>
         </div>
         <div class="card-body">
             <div class="alert alert-warning">Please Select Your Warehouse</div>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 shelf-container">
+            <div class="row g-3 warehouse-container">
+                <div class="col-12 border shadow rounded py-1">
+                    <p>Warehouse 1</p>
+                    <div class="row row-cols-3 g-1 shelf-container">
+                        <div class="col-4 border rounded">
+                            <div class="col-12 border-bottom text-capitalize fs-3">
+                                shelf 1
+                            </div>
+                            <div id="${data.id ? 'shelf-'+data.id : 'shelfless'}" class="col-12 product-container"
+                                style="min-height:100px;">
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                            </div>
+                        </div>
+                        <div class="col-4 border rounded">
+                            <div class="col-12 border-bottom text-capitalize fs-3">
+                                shelf 1
+                            </div>
+                            <div id="${data.id ? 'shelf-'+data.id : 'shelfless'}" class="col-12 product-container"
+                                style="min-height:100px;">
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                            </div>
+                        </div>
+                        <div class="col-4 border rounded">
+                            <div class="col-12 border-bottom text-capitalize fs-3">
+                                shelf 1
+                            </div>
+                            <div id="${data.id ? 'shelf-'+data.id : 'shelfless'}" class="col-12 product-container"
+                                style="min-height:100px;">
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 border shadow rounded py-1">
+                    <p>Warehouse 1</p>
+                    <div class="row row-cols-3 g-1 shelf-container">
+                        <div class="col-4 border rounded">
+                            <div class="col-12 border-bottom text-capitalize fs-3">
+                                shelf 1
+                            </div>
+                            <div id="${data.id ? 'shelf-'+data.id : 'shelfless'}" class="col-12 product-container"
+                                style="min-height:100px;">
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                            </div>
+                        </div>
+                        <div class="col-4 border rounded">
+                            <div class="col-12 border-bottom text-capitalize fs-3">
+                                shelf 1
+                            </div>
+                            <div id="${data.id ? 'shelf-'+data.id : 'shelfless'}" class="col-12 product-container"
+                                style="min-height:100px;">
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                            </div>
+                        </div>
+                        <div class="col-4 border rounded">
+                            <div class="col-12 border-bottom text-capitalize fs-3">
+                                shelf 1
+                            </div>
+                            <div id="${data.id ? 'shelf-'+data.id : 'shelfless'}" class="col-12 product-container"
+                                style="min-height:100px;">
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                                <div class="col">...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -33,23 +115,32 @@
     <script src="{{ asset('assets/js/dragula.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script>
-        window.update = false;
-
         function generateShelf(data) {
             let childHtml = ``;
             data.products.forEach(element => {
                 childHtml +=
-                    `<div class="col-12 border rounded-sm my-1" id="product-${element.product.id}"><div class="row p-1"><div class="col-2 align-self-center"><div class="avatar"><img src="../customer-product/${element.product.picture}" alt="" class="w-px-40 h-auto rounded-circle"></div></div><div class="col"><p class="fs-5 mb-0">${element.product.name}</p><p class="text-muted mb-0">${element.product.stock} (Rp.${element.product.price})</p></div></div></div>`
-            })
-            let html = `<div class="col border rounded">
+                    `<div class="${data.id ? 'col-12': 'col-4'} border rounded-sm my-1" id="product-${element.hasOwnProperty('product') ? element.product.id : element.id}"><div class="row p-1"><div class="col-2 align-self-center"><div class="avatar"><img src="../customer-product/${element.hasOwnProperty('product') ? element.product.picture : element.picture}" alt="" class="w-px-40 h-auto rounded-circle"></div></div><div class="col"><p class="fs-5 mb-0">${element.hasOwnProperty('product') ? element.product.name : element.name}</p><p class="text-muted mb-0">${element.hasOwnProperty('product') ? element.product.stock : element.stock} (Rp.${element.hasOwnProperty('product') ? element.product.price : element.price})</p></div></div></div>`
+            });
+            let html = `<div class="${data.id ? 'col-4' : 'col-12'} border rounded">
                             <div class="col-12 border-bottom text-capitalize fs-3">
                                 ${data.name ?? 'shelfless'}
                             </div>
-                            <div id="${data.id ? 'shelf-'+data.id : 'shelfless'}" class="col-12 product-container" style="min-height:100px;">
+                            <div id="${data.id ? 'shelf-'+data.id : 'shelfless'}" class="col-12 product-container ${data.id ? '': 'row'}" style="min-height:100px;">
                                 ${childHtml}
                             </div>
                         </div>`;
-            $('.shelf-container').append(html);
+            return html;
+        }
+
+        function generateWarehouse(data) {
+            let htmlShelf = ``;
+            data.racks.forEach(element => {
+                htmlShelf += generateShelf(element);
+            });
+            let html = `<div class="col-12 border shadow rounded py-1">
+                    <p>Warehouse 1</p>
+                    <div class="row row-cols-3 g-1 shelf-container">${htmlShelf}</div></div>`;
+            $('.warehouse-container').append(html)
         }
 
         function generateDragula(container = [...$('.product-container')]) {
@@ -64,13 +155,10 @@
                 slideFactorX: 0, // allows users to select the amount of movement on the X axis before it is considered a drag instead of a click
                 slideFactorY: 0, // allows users to select the amount of movement on the Y axis before it is considered a drag instead of a click
             }).on('drag', function(el) {
-                window.update = false
                 el.className = el.className.replace('ex-moved', '');
             }).on('drop', function(el) {
-                window.update = false
                 el.className += ' ex-moved';
             }).on('over', function(el, container) {
-                window.update = false
                 container.className += ' ex-over';
             }).on('out', debounce(function(el, container) {
                 container.className = container.className.replace('ex-over', '');
@@ -105,7 +193,7 @@
             }, 1000));
         }
         $(function() {
-            $('#warehouseId').change(function(e) {
+            $('#companyId').change(function(e) {
                 if (this.value != '') {
                     $('.alert.alert-warning').addClass('d-none').removeClass('d-block');
                     $.ajax({
@@ -113,65 +201,72 @@
                         url: `{{ route('man.customer-warehouse-rack-good.show') }}/${this.value}`,
                         dataType: "json",
                         beforeSend: function() {
-                            $('.shelf-container').html(`
-                                <div class="card" aria-hidden="true">
-                                    <div class="card-body">
-                                        <h5 class="card-title placeholder-glow">
-                                            <span class="placeholder col-3"></span>
-                                        </h5>
-                                        <p class="card-text placeholder-glow">
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                        </p>
+                            $('.warehouse-container').html(`<div class="col-12 border shadow rounded py-1">
+                                <p class="col-3 placeholder"></p> 
+                                <div class="row row-cols-3 g-1 shelf-container">
+                                    <div class="card" aria-hidden="true">
+                                        <div class="card-body">
+                                            <h5 class="card-title placeholder-glow">
+                                                <span class="placeholder col-3"></span>
+                                            </h5>
+                                            <p class="card-text placeholder-glow">
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="card" aria-hidden="true">
+                                        <div class="card-body">
+                                            <h5 class="card-title placeholder-glow">
+                                                <span class="placeholder col-3 rounded-lg"></span>
+                                            </h5>
+                                            <p class="card-text placeholder-glow">
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="card" aria-hidden="true">
+                                        <div class="card-body">
+                                            <h5 class="card-title placeholder-glow">
+                                                <span class="placeholder col-3 rounded-lg"></span>
+                                            </h5>
+                                            <p class="card-text placeholder-glow">
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                                <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="card" aria-hidden="true">
-                                    <div class="card-body">
-                                        <h5 class="card-title placeholder-glow">
-                                            <span class="placeholder col-3 rounded-lg"></span>
-                                        </h5>
-                                        <p class="card-text placeholder-glow">
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="card" aria-hidden="true">
-                                    <div class="card-body">
-                                        <h5 class="card-title placeholder-glow">
-                                            <span class="placeholder col-3 rounded-lg"></span>
-                                        </h5>
-                                        <p class="card-text placeholder-glow">
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                            <span class="placeholder placeholder-lg col-12 p-4 mb-2"></span>
-                                        </p>
-                                    </div>
-                                </div>
+                            </div>
                             `);
                         },
                         success: function(response) {
-                            $('.shelf-container').html('');
+                            $('.warehouse-container').html('');
+                            $('.warehouse-container').append(generateShelf({
+                                products: [...response.shelf_less],
+                            }));
                             response.data.forEach(element => {
-                                generateShelf(element);
+                                generateWarehouse(element);
                             });
                             generateDragula();
                         },
                     });
                 } else {
                     $('.alert.alert-warning').addClass('d-block').removeClass('d-none');
-                    $('.shelf-container').html('');
+                    $('.warehouse-container').html('');
                 }
             });
             $('.select2').select2();

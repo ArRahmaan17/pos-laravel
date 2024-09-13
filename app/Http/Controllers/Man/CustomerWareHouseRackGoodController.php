@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
 use App\Models\CustomerCompany;
+use App\Models\CustomerCompanyGood;
 use App\Models\CustomerCompanyWarehouse;
 use App\Models\CustomerWarehouseRack;
 use App\Models\CustomerWarehouseRackGood;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -17,28 +19,35 @@ class CustomerWareHouseRackGoodController extends Controller
      */
     public function index()
     {
-        $where = [['companyId', '=', session('userLogged')->company->id ?? 10]];
+        $where = [['userId', '=', session('userLogged')->user->id ?? 1]];
         if (getRole() == 'Developer') {
-            $where = [['companyId', '<>', 0]];
+            $where = [['userId', '<>', 0]];
         }
-        $warehouses = CustomerCompanyWarehouse::where($where)->get();
-        return view('man.customer-good-rack', compact('warehouses'));
+        $companies = CustomerCompany::where($where)->get();
+        return view('man.customer-good-rack', compact('companies'));
     }
 
     public function racks($id)
     {
-        $data = CustomerWarehouseRack::with(['products'])->where(
-            'warehouseId',
-            (getRole() == 'Developer') ? $id : session('userLogged')->company->id
-        )->get()->map(function ($data) {
-            $data->products->load('product');
+        $where = [['companyId', '=', session('userLogged')->company->id ?? 10]];
+        if (getRole() == 'Developer') {
+        }
+        $where = [['companyId', '<>', 0]];
+        $data = CustomerCompanyWarehouse::with(['racks'])->where($where)->get()->map(function ($data) {
+            $data->racks->load('products');
+            collect($data->racks)->map(function ($product) {
+                $product->products->load('product');
+                return $product;
+            });
             return $data;
         })->all();
-        $response = ['message' => 'showing resource successfully', 'data' => $data];
+        $warehouse_company = CustomerCompanyWarehouse::with('company')->first();
+        $shelf_less = CustomerCompanyGood::shelf_less($warehouse_company->company->id);
+        $response = ['message' => 'showing resource successfully', 'data' => $data, 'shelf_less' => $shelf_less];
         $code = 200;
         if (empty($data)) {
             $code = 404;
-            $response = ['message' => 'failed showing resource', 'data' => $data];
+            $response = ['message' => 'failed showing resource', 'data' => $data, 'shelf_less' => $shelf_less];
         }
         return response()->json($response, $code);
     }
@@ -50,13 +59,20 @@ class CustomerWareHouseRackGoodController extends Controller
     {
         DB::beginTransaction();
         try {
-            CustomerWarehouseRackGood::where('goodId', $goodId)->update(['rackId' => $rackId]);
+            if ($rackId == 'shelfless') {
+                throw new Exception("Products that have been entered into the account cannot be removed again", 422);
+            }
+            if (CustomerWarehouseRackGood::where('goodId', $goodId)->count() == 1) {
+                CustomerWarehouseRackGood::where('goodId', $goodId)->update(['rackId' => $rackId]);
+            } else {
+                CustomerWarehouseRackGood::create(['rackId' => $rackId, 'goodId' => $goodId]);
+            }
             DB::commit();
             $response = ['message' => 'updating resource successfully'];
             $code = 200;
         } catch (\Throwable $th) {
             DB::rollBack();
-            $response = ['message' => 'failed updating resource'];
+            $response = ['message' => $th->getCode() == 422 ? $th->getMessage() : 'failed updating resource'];
             $code = 422;
         }
         return response()->json($response, $code);
