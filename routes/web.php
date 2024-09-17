@@ -6,10 +6,9 @@ use App\Http\Controllers\Dev\AppRoleController;
 use App\Http\Controllers\Man\CustomerCompanyController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Man\CustomerCompanyWarehouseController;
-use App\Http\Controllers\Man\CustomerGoodWarehouseController;
+use App\Http\Controllers\Man\CustomerProductTransactionController;
 use App\Http\Controllers\Man\CustomerRoleAccessibilityController;
 use App\Http\Controllers\Man\CustomerRoleController;
-use App\Http\Controllers\Man\CustomerWarehouseController;
 use App\Http\Controllers\Man\CustomerWareHouseRackGoodController;
 use App\Http\Controllers\Man\UserCustomerController;
 use App\Http\Middleware\Authorization;
@@ -98,6 +97,14 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/data-table', [CustomerCompanyWarehouseController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerCompanyWarehouseController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerCompanyWarehouseController::class, 'destroy'])->name('delete');
+        });
+        Route::name('customer-product-transaction')->as('customer-product-transaction.')->prefix('customer-product-transaction')->group(function () {
+            Route::get('/', [CustomerProductTransactionController::class, 'index'])->name('index');
+            Route::post('/', [CustomerProductTransactionController::class, 'store'])->name('store');
+            Route::put('/{rackId?}/{id?}', [CustomerProductTransactionController::class, 'update'])->name('update');
+            Route::get('/product-data-table', [CustomerProductTransactionController::class, 'productDataTable'])->name('product-data-table');
+            Route::get('/{id?}', [CustomerProductTransactionController::class, 'racks'])->name('show');
+            Route::delete('/{id?}', [CustomerProductTransactionController::class, 'destroy'])->name('delete');
         });
         Route::name('customer-warehouse-rack-good')->as('customer-warehouse-rack-good.')->prefix('customer-warehouse-rack-good')->group(function () {
             Route::get('/', [CustomerWareHouseRackGoodController::class, 'index'])->name('index');

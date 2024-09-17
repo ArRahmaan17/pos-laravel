@@ -176,7 +176,7 @@
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
-        window.datatableAppRole = null;
+        window.datatableCustomerCompanyGood = null;
         window.state = 'add';
 
         function actionData() {
@@ -184,12 +184,12 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-company-good");
                 $("#edit-customer-company-good").data("customer-company-good", idAppRole);
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.datatableCustomerCompanyGood.rows('.selected').data().length == 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.datatableCustomerCompanyGood.rows('.selected').data()[0];
 
                 $('#modal-customer-company-good').modal('show');
                 $('#modal-customer-company-good').find('.modal-title').html(`Edit @yield('title')`);
@@ -244,12 +244,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.datatableCustomerCompanyGood.rows('.selected').data().length == 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idAppRole = $(this).data("customer-company-good");
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.datatableCustomerCompanyGood.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -285,7 +285,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppRole.ajax.reload()
+                                    window.datatableCustomerCompanyGood.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -310,7 +310,7 @@
         }
 
         $(function() {
-            window.datatableAppRole = $("#table-customer-company-good").DataTable({
+            window.datatableCustomerCompanyGood = $("#table-customer-company-good").DataTable({
                 ajax: "{{ route('man.customer-company-good.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -378,7 +378,7 @@
                     }
                 }, ]
             });
-            window.datatableAppRole.on('draw.dt', function() {
+            window.datatableCustomerCompanyGood.on('draw.dt', function() {
                 actionData();
             });
             $('#save-customer-company-good').click(function() {
@@ -401,7 +401,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload();
+                        window.datatableCustomerCompanyGood.ajax.reload();
 
                     },
                     error: function(error) {
@@ -443,7 +443,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload()
+                        window.datatableCustomerCompanyGood.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-customer-company-good .is-invalid').removeClass('is-invalid')

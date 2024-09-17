@@ -157,7 +157,10 @@ class CustomerCompanyGoodController extends Controller
         try {
             $data = $request->except('_token', 'id');
             if ($request->file('picture')) {
-                Storage::disk('customer-product')->delete(CustomerCompanyGood::find($id)->picture);
+                $product = CustomerCompanyGood::find($id);
+                if ($product->picture != 'default-product.webp') {
+                    Storage::disk('customer-product')->delete($product->picture);
+                }
                 $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
                 Storage::disk('customer-product')->putFileAs('/', $request->file('picture'), $filename);

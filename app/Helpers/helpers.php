@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\CustomerProductTransaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -8,6 +9,21 @@ if (!function_exists('getRole')) {
     function getRole()
     {
         return session('userLogged')->role->name;
+    }
+}
+function buatSingkatan($kalimat)
+{
+    return strtoupper(implode('', array_map(fn($kata) => $kata[0], explode(' ', $kalimat))));
+}
+if (!function_exists('lastCompanyOrderCode')) {
+    function lastCompanyOrderCode()
+    {
+        $data = CustomerProductTransaction::where('companyId', session('userLogged')->company->id ?? 10)->first();
+        $lastOrder = buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
+        if ($data && explode(buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-', $data->orderCode)) {
+            $lastOrder =  buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' .  str_pad(intval(implode('', explode(buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-', $data->orderCode)) + 1), 5, '0', STR_PAD_LEFT);
+        }
+        return $lastOrder;
     }
 }
 if (!function_exists('splitKodeGolongan')) {
