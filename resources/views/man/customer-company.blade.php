@@ -359,7 +359,7 @@
                     orderable: true,
                     searchable: true,
                     render: (data, type, row, meta) => {
-                        return `<addresss class='text-wrap'>${data}</addresss>`
+                        return `<div class='text-wrap'>${data}</div>`
                     }
                 }, {
                     target: 5,

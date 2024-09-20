@@ -7,5 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class CustomerDetailProductTransaction extends Model
 {
+    protected $fillable = ['orderCode', 'goodId', 'quantity', 'price', 'total'];
     use HasFactory;
 }

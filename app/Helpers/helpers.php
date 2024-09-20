@@ -18,9 +18,14 @@ function buatSingkatan($kalimat)
 if (!function_exists('lastCompanyOrderCode')) {
     function lastCompanyOrderCode()
     {
-        $data = CustomerProductTransaction::where('companyId', session('userLogged')->company->id ?? 10)->first();
+        $data = CustomerProductTransaction::where('companyId', session('userLogged')->company->id ?? 10)
+            ->orderBy('id', 'DESC')
+            ->first();
         $lastOrder = buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
-        if ($data && explode(buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-', $data->orderCode)) {
+        if ($data && explode(
+            buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
+            $data->orderCode
+        )) {
             $lastOrder =  buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' .  str_pad(intval(implode('', explode(buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-', $data->orderCode)) + 1), 5, '0', STR_PAD_LEFT);
         }
         return $lastOrder;
@@ -95,48 +100,6 @@ if (!function_exists('classificationType')) {
     function classificationType(array $conditions)
     {
         return DB::table('masterkapitalisasi')->where('kodegolongan', $conditions['kodegolongan'])->where('kodebidang', $conditions['kodebidang'])->first();
-    }
-}
-if (!function_exists('getKoderegister')) {
-
-    function getKoderegister(array $paramRegister)
-    {
-        $allowedColumn = [
-            'kodeurusan',
-            'kodesuburusan',
-            'kodeorganisasi',
-            'kodesuborganisasi',
-            'kodeunit',
-            'kodesubunit',
-            'kodesubsubunit',
-            'kodegolongan',
-            'kodebidang',
-            'kodekelompok',
-            'kodesub',
-            'kodesubsub',
-            'tahunorganisasi',
-            'tahunperolehan',
-        ];
-
-        $tmpWhere = [];
-
-        $query = DB::table('kib')
-            ->where('tahunorganisasi', 2024)
-            ->where('statusdata', 'aktif');
-
-        $akumLength = 0;
-        foreach ($paramRegister as $key => $value) {
-            if (in_array($key, $allowedColumn)) {
-                $query->where($key, $value);
-                $akumLength++;
-                array_push($tmpWhere, $key);
-            }
-        }
-        if ($akumLength < count($allowedColumn)) {
-            throw new \Exception("Kolom yang diminta kurang! berikut daftarnya : \n" . implode("\n", array_diff($allowedColumn, $tmpWhere)), 1);
-        }
-
-        return ($query->max('koderegister') ?? 0) + 1;
     }
 }
 if (!function_exists('convertStringToNumber')) {

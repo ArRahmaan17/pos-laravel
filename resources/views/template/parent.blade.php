@@ -197,7 +197,7 @@
                                 </script>
                                 , made with ❤️ by
                                 <a href="https://devwandering.com" target="_blank"
-                                    class="footer-link fw-bolder">Developer BACODE</a>
+                                    class="footer-link fw-bolder">Doglex's</a>
                             </div>
                         </div>
                     </footer>

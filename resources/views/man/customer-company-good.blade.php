@@ -2,38 +2,6 @@
 @section('title', 'Product Supply')
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
-    <style>
-        .code-container {
-            position: relative;
-            display: block;
-            background-color: #292D3E;
-            /* padding: 10px; */
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #007bff5d;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-
-        code {
-            position: relative;
-            margin: 0;
-            color: #ffffff;
-        }
-
-        .copy-btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
 @endpush
 @section('content')
     <div class="card-body">
@@ -402,7 +370,6 @@
                             displayMode: 'replace'
                         });
                         window.datatableCustomerCompanyGood.ajax.reload();
-
                     },
                     error: function(error) {
                         $('#modal-customer-company-good .is-invalid').removeClass('is-invalid')

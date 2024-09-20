@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dev\AppMenuController;
 use App\Http\Controllers\Dev\AppRoleController;
 use App\Http\Controllers\Man\CustomerCompanyController;
+use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Man\CustomerCompanyWarehouseController;
 use App\Http\Controllers\Man\CustomerProductTransactionController;
@@ -72,6 +73,14 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/{id?}', [CustomerRoleAccessibilityController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerRoleAccessibilityController::class, 'destroy'])->name('delete');
         });
+        Route::name('customer-company-discount')->as('customer-company-discount.')->prefix('customer-company-discount')->group(function () {
+            Route::get('/', [CustomerCompanyDiscountController::class, 'index'])->name('index');
+            Route::post('/', [CustomerCompanyDiscountController::class, 'store'])->name('store');
+            Route::put('/{id?}', [CustomerCompanyDiscountController::class, 'update'])->name('update');
+            Route::get('/data-table', [CustomerCompanyDiscountController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [CustomerCompanyDiscountController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [CustomerCompanyDiscountController::class, 'destroy'])->name('delete');
+        });
         Route::name('customer-role')->as('customer-role.')->prefix('customer-role')->group(function () {
             Route::get('/', [CustomerRoleController::class, 'index'])->name('index');
             Route::post('/', [CustomerRoleController::class, 'store'])->name('store');
@@ -101,8 +110,9 @@ Route::middleware([Authorization::class])->group(function () {
         Route::name('customer-product-transaction')->as('customer-product-transaction.')->prefix('customer-product-transaction')->group(function () {
             Route::get('/', [CustomerProductTransactionController::class, 'index'])->name('index');
             Route::post('/', [CustomerProductTransactionController::class, 'store'])->name('store');
-            Route::put('/{rackId?}/{id?}', [CustomerProductTransactionController::class, 'update'])->name('update');
             Route::get('/product-data-table', [CustomerProductTransactionController::class, 'productDataTable'])->name('product-data-table');
+            Route::get('/discount-data-table', [CustomerProductTransactionController::class, 'discountDataTable'])->name('discount-data-table');
+            Route::get('/validate-discount-code/{id?}', [CustomerProductTransactionController::class, 'validateDiscountCode'])->name('validate-discount-code');
             Route::get('/{id?}', [CustomerProductTransactionController::class, 'racks'])->name('show');
             Route::delete('/{id?}', [CustomerProductTransactionController::class, 'destroy'])->name('delete');
         });

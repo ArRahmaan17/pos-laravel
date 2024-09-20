@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomerCompanyDiscount;
 use App\Models\CustomerCompanyGood;
+use App\Models\CustomerDetailProductTransaction;
+use App\Models\CustomerProductTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CustomerProductTransactionController extends Controller
 {
@@ -76,13 +80,152 @@ class CustomerProductTransactionController extends Controller
 
         return Response()->json($response, 200);
     }
+    public function discountDataTable(Request $request)
+    {
+        $totalData = CustomerCompanyGood::where('status', 'publish')->orderBy('customer_company_goods.id', 'asc')
+            ->count();
+        $totalFiltered = $totalData;
+        if (empty($request['search']['value'])) {
+            $assets = CustomerCompanyGood::with('unit')->select('*');
+
+            if ($request['length'] != '-1') {
+                $assets->limit($request['length'])
+                    ->offset($request['start']);
+            }
+            if (isset($request['order'][0]['column'])) {
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+            }
+            $assets = $assets->where('status', 'publish')->get();
+        } else {
+            $assets = CustomerCompanyGood::with('unit')->select('*')
+                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+
+            if (isset($request['order'][0]['column'])) {
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+            }
+            if ($request['length'] != '-1') {
+                $assets->limit($request['length'])
+                    ->offset($request['start']);
+            }
+            $assets = $assets->where('status', 'publish')->get();
+
+            $totalFiltered = CustomerCompanyGood::select('*')
+                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+
+            if (isset($request['order'][0]['column'])) {
+                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+            }
+            $totalFiltered = $totalFiltered->where('status', 'publish')->count();
+        }
+        $dataFiltered = [];
+        foreach ($assets as $index => $item) {
+            $row = [];
+            $row['name'] = $item->name;
+            $row['id'] = $item->id;
+            $row['price'] = $item->price;
+            $row['stock'] = $item->stock;
+            $row['unit'] = $item->unit->name;
+            $row['picture'] = $item->picture;
+            $row['action'] = "<button class='btn btn-icon btn-success add-cart' data-customer-product='" . $item->id . "' ><i class='bx bx-plus' ></i></button>";
+            $dataFiltered[] = $row;
+        }
+        $response = [
+            'draw' => $request['draw'],
+            'recordsFiltered' => $totalFiltered,
+            'recordsTotal' => count($dataFiltered),
+            'aaData' => $dataFiltered,
+        ];
+
+        return Response()->json($response, 200);
+    }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $companyId = session('userLogged')->company->id ?? 10;
+            $goodIds = collect($request->transactions)->pluck('id');
+            $goods = CustomerCompanyGood::where('companyId', $companyId)
+                ->whereIn('id', $goodIds)
+                ->get()
+                ->keyBy('id');
+
+            $total = array_reduce($request->transactions, function ($acc, $product) use ($goods) {
+                return $acc += intval($goods[$product['id']]->price) * intval($product['quantity']);
+            }, 0);
+            $data_discount = CustomerCompanyDiscount::where('id', $request->discount['id'])->first();
+            $discount = ($total - ($data_discount->maxTransactionDiscount != null) ? ($data_discount->maxTransactionDiscount * $data_discount->percentage / 100) : 0) * $data_discount->percentage / 100;
+            $data = [
+                'orderCode' => $this->checkOrderCode($request->orderCode),
+                'userId' => session('userLogged')->user->id,
+                'companyId' => session('userLogged')->company->id ?? 10,
+                'total' => $total,
+                'discount' => $discount,
+            ];
+            CustomerProductTransaction::create($data);
+            $goodIds = collect($request->transactions)->pluck('id');
+            $goods = CustomerCompanyGood::whereIn('id', $goodIds)->get()->keyBy('id');
+
+            $dataDetail = [];
+            foreach ($request->transactions as $index => $product) {
+                $dataDetail[] = [
+                    'orderCode' => $data['orderCode'],
+                    'goodId' => $product['id'],
+                    'quantity' => $product['quantity'],
+                    'price' => $goods[$product['id']]->price,
+                    'total' => $goods[$product['id']]->price * intval($product['quantity']),
+                    'created_at' => now('Asia/Jakarta'),
+                    'updated_at' => now('Asia/Jakarta'),
+                ];
+            }
+            CustomerDetailProductTransaction::insert($dataDetail);
+            $companyId = session('userLogged')->company->id ?? 10;
+            $goodIds = collect($request->transactions)->pluck('id');
+            $goods = CustomerCompanyGood::where('companyId', $companyId)
+                ->whereIn('id', $goodIds)
+                ->get();
+
+            foreach ($request->transactions as $product) {
+                $goods->where('id', $product['id'])->first()->decrement('stock', intval($product['quantity']));
+            }
+            $goods->push();
+            DB::commit();
+            $response = [
+                'message' => 'transaction created successfully',
+                'orderCode' => lastCompanyOrderCode()
+            ];
+            $code = 200;
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $response = ['message' => 'failed creating transaction'];
+            $code = 422;
+        }
+        return response()->json($response, $code);
+    }
+    public function checkOrderCode(string $orderCode)
+    {
+        if (CustomerProductTransaction::where('orderCode')->count() == 0) {
+            return $orderCode;
+        } else {
+            return lastCompanyOrderCode();
+        }
+    }
+    public function validateDiscountCode($discountCode)
+    {
+        $data = CustomerCompanyDiscount::where('companyId', session('userLogged')->company->id ?? 10)
+            ->where('discountCode', $discountCode)->first();
+        $response = ['message' => 'invalid discount code', 'data' => $data];
+        $code = 404;
+        if ($data) {
+            $response = ['message' => 'valid discount code', 'data' => $data];
+            $code = 200;
+        }
+        return response()->json($response, $code);
     }
 
     /**
