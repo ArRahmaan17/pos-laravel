@@ -119,9 +119,9 @@
                             <div class="nav-item d-flex align-items-center">
                                 <i class='bx bxs-user-account'></i>
                                 {!! ' Logged in&nbsp;<i>' .
-                                    session('userLogged')->user->name .
+                                    session('userLogged')['user']['name'] .
                                     '</i> &nbsp;as&nbsp;<i>' .
-                                    session('userLogged')->role->name .
+                                    session('userLogged')['role']['name'] .
                                     '</i>' ??
                                     'Login as :' !!}
                             </div>
@@ -143,15 +143,9 @@
                                             <div class="d-flex">
                                                 <div class="flex-shrink-0 me-3">
                                                     <div class="avatar avatar-online">
-                                                        <img src="{{ !empty(session('userLogged')->user->foto) && session('userLogged')->user->foto !== null ? asset(session('userLogged')->user->foto) : '../assets/img/avatars/1.png' }}"
+                                                        <img src="{{ !empty(session('userLogged')['user']['foto']) && session('userLogged')['user']['foto'] !== null ? asset(session('userLogged')['user']['foto']) : '../assets/img/avatars/1.png' }}"
                                                             alt class="w-px-40 h-100 rounded-circle" />
                                                     </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <span
-                                                        class="fw-semibold d-block">{{ session('userLogged')->user->displayname }}</span>
-                                                    {{-- <small class="text-muted">{{ getRole() }} --}}
-                                                    </small>
                                                 </div>
                                             </div>
                                         </a>

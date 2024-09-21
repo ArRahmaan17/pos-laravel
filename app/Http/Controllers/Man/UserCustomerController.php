@@ -17,7 +17,7 @@ class UserCustomerController extends Controller
     public function index()
     {
         $users = User::user_manager();
-        $where = [['userId', '=', session('userLogged')->user->id]];
+        $where = [['userId', '=', session('userLogged')['user']['id']]];
         if (getRole() === "Developer") {
             $where = [['userId', '<>', 0]];
         }
@@ -26,7 +26,6 @@ class UserCustomerController extends Controller
     }
     public function generateRegistrationLink(Request $request)
     {
-
         $request->validate([
             'managerId' => 'required',
             'roleId' => 'required',
@@ -37,7 +36,7 @@ class UserCustomerController extends Controller
         if (getRole() === "Developer") {
             $id = $request->managerId;
         } else {
-            $id = session('userLogged')->user->id;
+            $id = session('userLogged')['user']['id'];
         }
         $role = $request->roleId;
         $link = route('auth.registration') . '?action=' . base64_encode($id . '|' . now('Asia/Jakarta')->add($request->time_limit) . '|' . $role . '|' . env('APP_SECRET'));

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 if (!function_exists('getRole')) {
     function getRole()
     {
-        return session('userLogged')->role->name;
+        return session('userLogged')['role']['name'];
     }
 }
 function buatSingkatan($kalimat)
@@ -18,7 +18,7 @@ function buatSingkatan($kalimat)
 if (!function_exists('lastCompanyOrderCode')) {
     function lastCompanyOrderCode()
     {
-        $data = CustomerProductTransaction::where('companyId', session('userLogged')->company->id ?? 10)
+        $data = CustomerProductTransaction::where('companyId', session('userLogged')['company']['id'])
             ->orderBy('id', 'DESC')
             ->first();
         $lastOrder = buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
@@ -26,7 +26,24 @@ if (!function_exists('lastCompanyOrderCode')) {
             buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
             $data->orderCode
         )) {
-            $lastOrder =  buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' .  str_pad(intval(implode('', explode(buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-', $data->orderCode)) + 1), 5, '0', STR_PAD_LEFT);
+            $lastOrder =  buatSingkatan(
+                session('userLogged')->company->name ?? 'Doglek Code'
+            ) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' .  str_pad(
+                intval(
+                    implode(
+                        '',
+                        explode(
+                            buatSingkatan(
+                                session('userLogged')->company->name ?? 'Doglek Code'
+                            ) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
+                            $data->orderCode
+                        )
+                    )
+                ) + 1,
+                5,
+                '0',
+                STR_PAD_LEFT
+            );
         }
         return $lastOrder;
     }

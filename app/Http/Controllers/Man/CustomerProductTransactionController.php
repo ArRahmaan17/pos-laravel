@@ -148,7 +148,7 @@ class CustomerProductTransactionController extends Controller
     {
         DB::beginTransaction();
         try {
-            $companyId = session('userLogged')->company->id ?? 10;
+            $companyId = session('userLogged')['company']['id'];
             $goodIds = collect($request->transactions)->pluck('id');
             $goods = CustomerCompanyGood::where('companyId', $companyId)
                 ->whereIn('id', $goodIds)
@@ -162,8 +162,8 @@ class CustomerProductTransactionController extends Controller
             $discount = ($total - ($data_discount->maxTransactionDiscount != null) ? ($data_discount->maxTransactionDiscount * $data_discount->percentage / 100) : 0) * $data_discount->percentage / 100;
             $data = [
                 'orderCode' => $this->checkOrderCode($request->orderCode),
-                'userId' => session('userLogged')->user->id,
-                'companyId' => session('userLogged')->company->id ?? 10,
+                'userId' => session('userLogged')['user']['id'],
+                'companyId' => session('userLogged')['company']['id'],
                 'total' => $total,
                 'discount' => $discount,
             ];
@@ -184,7 +184,7 @@ class CustomerProductTransactionController extends Controller
                 ];
             }
             CustomerDetailProductTransaction::insert($dataDetail);
-            $companyId = session('userLogged')->company->id ?? 10;
+            $companyId = session('userLogged')['company']['id'];
             $goodIds = collect($request->transactions)->pluck('id');
             $goods = CustomerCompanyGood::where('companyId', $companyId)
                 ->whereIn('id', $goodIds)
@@ -217,7 +217,7 @@ class CustomerProductTransactionController extends Controller
     }
     public function validateDiscountCode($discountCode)
     {
-        $data = CustomerCompanyDiscount::where('companyId', session('userLogged')->company->id ?? 10)
+        $data = CustomerCompanyDiscount::where('companyId', session('userLogged')['company']['id'])
             ->where('discountCode', $discountCode)->first();
         $response = ['message' => 'invalid discount code', 'data' => $data];
         $code = 404;

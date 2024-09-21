@@ -19,7 +19,7 @@ class CustomerWareHouseRackGoodController extends Controller
      */
     public function index()
     {
-        $where = [['userId', '=', session('userLogged')->user->id ?? 1]];
+        $where = [['userId', '=', session('userLogged')['user']['id'] ?? 1]];
         if (getRole() == 'Developer') {
             $where = [['userId', '<>', 0]];
         }
@@ -29,7 +29,7 @@ class CustomerWareHouseRackGoodController extends Controller
 
     public function racks($id)
     {
-        $where = [['companyId', '=', session('userLogged')->company->id ?? 10]];
+        $where = [['companyId', '=', session('userLogged')['company']['id']]];
         if (getRole() == 'Developer') {
         }
         $where = [['companyId', '<>', 0]];

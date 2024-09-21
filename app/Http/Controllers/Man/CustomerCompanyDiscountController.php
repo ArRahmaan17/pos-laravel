@@ -106,7 +106,7 @@ class CustomerCompanyDiscountController extends Controller
             $data['percentage'] = intval(implode('', explode('%', $data['percentage'])));
             $data['maxTransactionDiscount'] = intval(convertStringToNumber($data['maxTransactionDiscount']));
             $data['minTransactionPrice'] = intval(convertStringToNumber($data['minTransactionPrice']));
-            $data['companyId'] = session('userLogged')->company->id ?? 10;
+            $data['companyId'] = session('userLogged')['company']['id'];
             CustomerCompanyDiscount::create($data);
             DB::commit();
             $response = ['message' => 'resources created successfully'];
@@ -124,7 +124,7 @@ class CustomerCompanyDiscountController extends Controller
      */
     public function show(string $id)
     {
-        $discount = CustomerCompanyDiscount::where('id', $id)->where('companyId', session('userLogged')->company->id ?? 10)->first();
+        $discount = CustomerCompanyDiscount::where('id', $id)->where('companyId', session('userLogged')['company']['id'])->first();
         $response = ['message' => 'failed showing resources', 'data' => $discount];
         $code = 404;
         if ($discount) {
@@ -152,8 +152,8 @@ class CustomerCompanyDiscountController extends Controller
             $data['percentage'] = intval(implode('', explode('%', $data['percentage'])));
             $data['maxTransactionDiscount'] = $request->has('maxTransactionDiscount') ? intval(convertStringToNumber($data['maxTransactionDiscount'])) : null;
             $data['minTransactionPrice'] = intval(convertStringToNumber($data['minTransactionPrice']));
-            $data['companyId'] = session('userLogged')->company->id ?? 10;
-            CustomerCompanyDiscount::where(['id' => $id, 'companyId' => session('userLogged')->company->id ?? 10])->update($data);
+            $data['companyId'] = session('userLogged')['company']['id'];
+            CustomerCompanyDiscount::where(['id' => $id, 'companyId' => session('userLogged')['company']['id']])->update($data);
             DB::commit();
             $response = ['message' => 'resources updated successfully'];
             $code = 200;
@@ -172,7 +172,7 @@ class CustomerCompanyDiscountController extends Controller
     {
         DB::beginTransaction();
         try {
-            CustomerCompanyDiscount::where(['id' => $id, 'companyId' => session('userLogged')->company->id ?? 10])->delete();
+            CustomerCompanyDiscount::where(['id' => $id, 'companyId' => session('userLogged')['company']['id']])->delete();
             DB::commit();
             $response = ['message' => 'resources deleted successfully'];
             $code = 200;

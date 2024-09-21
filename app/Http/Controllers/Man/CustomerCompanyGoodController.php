@@ -124,7 +124,7 @@ class CustomerCompanyGoodController extends Controller
      */
     public function show(string $id)
     {
-        $data = CustomerCompanyGood::where([['id', $id], ['companyId', session('userLogged')->company->id ?? 10]])->first();
+        $data = CustomerCompanyGood::where([['id', $id], ['companyId', session('userLogged')['company']['id']]])->first();
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -167,7 +167,7 @@ class CustomerCompanyGoodController extends Controller
             }
             CustomerCompanyGood::where([
                 ['id', $id],
-                ['companyId', session('userLogged')->company->id ?? 10]
+                ['companyId', session('userLogged')['company']['id']]
             ])->update($data);
             $response = ['message' => 'updating resource successfully'];
             $code = 200;
@@ -190,7 +190,7 @@ class CustomerCompanyGoodController extends Controller
             Storage::disk('customer-product')->delete(CustomerCompanyGood::find($id)->picture);
             CustomerCompanyGood::where([
                 ['id', $id],
-                ['companyId', session('userLogged')->company->id ?? 10]
+                ['companyId', session('userLogged')['company']['id']]
             ])->delete();
             $response = ['message' => 'deleting resource successfully'];
             $code = 200;

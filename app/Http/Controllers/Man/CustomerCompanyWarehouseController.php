@@ -23,7 +23,7 @@ class CustomerCompanyWarehouseController extends Controller
 
     public function dataTable(Request $request)
     {
-        $where = [['companyId', '=', session('userLogged')->company->id ?? 0]];
+        $where = [['companyId', '=', session('userLogged')['company']['id']]];
         if (getRole() === "Developer") {
             $where = [['companyId', '<>', 0]];
         }
@@ -142,7 +142,7 @@ class CustomerCompanyWarehouseController extends Controller
         if (getRole() != 'Developer') {
             $where = [
                 ['id', $id],
-                ['companyId', '=', session('userLogged')->company->id]
+                ['companyId', '=', session('userLogged')['company']['id']]
             ];
         }
         $warehouse = CustomerCompanyWarehouse::with(['racks', 'company'])->where($where)->first();

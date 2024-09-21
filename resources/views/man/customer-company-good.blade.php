@@ -50,7 +50,7 @@
                     <form action="#" id="form-customer-company-good">
                         @csrf
                         <input type="hidden" name="id">
-                        <input type="hidden" name="companyId" value="{{ session('userLogged')->company->id ?? 10 }}">
+                        <input type="hidden" name="companyId" value="{{ session('userLogged')['company']['id'] }}">
                         <div class="row">
                             <label class="form-label" for="">Status</label>
                             <div class="col">

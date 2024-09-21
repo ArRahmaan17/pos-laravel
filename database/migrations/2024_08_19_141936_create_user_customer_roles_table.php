@@ -25,6 +25,12 @@ return new class extends Migration
                 ->on('customer_roles')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->bigInteger('companyId')->unsigned();
+            $table->foreign('companyId')
+                ->references('id')
+                ->on('customer_companies')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
         });
     }

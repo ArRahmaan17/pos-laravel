@@ -13,6 +13,7 @@ use App\Http\Controllers\Man\CustomerRoleController;
 use App\Http\Controllers\Man\CustomerWareHouseRackGoodController;
 use App\Http\Controllers\Man\UserCustomerController;
 use App\Http\Middleware\Authorization;
+use App\Http\Middleware\selectCustomerCompany;
 use App\Http\Middleware\UnAuthorization;
 use Illuminate\Support\Facades\Route;
 
@@ -33,10 +34,15 @@ Route::middleware([unAuthorization::class])->name('auth.')->prefix('auth')->grou
     Route::get('/registration', [AuthController::class, 'register'])->name('registration');
     Route::post('/registration', [AuthController::class, 'registration'])->name('registration.process');
 });
-Route::middleware([Authorization::class])->group(function () {
+Route::middleware([Authorization::class, selectCustomerCompany::class])->group(function () {
     Route::get('/', function () {
         return view('home');
     })->name('home');
+    Route::get('/select-company', function () {
+        return view('select-customer-company');
+    })->name('select-customer-company');
+    Route::post('/select-company', [AuthController::class, 'selectCompany'])
+        ->name('select-customer-company');
     Route::name('dev')->as('dev.')->prefix('dev')->group(function () {
         Route::name('app-role')->as('app-role.')->prefix('app-role')->group(function () {
             Route::get('/', [AppRoleController::class, 'index'])->name('index');
@@ -59,10 +65,10 @@ Route::middleware([Authorization::class])->group(function () {
         Route::name('customer-company')->as('customer-company.')->prefix('customer-company')->group(function () {
             Route::get('/', [CustomerCompanyController::class, 'index'])->name('index');
             Route::post('/', [CustomerCompanyController::class, 'store'])->name('store');
+            Route::get('/company', [CustomerCompanyController::class, 'company'])->name('company');
             Route::post('/{id?}', [CustomerCompanyController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerCompanyController::class, 'show'])->name('show');
-            Route::get('/company/{userId?}', [CustomerCompanyController::class, 'company'])->name('company');
             Route::delete('/{id?}', [CustomerCompanyController::class, 'destroy'])->name('delete');
         });
         Route::name('customer-role-accessibility')->as('customer-role-accessibility.')->prefix('customer-role-accessibility')->group(function () {

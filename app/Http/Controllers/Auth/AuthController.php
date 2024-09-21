@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomerCompany;
 use App\Models\CustomerRole;
 use App\Models\User;
 use App\Models\UserCustomerRole;
@@ -29,18 +30,33 @@ class AuthController extends Controller
             ->orWhere('phone_number', $request->username)
             ->first();
         if (!empty($user) && Hash::check($request->password, $user->password)) {
-            $role = UserRole::with('user', 'role')->where('userId', $user->id)->first();
-            if (empty($role) || empty($role->user) || empty($role->role)) {
-                $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
+            $role = UserRole::with('user', 'role')->where('userId', $user->id)->first()->toArray();
+            if (empty($role) || empty($role['user']) || empty($role['role'])) {
+                $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first()->toArray();
+            }
+            if (!in_array($role['role']['name'], ['Developer', 'Manager'])) {
+                $role['company'] = UserCustomerRole::employeeCompany($role['userId']);
             }
             session()->flush();
             session(['userLogged' => $role]);
-            return redirect()->route('home');
+            return redirect()->route('select-customer-company');
         }
         return redirect()
             ->back()
             ->with('error', "Your provide <i><b>Username/Email/Phone Number</b></i> or <i><b>Password</b></i> dons't match to our record")
             ->withInput();
+    }
+    public function selectCompany(Request $request)
+    {
+        $data = session('userLogged');
+        $where = [['id', '=', $request->id]];
+        if (in_array($data['role']['name'], ['Manager'])) {
+            $where = [['id', '=', $request->id], ['userId', '=', $data['userId']]];
+        }
+        $data['company'] = CustomerCompany::where($where)->first()->toArray();
+        session()->flush();
+        session(['userLogged' => $data]);
+        return redirect()->route('home');
     }
     public function register(Request $request)
     {

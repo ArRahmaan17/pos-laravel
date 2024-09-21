@@ -131,7 +131,7 @@ class CustomerCompanyController extends Controller
             } else {
                 $data['picture'] = 'default-picture.png';
             }
-            $data['userId'] = (getRole() === 'Developer' ? $request->userId : session('userLogged')->user->id);
+            $data['userId'] = (getRole() === 'Developer' ? $request->userId : session('userLogged')['user']['id']);
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);
             $company = CustomerCompany::create($data);
             $address = $request->only('address')['address'];
@@ -163,18 +163,18 @@ class CustomerCompanyController extends Controller
         return response()->json($response, $code);
     }
 
-    public function company($userId)
+    public function company()
     {
-        $where = [['userId', '=', session('userLogged')->user->id]];
+        $where = [['userId', '=', session('userLogged')['user']['id']]];
         if (getRole() === "Developer") {
-            $where = [['userId', '=', $userId]];
+            $where = [['userId', '<>', null]];
         }
         $data = CustomerCompany::with('address', 'type')->where($where)->get();
         $code = 200;
-        $response = ['message' => 'Showing resource successfully', 'data' => dataToOption($data)];
+        $response = ['message' => 'Showing resource successfully', 'data' => $data];
         if (empty($data)) {
             $code = 404;
-            $response = ['message' => 'Failed showing resource', 'data' => dataToOption($data)];
+            $response = ['message' => 'Failed showing resource', 'data' => $data];
         }
         return response()->json($response, $code);
     }
@@ -228,7 +228,7 @@ class CustomerCompanyController extends Controller
                     ->putFileAs('/', $request->picture, $profile_picture);
                 $data['picture'] = $profile_picture;
             }
-            $data['userId'] = (getRole() === 'Developer' ? $request->userId : session('userLogged')->user->id);
+            $data['userId'] = (getRole() === 'Developer' ? $request->userId : session('userLogged')['user']['id']);
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);
             CustomerCompany::where('id', $id)->update($data);
             $address = $request->only('address')['address'];

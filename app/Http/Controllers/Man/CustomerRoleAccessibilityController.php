@@ -26,7 +26,7 @@ class CustomerRoleAccessibilityController extends Controller
 
     public function dataTable(Request $request)
     {
-        $where = [['customer_roles.userId', '=', session('userLogged')->user->id]];
+        $where = [['customer_roles.userId', '=', session('userLogged')['user']['id']]];
         if (getRole() === "Developer") {
             $where = [['customer_roles.userId', '<>', 0]];
         }

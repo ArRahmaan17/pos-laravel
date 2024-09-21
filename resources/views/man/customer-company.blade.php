@@ -65,7 +65,7 @@
                                 </select>
                                 <div class="invalid-feedback">test</div>
                             @else
-                                <input type="hidden" name="userId" value="{{ session('userLogged')->user->id }}">
+                                <input type="hidden" name="userId" value="{{ session('userLogged')['user']['id'] }}">
                             @endif
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">

@@ -24,7 +24,7 @@
                     <label class="col-12 col-md-2 col-form-label" for="officer">Officer</label>
                     <div class="col-12 col-md-10">
                         <input type="text" class="form-control" readonly name="officer" id="officer"
-                            value="{{ session('userLogged')->user->name }}">
+                            value="{{ session('userLogged')['user']['name'] }}">
                     </div>
                 </div>
                 <div class="row mb-2">

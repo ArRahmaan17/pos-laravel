@@ -59,7 +59,7 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="userId" value="{{ session('userLogged')->user->id }}">
+                                    <input type="hidden" name="userId" value="{{ session('userLogged')['user']['id'] }}">
                                 @endif
                             </div>
                         </div>

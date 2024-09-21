@@ -123,7 +123,7 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="roleId" value="{{ session('userLogged')->user->id }}">
+                                    <input type="hidden" name="roleId" value="{{ session('userLogged')['user']['id'] }}">
                                 @endif
                             </div>
                         </div>
@@ -166,7 +166,7 @@
                                     </select>
                                 @else
                                     <input type="hidden" name="managerIdLink"
-                                        value="{{ session('userLogged')->user->id }}">
+                                        value="{{ session('userLogged')['user']['id'] }}">
                                 @endif
                             </div>
                         </div>
@@ -544,7 +544,7 @@
                 let id = e.currentTarget.value;
                 $.ajax({
                     type: "get",
-                    url: `{{ route('man.customer-role.role') }}/${(`{{ getRole() }}` === 'Developer' ) ? id : `{{ session('userLogged')->user->id }}`}`,
+                    url: `{{ route('man.customer-role.role') }}/${(`{{ getRole() }}` === 'Developer' ) ? id : `{{ session('userLogged')['user']['id'] }}`}`,
                     dataType: "json",
                     success: function(response) {
                         $('#customerRoleIdLink').html()

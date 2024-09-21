@@ -32,7 +32,7 @@ class CustomerRoleController extends Controller
     }
     public function dataTable(Request $request)
     {
-        $where = [['userId', '=', session('userLogged')->user->id]];
+        $where = [['userId', '=', session('userLogged')['user']['id']]];
         if (getRole() === "Developer") {
             $where = [['userId', '<>', 0]];
         }
