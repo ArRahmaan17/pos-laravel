@@ -46,7 +46,7 @@
 
 <body>
     <!-- Content -->
-
+    {{-- {{ dd(session('userLogged')) }} --}}
     <div class="container-xxl">
         <div class="authentication-wrapper authentication-basic container-p-y">
             <div class="authentication-inner">
@@ -131,7 +131,7 @@
         $(function() {
             $.ajax({
                 type: "GET",
-                url: `{{ route('man.customer-company.company') }}`,
+                url: `{{ route('list-company') }}`,
                 dataType: "json",
                 success: function(response) {
                     const cardContainer = document.querySelector('.company-container')

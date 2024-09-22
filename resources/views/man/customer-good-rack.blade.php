@@ -188,6 +188,12 @@
                 }
             });
             $('.select2').select2();
+            if (`{!! !empty(session('userLogged')['company']) !!}`) {
+                $('#companyId').val(`{{ session('userLogged')['company']['id'] }}`).trigger('change');
+                setTimeout(() => {
+                    $('#companyId').select2('enable', false)
+                }, 500);
+            }
         });
     </script>
 @endpush

@@ -21,20 +21,20 @@ if (!function_exists('lastCompanyOrderCode')) {
         $data = CustomerProductTransaction::where('companyId', session('userLogged')['company']['id'])
             ->orderBy('id', 'DESC')
             ->first();
-        $lastOrder = buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
+        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
         if ($data && explode(
-            buatSingkatan(session('userLogged')->company->name ?? 'Doglek Code') . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
+            buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
             $data->orderCode
         )) {
             $lastOrder =  buatSingkatan(
-                session('userLogged')->company->name ?? 'Doglek Code'
+                session('userLogged')['company']['name']
             ) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' .  str_pad(
                 intval(
                     implode(
                         '',
                         explode(
                             buatSingkatan(
-                                session('userLogged')->company->name ?? 'Doglek Code'
+                                session('userLogged')['company']['name']
                             ) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
                             $data->orderCode
                         )
@@ -375,8 +375,7 @@ if (!function_exists('buildMenu')) {
     {
         $html = '';
         foreach ($elements as $element) {
-            $element = (array) $element;
-            if (getRole() == "Developer" || (getRole() == "Manager" && $element['dev_only'] == 0) || checkPermissionMenu($element['id'], session('userLogged')->roleId)) {
+            if (getRole() == "Developer" || (getRole() == "Manager" && $element['dev_only'] == 0) || checkPermissionMenu($element['id'], session('userLogged')['roleId'])) {
                 if ($place == 0) {
                     if (isset($element['children'])) {
                         $children = buildMenu($element['children']);

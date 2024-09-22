@@ -132,6 +132,20 @@
         window.datatableCustomerCompanyDiscount = null;
         window.discount = {}
 
+        function actionCustomerDiscount() {
+            $('.use-discount').click(function() {
+                if (window.datatableCustomerCompanyDiscount.rows('.selected').data().length == 0) {
+                    $('#table-customer-product tbody').find('tr').removeClass('selected');
+                    $(this).parents('tr').addClass('selected')
+                }
+
+                var data = window.datatableCustomerCompanyDiscount.rows('.selected').data()[0];
+                delete data.action;
+                window.discount = data;
+                $('#table-customer-discount tbody').find('tr').removeClass('selected');
+            })
+        }
+
         function quantityChange(element) {
             let quantity = $(element).val();
             let container = $(element).parents('.cart-item');
@@ -411,8 +425,8 @@
                         ],
                         columns: [{
                             target: 0,
-                            name: 'name',
-                            data: 'name',
+                            name: 'code',
+                            data: 'code',
                             orderable: true,
                             searchable: true,
                             render: (data, type, row, meta) => {
@@ -420,27 +434,27 @@
                             }
                         }, {
                             target: 1,
-                            name: 'stock',
-                            data: 'stock',
+                            name: 'percentage',
+                            data: 'percentage',
                             orderable: true,
                             searchable: true,
-                            render: $.fn.dataTable.render.number('.', ',', 0, '')
+                            render: (data, type, row, meta) => {
+                                return `<div class='text-wrap'>${data}%</div>`
+                            }
                         }, {
                             target: 2,
-                            name: 'price',
-                            data: 'price',
-                            orderable: true,
-                            searchable: true,
+                            name: 'minTransactionPrice',
+                            data: 'minTransactionPrice',
+                            orderable: false,
+                            searchable: false,
                             render: $.fn.dataTable.render.number('.', ',', 2, 'Rp.')
                         }, {
                             target: 3,
-                            name: 'unit',
-                            data: 'unit',
+                            name: 'maxTransactionDiscount',
+                            data: 'maxTransactionDiscount',
                             orderable: false,
                             searchable: false,
-                            render: (data, type, row, meta) => {
-                                return `<div class='text-wrap'>${data}</div>`
-                            }
+                            render: $.fn.dataTable.render.number('.', ',', 2, 'Rp.')
                         }, {
                             target: 4,
                             name: 'action',

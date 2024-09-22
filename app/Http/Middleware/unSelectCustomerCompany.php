@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class selectCustomerCompany
+class unSelectCustomerCompany
 {
     /**
      * Handle an incoming request.
@@ -15,10 +15,12 @@ class selectCustomerCompany
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!empty(session('userLogged')['company'])) {
+        if (!empty(session('userLogged')) && empty(session('userLogged')['company']) && !empty(session('userLogged')['role'])) {
             return $next($request);
-        } else {
-            return redirect()->route('select-customer-company');
+        } else if (empty(session('userLogged'))) {
+            return redirect()->route('auth.login');
+        } else if (!empty(session('userLogged'))) {
+            return redirect()->route('home');
         }
     }
 }

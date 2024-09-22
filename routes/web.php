@@ -15,6 +15,7 @@ use App\Http\Controllers\Man\UserCustomerController;
 use App\Http\Middleware\Authorization;
 use App\Http\Middleware\selectCustomerCompany;
 use App\Http\Middleware\UnAuthorization;
+use App\Http\Middleware\unSelectCustomerCompany;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,15 +35,20 @@ Route::middleware([unAuthorization::class])->name('auth.')->prefix('auth')->grou
     Route::get('/registration', [AuthController::class, 'register'])->name('registration');
     Route::post('/registration', [AuthController::class, 'registration'])->name('registration.process');
 });
-Route::middleware([Authorization::class, selectCustomerCompany::class])->group(function () {
-    Route::get('/', function () {
-        return view('home');
-    })->name('home');
+Route::middleware([unSelectCustomerCompany::class])->group(function () {
     Route::get('/select-company', function () {
         return view('select-customer-company');
     })->name('select-customer-company');
     Route::post('/select-company', [AuthController::class, 'selectCompany'])
         ->name('select-customer-company');
+    Route::get('/list-company', [AuthController::class, 'customerCompany'])->name('list-company');
+});
+Route::middleware([Authorization::class])->group(function () {
+    Route::get('/', function () {
+        return view('home');
+    })->name('home');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+    Route::get('/change-company', [AuthController::class, 'changeCompany'])->name('auth.change-company');
     Route::name('dev')->as('dev.')->prefix('dev')->group(function () {
         Route::name('app-role')->as('app-role.')->prefix('app-role')->group(function () {
             Route::get('/', [AppRoleController::class, 'index'])->name('index');

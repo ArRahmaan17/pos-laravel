@@ -82,11 +82,11 @@ class CustomerProductTransactionController extends Controller
     }
     public function discountDataTable(Request $request)
     {
-        $totalData = CustomerCompanyGood::where('status', 'publish')->orderBy('customer_company_goods.id', 'asc')
+        $totalData = CustomerCompanyDiscount::orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompanyGood::with('unit')->select('*');
+            $assets = CustomerCompanyDiscount::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -95,11 +95,15 @@ class CustomerProductTransactionController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $assets = $assets->where('status', 'publish')->get();
+            $assets = $assets->get();
         } else {
-            $assets = CustomerCompanyGood::with('unit')->select('*')
-                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+            $assets = CustomerCompanyDiscount::select('*')
+                ->where('code', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('maxTransactionDiscount', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('minTransactionPrice', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('status', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('percentage', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
@@ -108,27 +112,31 @@ class CustomerProductTransactionController extends Controller
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->where('status', 'publish')->get();
+            $assets = $assets->get();
 
-            $totalFiltered = CustomerCompanyGood::select('*')
-                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+            $totalFiltered = CustomerCompanyDiscount::select('*')
+                ->where('code', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('maxTransactionDiscount', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('minTransactionPrice', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('status', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('percentage', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->where('status', 'publish')->count();
+            $totalFiltered = $totalFiltered->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
             $row = [];
-            $row['name'] = $item->name;
+            $row['code'] = $item->code;
             $row['id'] = $item->id;
-            $row['price'] = $item->price;
-            $row['stock'] = $item->stock;
-            $row['unit'] = $item->unit->name;
-            $row['picture'] = $item->picture;
-            $row['action'] = "<button class='btn btn-icon btn-success add-cart' data-customer-product='" . $item->id . "' ><i class='bx bx-plus' ></i></button>";
+            $row['description'] = $item->description;
+            $row['percentage'] = $item->percentage;
+            $row['maxTransactionDiscount'] = $item->maxTransactionDiscount;
+            $row['minTransactionPrice'] = $item->minTransactionPrice;
+            $row['action'] = "<button class='btn btn-icon btn-success use-discount' data-customer-company-discount='" . $item->id . "' ><i class='bx bx-check-double' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -140,7 +148,6 @@ class CustomerProductTransactionController extends Controller
 
         return Response()->json($response, 200);
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -209,7 +216,7 @@ class CustomerProductTransactionController extends Controller
     }
     public function checkOrderCode(string $orderCode)
     {
-        if (CustomerProductTransaction::where('orderCode')->count() == 0) {
+        if (CustomerProductTransaction::where('orderCode',)->count() == 0) {
             return $orderCode;
         } else {
             return lastCompanyOrderCode();
@@ -218,7 +225,7 @@ class CustomerProductTransactionController extends Controller
     public function validateDiscountCode($discountCode)
     {
         $data = CustomerCompanyDiscount::where('companyId', session('userLogged')['company']['id'])
-            ->where('discountCode', $discountCode)->first();
+            ->where('code', $discountCode)->first();
         $response = ['message' => 'invalid discount code', 'data' => $data];
         $code = 404;
         if ($data) {

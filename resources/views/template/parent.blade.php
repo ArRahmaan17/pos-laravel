@@ -153,7 +153,7 @@
                                     <li>
                                         <div class="dropdown-divider"></div>
                                     </li>
-                                    {{-- {!! buildMenu($menu_profile, session('app'), 'profile') !!} --}}
+                                    {!! buildMenu($profileAppMenu, 1) !!}
                                     <li>
                                         <div class="dropdown-divider"></div>
                                     </li>

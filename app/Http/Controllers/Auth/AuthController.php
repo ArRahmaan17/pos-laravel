@@ -46,6 +46,7 @@ class AuthController extends Controller
             ->with('error', "Your provide <i><b>Username/Email/Phone Number</b></i> or <i><b>Password</b></i> dons't match to our record")
             ->withInput();
     }
+
     public function selectCompany(Request $request)
     {
         $data = session('userLogged');
@@ -58,6 +59,7 @@ class AuthController extends Controller
         session(['userLogged' => $data]);
         return redirect()->route('home');
     }
+
     public function register(Request $request)
     {
         if ($request->action) {
@@ -69,6 +71,7 @@ class AuthController extends Controller
         }
         return view('auth.registration.index',);
     }
+
     public function registration(Request $request)
     {
         $request->validate([
@@ -104,5 +107,33 @@ class AuthController extends Controller
             return redirect()->back();
             //throw $th;
         }
+    }
+
+    public function logout()
+    {
+        session()->flush();
+        return redirect()->route('home');
+    }
+    public function customerCompany()
+    {
+        $where = [['userId', '=', session('userLogged')['user']['id']]];
+        if (getRole() === "Developer") {
+            $where = [['userId', '<>', null]];
+        }
+        $data = CustomerCompany::with('address', 'type')->where($where)->get();
+        $code = 200;
+        $response = ['message' => 'Showing resource successfully', 'data' => $data];
+        if (empty($data)) {
+            $code = 404;
+            $response = ['message' => 'Failed showing resource', 'data' => $data];
+        }
+        return response()->json($response, $code);
+    }
+    public function changeCompany()
+    {
+        $data = session('userLogged');
+        unset($data['company']);
+        session(['userLogged' => $data]);
+        return redirect()->route('home');
     }
 }

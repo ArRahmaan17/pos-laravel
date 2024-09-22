@@ -15,7 +15,7 @@ class Authorization
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!empty(session('userLogged'))) {
+        if (!empty(session('userLogged')) && !empty(session('userLogged')['company']) && !empty(session('userLogged')['role'])) {
             return $next($request);
         } else {
             return redirect()->route('auth.login');

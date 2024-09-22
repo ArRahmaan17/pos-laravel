@@ -96,6 +96,27 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label class="form-label">Menu Place</label>
+                                <div class="col">
+                                    <div class="form-check form-check-inline">
+                                        <input name="place" class="form-check-input" type="radio" value="0"
+                                            id="place-sidebar">
+                                        <label class="form-check-label" for="place-sidebar">
+                                            Sidebar
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input name="place" class="form-check-input" type="radio" value="1"
+                                            id="place-profile">
+                                        <label class="form-check-label" for="place-profile">
+                                            Profile
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div id="container-child-list" class="row container">
                             <div class="col-12 row">
                                 Menu Child
@@ -151,11 +172,14 @@
                         let childHtml = '';
                         $('#modal-app-menu').find("form")
                             .find('input, select').map(function(index, element) {
-                                if (response.data[element.name]) {
+                                if (response.data[element.name] != undefined) {
                                     if (element.name === 'dev_only') {
                                         $(`[name=${element.name}]`)
                                             .prop('checked', response.data[element
                                                 .name] == 1 ? true : false)
+                                    } else if (element.name === 'place') {
+                                        $(`[name=${element.name}][value=${response.data[element
+                                                .name]}]`).prop('checked', true)
                                     } else {
                                         $(`[name=${element.name}]`).val(response.data[element
                                             .name]);
