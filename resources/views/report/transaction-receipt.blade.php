@@ -8,38 +8,29 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            width: 300px;
-            margin: 0 auto;
-            border: 1px solid #ddd;
-            padding: 20px;
+            width: 385px;
+            padding: 0;
+            margin-left: -40px;
+            margin-top: -70px;
         }
 
         h2,
-        p {
+        p,
+        .address {
             text-align: center;
         }
 
         .details,
         .totals {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
-        .items {
-            width: 100%;
+        .details>div {
+            font-size: 12px;
         }
 
-        .items th,
-        .items td {
-            text-align: left;
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .items th {
-            background-color: #f2f2f2;
-        }
-
-        .totals p {
+        .totals>div {
+            font-size: 12px;
             text-align: right;
         }
 
@@ -47,57 +38,70 @@
             text-align: center;
             margin-top: 20px;
         }
+
+        .item {
+            height: 20px;
+            margin-bottom: 10px;
+        }
+
+        .container-subtotal {
+            margin-top: -5px;
+            font-size: 12px;
+        }
+
+        .container-product {
+            display: block;
+        }
+
+        .product {
+            float: left;
+            font-size: 15px;
+        }
+
+        .container-subtotal {
+            float: right;
+            font-size: 10px;
+        }
+
+        .subtotal {
+            display: block;
+            text-align: end;
+        }
     </style>
 </head>
 
 <body>
-
     <h2>Nama Toko</h2>
-    <p>Alamat Toko, Nomor Telepon</p>
+    <div class="address">Alamat Toko, Nomor Telepon</div>
     <hr>
 
     <div class="details">
-        <p>No. Struk: 001234</p>
-        <p>Tanggal: 20 Sept 2024</p>
-        <p>Waktu: 14:35</p>
+        <div>No. Struk: 001234</div>
+        <div>Tanggal: 20 Sept 2024</div>
+        <div>Waktu: 14:35</div>
     </div>
+    <hr>
 
-    <table class="items">
-        <thead>
-            <tr>
-                <th>Nama Barang</th>
-                <th>Kuantitas</th>
-                <th>Harga</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Produk A</td>
-                <td>2</td>
-                <td>Rp10,000</td>
-                <td>Rp20,000</td>
-            </tr>
-            <tr>
-                <td>Produk B</td>
-                <td>1</td>
-                <td>Rp15,000</td>
-                <td>Rp15,000</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="items">
+        @for ($i = 1; $i <= 3; $i++)
+            <div class="item">
+                <div class="container-product">
+                    <div class="product">Produk A</div>
+                    <div class="container-subtotal">
+                        <div class="price">10,000 * 2</div>
+                        <div class="subtotal">20,000</div>
+                    </div>
+                </div>
+            </div>
+        @endfor
+    </div>
+    <hr>
 
     <div class="totals">
-        <p>Subtotal: Rp35,000</p>
-        <p>Pajak: Rp3,500</p>
-        <p><strong>Total: Rp38,500</strong></p>
+        <div><strong>Total: 38,500</strong></div>
     </div>
 
-    <p>Metode Pembayaran: Tunai</p>
-
-    <div class="thankyou">
-        <p>Terima kasih telah berbelanja!</p>
-    </div>
+    <div class="thankyou">Terima kasih telah berbelanja!</div>
 
 </body>
 

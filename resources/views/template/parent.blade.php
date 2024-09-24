@@ -261,6 +261,10 @@
             return array.filter((value, index) => array.indexOf(value) === index);
         }
 
+        function numberFormat(nilai, prefix = 'Rp. ') {
+            return $.fn.dataTable.render.number('.', ',', 2, prefix).display(nilai);
+        }
+
         function buildTree(elements, parentId = 0) {
             var branch = [];
             elements.forEach(element => {

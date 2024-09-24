@@ -123,6 +123,19 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modal-customer-transaction-receipt" tabindex="-1" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modal-customer-product-title">Modal Discount</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="transaction-receipt-container" src="" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
@@ -166,29 +179,35 @@
                 return parseInt(acc) + parseInt(curr)
             }, 0);
             if (Object.keys(window.discount).length != 0) {
+                let discount = 0;
                 if (subtotal >= parseFloat(window.discount.minTransactionPrice)) {
                     $('.discount-percentage').html(`${window.discount.percentage}%`);
-                    let discount = (subtotal - (window.discount.hasOwnProperty('maxTransactionDiscount') ? (window.discount
+                    discount = (subtotal - (window.discount.hasOwnProperty('maxTransactionDiscount') ? (window.discount
                             .maxTransactionDiscount * window.discount.percentage / 100) : 0)) * window.discount.percentage /
                         100;
                     $('.total-after-discount').removeClass('d-none')
                     $('.total').addClass('text-decoration-line-through fst-italic text-muted');
                     if ((window.discount.hasOwnProperty('maxTransactionDiscount')) ? discount <= window.discount
                         .maxTransactionDiscount : true) {
-                        $('.discount-price').html(`${numberToAlphabet(discount)}`);
-                        $('.total-after-discount').html(numberToAlphabet(subtotal - discount));
-                        $('.total').html(numberToAlphabet(subtotal));
+                        $('.discount-price').html(`${numberFormat(discount,'')}`);
+                        $('.total-after-discount').html(numberFormat(subtotal - discount, ''));
+                        $('.total').html(numberFormat(subtotal, ''));
                     } else {
                         $('.discount-price').html(`${window.discount.maxTransactionDiscount}`);
-                        $('.total-after-discount').html(numberToAlphabet(subtotal - window.discount
-                            .maxTransactionDiscount));
-                        $('.total').html(numberToAlphabet(subtotal));
+                        $('.total-after-discount').html(numberFormat(subtotal - window.discount
+                            .maxTransactionDiscount, ''));
+                        $('.total').html(numberFormat(subtotal, ''));
                     }
+                } else {
+                    $('.total').removeClass('text-decoration-line-through fst-italic text-muted');
+                    $('.total').html(numberFormat(subtotal, ''));
+                    $('.discount-price').html(`${numberFormat(discount,'')}`);
+                    $('.total-after-discount').addClass('d-none');
                 }
             } else {
-                $('.total').html(numberToAlphabet(subtotal));
+                $('.total').html(numberFormat(subtotal, ''));
             }
-            $('.subtotal-all').html(numberToAlphabet(subtotal));
+            $('.subtotal-all').html(numberFormat(subtotal, ''));
         }
 
         function generateCartElement(data) {
@@ -562,6 +581,14 @@
                         url: `{{ route('man.customer-product-transaction.validate-discount-code') }}/${discountCode}`,
                         dataType: "JSON",
                         success: function(response) {
+                            iziToast.success({
+                                id: 'alert-customer-company-discount-action',
+                                title: 'Success',
+                                message: 'Discount applied',
+                                position: 'topRight',
+                                layout: 2,
+                                displayMode: 'replace'
+                            });
                             if (response.data.maxTransactionDiscount == null) {
                                 delete response.data.maxTransactionDiscount;
                             }
@@ -569,6 +596,14 @@
                             countAll();
                         },
                         error: function(error) {
+                            iziToast.error({
+                                id: 'alert-customer-company-discount-action',
+                                title: 'Error',
+                                message: 'Cant apply code ',
+                                position: 'topRight',
+                                layout: 2,
+                                displayMode: 'replace'
+                            });
                             window.discount = error.responseJSON.data
                         }
                     });

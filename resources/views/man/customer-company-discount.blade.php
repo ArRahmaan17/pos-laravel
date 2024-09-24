@@ -444,7 +444,7 @@
             });
             $('.discount-code')
                 .inputmask(
-                `{{ buatSingkatan(session('userLogged')['company']['name'] ?? 'Doglex Code') }}A{1,30}`);
+                    `{{ buatSingkatan(session('userLogged')['company']['name'] ?? 'Doglex Code') }}A{1,30}`);
             $('.discount-percentage').inputmask({
                 regex: '^([1-9]%|[1-9][0-9]%|100%)$',
             });

@@ -7,6 +7,7 @@ use App\Models\CustomerCompanyDiscount;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerDetailProductTransaction;
 use App\Models\CustomerProductTransaction;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -166,13 +167,20 @@ class CustomerProductTransactionController extends Controller
                 return $acc += intval($goods[$product['id']]->price) * intval($product['quantity']);
             }, 0);
             $data_discount = CustomerCompanyDiscount::where('id', $request->discount['id'])->first();
-            $discount = ($total - ($data_discount->maxTransactionDiscount != null) ? ($data_discount->maxTransactionDiscount * $data_discount->percentage / 100) : 0) * $data_discount->percentage / 100;
+            $discount = 0;
+            if ($total >= $data_discount->minTransactionPrice) {
+                $discount = (
+                    floatval($total)
+                    - floatval(($data_discount->maxTransactionDiscount != null) ? ($data_discount->maxTransactionDiscount * $data_discount->percentage / 100) : 0)
+                ) * $data_discount->percentage / 100;
+            }
             $data = [
                 'orderCode' => $this->checkOrderCode($request->orderCode),
                 'userId' => session('userLogged')['user']['id'],
                 'companyId' => session('userLogged')['company']['id'],
                 'total' => $total,
                 'discount' => $discount,
+                'discountCode' => $data_discount->code,
             ];
             CustomerProductTransaction::create($data);
             $goodIds = collect($request->transactions)->pluck('id');
@@ -234,7 +242,13 @@ class CustomerProductTransactionController extends Controller
         }
         return response()->json($response, $code);
     }
+    public function viewPdf($orderCode)
+    {
+        $data = CustomerProductTransaction::where('orderCode', $orderCode)->where('companyId', session('userLogged')->company->id)->first();
 
+        $pdf = Pdf::loadView('report.transaction-receipt', $data)->setPaper('a6');
+        return $pdf->stream('document.pdf');
+    }
     /**
      * Display the specified resource.
      */
