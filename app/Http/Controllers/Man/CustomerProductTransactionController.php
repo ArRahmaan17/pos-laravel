@@ -9,6 +9,7 @@ use App\Models\CustomerDetailProductTransaction;
 use App\Models\CustomerProductTransaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
 class CustomerProductTransactionController extends Controller
@@ -249,11 +250,9 @@ class CustomerProductTransactionController extends Controller
             ->where('orderCode', $orderCode)
             ->where('companyId', session('userLogged')['company']['id'])
             ->first();
-        if ($data) {
-            $pdf = Pdf::loadView('report.transaction-receipt', $data->toArray())->setPaper('a6');
-            return $pdf->stream('Transaction-' . $orderCode . '.pdf');
-        } else {
-        }
+        $pdf = App::make('dompdf.wrapper');
+        $pdf = $pdf->loadView('report.transaction-receipt', ($data) ? $data->toArray() : [])->setPaper(array(0, 0, 300, 280), 'portrait');
+        return $pdf->stream('Transaction-' . $orderCode . '.pdf');
     }
     /**
      * Display the specified resource.
