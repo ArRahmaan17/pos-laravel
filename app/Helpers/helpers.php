@@ -11,6 +11,10 @@ if (!function_exists('getRole')) {
         return session('userLogged')['role']['name'];
     }
 }
+function numberFormat($number)
+{
+    return number_format($number, 2, ',', '.');
+}
 function buatSingkatan($kalimat)
 {
     return strtoupper(implode('', array_map(fn($kata) => $kata[0], explode(' ', $kalimat))));

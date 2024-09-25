@@ -212,7 +212,8 @@ class CustomerProductTransactionController extends Controller
             DB::commit();
             $response = [
                 'message' => 'transaction created successfully',
-                'orderCode' => lastCompanyOrderCode()
+                'orderCode' => lastCompanyOrderCode(),
+                'lastOrderCode' => $data['orderCode']
             ];
             $code = 200;
         } catch (\Throwable $th) {
@@ -242,12 +243,17 @@ class CustomerProductTransactionController extends Controller
         }
         return response()->json($response, $code);
     }
-    public function viewPdf($orderCode)
+    public function viewPdf(string $orderCode)
     {
-        $data = CustomerProductTransaction::where('orderCode', $orderCode)->where('companyId', session('userLogged')->company->id)->first();
-
-        $pdf = Pdf::loadView('report.transaction-receipt', $data)->setPaper('a6');
-        return $pdf->stream('document.pdf');
+        $data = CustomerProductTransaction::with('details.good')
+            ->where('orderCode', $orderCode)
+            ->where('companyId', session('userLogged')['company']['id'])
+            ->first();
+        if ($data) {
+            $pdf = Pdf::loadView('report.transaction-receipt', $data->toArray())->setPaper('a6');
+            return $pdf->stream('Transaction-' . $orderCode . '.pdf');
+        } else {
+        }
     }
     /**
      * Display the specified resource.

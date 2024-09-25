@@ -122,12 +122,10 @@ Route::middleware([Authorization::class])->group(function () {
         Route::name('customer-product-transaction')->as('customer-product-transaction.')->prefix('customer-product-transaction')->group(function () {
             Route::get('/', [CustomerProductTransactionController::class, 'index'])->name('index');
             Route::post('/', [CustomerProductTransactionController::class, 'store'])->name('store');
-            Route::get('/print-transaction-receipt', [CustomerProductTransactionController::class, 'viewPdf'])->name('print-transaction-receipt');
+            Route::get('/transaction-receipt/{orderCode?}/print', [CustomerProductTransactionController::class, 'viewPdf'])->name('print-transaction-receipt');
             Route::get('/product-data-table', [CustomerProductTransactionController::class, 'productDataTable'])->name('product-data-table');
             Route::get('/discount-data-table', [CustomerProductTransactionController::class, 'discountDataTable'])->name('discount-data-table');
             Route::get('/validate-discount-code/{id?}', [CustomerProductTransactionController::class, 'validateDiscountCode'])->name('validate-discount-code');
-            Route::get('/{id?}', [CustomerProductTransactionController::class, 'racks'])->name('show');
-            Route::delete('/{id?}', [CustomerProductTransactionController::class, 'destroy'])->name('delete');
         });
         Route::name('customer-warehouse-rack-good')->as('customer-warehouse-rack-good.')->prefix('customer-warehouse-rack-good')->group(function () {
             Route::get('/', [CustomerWareHouseRackGoodController::class, 'index'])->name('index');

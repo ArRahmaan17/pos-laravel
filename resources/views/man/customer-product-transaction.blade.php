@@ -10,12 +10,11 @@
                 <h3>@yield('title')</h3>
             </div>
             <div class="col-6 text-end">
-                <button class="btn btn-success" id="add-customer-company" data-bs-toggle="modal"
-                    data-bs-target="#modal-customer-company">Add <i class='bx bxs-file-plus pb-1'></i></button><button
-                    class="btn btn-success" id="add-customer-company" data-bs-toggle="modal"
-                    data-bs-target="#modal-customer-company">Add <i class='bx bxs-file-plus pb-1'></i></button><button
-                    class="btn btn-success" id="add-customer-company" data-bs-toggle="modal"
-                    data-bs-target="#modal-customer-company">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                <button class="btn btn-success" id="add-customer-company" data-bs-toggle="modal" data-bs-target="#modal-customer-company">Add <i
+                        class='bx bxs-file-plus pb-1'></i></button><button class="btn btn-success" id="add-customer-company" data-bs-toggle="modal"
+                    data-bs-target="#modal-customer-company">Add <i class='bx bxs-file-plus pb-1'></i></button><button class="btn btn-success"
+                    id="add-customer-company" data-bs-toggle="modal" data-bs-target="#modal-customer-company">Add <i
+                        class='bx bxs-file-plus pb-1'></i></button>
             </div>
         </div>
         <div class="card-body">
@@ -23,15 +22,13 @@
                 <div class="row mb-2">
                     <label class="col-12 col-md-2 col-form-label" for="officer">Officer</label>
                     <div class="col-12 col-md-10">
-                        <input type="text" class="form-control" readonly name="officer" id="officer"
-                            value="{{ session('userLogged')['user']['name'] }}">
+                        <input type="text" class="form-control" readonly name="officer" id="officer" value="{{ session('userLogged')['user']['name'] }}">
                     </div>
                 </div>
                 <div class="row mb-2">
                     <label class="col-12 col-md-2 col-form-label" for="orderCode">Transaction Code</label>
                     <div class="col-12 col-md-10">
-                        <input type="text" class="form-control" readonly name="orderCode" id="orderCode"
-                            value="{{ lastCompanyOrderCode() }}">
+                        <input type="text" class="form-control" readonly name="orderCode" id="orderCode" value="{{ lastCompanyOrderCode() }}">
                     </div>
                 </div>
                 <div class="row mb-2">
@@ -46,27 +43,23 @@
             </form>
             <div class="col-12 text-end">
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#modal-customer-product"
-                        class="btn btn-icon btn-outline-success"><i class="bx bx-plus"></i></button>
-                    <button type="button" class="btn btn-icon btn-outline-danger clear-cart"><i
-                            class="bx bx-x"></i></button>
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#modal-customer-product" class="btn btn-icon btn-outline-success"><i
+                            class="bx bx-plus"></i></button>
+                    <button type="button" class="btn btn-icon btn-outline-danger clear-cart"><i class="bx bx-x"></i></button>
                 </div>
             </div>
             <div class="mt-3">
-                <ul class="list-group cart-product py-1 px-2"
-                    style="min-height: 350px;max-height: 350px; overflow-y:scroll;">
+                <ul class="list-group cart-product py-1 px-2" style="min-height: 350px;max-height: 350px; overflow-y:scroll;">
                 </ul>
                 <div class="text-end mt-3">
                     <p><strong>Subtotal: </strong><span class="subtotal-all">0</span></p>
                     <p><strong>Discount: </strong><span class="discount-price">0</span>
                     </p>
-                    <h4><strong>Total: </strong><span class="total">0</span><sub
-                            class="total-after-discount d-none">0</sub>
+                    <h4><strong>Total: </strong><span class="total">0</span><sub class="total-after-discount d-none">0</sub>
                     </h4>
                 </div>
                 <div class="text-end">
-                    <button type="button" class="btn btn-outline-success save-cart">Save <i
-                            class="bx bx-save"></i></button>
+                    <button type="button" class="btn btn-outline-success save-cart">Save <i class="bx bx-save"></i></button>
                 </div>
             </div>
         </div>
@@ -127,11 +120,11 @@
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modal-customer-product-title">Modal Discount</h5>
+                    <h5 class="modal-title" id="modal-customer-product-title">Modal Transaction Receipt</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <iframe id="transaction-receipt-container" src="" frameborder="0"></iframe>
+                    <iframe class="col-12 rounded" style="height: 80vh;" id="transaction-receipt-container" src="" frameborder="0"></iframe>
                 </div>
             </div>
         </div>
@@ -340,8 +333,15 @@
                     clearAll();
                     $('[name=discountCode]').val('');
                     window.discount = null;
+                    loadTransactionReceipt(response.lastOrderCode)
                 }
             });
+        }
+
+        function loadTransactionReceipt(orderCode) {
+            $('#transaction-receipt-container').prop('src', "{{ url('/man/customer-product-transaction/transaction-receipt') }}/" + orderCode + "/print");
+            $('#modal-customer-transaction-receipt').find('.modal-title').html(`Modal Transaction Receipt ${orderCode}`)
+            $('#modal-customer-transaction-receipt').modal('show');
         }
 
         function clearAll() {

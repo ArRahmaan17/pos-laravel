@@ -54,7 +54,7 @@ class AuthController extends Controller
         if (in_array($data['role']['name'], ['Manager'])) {
             $where = [['id', '=', $request->id], ['userId', '=', $data['userId']]];
         }
-        $data['company'] = CustomerCompany::where($where)->first()->toArray();
+        $data['company'] = CustomerCompany::with('address')->where($where)->first()->toArray();
         session()->flush();
         session(['userLogged' => $data]);
         return redirect()->route('home');

@@ -4,19 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Struk Kasir</title>
+    <title>Transaction Receipt {{ $orderCode }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             width: 385px;
             padding: 0;
             margin-left: -40px;
-            margin-top: -70px;
+            margin-top: -60px;
         }
 
         h2,
-        p,
+        p {
+            text-align: center;
+        }
+
         .address {
+            width: 100%;
+            font-size: 12px;
             text-align: center;
         }
 
@@ -35,6 +40,7 @@
         }
 
         .thankyou {
+            font-size: 13px;
             text-align: center;
             margin-top: 20px;
         }
@@ -71,34 +77,41 @@
 </head>
 
 <body>
-    <h2>Nama Toko</h2>
-    <div class="address">Alamat Toko, Nomor Telepon</div>
+    <h2>{{ session('userLogged')['company']['name'] }}</h2>
+    <div class="address">
+        {{ session('userLogged')['company']['address']['place'] . ',' . session('userLogged')['company']['address']['address'] . ',' . session('userLogged')['company']['address']['city'] . ',' . session('userLogged')['company']['address']['province'] . ',' . session('userLogged')['company']['address']['zipCode'] }}
+    </div>
+    <div class="address">
+        {{ session('userLogged')['company']['email'] }},{{ session('userLogged')['company']['phone_number'] }}
+    </div>
     <hr>
 
     <div class="details">
-        <div>No. Struk: 001234</div>
-        <div>Tanggal: 20 Sept 2024</div>
-        <div>Waktu: 14:35</div>
+        <div>No. Struk: {{ $orderCode }}</div>
+        <div>Tanggal: {{ explode(' ', new Carbon\Carbon($created_at))[0] }}</div>
+        <div>Waktu: {{ explode(' ', new Carbon\Carbon($created_at))[1] }}</div>
     </div>
     <hr>
 
     <div class="items">
-        @for ($i = 1; $i <= 3; $i++)
+        @foreach ($details as $detail)
             <div class="item">
                 <div class="container-product">
-                    <div class="product">Produk A</div>
+                    <div class="product">{{ $detail['good']['name'] }}</div>
                     <div class="container-subtotal">
-                        <div class="price">10,000 * 2</div>
-                        <div class="subtotal">20,000</div>
+                        <div class="price">{{ numberFormat($detail['good']['price']) }} * {{ $detail['quantity'] }}
+                        </div>
+                        <div class="subtotal">{{ numberFormat($detail['good']['price'] * $detail['quantity']) }}</div>
                     </div>
                 </div>
             </div>
-        @endfor
+        @endforeach
     </div>
     <hr>
 
     <div class="totals">
-        <div><strong>Total: 38,500</strong></div>
+        <div><strong>Discount: {{ numberFormat($discount) }}</strong></div>
+        <div><strong>Total: {{ numberFormat($total - $discount) }}</strong></div>
     </div>
 
     <div class="thankyou">Terima kasih telah berbelanja!</div>

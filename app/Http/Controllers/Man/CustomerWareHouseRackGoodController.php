@@ -33,14 +33,7 @@ class CustomerWareHouseRackGoodController extends Controller
         if (getRole() == 'Developer') {
         }
         $where = [['companyId', '<>', 0]];
-        $data = CustomerCompanyWarehouse::with(['racks'])->where($where)->get()->map(function ($data) {
-            $data->racks->load('products');
-            collect($data->racks)->map(function ($product) {
-                $product->products->load('product');
-                return $product;
-            });
-            return $data;
-        })->all();
+        $data = CustomerCompanyWarehouse::with(['racks.products.product'])->where($where)->get();
         $warehouse_company = CustomerCompanyWarehouse::with('company')->first();
         $shelf_less = CustomerCompanyGood::shelf_less($warehouse_company->company->id);
         $response = ['message' => 'showing resource successfully', 'data' => $data, 'shelf_less' => $shelf_less];

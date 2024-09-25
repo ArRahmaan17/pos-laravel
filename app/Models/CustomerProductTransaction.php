@@ -10,8 +10,8 @@ class CustomerProductTransaction extends Model
 {
     protected $fillable = ['orderCode', 'userId', 'companyId', 'total', 'discount'];
     use HasFactory;
-    public function detail(): HasMany
+    public function details(): HasMany
     {
-        return $this->hasMany(CustomerProductTransaction::class, 'orderCode', 'orderCode');
+        return $this->hasMany(CustomerDetailProductTransaction::class, 'orderCode', 'orderCode');
     }
 }
