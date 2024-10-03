@@ -5,11 +5,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
-if (!function_exists('getRole')) {
+if (! function_exists('getRole')) {
     function getRole()
     {
         return session('userLogged')['role']['name'];
     }
+}
+function generateAffiliateCode()
+{
+    $array = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    $array_result = [];
+    foreach (array_rand($array, 6) as $index => $value) {
+        $array_result[] = $array[$value];
+    }
+    return implode('', $array_result);
 }
 function numberFormat($number)
 {
@@ -19,7 +28,7 @@ function buatSingkatan($kalimat)
 {
     return strtoupper(implode('', array_map(fn($kata) => $kata[0], explode(' ', $kalimat))));
 }
-if (!function_exists('lastCompanyOrderCode')) {
+if (! function_exists('lastCompanyOrderCode')) {
     function lastCompanyOrderCode()
     {
         $data = CustomerProductTransaction::where('companyId', session('userLogged')['company']['id'])
@@ -30,9 +39,9 @@ if (!function_exists('lastCompanyOrderCode')) {
             buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
             $data->orderCode
         )) {
-            $lastOrder =  buatSingkatan(
+            $lastOrder = buatSingkatan(
                 session('userLogged')['company']['name']
-            ) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' .  str_pad(
+            ) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(
                 intval(
                     implode(
                         '',
@@ -49,16 +58,17 @@ if (!function_exists('lastCompanyOrderCode')) {
                 STR_PAD_LEFT
             );
         }
+
         return $lastOrder;
     }
 }
-if (!function_exists('splitKodeGolongan')) {
+if (! function_exists('splitKodeGolongan')) {
     function splitKodeGolongan($kodegolongan)
     {
         return implode('.', str_split($kodegolongan));
     }
 }
-if (!function_exists('stringPad')) {
+if (! function_exists('stringPad')) {
     function stringPad($word, $length = 2, $pad = '0', $type = STR_PAD_LEFT)
     {
         return str_pad($word, $length, $pad, $type);
@@ -71,10 +81,11 @@ function unFormattedPhoneNumber($formattedNumber)
     $unformattedNumber = preg_replace('/\D/', '', $formattedNumber);
 
     // Ensure the number starts with '62' after removing non-digit characters
-    if (substr($unformattedNumber, 0, 2) !== "62") {
-        return "Invalid Indonesian phone number.";
+    if (substr($unformattedNumber, 0, 2) !== '62') {
+        return 'Invalid Indonesian phone number.';
     }
     str_replace('62', '', $unformattedNumber);
+
     return $unformattedNumber;
 }
 
@@ -82,7 +93,7 @@ function company_profile_asset($filename)
 {
     return Storage::disk('company-profile')->get($filename);
 }
-if (!function_exists('dataToOption')) {
+if (! function_exists('dataToOption')) {
     function dataToOption($allData, $attr = false)
     {
         $html = "<option value=''>Mohon Pilih</option>";
@@ -105,7 +116,7 @@ function removeDuplicate($array)
     // Iterate through the input array
     foreach ($array as $item) {
         // Check if the ID of the current item exists in $uniqueIds array
-        if (!in_array($item, $uniqueIds)) {
+        if (! in_array($item, $uniqueIds)) {
             // If ID doesn't exist, add it to $uniqueIds and keep the item
             $uniqueIds[] = $item;
             $uniqueArray[] = $item;
@@ -117,19 +128,19 @@ function removeDuplicate($array)
     return $uniqueArray;
 }
 
-if (!function_exists('classificationType')) {
+if (! function_exists('classificationType')) {
     function classificationType(array $conditions)
     {
         return DB::table('masterkapitalisasi')->where('kodegolongan', $conditions['kodegolongan'])->where('kodebidang', $conditions['kodebidang'])->first();
     }
 }
-if (!function_exists('convertStringToNumber')) {
+if (! function_exists('convertStringToNumber')) {
     function convertStringToNumber($string)
     {
         return implode('', explode('.', $string));
     }
 }
-if (!function_exists('getkdunit')) {
+if (! function_exists('getkdunit')) {
     function getkdunit($sp2d)
     {
         return DB::table('anggaran.sp2d')
@@ -140,7 +151,7 @@ if (!function_exists('getkdunit')) {
             ])->first()->kdunit;
     }
 }
-if (!function_exists('convertAlphabeticalToNumberDate')) {
+if (! function_exists('convertAlphabeticalToNumberDate')) {
 
     function convertAlphabeticalToNumberDate($stringDate)
     {
@@ -195,7 +206,7 @@ if (!function_exists('convertAlphabeticalToNumberDate')) {
         }
     }
 }
-if (!function_exists('convertNumericDateToAlphabetical')) {
+if (! function_exists('convertNumericDateToAlphabetical')) {
     function convertNumericDateToAlphabetical($stringDate)
     {
         if ($stringDate != null) {
@@ -249,7 +260,7 @@ if (!function_exists('convertNumericDateToAlphabetical')) {
         }
     }
 }
-if (!function_exists('kodeOrganisasi')) {
+if (! function_exists('kodeOrganisasi')) {
     function kodeOrganisasi()
     {
         $copi = clone session('organisasi');
@@ -262,13 +273,13 @@ if (!function_exists('kodeOrganisasi')) {
         return implode('.', array_values((array) $copi));
     }
 }
-if (!function_exists('getOrganisasi')) {
+if (! function_exists('getOrganisasi')) {
     function getOrganisasi()
     {
         return session('organisasi')->organisasi;
     }
 }
-if (!function_exists('buildTree')) {
+if (! function_exists('buildTree')) {
     function buildTree(array &$elements, $idParent = 0)
     {
         $branch = [];
@@ -287,7 +298,7 @@ if (!function_exists('buildTree')) {
         return $branch;
     }
 }
-if (!function_exists('buildTreeMenu')) {
+if (! function_exists('buildTreeMenu')) {
 
     function buildTreeMenu(array &$elements, $idParent = '0')
     {
@@ -314,12 +325,13 @@ function getSql($model)
         foreach ($bindings as $replace) {
             $pos = strpos($sql, $needle);
             if ($pos !== false) {
-                if (gettype($replace) === "string") {
+                if (gettype($replace) === 'string') {
                     $replace = ' "' . addslashes($replace) . '" ';
                 }
                 $sql = substr_replace($sql, $replace, $pos, strlen($needle));
             }
         }
+
         return $sql;
     };
     $sql = $replace($model->toSql(), $model->getBindings());
@@ -347,7 +359,7 @@ function formatIndonesianPhoneNumber($phoneNumber)
 
     return $formatted;
 }
-if (!function_exists('buildTreeOrganisasi')) {
+if (! function_exists('buildTreeOrganisasi')) {
     function buildTreeOrganisasi(array &$elements, $idParent = '0')
     {
         $branch = [];
@@ -367,19 +379,19 @@ if (!function_exists('buildTreeOrganisasi')) {
         return $branch;
     }
 }
-if (!function_exists('checkPermissionMenu')) {
+if (! function_exists('checkPermissionMenu')) {
     function checkPermissionMenu($id, $role)
     {
         return DB::table('role_menus')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false;
     }
 }
-if (!function_exists('buildMenu')) {
+if (! function_exists('buildMenu')) {
 
     function buildMenu(array &$elements, $place = 0)
     {
         $html = '';
         foreach ($elements as $element) {
-            if (getRole() == "Developer" || (getRole() == "Manager" && $element['dev_only'] == 0) || checkPermissionMenu($element['id'], session('userLogged')['roleId'])) {
+            if (getRole() == 'Developer' || (getRole() == 'Manager' && $element['dev_only'] == 0) || checkPermissionMenu($element['id'], session('userLogged')['roleId'])) {
                 if ($place == 0) {
                     if (isset($element['children'])) {
                         $children = buildMenu($element['children']);
@@ -415,7 +427,7 @@ if (!function_exists('buildMenu')) {
         return $html;
     }
 }
-if (!function_exists('limitOffsetToArray')) {
+if (! function_exists('limitOffsetToArray')) {
 
     function limitOffsetToArray($limit = 5, $offset = 1)
     {
@@ -428,8 +440,7 @@ if (!function_exists('limitOffsetToArray')) {
     }
 }
 
-
-if (!function_exists('generateIdKontrak')) {
+if (! function_exists('generateIdKontrak')) {
 
     function generateNextIdKontrak()
     {

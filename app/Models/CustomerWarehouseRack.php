@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class CustomerWarehouseRack extends Model
 {
     use HasFactory;
+
     protected $fillable = ['warehouseId', 'name', 'description'];
+
     public function products(): HasMany
     {
         return $this->hasMany(

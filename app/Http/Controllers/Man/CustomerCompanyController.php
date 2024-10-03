@@ -20,6 +20,7 @@ class CustomerCompanyController extends Controller
     {
         $users = User::user_manager();
         $types = BusinessType::all();
+
         return view('man.customer-company', compact('users', 'types'));
     }
 
@@ -38,17 +39,17 @@ class CustomerCompanyController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->get();
         } else {
             $assets = CustomerCompany::with('address', 'type')->join('users as uc', 'customer_companies.userId', '=', 'uc.id')
                 ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId')
-                ->where('customer_companies.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_companies.phone_number', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_companies.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_companies.phone_number', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -58,11 +59,11 @@ class CustomerCompanyController extends Controller
 
             $totalFiltered = CustomerCompany::join('users as uc', 'customer_companies.userId', '=', 'uc.id')
                 ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId')
-                ->where('customer_companies.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_companies.phone_number', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_companies.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_companies.phone_number', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->count();
         }
@@ -73,8 +74,8 @@ class CustomerCompanyController extends Controller
             $row['name'] = $item->name;
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['business'] = $item->type->name;
-            $row['address'] = $item->address->place . '<br>' . $item->address->address . ' ' . $item->address->city . ' ' . $item->address->province . ' ' . $item->address->zipCode;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['address'] = $item->address->place.'<br>'.$item->address->address.' '.$item->address->city.' '.$item->address->province.' '.$item->address->zipCode;
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -86,6 +87,7 @@ class CustomerCompanyController extends Controller
 
         return Response()->json($response, 200);
     }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -124,8 +126,8 @@ class CustomerCompanyController extends Controller
         try {
             $data = $request->except('address', '_token');
             if ($request->has('picture')) {
-                $profile_picture = md5(now('Asia/Jakarta')->format('Y-m-d H:i:s')) . '.' . $request->file('picture')->getClientOriginalExtension();
-                $profile_picture =  Storage::disk('company-profile')
+                $profile_picture = md5(now('Asia/Jakarta')->format('Y-m-d H:i:s')).'.'.$request->file('picture')->getClientOriginalExtension();
+                $profile_picture = Storage::disk('company-profile')
                     ->putFileAs('/', $request->picture, $profile_picture);
                 $data['picture'] = $profile_picture;
             } else {
@@ -145,6 +147,7 @@ class CustomerCompanyController extends Controller
             $code = 422;
             $response = ['message' => 'Failed creating resources'];
         }
+
         return response()->json($response, $code);
     }
 
@@ -160,13 +163,14 @@ class CustomerCompanyController extends Controller
             $code = 404;
             $response = ['message' => 'Failed showing resource', 'data' => $data];
         }
+
         return response()->json($response, $code);
     }
 
     public function company()
     {
         $where = [['userId', '=', session('userLogged')['user']['id']]];
-        if (getRole() === "Developer") {
+        if (getRole() === 'Developer') {
             $where = [['userId', '<>', null]];
         }
         $data = CustomerCompany::with('address', 'type')->where($where)->get();
@@ -176,6 +180,7 @@ class CustomerCompanyController extends Controller
             $code = 404;
             $response = ['message' => 'Failed showing resource', 'data' => $data];
         }
+
         return response()->json($response, $code);
     }
 
@@ -187,8 +192,8 @@ class CustomerCompanyController extends Controller
         $request->validate([
             'picture' => ['file', 'extensions:jpg,png'],
             'name' => ['required', 'min:6', 'max:30'],
-            'phone_number' => ['required', 'min:10', 'max:19', 'unique:customer_companies,phone_number,' . $id],
-            'email' => ['required', 'email', 'unique:customer_companies,email,' . $id],
+            'phone_number' => ['required', 'min:10', 'max:19', 'unique:customer_companies,phone_number,'.$id],
+            'email' => ['required', 'email', 'unique:customer_companies,email,'.$id],
             'businessId' => ['required'],
             'address.place' => ['required', 'min:4', 'max:30'],
             'address.address' => ['required', 'min:4', 'max:30'],
@@ -218,13 +223,13 @@ class CustomerCompanyController extends Controller
             $data = $request->except('address', '_token');
             if ($request->has('picture')) {
                 $company = CustomerCompany::find($id);
-                $profile_picture = md5(now('Asia/Jakarta')->format('Y-m-d H:i:s')) . '.' . $request->file('picture')
+                $profile_picture = md5(now('Asia/Jakarta')->format('Y-m-d H:i:s')).'.'.$request->file('picture')
                     ->getClientOriginalExtension();
                 if ($company->picture != 'default-picture.png') {
                     Storage::disk('company-profile')
                         ->delete($company->picture);
                 }
-                $profile_picture =  Storage::disk('company-profile')
+                $profile_picture = Storage::disk('company-profile')
                     ->putFileAs('/', $request->picture, $profile_picture);
                 $data['picture'] = $profile_picture;
             }
@@ -241,6 +246,7 @@ class CustomerCompanyController extends Controller
             $code = 422;
             $response = ['message' => 'Failed updating resources'];
         }
+
         return response()->json($response, $code);
     }
 
@@ -261,6 +267,7 @@ class CustomerCompanyController extends Controller
             $code = 422;
             $response = ['message' => 'Failed deleting resources'];
         }
+
         return response()->json($response, $code);
     }
 }

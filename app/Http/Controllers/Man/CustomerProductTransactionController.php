@@ -7,7 +7,6 @@ use App\Models\CustomerCompanyDiscount;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerDetailProductTransaction;
 use App\Models\CustomerProductTransaction;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -82,6 +81,7 @@ class CustomerProductTransactionController extends Controller
 
         return Response()->json($response, 200);
     }
+
     public function discountDataTable(Request $request)
     {
         $totalData = CustomerCompanyDiscount::orderBy('id', 'asc')
@@ -150,6 +150,7 @@ class CustomerProductTransactionController extends Controller
 
         return Response()->json($response, 200);
     }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -181,7 +182,7 @@ class CustomerProductTransactionController extends Controller
                 'companyId' => session('userLogged')['company']['id'],
                 'total' => $total,
                 'discount' => $discount,
-                'discountCode' => $data_discount->code,
+                'discountId' => $data_discount->id,
             ];
             CustomerProductTransaction::create($data);
             $goodIds = collect($request->transactions)->pluck('id');
@@ -214,7 +215,7 @@ class CustomerProductTransactionController extends Controller
             $response = [
                 'message' => 'transaction created successfully',
                 'orderCode' => lastCompanyOrderCode(),
-                'lastOrderCode' => $data['orderCode']
+                'lastOrderCode' => $data['orderCode'],
             ];
             $code = 200;
         } catch (\Throwable $th) {
@@ -222,16 +223,19 @@ class CustomerProductTransactionController extends Controller
             $response = ['message' => 'failed creating transaction'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
+
     public function checkOrderCode(string $orderCode)
     {
-        if (CustomerProductTransaction::where('orderCode',)->count() == 0) {
+        if (CustomerProductTransaction::where('orderCode')->count() == 0) {
             return $orderCode;
         } else {
             return lastCompanyOrderCode();
         }
     }
+
     public function validateDiscountCode($discountCode)
     {
         $data = CustomerCompanyDiscount::where('companyId', session('userLogged')['company']['id'])
@@ -242,8 +246,10 @@ class CustomerProductTransactionController extends Controller
             $response = ['message' => 'valid discount code', 'data' => $data];
             $code = 200;
         }
+
         return response()->json($response, $code);
     }
+
     public function viewPdf(string $orderCode)
     {
         $data = CustomerProductTransaction::with('details.good')
@@ -251,9 +257,11 @@ class CustomerProductTransactionController extends Controller
             ->where('companyId', session('userLogged')['company']['id'])
             ->first();
         $pdf = App::make('dompdf.wrapper');
-        $pdf = $pdf->loadView('report.transaction-receipt', ($data) ? $data->toArray() : [])->setPaper(array(0, 0, 300, 280), 'portrait');
+        $pdf = $pdf->loadView('report.transaction-receipt', ($data) ? $data->toArray() : [])->setPaper([0, 0, 300, 280], 'portrait');
+
         return $pdf->stream('Transaction-' . $orderCode . '.pdf');
     }
+
     /**
      * Display the specified resource.
      */

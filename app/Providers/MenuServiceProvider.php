@@ -25,6 +25,10 @@ class MenuServiceProvider extends ServiceProvider
         $profileAppMenu = AppMenu::where('place', 1)->get()->setHidden([])->toArray();
         $sidebarAppMenu = buildTree($sidebarAppMenu);
         $profileAppMenu = buildTree($profileAppMenu);
+        // $sidebarAppMenu = [];
+        // $profileAppMenu = [];
+        // $sidebarAppMenu = buildTree($sidebarAppMenu);
+        // $profileAppMenu = buildTree($profileAppMenu);
         View::composer('*', function ($view) use ($sidebarAppMenu, $profileAppMenu) {
             $view->with([
                 'sidebarAppMenu' => $sidebarAppMenu,

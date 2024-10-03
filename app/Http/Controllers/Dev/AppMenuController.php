@@ -17,8 +17,10 @@ class AppMenuController extends Controller
     {
         $routes = Route::getRoutes()->getRoutesByMethod()['GET'];
         $menus = AppMenu::orderBy('parent', 'asc')->get();
+
         return view('dev.app-menu', compact('routes', 'menus'));
     }
+
     public function dataTable(Request $request)
     {
         $totalData = AppMenu::orderBy('id', 'asc')
@@ -94,13 +96,14 @@ class AppMenuController extends Controller
             $data['dev_only'] = isset($data['dev_only']) ? 1 : 0;
             AppMenu::create($data);
             DB::commit();
-            $response = ['message' => 'App Role create successfully'];
+            $response = ['message' => 'Resource create successfully'];
             $code = 200;
         } catch (\Throwable $th) {
             DB::rollBack();
             $code = 422;
-            $response = ['message' => 'Failed creating App Role'];
+            $response = ['message' => 'Failed creating resource'];
         }
+
         return response()->json($response, $code);
     }
 
@@ -110,12 +113,13 @@ class AppMenuController extends Controller
     public function show(string $id)
     {
         $data = AppMenu::with(['child'])->find($id)->setHidden([]);
-        $response = ['message' => 'showing resource successfully', 'data' => $data];
+        $response = ['message' => 'Showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
-            $response = ['message' => 'failed showing resource', 'data' => $data];
+            $response = ['message' => 'Failed showing resource', 'data' => $data];
             $code = 404;
         }
+
         return response()->json($response, $code);
     }
 
@@ -142,6 +146,7 @@ class AppMenuController extends Controller
             $response = ['message' => 'Failed updating resource'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 
@@ -155,7 +160,7 @@ class AppMenuController extends Controller
             if (empty(collect(AppMenu::with('child')->find($id)->child)->toArray())) {
                 AppMenu::destroy($id);
                 DB::commit();
-                $response = ['message' => 'deleting resource successfully'];
+                $response = ['message' => 'Deleting resource successfully'];
                 $code = 200;
             } else {
                 $response = ['message' => "Failed deleting resource. This data is still being used in other data. You can't delete it until it's removed from those data"];
@@ -166,6 +171,7 @@ class AppMenuController extends Controller
             $response = ['message' => 'failed deleting resource'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 }

@@ -15,11 +15,11 @@ class unSelectCustomerCompany
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!empty(session('userLogged')) && empty(session('userLogged')['company']) && !empty(session('userLogged')['role'])) {
+        if (! empty(session('userLogged')) && empty(session('userLogged')['company']) && ! empty(session('userLogged')['role'])) {
             return $next($request);
-        } else if (empty(session('userLogged'))) {
+        } elseif (empty(session('userLogged'))) {
             return redirect()->route('auth.login');
-        } else if (!empty(session('userLogged'))) {
+        } elseif (! empty(session('userLogged'))) {
             return redirect()->route('home');
         }
     }

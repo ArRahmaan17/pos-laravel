@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class CompanyAddress extends Model
 {
     use HasFactory;
+
     protected $fillable = ['companyId', 'place', 'address', 'city', 'province', 'zipCode'];
 }

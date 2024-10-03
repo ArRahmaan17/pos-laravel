@@ -21,13 +21,14 @@ class CustomerRoleAccessibilityController extends Controller
         $users = User::user_manager();
         $menus = AppMenu::customer_menu();
         $roles = CustomerRole::with(['role_users'])->get();
+
         return view('man.customer-role-accessibility', compact('users', 'menus', 'roles'));
     }
 
     public function dataTable(Request $request)
     {
         $where = [['customer_roles.userId', '=', session('userLogged')['user']['id']]];
-        if (getRole() === "Developer") {
+        if (getRole() === 'Developer') {
             $where = [['customer_roles.userId', '<>', 0]];
         }
         $totalData = CustomerRole::select('customer_roles.*')
@@ -45,17 +46,17 @@ class CustomerRoleAccessibilityController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where($where)->groupBy('customer_roles.id')->get();
         } else {
             $assets = CustomerRole::with('role_menus')->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
                 ->select('customer_roles.*')
-                ->where('customer_roles.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_roles.description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_roles.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_roles.description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -64,11 +65,11 @@ class CustomerRoleAccessibilityController extends Controller
             $assets = $assets->where($where)->groupBy('customer_roles.id')->get();
 
             $totalFiltered = CustomerRole::select('customer_roles.*')
-                ->where('customer_roles.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_roles.description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_roles.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_roles.description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where($where)->groupBy('customer_roles.id')->count();
         }
@@ -78,7 +79,7 @@ class CustomerRoleAccessibilityController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['menu'] = $item->role_menus;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role-accessibility='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-role-accessibility='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role-accessibility='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-role-accessibility='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -119,7 +120,7 @@ class CustomerRoleAccessibilityController extends Controller
                 }
                 CustomerRoleAccessibility::insert($data_menu);
             } else {
-                throw new Exception("Role mismatch to our record", 422);
+                throw new Exception('Role mismatch to our record', 422);
             }
             DB::commit();
             $response = ['message' => 'Creating resources successfully'];
@@ -132,6 +133,7 @@ class CustomerRoleAccessibilityController extends Controller
             }
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 
@@ -143,12 +145,13 @@ class CustomerRoleAccessibilityController extends Controller
         $role_menu = CustomerRole::select('*', 'id as roleId')->with(['role_menus' => function ($query) {
             $query->select(['*']);
         }])->where('id', $id)->first();
-        $response = ['message' => "Show resources successfully", 'data' => $role_menu];
+        $response = ['message' => 'Show resources successfully', 'data' => $role_menu];
         $code = 200;
         if (empty($role_menu->role_menus)) {
-            $response = ['message' => "Failed show resources", 'data' => $role_menu];
+            $response = ['message' => 'Failed show resources', 'data' => $role_menu];
             $code = 404;
         }
+
         return response()->json($response, $code);
     }
 
@@ -179,7 +182,7 @@ class CustomerRoleAccessibilityController extends Controller
                 }
                 CustomerRoleAccessibility::insert($data_menu);
             } else {
-                throw new Exception("Role mismatch to our record", 422);
+                throw new Exception('Role mismatch to our record', 422);
             }
             DB::commit();
             $response = ['message' => 'Creating resources successfully'];
@@ -192,6 +195,7 @@ class CustomerRoleAccessibilityController extends Controller
             }
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 
@@ -211,6 +215,7 @@ class CustomerRoleAccessibilityController extends Controller
             $response = ['message' => 'Failed destroy resource'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 }

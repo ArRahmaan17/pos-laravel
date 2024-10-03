@@ -149,6 +149,16 @@
                 delete data.action;
                 window.discount = data;
                 $('#table-customer-discount tbody').find('tr').removeClass('selected');
+                $('#discountCode').val(`${data.code}`);
+                $('#modal-customer-discount').modal('hide');
+                iziToast.success({
+                    id: 'alert-customer-company-discount-action',
+                    title: 'Success',
+                    message: 'Discount applied',
+                    position: 'topRight',
+                    layout: 2,
+                    displayMode: 'replace'
+                });
             })
         }
 
@@ -413,7 +423,6 @@
                     $('.decrease').off('click');
                 }
             });
-
             $('#modal-customer-product').on('hidden.bs.modal', function() {
                 $('.increase').click(function(e) {
                     let currentValue = parseInt($(this).siblings('.quantity').val());
@@ -611,6 +620,10 @@
                     $('#modal-customer-discount').modal('show');
                 }
             });
+            $('#modal-customer-transaction-receipt').on('hidden.bs.modal', function() {
+                $('#transaction-receipt-container').prop('src', "");
+                $('#modal-customer-transaction-receipt').find('.modal-title').html(`Modal Transaction Receipt`)
+            })
         });
     </script>
 @endpush

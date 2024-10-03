@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppMenu;
 use App\Models\CustomerRole;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,8 +16,10 @@ class CustomerRoleController extends Controller
     public function index()
     {
         $users = User::user_manager();
+
         return view('man.customer-role', compact('users'));
     }
+
     public function role($id)
     {
         $data = CustomerRole::where('userId', $id)->get();
@@ -28,12 +29,14 @@ class CustomerRoleController extends Controller
             $response = ['message' => 'Failed showing resource', 'data' => dataToOption($data)];
             $code = 404;
         }
+
         return response()->json($response, $code);
     }
+
     public function dataTable(Request $request)
     {
         $where = [['userId', '=', session('userLogged')['user']['id']]];
-        if (getRole() === "Developer") {
+        if (getRole() === 'Developer') {
             $where = [['userId', '<>', 0]];
         }
         $totalData = CustomerRole::where($where)->orderBy('id', 'asc')
@@ -47,16 +50,16 @@ class CustomerRoleController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where($where)->get();
         } else {
             $assets = CustomerRole::select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -65,11 +68,11 @@ class CustomerRoleController extends Controller
             $assets = $assets->where($where)->get();
 
             $totalFiltered = CustomerRole::select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where($where)->count();
         }
@@ -79,7 +82,7 @@ class CustomerRoleController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['description'] = $item->description;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-role='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-role='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -113,6 +116,7 @@ class CustomerRoleController extends Controller
             $response = ['message' => 'Failed creating resources'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 
@@ -128,6 +132,7 @@ class CustomerRoleController extends Controller
             $response = ['message' => 'Failed showing resource', 'data' => $data];
             $code = 404;
         }
+
         return response()->json($response, $code);
     }
 
@@ -139,7 +144,7 @@ class CustomerRoleController extends Controller
         $request->validate([
             'id' => 'required',
             'userId' => 'required',
-            'name' => 'required|unique:app_roles,name,' . $id,
+            'name' => 'required|unique:app_roles,name,'.$id,
             'description' => 'required|min:6|max:100',
         ]);
         DB::beginTransaction();
@@ -153,6 +158,7 @@ class CustomerRoleController extends Controller
             $response = ['message' => 'Failed updating resource'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 
@@ -177,6 +183,7 @@ class CustomerRoleController extends Controller
             $response = ['message' => 'failed deleting resource'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 }

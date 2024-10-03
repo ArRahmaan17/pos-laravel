@@ -14,7 +14,8 @@ class CustomerCompanyDiscount extends Model
         'percentage',
         'maxTransactionDiscount',
         'minTransactionPrice',
-        'status'
+        'status',
     ];
+
     use HasFactory;
 }

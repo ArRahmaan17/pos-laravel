@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class CustomerWarehouseRackGood extends Model
 {
     protected $fillable = ['rackId', 'goodId'];
+
     use HasFactory;
+
     public function product(): HasOne
     {
         return $this->hasOne(CustomerCompanyGood::class, 'id', 'goodId');

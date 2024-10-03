@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class CustomerProductTransaction extends Model
 {
     protected $fillable = ['orderCode', 'userId', 'companyId', 'total', 'discount'];
+
     use HasFactory;
+
     public function details(): HasMany
     {
         return $this->hasMany(CustomerDetailProductTransaction::class, 'orderCode', 'orderCode');

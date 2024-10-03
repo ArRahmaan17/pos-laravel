@@ -12,8 +12,8 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-app-menu" data-bs-toggle="modal"
-                            data-bs-target="#modal-app-menu">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-success" id="add-app-menu" data-bs-toggle="modal" data-bs-target="#modal-app-menu">Add <i
+                                class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -35,8 +35,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-app-menu" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
+    <div class="modal fade" id="modal-app-menu" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" menu="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -61,15 +60,13 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="name" class="form-label">Menu Name</label>
-                                <input type="text" id="name" name="name" class="form-control"
-                                    placeholder="Enter Menu Name" />
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Menu Name" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="route" class="form-label">Menu Route</label>
-                                <input list="routes" type="text" id="route" name="route" class="form-control"
-                                    placeholder="Enter Menu Route" />
+                                <input list="routes" type="text" id="route" name="route" class="form-control" placeholder="Enter Menu Route" />
                                 <datalist id="routes">
                                     @foreach ($routes as $route)
                                         <option value="{{ $route->getName() }}">{{ url($route->uri()) }}</option>
@@ -80,8 +77,7 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="icon" class="form-label">Menu Icon</label>
-                                <input type="text" id="icon" name="icon" class="form-control"
-                                    placeholder="Enter Menu Icon" />
+                                <input type="text" id="icon" name="icon" class="form-control" placeholder="Enter Menu Icon" />
                                 <div id="passwordHelpBlock" class="form-text">
                                     compatible icon is on <a href="https://boxicons.com/">boxicons</a>
                                 </div>
@@ -101,15 +97,13 @@
                                 <label class="form-label">Menu Place</label>
                                 <div class="col">
                                     <div class="form-check form-check-inline">
-                                        <input name="place" class="form-check-input" type="radio" value="0"
-                                            id="place-sidebar">
+                                        <input name="place" class="form-check-input" type="radio" value="0" id="place-sidebar">
                                         <label class="form-check-label" for="place-sidebar">
                                             Sidebar
                                         </label>
                                     </div>
                                     <div class="form-check form-check-inline">
-                                        <input name="place" class="form-check-input" type="radio" value="1"
-                                            id="place-profile">
+                                        <input name="place" class="form-check-input" type="radio" value="1" id="place-profile">
                                         <label class="form-check-label" for="place-profile">
                                             Profile
                                         </label>
@@ -144,7 +138,7 @@
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script>
-        window.datatableAppRole = null;
+        window.datatableAppMenu = null;
         window.state = 'add';
 
         function actionData() {
@@ -152,12 +146,12 @@
                 window.state = 'update';
                 let idAppMenu = $(this).data("app-menu");
                 $("#edit-app-menu").data("app-menu", idAppMenu);
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.datatableAppMenu.rows('.selected').data().length == 0) {
                     $('#table-app-menu tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.datatableAppMenu.rows('.selected').data()[0];
 
                 $('#modal-app-menu').modal('show');
                 $('#modal-app-menu').find('.modal-title').html(`Edit @yield('title')`);
@@ -211,12 +205,12 @@
                 window.state = 'add';
                 let idAppMenu = $(this).data("app-menu");
                 $("#edit-app-menu").data("app-menu", idAppMenu);
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.datatableAppMenu.rows('.selected').data().length == 0) {
                     $('#table-app-menu tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.datatableAppMenu.rows('.selected').data()[0];
 
                 $('#modal-app-menu').modal('show');
                 $('#modal-app-menu').find('.modal-title').html(`Add Child @yield('title')`);
@@ -261,12 +255,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.datatableAppMenu.rows('.selected').data().length == 0) {
                     $('#table-app-menu tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idAppMenu = $(this).data("app-menu");
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.datatableAppMenu.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -302,7 +296,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppRole.ajax.reload()
+                                    window.datatableAppMenu.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -326,7 +320,7 @@
             });
         }
         $(function() {
-            window.datatableAppRole = $("#table-app-menu").DataTable({
+            window.datatableAppMenu = $("#table-app-menu").DataTable({
                 ajax: "{{ route('dev.app-menu.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -373,7 +367,7 @@
                     }
                 }]
             });
-            window.datatableAppRole.on('draw.dt', function() {
+            window.datatableAppMenu.on('draw.dt', function() {
                 actionData();
             });
             $('#save-app-menu').click(function() {
@@ -396,7 +390,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload();
+                        window.datatableAppMenu.ajax.reload();
 
                     },
                     error: function(error) {
@@ -434,7 +428,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload()
+                        window.datatableAppMenu.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-app-menu .is-invalid').removeClass('is-invalid')

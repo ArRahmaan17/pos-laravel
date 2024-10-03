@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Man;
 use App\Http\Controllers\Controller;
 use App\Models\AppGoodUnit;
 use App\Models\CustomerCompanyGood;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +16,8 @@ class CustomerCompanyGoodController extends Controller
      */
     public function index()
     {
-        $units = AppGoodUnit::where('id', '<>', 1)->get();
+        $units = AppGoodUnit::get();
+
         return view('man.customer-company-good', compact('units'));
     }
 
@@ -81,6 +81,7 @@ class CustomerCompanyGoodController extends Controller
 
         return Response()->json($response, 200);
     }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -101,7 +102,7 @@ class CustomerCompanyGoodController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->except('_token', 'id');
-            $data['picture'] = 'customer-product/default-product.webp';
+            $data['picture'] = 'default-product.webp';
             if ($request->picture) {
                 $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
@@ -116,6 +117,7 @@ class CustomerCompanyGoodController extends Controller
             $response = ['message' => 'failed creating resource'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 
@@ -131,9 +133,9 @@ class CustomerCompanyGoodController extends Controller
             $response = ['message' => 'failed showing resource', 'data' => $data];
             $code = 404;
         }
+
         return response()->json($response, $code);
     }
-
 
     /**
      * Update the specified resource in storage.
@@ -167,7 +169,7 @@ class CustomerCompanyGoodController extends Controller
             }
             CustomerCompanyGood::where([
                 ['id', $id],
-                ['companyId', session('userLogged')['company']['id']]
+                ['companyId', session('userLogged')['company']['id']],
             ])->update($data);
             $response = ['message' => 'updating resource successfully'];
             $code = 200;
@@ -177,6 +179,7 @@ class CustomerCompanyGoodController extends Controller
             $response = ['message' => 'failed updating resource'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 
@@ -190,7 +193,7 @@ class CustomerCompanyGoodController extends Controller
             Storage::disk('customer-product')->delete(CustomerCompanyGood::find($id)->picture);
             CustomerCompanyGood::where([
                 ['id', $id],
-                ['companyId', session('userLogged')['company']['id']]
+                ['companyId', session('userLogged')['company']['id']],
             ])->delete();
             $response = ['message' => 'deleting resource successfully'];
             $code = 200;
@@ -200,6 +203,7 @@ class CustomerCompanyGoodController extends Controller
             $response = ['message' => 'failed deleting resource'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 }

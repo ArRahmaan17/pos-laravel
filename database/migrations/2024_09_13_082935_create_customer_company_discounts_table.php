@@ -11,23 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_product_transactions', function (Blueprint $table) {
+        Schema::create('customer_company_discounts', function (Blueprint $table) {
             $table->id();
-            $table->string('orderCode');
-            $table->bigInteger('userId')->unsigned();
-            $table->foreign('userId')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
             $table->bigInteger('companyId')->unsigned();
             $table->foreign('companyId')
-                ->references('id')
                 ->on('customer_companies')
+                ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->decimal('total', 16, 2);
-            $table->decimal('discount', 16, 2);
+            $table->string('code')->unique();
+            $table->string('description');
+            $table->integer('percentage');
+            $table->decimal('maxTransactionDiscount', 16, 2)->nullable(true);
+            $table->decimal('minTransactionPrice', 16, 2)->default(0);
+            $table->enum('status', ['archive', 'draft', 'publish'])->default('draft');
             $table->timestamps();
         });
     }
@@ -37,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_product_transactions');
+        Schema::dropIfExists('customer_company_discounts');
     }
 };

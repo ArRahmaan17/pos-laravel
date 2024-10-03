@@ -18,12 +18,14 @@ class UserCustomerController extends Controller
     {
         $users = User::user_manager();
         $where = [['userId', '=', session('userLogged')['user']['id']]];
-        if (getRole() === "Developer") {
+        if (getRole() === 'Developer') {
             $where = [['userId', '<>', 0]];
         }
         $customer_roles = CustomerRole::exists_role($where);
+
         return view('man.customer-user', compact('users', 'customer_roles'));
     }
+
     public function generateRegistrationLink(Request $request)
     {
         $request->validate([
@@ -31,15 +33,16 @@ class UserCustomerController extends Controller
             'roleId' => 'required',
         ], [
             'managerId.required' => 'The customer user field is required',
-            'roleId.required' => 'The customer user role field is required'
+            'roleId.required' => 'The customer user role field is required',
         ]);
-        if (getRole() === "Developer") {
+        if (getRole() === 'Developer') {
             $id = $request->managerId;
         } else {
             $id = session('userLogged')['user']['id'];
         }
         $role = $request->roleId;
-        $link = route('auth.registration') . '?action=' . base64_encode($id . '|' . now('Asia/Jakarta')->add($request->time_limit) . '|' . $role . '|' . env('APP_SECRET'));
+        $link = route('auth.registration').'?action='.base64_encode($id.'|'.now('Asia/Jakarta')->add($request->time_limit).'|'.$role.'|'.env('APP_SECRET'));
+
         return response()->json(['message' => 'registration link created successfully', 'link' => $link]);
     }
 
@@ -62,7 +65,7 @@ class UserCustomerController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->get();
         } else {
@@ -70,12 +73,12 @@ class UserCustomerController extends Controller
                 ->join('user_customer_roles as ucr', 'ucr.roleId', '=', 'cr.id')
                 ->join('users as uc', 'ucr.userId', '=', 'uc.id')
                 ->select('uc.name', 'uc.phone_number', 'cr.name as role_name', 'uc.username', 'uc.id')
-                ->where('uc.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('cr.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('uc.phone_number', 'like', '%' . $request['search']['value'] . '%');
+                ->where('uc.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('cr.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('uc.phone_number', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -87,12 +90,12 @@ class UserCustomerController extends Controller
                 ->join('user_customer_roles as ucr', 'ucr.roleId', '=', 'cr.id')
                 ->join('users as uc', 'ucr.userId', '=', 'uc.id')
                 ->select('uc.name', 'uc.phone_number', 'cr.name as role_name', 'uc.username', 'uc.id')
-                ->where('uc.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('cr.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('uc.phone_number', 'like', '%' . $request['search']['value'] . '%');
+                ->where('uc.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('cr.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('uc.phone_number', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->count();
         }
@@ -100,10 +103,10 @@ class UserCustomerController extends Controller
         foreach ($assets as $index => $item) {
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
-            $row['name'] = $item->name . '<br><small>(' . $item->username . ')</small>';
+            $row['name'] = $item->name.'<br><small>('.$item->username.')</small>';
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['role'] = $item->role_name;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-user-customer='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-user-customer='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-user-customer='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-user-customer='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -137,6 +140,7 @@ class UserCustomerController extends Controller
             $response = ['message' => 'Failed creating resources'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 
@@ -152,6 +156,7 @@ class UserCustomerController extends Controller
             $response = ['message' => 'Failed showing resource', 'data' => $data];
             $code = 404;
         }
+
         return response()->json($response, $code);
     }
 
@@ -162,10 +167,10 @@ class UserCustomerController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'name' => 'required|unique:users,name,' . $id,
-            'username' => 'required|unique:users,username,' . $id,
-            'email' => 'required|unique:users,email,' . $id,
-            'phone_number' => 'required|unique:users,phone_number,' . $id,
+            'name' => 'required|unique:users,name,'.$id,
+            'username' => 'required|unique:users,username,'.$id,
+            'email' => 'required|unique:users,email,'.$id,
+            'phone_number' => 'required|unique:users,phone_number,'.$id,
             'roleId' => 'required',
         ]);
         DB::beginTransaction();
@@ -180,6 +185,7 @@ class UserCustomerController extends Controller
             $response = ['message' => 'Failed updating resource'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 
@@ -200,6 +206,7 @@ class UserCustomerController extends Controller
             $response = ['message' => 'failed deleting resource'];
             $code = 422;
         }
+
         return response()->json($response, $code);
     }
 }

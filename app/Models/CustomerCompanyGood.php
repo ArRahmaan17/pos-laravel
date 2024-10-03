@@ -10,12 +10,15 @@ use Illuminate\Support\Facades\DB;
 class CustomerCompanyGood extends Model
 {
     protected $fillable = ['name', 'price', 'stock', 'picture', 'companyId', 'unitId', 'status'];
+
     use HasFactory;
+
     public function unit(): HasOne
     {
         return $this->hasOne(AppGoodUnit::class, 'id', 'unitId');
     }
-    static public function shelf_less($companyId)
+
+    public static function shelf_less($companyId)
     {
         return self::whereRaw(
             DB::raw('id not in (select goodId from customer_warehouse_rack_goods)')

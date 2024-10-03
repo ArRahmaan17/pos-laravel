@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('mamanrecing'),
                 'hr' => true,
                 'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta')
+                'updated_at' => now('Asia/Jakarta'),
             ],
             [
                 'name' => 'maman manager',
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('mamanrecing'),
                 'hr' => true,
                 'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta')
+                'updated_at' => now('Asia/Jakarta'),
             ],
             [
                 'name' => 'maman cashier',
@@ -42,8 +42,8 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('mamanrecing'),
                 'hr' => false,
                 'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta')
-            ]
+                'updated_at' => now('Asia/Jakarta'),
+            ],
         ];
         \App\Models\User::insert(
             $users
@@ -53,14 +53,14 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Developer',
                 'description' => 'Developer App',
                 'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta')
+                'updated_at' => now('Asia/Jakarta'),
             ],
             [
                 'name' => 'Manager',
                 'description' => 'Customer Manager',
                 'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta')
-            ]
+                'updated_at' => now('Asia/Jakarta'),
+            ],
         ]);
         \App\Models\UserRole::insert(
             [
@@ -68,30 +68,30 @@ class DatabaseSeeder extends Seeder
                     'userId' => 1,
                     'roleId' => 1,
                     'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta')
+                    'updated_at' => now('Asia/Jakarta'),
                 ],
                 [
                     'userId' => 2,
                     'roleId' => 2,
                     'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta')
-                ]
+                    'updated_at' => now('Asia/Jakarta'),
+                ],
             ]
         );
-        \App\Models\CustomerRole::insert([
-            'userId' => 2,
-            'name' => 'Cashier',
-            'description' => 'Customer Cashier',
-            'created_at' => now('Asia/Jakarta'),
-            'updated_at' => now('Asia/Jakarta')
-        ]);
-        \App\Models\UserCustomerRole::insert(
-            [
-                'userId' => 3,
-                'roleId' => 1,
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta')
-            ],
-        );
+        // \App\Models\CustomerRole::insert([
+        //     'userId' => 2,
+        //     'name' => 'Cashier',
+        //     'description' => 'Customer Cashier',
+        //     'created_at' => now('Asia/Jakarta'),
+        //     'updated_at' => now('Asia/Jakarta')
+        // ]);
+        // \App\Models\UserCustomerRole::insert(
+        //     [
+        //         'userId' => 3,
+        //         'roleId' => 1,
+        //         'created_at' => now('Asia/Jakarta'),
+        //         'updated_at' => now('Asia/Jakarta')
+        //     ],
+        // );
     }
 }
