@@ -32,15 +32,21 @@ class AuthController extends Controller
             ->orWhere('phone_number', $request->username)
             ->first();
         if (! empty($user) && Hash::check($request->password, $user->password)) {
-            $role = UserRole::with('user', 'role')->where('userId', $user->id)->first()->toArray();
-            if (empty($role) || empty($role['user']) || empty($role['role'])) {
-                $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first()->toArray();
+            $role = UserRole::with('user', 'role')->where('userId', $user->id)->first();
+            if (empty($role) || empty($role->user) || empty($role->role)) {
+                $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
             }
-            if (! in_array($role['role']['name'], ['Developer', 'Manager'])) {
-                $role['company'] = UserCustomerRole::employeeCompany($role['userId']);
+            $hasPrivileges = true;
+            if (! in_array($role->role->name, ['Developer', 'Manager'])) {
+                $role['company'] = UserCustomerRole::employeeCompany($role->userId);
+                if (UserCustomerRole::employeeMenu($role->userId) == 0) {
+                    $hasPrivileges = false;
+                }
             }
             session()->flush();
-            session(['userLogged' => $role]);
+            if ($hasPrivileges) {
+                session(['userLogged' => collect($role)->toArray()]);
+            }
 
             return redirect()->route('select-customer-company');
         }
@@ -181,9 +187,11 @@ class AuthController extends Controller
                 CompanyAddress::create($address);
             }
             DB::commit();
+
             return redirect()->route('home');
         } catch (\Throwable $th) {
             DB::rollBack();
+
             return redirect()->back();
         }
     }

@@ -34,16 +34,16 @@ class CustomerProductTransactionController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where('status', 'publish')->get();
         } else {
             $assets = CustomerCompanyGood::with('unit')->select('*')
-                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_company_goods.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_company_goods.price', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -52,11 +52,11 @@ class CustomerProductTransactionController extends Controller
             $assets = $assets->where('status', 'publish')->get();
 
             $totalFiltered = CustomerCompanyGood::select('*')
-                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_company_goods.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_company_goods.price', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where('status', 'publish')->count();
         }
@@ -69,7 +69,7 @@ class CustomerProductTransactionController extends Controller
             $row['stock'] = $item->stock;
             $row['unit'] = $item->unit->name;
             $row['picture'] = $item->picture;
-            $row['action'] = "<button class='btn btn-icon btn-success add-cart' data-customer-product='" . $item->id . "' ><i class='bx bx-plus' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-success add-cart' data-customer-product='".$item->id."' ><i class='bx bx-plus' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -95,20 +95,20 @@ class CustomerProductTransactionController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->get();
         } else {
             $assets = CustomerCompanyDiscount::select('*')
-                ->where('code', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('maxTransactionDiscount', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('minTransactionPrice', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('status', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('percentage', 'like', '%' . $request['search']['value'] . '%');
+                ->where('code', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('maxTransactionDiscount', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('minTransactionPrice', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('status', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('percentage', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -117,15 +117,15 @@ class CustomerProductTransactionController extends Controller
             $assets = $assets->get();
 
             $totalFiltered = CustomerCompanyDiscount::select('*')
-                ->where('code', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('maxTransactionDiscount', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('minTransactionPrice', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('status', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('percentage', 'like', '%' . $request['search']['value'] . '%');
+                ->where('code', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('maxTransactionDiscount', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('minTransactionPrice', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('status', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('percentage', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->count();
         }
@@ -138,7 +138,7 @@ class CustomerProductTransactionController extends Controller
             $row['percentage'] = $item->percentage;
             $row['maxTransactionDiscount'] = $item->maxTransactionDiscount;
             $row['minTransactionPrice'] = $item->minTransactionPrice;
-            $row['action'] = "<button class='btn btn-icon btn-success use-discount' data-customer-company-discount='" . $item->id . "' ><i class='bx bx-check-double' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-success use-discount' data-customer-company-discount='".$item->id."' ><i class='bx bx-check-double' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -259,7 +259,7 @@ class CustomerProductTransactionController extends Controller
         $pdf = App::make('dompdf.wrapper');
         $pdf = $pdf->loadView('report.transaction-receipt', ($data) ? $data->toArray() : [])->setPaper([0, 0, 300, 280], 'portrait');
 
-        return $pdf->stream('Transaction-' . $orderCode . '.pdf');
+        return $pdf->stream('Transaction-'.$orderCode.'.pdf');
     }
 
     /**

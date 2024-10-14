@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'App Role')
+@section('title', 'App Subscription')
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
 @endpush
@@ -12,18 +12,19 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-app-role" data-bs-toggle="modal" data-bs-target="#modal-app-role">Add <i
+                        <button class="btn btn-success" id="add-app-subscription" data-bs-toggle="modal" data-bs-target="#modal-app-subscription">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table-app-role">
+                        <table class="table" id="table-app-subscription">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Role</th>
                                     <th scope="col">Description</th>
+                                    <th scope="col">Price/month</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -35,7 +36,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-app-role" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modal-app-subscription" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -43,7 +44,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-app-role">
+                    <form action="#" id="form-app-subscription">
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
@@ -64,9 +65,9 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-app-role" class="btn btn-success">Save
+                    <button type="button" id="save-app-subscription" class="btn btn-success">Save
                         changes</button>
-                    <button type="button" id="edit-app-role" class="btn btn-warning d-none">Update
+                    <button type="button" id="edit-app-subscription" class="btn btn-warning d-none">Update
                         changes</button>
                 </div>
             </div>
@@ -77,32 +78,32 @@
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script>
-        window.datatableAppRole = null;
+        window.datatableAppSubscription = null;
         window.state = 'add';
 
         function actionData() {
             $('.edit').click(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("app-role");
-                $("#edit-app-role").data("app-role", idAppRole);
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-app-role tbody').find('tr').removeClass('selected');
+                let idAppSubscription = $(this).data("app-subscription");
+                $("#edit-app-subscription").data("app-subscription", idAppSubscription);
+                if (window.datatableAppSubscription.rows('.selected').data().length == 0) {
+                    $('#table-app-subscription tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.datatableAppSubscription.rows('.selected').data()[0];
 
-                $('#modal-app-role').modal('show');
-                $('#modal-app-role').find('.modal-title').html(`Edit @yield('title')`);
-                $('#save-app-role').addClass('d-none');
-                $('#edit-app-role').removeClass('d-none');
+                $('#modal-app-subscription').modal('show');
+                $('#modal-app-subscription').find('.modal-title').html(`Edit @yield('title')`);
+                $('#save-app-subscription').addClass('d-none');
+                $('#edit-app-subscription').removeClass('d-none');
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('dev.app-role.show') }}/" + idAppRole,
+                    url: "{{ route('dev.app-subscription.show') }}/" + idAppSubscription,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-app-role').find("form")
+                        $('#modal-app-subscription').find("form")
                             .find('input, textarea').map(function(index, element) {
                                 if (response.data[element.name]) {
                                     $(`[name=${element.name}]`).val(response.data[element
@@ -112,7 +113,7 @@
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-app-role-action',
+                            id: 'alert-app-subscription-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -124,12 +125,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-app-role tbody').find('tr').removeClass('selected');
+                if (window.datatableAppSubscription.rows('.selected').data().length == 0) {
+                    $('#table-app-subscription tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("app-role");
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                let idAppSubscription = $(this).data("app-subscription");
+                var data = window.datatableAppSubscription.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -150,26 +151,26 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('dev.app-role.delete') }}/" +
-                                    idAppRole,
+                                url: "{{ route('dev.app-subscription.delete') }}/" +
+                                    idAppSubscription,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
                                 },
                                 dataType: "json",
                                 success: function(response) {
                                     iziToast.success({
-                                        id: 'alert-app-role-form',
+                                        id: 'alert-app-subscription-form',
                                         title: 'Success',
                                         message: response.message,
                                         position: 'topRight',
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppRole.ajax.reload()
+                                    window.datatableAppSubscription.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
-                                        id: 'alert-app-role-action',
+                                        id: 'alert-app-subscription-action',
                                         title: 'Error',
                                         message: error.responseJSON.message,
                                         position: 'topRight',
@@ -188,23 +189,38 @@
                 });
             });
         }
+
+        function detail_table(d) {
+            let html = ``;
+            d.plans.forEach(element => {
+            html += `<li class="list-group-item d-flex align-items-center">
+                        <i class='bx bxs-check-circle me-3 text-success' ></i>
+                        ${element.planFeature}
+                    </li>`
+            });
+            return (
+                `<div class='mx-0 my-3 p-1'>
+                    <ul class="list-group">
+                        ${html}
+                    </ul>
+                </div>`
+            );
+        }
         $(function() {
-            window.datatableAppRole = $("#table-app-role").DataTable({
-                ajax: "{{ route('dev.app-role.data-table') }}",
+            window.datatableAppSubscription = $("#table-app-subscription").DataTable({
+                ajax: "{{ route('dev.app-subscription.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
-                    [1, 'desc']
+                    [2, 'desc']
                 ],
                 columns: [{
-                    target: 0,
-                    name: 'order_number',
-                    data: 'order_number',
+                    name: '',
+                    className: 'dt-control parent',
+                    data: null,
+                    defaultContent: '',
                     orderable: false,
                     searchable: false,
-                    render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'>${data}</div>`
-                    }
                 }, {
                     target: 1,
                     name: 'name',
@@ -225,6 +241,13 @@
                     }
                 }, {
                     target: 3,
+                    name: 'price',
+                    data: 'price',
+                    orderable: true,
+                    searchable: true,
+                    render: $.fn.dataTable.render.number('.', ',', 2, 'Rp.')
+                },{
+                    target: 4,
                     name: 'action',
                     data: 'action',
                     orderable: false,
@@ -234,38 +257,49 @@
                     }
                 }]
             });
-            window.datatableAppRole.on('draw.dt', function() {
+            window.datatableAppSubscription.on('draw.dt', function() {
                 actionData();
             });
-            $('#save-app-role').click(function() {
-                let data = serializeObject($('#form-app-role'));
+            window.datatableAppSubscription.on('click', 'td.parent', function(e) {
+                let tr = e.target.closest('tr');
+                let row = window.datatableAppSubscription.row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                } else {
+                    // Open this row
+                    row.child(detail_table(row.data())).show();
+                }
+            });
+            $('#save-app-subscription').click(function() {
+                let data = serializeObject($('#form-app-subscription'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('dev.app-role.store') }}`,
+                    url: `{{ route('dev.app-subscription.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-app-role').modal('hide')
+                        $('#modal-app-subscription').modal('hide')
                         iziToast.success({
-                            id: 'alert-app-role-form',
+                            id: 'alert-app-subscription-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload();
+                        window.datatableAppSubscription.ajax.reload();
 
                     },
                     error: function(error) {
-                        $('#modal-app-role .is-invalid').removeClass('is-invalid')
+                        $('#modal-app-subscription .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-app-role').find('[name=' + indexInArray +
+                            $('#modal-app-subscription').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-app-role-form',
+                            id: 'alert-app-subscription-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -275,34 +309,34 @@
                     }
                 });
             });
-            $('#edit-app-role').click(function() {
-                let data = serializeObject($('#form-app-role'));
+            $('#edit-app-subscription').click(function() {
+                let data = serializeObject($('#form-app-subscription'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('dev.app-role.update') }}/${data.id}`,
+                    url: `{{ route('dev.app-subscription.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-app-role').modal('hide')
+                        $('#modal-app-subscription').modal('hide')
                         iziToast.success({
-                            id: 'alert-app-role-form',
+                            id: 'alert-app-subscription-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload()
+                        window.datatableAppSubscription.ajax.reload()
                     },
                     error: function(error) {
-                        $('#modal-app-role .is-invalid').removeClass('is-invalid')
+                        $('#modal-app-subscription .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-app-role').find('[name=' + indexInArray +
+                            $('#modal-app-subscription').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-app-role-form',
+                            id: 'alert-app-subscription-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -312,13 +346,13 @@
                     }
                 });
             });
-            $('#modal-app-role').on('hidden.bs.modal', function() {
+            $('#modal-app-subscription').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
-                $('#save-app-role').removeClass('d-none');
-                $('#edit-app-role').addClass('d-none');
-                $('#modal-app-role .is-invalid').removeClass('is-invalid')
-                $('#table-app-role tbody').find('tr').removeClass('selected');
+                $('#save-app-subscription').removeClass('d-none');
+                $('#edit-app-subscription').addClass('d-none');
+                $('#modal-app-subscription .is-invalid').removeClass('is-invalid')
+                $('#table-app-subscription tbody').find('tr').removeClass('selected');
             });
         });
     </script>

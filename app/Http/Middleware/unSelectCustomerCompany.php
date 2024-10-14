@@ -18,7 +18,7 @@ class unSelectCustomerCompany
         if (! empty(session('userLogged')) && empty(session('userLogged')['company']) && ! empty(session('userLogged')['role'])) {
             return $next($request);
         } elseif (empty(session('userLogged'))) {
-            return redirect()->route('auth.login');
+            return redirect()->route('auth.login')->with('error', 'Please report to your manager to add the accessibility menu role');
         } elseif (! empty(session('userLogged'))) {
             return redirect()->route('home');
         }

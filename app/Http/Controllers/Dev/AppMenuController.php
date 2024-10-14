@@ -34,16 +34,16 @@ class AppMenuController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->get();
         } else {
             $assets = AppMenu::select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('route', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -52,11 +52,11 @@ class AppMenuController extends Controller
             $assets = $assets->get();
 
             $totalFiltered = AppMenu::select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('route', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->count();
         }
@@ -66,7 +66,7 @@ class AppMenuController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['child'] = AppMenu::getChildMenu($item->id);
-            $row['action'] = "<button class='btn btn-icon btn-success parent' data-app-menu='" . $item->id . "' ><i class='bx bx-plus' ></i></button><button class='btn btn-icon btn-warning edit' data-app-menu='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-app-menu='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-success parent' data-app-menu='".$item->id."' ><i class='bx bx-plus' ></i></button><button class='btn btn-icon btn-warning edit' data-app-menu='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-app-menu='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -86,7 +86,7 @@ class AppMenuController extends Controller
     {
         DB::beginTransaction();
         $request->validate([
-            'name' => 'required|min:2|max:15|unique:app_menus,name',
+            'name' => 'required|min:2|max:20|unique:app_menus,name',
             'route' => 'required',
             'icon' => 'required',
             'parent' => 'required',
@@ -130,14 +130,16 @@ class AppMenuController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'name' => 'required|min:2|max:15|unique:app_menus,name,' . $id,
+            'name' => 'required|min:2|max:15|unique:app_menus,name,'.$id,
             'route' => 'required',
             'icon' => 'required',
             'parent' => 'required',
         ]);
         DB::beginTransaction();
         try {
-            AppMenu::find($id)->update($request->except('_token', 'id'));
+            $data = $request->except('_token', 'id');
+            $data['dev_only'] = isset($data['dev_only']) ? 1 : 0;
+            AppMenu::find($id)->update($data);
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();

@@ -5,7 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AppSubcriotion extends Model
+class AppDetailSubscription extends Model
 {
     use HasFactory;
+    protected $fillable = ['subscriptionId', 'planFeature'];
 }

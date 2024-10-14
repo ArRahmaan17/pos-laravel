@@ -34,16 +34,16 @@ class CustomerCompanyGoodController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->get();
         } else {
             $assets = CustomerCompanyGood::with('unit')->select('*')
-                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_company_goods.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_company_goods.price', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -52,11 +52,11 @@ class CustomerCompanyGoodController extends Controller
             $assets = $assets->get();
 
             $totalFiltered = CustomerCompanyGood::select('*')
-                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_company_goods.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_company_goods.price', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->count();
         }
@@ -68,8 +68,8 @@ class CustomerCompanyGoodController extends Controller
             $row['price'] = $item->price;
             $row['stock'] = $item->stock;
             $row['unit'] = $item->unit->name;
-            $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">' . $item->status . '</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">' . $item->status . '</span>' : '<span class="badge bg-label-success">' . $item->status . '</span>');
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -104,7 +104,7 @@ class CustomerCompanyGoodController extends Controller
             $data = $request->except('_token', 'id');
             $data['picture'] = 'default-product.webp';
             if ($request->picture) {
-                $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
+                $filename = md5($request->name.now('Asia/Jakarta')->format('Y-m-d')).'.'.$request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
                 Storage::disk('customer-product')->putFileAs('/', $request->picture, $filename);
             }
@@ -163,7 +163,7 @@ class CustomerCompanyGoodController extends Controller
                 if ($product->picture != 'default-product.webp') {
                     Storage::disk('customer-product')->delete($product->picture);
                 }
-                $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
+                $filename = md5($request->name.now('Asia/Jakarta')->format('Y-m-d')).'.'.$request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
                 Storage::disk('customer-product')->putFileAs('/', $request->file('picture'), $filename);
             }

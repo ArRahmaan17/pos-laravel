@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Dev\AppMenuController;
 use App\Http\Controllers\Dev\AppRoleController;
+use App\Http\Controllers\Dev\AppSubscriptionController;
 use App\Http\Controllers\Man\CustomerCompanyController;
 use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
@@ -65,6 +66,14 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/data-table', [AppMenuController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [AppMenuController::class, 'show'])->name('show');
             Route::delete('/{id?}', [AppMenuController::class, 'destroy'])->name('delete');
+        });
+        Route::name('app-subscription')->as('app-subscription.')->prefix('app-subscription')->group(function () {
+            Route::get('/', [AppSubscriptionController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
+            Route::post('/', [AppSubscriptionController::class, 'store'])->name('store');
+            Route::put('/{id?}', [AppSubscriptionController::class, 'update'])->name('update');
+            Route::get('/data-table', [AppSubscriptionController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [AppSubscriptionController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [AppSubscriptionController::class, 'destroy'])->name('delete');
         });
     });
     Route::name('man')->as('man.')->prefix('man')->group(function () {

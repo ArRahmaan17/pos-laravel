@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default"
-    data-assets-path="../assets/" data-template="vertical-menu-template-free">
+<html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="../assets/"
+    data-template="vertical-menu-template-free">
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
     <title>{{ env('APP_NAME') }}</title>
 
@@ -17,8 +16,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
         rel="stylesheet" />
 
     <!-- Icons. Uncomment required icon fonts -->
@@ -26,8 +24,7 @@
 
     <!-- Core CSS -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}"
-        class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
 
     <!-- Vendors CSS -->
@@ -57,8 +54,8 @@
                         <div class="app-brand justify-content-center">
                             <a class="app-brand-link gap-2">
                                 <span class="app-brand-logo demo">
-                                    <svg width="25" viewBox="0 0 25 42" version="1.1"
-                                        xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <svg width="25" viewBox="0 0 25 42" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                                        xmlns:xlink="http://www.w3.org/1999/xlink">
                                         <defs>
                                             <path
                                                 d="M13.7918663,0.358365126 L3.39788168,7.44174259 C0.566865006,9.69408886 -0.379795268,12.4788597 0.557900856,15.7960551 C0.68998853,16.2305145 1.09562888,17.7872135 3.12357076,19.2293357 C3.8146334,19.7207684 5.32369333,20.3834223 7.65075054,21.2172976 L7.59773219,21.2525164 L2.63468769,24.5493413 C0.445452254,26.3002124 0.0884951797,28.5083815 1.56381646,31.1738486 C2.83770406,32.8170431 5.20850219,33.2640127 7.09180128,32.5391577 C8.347334,32.0559211 11.4559176,30.0011079 16.4175519,26.3747182 C18.0338572,24.4997857 18.6973423,22.4544883 18.4080071,20.2388261 C17.963753,17.5346866 16.1776345,15.5799961 13.0496516,14.3747546 L10.9194936,13.4715819 L18.6192054,7.984237 L13.7918663,0.358365126 Z"
@@ -73,8 +70,7 @@
                                                 d="M20.6,7.13333333 L25.6,13.8 C26.2627417,14.6836556 26.0836556,15.9372583 25.2,16.6 C24.8538077,16.8596443 24.4327404,17 24,17 L14,17 C12.8954305,17 12,16.1045695 12,15 C12,14.5672596 12.1403557,14.1461923 12.4,13.8 L17.4,7.13333333 C18.0627417,6.24967773 19.3163444,6.07059163 20.2,6.73333333 C20.3516113,6.84704183 20.4862915,6.981722 20.6,7.13333333 Z"
                                                 id="path-5"></path>
                                         </defs>
-                                        <g id="g-app-brand" stroke="none" stroke-width="1" fill="none"
-                                            fill-rule="evenodd">
+                                        <g id="g-app-brand" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                             <g id="Brand-Logo" transform="translate(-27.000000, -15.000000)">
                                                 <g id="Icon" transform="translate(27.000000, 15.000000)">
                                                     <g id="Mask" transform="translate(0.000000, 8.000000)">
@@ -106,15 +102,18 @@
                                 </span>
                             </a>
                         </div>
+                        <div class="col-12">
+                            @if (session('error'))
+                                <div class="alert alert-danger">{!! session('error') !!}</div>
+                            @endif
+                        </div>
                         <!-- /Logo -->
-                        <form id="formAuthentication" class="mb-3" action="{{ route('auth.login.process') }}"
-                            method="POST">
+                        <form id="formAuthentication" class="mb-3" action="{{ route('auth.login.process') }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label for="username" class="form-label">Email/Username/Phone number</label>
-                                <input type="text" class="form-control @error('username') is-invalid @enderror"
-                                    id="username" name="username" value="{{ old('username') }}"
-                                    placeholder="Masukan Email/Username/Phone Number Anda" autofocus />
+                                <input type="text" class="form-control @error('username') is-invalid @enderror" id="username" name="username"
+                                    value="{{ old('username') }}" placeholder="Masukan Email/Username/Phone Number Anda" autofocus />
                                 @error('username')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -122,12 +121,10 @@
                             <div class="mb-3 form-password-toggle">
                                 <label class="form-label" for="password">Password</label>
                                 <div class="input-group input-group-merge">
-                                    <input type="password" id="password"
-                                        class="form-control @error('password') is-invalid @enderror" name="password"
+                                    <input type="password" id="password" class="form-control @error('password') is-invalid @enderror" name="password"
                                         placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                                         aria-describedby="password" />
-                                    <span class="input-group-text cursor-pointer rounded-end"><i
-                                            class="bx bx-hide"></i></span>
+                                    <span class="input-group-text cursor-pointer rounded-end"><i class="bx bx-hide"></i></span>
                                     @error('password')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -136,8 +133,7 @@
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="remember-me"
-                                            name="remember_me" />
+                                        <input class="form-check-input" type="checkbox" id="remember-me" name="remember_me" />
                                         <label class="form-check-label" for="remember-me"> Remember Me </label>
                                     </div>
                                     <a href="auth-forgot-password-basic.html">

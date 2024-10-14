@@ -18,7 +18,7 @@ class checkPageAuthorization
     {
         if (getRole() == 'Developer') {
             return $next($request);
-        } else if (getRole() == 'Manager') {
+        } elseif (getRole() == 'Manager') {
             if (AppMenu::where('route', $request->route()->action['as'])->where('dev_only', 0)->count() == 1) {
                 return $next($request);
             } else {

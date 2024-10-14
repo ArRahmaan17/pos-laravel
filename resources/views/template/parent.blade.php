@@ -65,7 +65,7 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('assets/js/config.js') }}"></script>
-    <link href="https://cdn.datatables.net/v/bs5/dt-2.0.2/fc-5.0.0/fh-4.0.1/datatables.min.css" rel="stylesheet">
+    <link href="{{ asset('assets/css/datatables.min.css') }}" rel="stylesheet">
     @stack('css')
 </head>
 
@@ -163,16 +163,14 @@
                     <div class="container-fluid flex-grow-1 container-p-y">
                         @yield('content')
 
-                        <div class="modal fade" id="exLargeModal" tabindex="-1" aria-modal="true" role="dialog">
+                        <div class="modal fade" id="AppSubscriptionModal" tabindex="-1" aria-modal="true" role="dialog">
                             <div class="modal-dialog modal-xl" role="document">
                                 <div class="modal-content">
                                     <div class="modal-body">
                                         <div class="pb-4 rounded-top">
-                                            <div class="container py-6 px-xl-4 px-4">
+                                            <div class="container-fluid py-6 px-xl-4 px-4">
                                                 <h3 class="text-center mb-2 mt-4">Pricing Plans</h3>
                                                 <p class="text-center mb-0">
-                                                    All plans include 40+ advanced tools and features to boost your
-                                                    product.<br />
                                                     Choose the best plan to fit your needs.
                                                 </p>
                                                 <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 pt-6 pb-6">
@@ -182,176 +180,57 @@
                                                     </label>
                                                 </div>
 
-                                                <div class="row mx-0 px-lg-6 gy-6">
-                                                    <!-- Basic -->
-                                                    <div class="col-xl mb-md-0">
-                                                        <div class="card border rounded shadow-none">
-                                                            <div class="card-body pt-6">
-                                                                <div class="mt-3 mb-5 text-center">
-                                                                    <img src="../../assets/img/icons/unicons/bookmark.png" alt="Basic Image"
-                                                                        width="120" />
-                                                                </div>
-                                                                <h4 class="card-title text-center text-capitalize mb-1">Basic</h4>
-                                                                <p class="text-center mb-5">A simple start for everyone</p>
-                                                                <div class="text-center h-px-50">
-                                                                    <div class="d-flex justify-content-center">
-                                                                        <sup class="h6 text-body pricing-currency mt-2 mb-0 me-1">$</sup>
-                                                                        <h1 class="mb-0 text-primary">0</h1>
-                                                                        <sub class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
+                                                <div class="row px-lg-12">
+                                                    @foreach ($subscriptions as $subscription)
+                                                        <!-- Basic -->
+                                                        <div class="col-12 col-lg-4 mb-md-0">
+                                                            <div class="card border-primary border shadow-none">
+                                                                <div class="card-body position-relative pt-4">
+                                                                    <div class="position-absolute end-0 me-5 top-0 mt-4">
+                                                                        <span class="badge bg-label-primary rounded-1">Popular</span>
                                                                     </div>
+                                                                    <div class="my-5 pt-6 text-center">
+                                                                        <img src="../../assets/img/icons/unicons/wallet-round.png" alt="Pro Image"
+                                                                            width="120" />
+                                                                    </div>
+                                                                    <h4 class="card-title text-center text-capitalize mb-1">
+                                                                        {{ $subscription->name }}
+                                                                    </h4>
+                                                                    <p class="text-center mb-5">{{ $subscription->description }}</p>
+                                                                    <div class="text-center h-px-50">
+                                                                        <div class="d-flex justify-content-center">
+                                                                            <sup class="h6 text-body pricing-currency mt-2 mb-0 me-1">Rp.</sup>
+                                                                            <h1 class="price-toggle price-yearly text-primary mb-0 d-none">
+                                                                                {{ numberFormat($subscription->price - ($subscription->price * 5) / 100) }}
+                                                                            </h1>
+                                                                            <h1 class="price-toggle price-monthly text-primary mb-0">
+                                                                                {{ numberFormat($subscription->price) }}</h1>
+                                                                            <sub class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
+                                                                        </div>
+                                                                        <small class="price-yearly price-yearly-toggle text-muted d-none">USD
+                                                                            {{ numberFormat($subscription->price * 12 - ($subscription->price * 5) / 100) }}
+                                                                            /
+                                                                            year</small>
+                                                                    </div>
+
+                                                                    <ul class="list-group my-5 pt-9">
+                                                                        @foreach ($subscription->plans as $plan)
+                                                                            <li class="mb-4 d-flex align-items-center">
+                                                                                <span class="badge w-px-30 h-px-30 rounded-pill bg-label-primary me-2"><i
+                                                                                        class="bx bx-check bx-xs"></i></span>
+                                                                                <span>{{ $plan->planFeature }}</span>
+                                                                            </li>
+                                                                        @endforeach
+                                                                    </ul>
+
+                                                                    <a href="auth-register-basic.html" class="btn btn-primary d-grid w-100">Upgrade</a>
                                                                 </div>
-
-                                                                <ul class="list-group my-5 pt-9">
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>100 responses a month</span>
-                                                                    </li>
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited forms and
-                                                                            surveys</span>
-                                                                    </li>
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited fields</span>
-                                                                    </li>
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Basic form creation
-                                                                            tools</span>
-                                                                    </li>
-                                                                    <li class="mb-0 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Up to 2 subdomains</span>
-                                                                    </li>
-                                                                </ul>
-
-                                                                <a href="auth-register-basic.html" class="btn btn-label-success d-grid w-100">Your
-                                                                    Current Plan</a>
                                                             </div>
                                                         </div>
-                                                    </div>
-
-                                                    <!-- Pro -->
-                                                    <div class="col-xl mb-md-0">
-                                                        <div class="card border-primary border shadow-none">
-                                                            <div class="card-body position-relative pt-4">
-                                                                <div class="position-absolute end-0 me-5 top-0 mt-4">
-                                                                    <span class="badge bg-label-primary rounded-1">Popular</span>
-                                                                </div>
-                                                                <div class="my-5 pt-6 text-center">
-                                                                    <img src="../../assets/img/icons/unicons/wallet-round.png" alt="Pro Image"
-                                                                        width="120" />
-                                                                </div>
-                                                                <h4 class="card-title text-center text-capitalize mb-1">
-                                                                    Standard
-                                                                </h4>
-                                                                <p class="text-center mb-5">For small to medium businesses</p>
-                                                                <div class="text-center h-px-50">
-                                                                    <div class="d-flex justify-content-center">
-                                                                        <sup class="h6 text-body pricing-currency mt-2 mb-0 me-1">$</sup>
-                                                                        <h1 class="price-toggle price-yearly text-primary mb-0 d-none">
-                                                                            7
-                                                                        </h1>
-                                                                        <h1 class="price-toggle price-monthly text-primary mb-0">9</h1>
-                                                                        <sub class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
-                                                                    </div>
-                                                                    <small class="price-yearly price-yearly-toggle text-muted d-none">USD 480 /
-                                                                        year</small>
-                                                                </div>
-
-                                                                <ul class="list-group my-5 pt-9">
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited responses</span>
-                                                                    </li>
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited forms and
-                                                                            surveys</span>
-                                                                    </li>
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Instagram profile page</span>
-                                                                    </li>
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Google Docs integration</span>
-                                                                    </li>
-                                                                    <li class="mb-0 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Custom “Thank you” page</span>
-                                                                    </li>
-                                                                </ul>
-
-                                                                <a href="auth-register-basic.html" class="btn btn-primary d-grid w-100">Upgrade</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- Enterprise -->
-                                                    <div class="col-xl">
-                                                        <div class="card border rounded shadow-none">
-                                                            <div class="card-body pt-6">
-                                                                <div class="mt-3 mb-5 text-center">
-                                                                    <img src="../../assets/img/icons/unicons/briefcase-round.png" alt="Pro Image"
-                                                                        width="120" />
-                                                                </div>
-                                                                <h4 class="card-title text-center text-capitalize mb-1">
-                                                                    Enterprise
-                                                                </h4>
-                                                                <p class="text-center mb-5">Solution for big organizations</p>
-
-                                                                <div class="text-center h-px-50">
-                                                                    <div class="d-flex justify-content-center">
-                                                                        <sup class="h6 text-body pricing-currency mt-2 mb-0 me-1">$</sup>
-                                                                        <h1 class="price-toggle price-yearly text-primary mb-0 d-none">
-                                                                            16
-                                                                        </h1>
-                                                                        <h1 class="price-toggle price-monthly text-primary mb-0">19</h1>
-                                                                        <sub class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
-                                                                    </div>
-                                                                    <small class="price-yearly price-yearly-toggle text-muted d-none">USD 960 /
-                                                                        year</small>
-                                                                </div>
-
-                                                                <ul class="list-group my-5 pt-9">
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>PayPal payments</span>
-                                                                    </li>
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Logic Jumps</span>
-                                                                    </li>
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>File upload with 5GB
-                                                                            storage</span>
-                                                                    </li>
-                                                                    <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Custom domain support</span>
-                                                                    </li>
-                                                                    <li class="mb-0 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Stripe integration</span>
-                                                                    </li>
-                                                                </ul>
-
-                                                                <a href="auth-register-basic.html" class="btn btn-label-primary d-grid w-100">Upgrade</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    @endforeach
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                            Close
-                                        </button>
-                                        <button type="button" class="btn btn-primary">Save changes</button>
                                     </div>
                                 </div>
                             </div>
@@ -408,7 +287,7 @@
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
-    <script src="https://cdn.datatables.net/v/bs5/dt-2.0.2/fc-5.0.0/fh-4.0.1/datatables.min.js"></script>
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
     @if (env('APP_ENV') === 'production')
         <script>
             document.addEventListener('contextmenu', (e) => {

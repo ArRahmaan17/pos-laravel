@@ -10,7 +10,8 @@ class BusinessType extends Model
     protected $fillable = [
         'id',
         'name',
-        'description'
+        'description',
     ];
+
     use HasFactory;
 }
