@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="../assets/"
-    data-template="vertical-menu-template-free">
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default"
+    data-assets-path="../assets/" data-template="vertical-menu-template-free">
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <title>{{ env('APP_NAME') }} | @yield('title')</title>
     {{-- <title>{{ (session('app') == 'aset' ? env('APP_NAME') : session('app') == 'ssh') ? env('APP_NAME_2') : '' }}</title> --}}
     <style>
@@ -37,12 +38,13 @@
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
         rel="stylesheet" />
     <!-- Icons. Uncomment required icon fonts -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />
@@ -51,6 +53,9 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" class="template-customizer-core-css" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.2/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.2/dist/sweetalert2.all.min.js"></script>
 
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
@@ -75,86 +80,15 @@
         <div class="layout-container">
             <!-- Menu -->
 
-            <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-                <div class="app-brand demo">
-                    <a href="{{ route('home') }}" class="app-brand-link">
-                        <span
-                            class="app-brand-text demo menu-text fw-bolder ms-2 text-capitalize text-wrap col-12">{{ !session('userLogged')['company']['name'] ? env('APP_NAME') : session('userLogged')['company']['name'] }}</span>
-                    </a>
-                    <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
-                        <i class="bx bx-chevron-left bx-sm align-middle"></i>
-                    </a>
-                </div>
-
-                <div class="menu-inner-shadow"></div>
-                <div class="menu-inner">
-                    {!! buildMenu($sidebarAppMenu) !!}
-                </div>
-            </aside>
+            {{-- Sidebar --}}
+                @include('layout.sidebar')
+            {{-- End sidebar --}}
             <!-- / Menu -->
 
             <!-- Layout container -->
             <div class="layout-page">
                 <!-- Navbar -->
-
-                <nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
-                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                            <i class="bx bx-menu bx-sm"></i>
-                        </a>
-                    </div>
-
-                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-                        <div class="navbar-nav align-items-center">
-                            <div class="nav-item d-flex align-items-center">
-                                <i class='bx bxs-user-account'></i>
-                                {!! ' Logged in&nbsp;<i>' . session('userLogged')['user']['name'] . '</i> &nbsp;as&nbsp;<i>' . session('userLogged')['role']['name'] . '</i>' ??
-                                    'Login as :' !!}
-                            </div>
-                        </div>
-
-                        <ul class="navbar-nav flex-row align-items-center ms-auto">
-                            <!-- User -->
-                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                                    <div class="avatar avatar-online">
-                                        <img src="{{ !empty(session('userLogged')->user->foto) && session('userLogged')->user->foto !== null ? asset(session('userLogged')->user->foto) : '../assets/img/avatars/1.png' }}"
-                                            alt class="w-px-40 h-100 rounded-circle" />
-                                    </div>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <div class="d-flex">
-                                                <div class="flex-shrink-0 me-3">
-                                                    <div class="avatar avatar-online">
-                                                        <img src="{{ !empty(session('userLogged')['user']['foto']) && session('userLogged')['user']['foto'] !== null ? asset(session('userLogged')['user']['foto']) : '../assets/img/avatars/1.png' }}"
-                                                            alt class="w-px-40 h-100 rounded-circle" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-divider"></div>
-                                    </li>
-                                    {!! buildMenu($profileAppMenu, 1) !!}
-                                    <li>
-                                        <div class="dropdown-divider"></div>
-                                    </li>
-                                    <li>
-                                        {{-- <a class="dropdown-item" href="{{ route('logout.system') }}">
-                                            <i class="bx bx-power-off me-2"></i>
-                                            <span class="align-middle">Log Out System</span>
-                                        </a> --}}
-                                    </li>
-                                </ul>
-                            </li>
-                            <!--/ User -->
-                        </ul>
-                    </div>
-                </nav>
-
+                    @include('layout.navbar')
                 <!-- / Navbar -->
 
                 <!-- Content wrapper -->
@@ -175,9 +109,12 @@
                                                     product.<br />
                                                     Choose the best plan to fit your needs.
                                                 </p>
-                                                <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 pt-6 pb-6">
+                                                <div
+                                                    class="d-flex align-items-center justify-content-center flex-wrap gap-2 pt-6 pb-6">
                                                     <label class="form-check form-switch ms-sm-6 ps-sm-6 me-0">
-                                                        <input type="checkbox" class="form-check-input price-duration-toggler" checked="" />
+                                                        <input type="checkbox"
+                                                            class="form-check-input price-duration-toggler"
+                                                            checked="" />
                                                         <span class="form-check-label fs-6 text-body">Annually</span>
                                                     </label>
                                                 </div>
@@ -188,45 +125,61 @@
                                                         <div class="card border rounded shadow-none">
                                                             <div class="card-body pt-6">
                                                                 <div class="mt-3 mb-5 text-center">
-                                                                    <img src="../../assets/img/icons/unicons/bookmark.png" alt="Basic Image"
-                                                                        width="120" />
+                                                                    <img src="../../assets/img/icons/unicons/bookmark.png"
+                                                                        alt="Basic Image" width="120" />
                                                                 </div>
-                                                                <h4 class="card-title text-center text-capitalize mb-1">Basic</h4>
-                                                                <p class="text-center mb-5">A simple start for everyone</p>
+                                                                <h4
+                                                                    class="card-title text-center text-capitalize mb-1">
+                                                                    Basic</h4>
+                                                                <p class="text-center mb-5">A simple start for everyone
+                                                                </p>
                                                                 <div class="text-center h-px-50">
                                                                     <div class="d-flex justify-content-center">
-                                                                        <sup class="h6 text-body pricing-currency mt-2 mb-0 me-1">$</sup>
+                                                                        <sup
+                                                                            class="h6 text-body pricing-currency mt-2 mb-0 me-1">$</sup>
                                                                         <h1 class="mb-0 text-primary">0</h1>
-                                                                        <sub class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
+                                                                        <sub
+                                                                            class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
                                                                     </div>
                                                                 </div>
 
                                                                 <ul class="list-group my-5 pt-9">
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>100 responses a month</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>100
+                                                                            responses a month</span>
                                                                     </li>
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited forms and
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited
+                                                                            forms and
                                                                             surveys</span>
                                                                     </li>
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited fields</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited
+                                                                            fields</span>
                                                                     </li>
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Basic form creation
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Basic
+                                                                            form creation
                                                                             tools</span>
                                                                     </li>
                                                                     <li class="mb-0 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Up to 2 subdomains</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Up
+                                                                            to 2 subdomains</span>
                                                                     </li>
                                                                 </ul>
 
-                                                                <a href="auth-register-basic.html" class="btn btn-label-success d-grid w-100">Your
+                                                                <a href="auth-register-basic.html"
+                                                                    class="btn btn-label-success d-grid w-100">Your
                                                                     Current Plan</a>
                                                             </div>
                                                         </div>
@@ -237,50 +190,70 @@
                                                         <div class="card border-primary border shadow-none">
                                                             <div class="card-body position-relative pt-4">
                                                                 <div class="position-absolute end-0 me-5 top-0 mt-4">
-                                                                    <span class="badge bg-label-primary rounded-1">Popular</span>
+                                                                    <span
+                                                                        class="badge bg-label-primary rounded-1">Popular</span>
                                                                 </div>
                                                                 <div class="my-5 pt-6 text-center">
-                                                                    <img src="../../assets/img/icons/unicons/wallet-round.png" alt="Pro Image"
-                                                                        width="120" />
+                                                                    <img src="../../assets/img/icons/unicons/wallet-round.png"
+                                                                        alt="Pro Image" width="120" />
                                                                 </div>
-                                                                <h4 class="card-title text-center text-capitalize mb-1">
+                                                                <h4
+                                                                    class="card-title text-center text-capitalize mb-1">
                                                                     Standard
                                                                 </h4>
-                                                                <p class="text-center mb-5">For small to medium businesses</p>
+                                                                <p class="text-center mb-5">For small to medium
+                                                                    businesses</p>
                                                                 <div class="text-center h-px-50">
                                                                     <div class="d-flex justify-content-center">
-                                                                        <sup class="h6 text-body pricing-currency mt-2 mb-0 me-1">$</sup>
-                                                                        <h1 class="price-toggle price-yearly text-primary mb-0 d-none">
+                                                                        <sup
+                                                                            class="h6 text-body pricing-currency mt-2 mb-0 me-1">$</sup>
+                                                                        <h1
+                                                                            class="price-toggle price-yearly text-primary mb-0 d-none">
                                                                             7
                                                                         </h1>
-                                                                        <h1 class="price-toggle price-monthly text-primary mb-0">9</h1>
-                                                                        <sub class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
+                                                                        <h1
+                                                                            class="price-toggle price-monthly text-primary mb-0">
+                                                                            9</h1>
+                                                                        <sub
+                                                                            class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
                                                                     </div>
-                                                                    <small class="price-yearly price-yearly-toggle text-muted d-none">USD 480 /
+                                                                    <small
+                                                                        class="price-yearly price-yearly-toggle text-muted d-none">USD
+                                                                        480 /
                                                                         year</small>
                                                                 </div>
 
                                                                 <ul class="list-group my-5 pt-9">
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited responses</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited
+                                                                            responses</span>
                                                                     </li>
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited forms and
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Unlimited
+                                                                            forms and
                                                                             surveys</span>
                                                                     </li>
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Instagram profile page</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Instagram
+                                                                            profile page</span>
                                                                     </li>
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Google Docs integration</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Google
+                                                                            Docs integration</span>
                                                                     </li>
                                                                     <li class="mb-0 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Custom “Thank you” page</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Custom
+                                                                            “Thank you” page</span>
                                                                     </li>
                                                                 </ul>
 
@@ -294,52 +267,72 @@
                                                         <div class="card border rounded shadow-none">
                                                             <div class="card-body pt-6">
                                                                 <div class="mt-3 mb-5 text-center">
-                                                                    <img src="../../assets/img/icons/unicons/briefcase-round.png" alt="Pro Image"
-                                                                        width="120" />
+                                                                    <img src="../../assets/img/icons/unicons/briefcase-round.png"
+                                                                        alt="Pro Image" width="120" />
                                                                 </div>
-                                                                <h4 class="card-title text-center text-capitalize mb-1">
+                                                                <h4
+                                                                    class="card-title text-center text-capitalize mb-1">
                                                                     Enterprise
                                                                 </h4>
-                                                                <p class="text-center mb-5">Solution for big organizations</p>
+                                                                <p class="text-center mb-5">Solution for big
+                                                                    organizations</p>
 
                                                                 <div class="text-center h-px-50">
                                                                     <div class="d-flex justify-content-center">
-                                                                        <sup class="h6 text-body pricing-currency mt-2 mb-0 me-1">$</sup>
-                                                                        <h1 class="price-toggle price-yearly text-primary mb-0 d-none">
+                                                                        <sup
+                                                                            class="h6 text-body pricing-currency mt-2 mb-0 me-1">$</sup>
+                                                                        <h1
+                                                                            class="price-toggle price-yearly text-primary mb-0 d-none">
                                                                             16
                                                                         </h1>
-                                                                        <h1 class="price-toggle price-monthly text-primary mb-0">19</h1>
-                                                                        <sub class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
+                                                                        <h1
+                                                                            class="price-toggle price-monthly text-primary mb-0">
+                                                                            19</h1>
+                                                                        <sub
+                                                                            class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
                                                                     </div>
-                                                                    <small class="price-yearly price-yearly-toggle text-muted d-none">USD 960 /
+                                                                    <small
+                                                                        class="price-yearly price-yearly-toggle text-muted d-none">USD
+                                                                        960 /
                                                                         year</small>
                                                                 </div>
 
                                                                 <ul class="list-group my-5 pt-9">
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>PayPal payments</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>PayPal
+                                                                            payments</span>
                                                                     </li>
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Logic Jumps</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Logic
+                                                                            Jumps</span>
                                                                     </li>
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>File upload with 5GB
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>File
+                                                                            upload with 5GB
                                                                             storage</span>
                                                                     </li>
                                                                     <li class="mb-4 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Custom domain support</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Custom
+                                                                            domain support</span>
                                                                     </li>
                                                                     <li class="mb-0 d-flex align-items-center">
-                                                                        <span class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
-                                                                                class="bx bx-check bx-xs"></i></span><span>Stripe integration</span>
+                                                                        <span
+                                                                            class="badge p-50 w-px-20 h-px-20 rounded-pill bg-label-primary me-2"><i
+                                                                                class="bx bx-check bx-xs"></i></span><span>Stripe
+                                                                            integration</span>
                                                                     </li>
                                                                 </ul>
 
-                                                                <a href="auth-register-basic.html" class="btn btn-label-primary d-grid w-100">Upgrade</a>
+                                                                <a href="auth-register-basic.html"
+                                                                    class="btn btn-label-primary d-grid w-100">Upgrade</a>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -348,7 +341,8 @@
                                         </div>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                            data-bs-dismiss="modal">
                                             Close
                                         </button>
                                         <button type="button" class="btn btn-primary">Save changes</button>
@@ -360,18 +354,7 @@
                     <!-- / Content -->
 
                     <!-- Footer -->
-                    <footer class="content-footer footer bg-footer-theme">
-                        <div class="container-fluid d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
-                            <div class="mb-2 mb-md-0">
-                                ©
-                                <script>
-                                    document.write(new Date().getFullYear());
-                                </script>
-                                , made with ❤️ by
-                                <a href="https://devwandering.com" target="_blank" class="footer-link fw-bolder">Doglex's</a>
-                            </div>
-                        </div>
-                    </footer>
+                        @include('layout.footer')
                     <!-- / Footer -->
 
                     <div class="content-backdrop fade"></div>

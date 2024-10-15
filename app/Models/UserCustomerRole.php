@@ -14,7 +14,11 @@ class UserCustomerRole extends Model
 
     public static function employeeCompany($userId)
     {
-        self::join('customer_companies as cp', 'cp.id', '=', 'user_customer_roles')->where('user_customer_roles.user', $userId)->first();
+        // self::join('customer_companies as cp', 'cp.id', '=', 'user_customer_roles')->where('user_customer_roles.userId', $userId)->first();
+        self::select('user_customer_roles.*', 'cp.*') // Tentukan kolom yang ingin diambil
+            ->join('customer_companies as cp', 'cp.id', '=', 'user_customer_roles.companyId')
+            ->where('user_customer_roles.userId', $userId)
+            ->first();
     }
 
     public function user(): HasOne

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="../assets/"
-    data-template="vertical-menu-template-free">
+<html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default"
+    data-assets-path="../assets/" data-template="vertical-menu-template-free">
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
     <title>{{ env('APP_NAME') }}</title>
 
@@ -16,7 +17,8 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
         rel="stylesheet" />
 
     <!-- Icons. Uncomment required icon fonts -->
@@ -24,7 +26,8 @@
 
     <!-- Core CSS -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}"
+        class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
 
     <!-- Vendors CSS -->
@@ -36,6 +39,17 @@
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
 
+    {{-- SweatAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.1/dist/sweetalert2.all.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.1/dist/sweetalert2.min.css" rel="stylesheet">
+
+    {{-- Custom style --}}
+    <style>
+        .card-custom {
+            box-shadow: rgba(0, 0, 0, 0.15) 0px 5px 15px 0px;
+        }
+    </style>
+
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('assets/js/config.js') }}"></script>
@@ -46,7 +60,7 @@
     {{-- {{ dd(session('userLogged')) }} --}}
     <div class="container-xxl">
         <div class="authentication-wrapper authentication-basic container-p-y">
-            <div class="col-12">
+            <div class="col-10">
                 <!-- Register -->
                 <div class="card">
                     <div class="card-body">
@@ -54,8 +68,8 @@
                         <div class="app-brand justify-content-center">
                             <a class="app-brand-link gap-2">
                                 <span class="app-brand-logo demo">
-                                    <svg width="25" viewBox="0 0 25 42" version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                                    <svg width="25" viewBox="0 0 25 42" version="1.1"
+                                        xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                         <defs>
                                             <path
                                                 d="M13.7918663,0.358365126 L3.39788168,7.44174259 C0.566865006,9.69408886 -0.379795268,12.4788597 0.557900856,15.7960551 C0.68998853,16.2305145 1.09562888,17.7872135 3.12357076,19.2293357 C3.8146334,19.7207684 5.32369333,20.3834223 7.65075054,21.2172976 L7.59773219,21.2525164 L2.63468769,24.5493413 C0.445452254,26.3002124 0.0884951797,28.5083815 1.56381646,31.1738486 C2.83770406,32.8170431 5.20850219,33.2640127 7.09180128,32.5391577 C8.347334,32.0559211 11.4559176,30.0011079 16.4175519,26.3747182 C18.0338572,24.4997857 18.6973423,22.4544883 18.4080071,20.2388261 C17.963753,17.5346866 16.1776345,15.5799961 13.0496516,14.3747546 L10.9194936,13.4715819 L18.6192054,7.984237 L13.7918663,0.358365126 Z"
@@ -70,7 +84,8 @@
                                                 d="M20.6,7.13333333 L25.6,13.8 C26.2627417,14.6836556 26.0836556,15.9372583 25.2,16.6 C24.8538077,16.8596443 24.4327404,17 24,17 L14,17 C12.8954305,17 12,16.1045695 12,15 C12,14.5672596 12.1403557,14.1461923 12.4,13.8 L17.4,7.13333333 C18.0627417,6.24967773 19.3163444,6.07059163 20.2,6.73333333 C20.3516113,6.84704183 20.4862915,6.981722 20.6,7.13333333 Z"
                                                 id="path-5"></path>
                                         </defs>
-                                        <g id="g-app-brand" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <g id="g-app-brand" stroke="none" stroke-width="1" fill="none"
+                                            fill-rule="evenodd">
                                             <g id="Brand-Logo" transform="translate(-27.000000, -15.000000)">
                                                 <g id="Icon" transform="translate(27.000000, 15.000000)">
                                                     <g id="Mask" transform="translate(0.000000, 8.000000)">
@@ -122,6 +137,14 @@
     <!-- Main JS -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
 
+    <script>
+        Swal.fire({
+            title: "Success Login !!",
+            text: "You have been successfully logged in.",
+            icon: "success",
+        });
+    </script>
+
     <!-- Page JS -->
     <script>
         $(function() {
@@ -134,12 +157,13 @@
                     response.data.forEach(item => {
                         console.log(item)
                         const card = `
-                               <div class="card mb-4 col-12 col-md-4">
+                                <div class="card mb-4 col-11 mt-4 col-md-3 card-custom">
                                     <img
-                                        src="../cp/${item.picture}"
+                                        src="/assets/img/blankImage/${item.picture}"
                                         class="card-img-top w-full"
-                                        style="max-height:150px; object-fit: cover;"
+                                        style="width: 50%;height: 50%; object-fit: cover; margin-left: 80px;"
                                         alt="${item.name}"
+                                        onerror="this.src='/assets/img/blankImage/default-picture.png'"
                                     />
                                     <div class="card-body">
                                         <h5 class="card-title">${item.name}</h5>
@@ -148,11 +172,11 @@
                                         <strong>Location:</strong> ${item.address.city}, ${item.address.province}
                                         </p>
                                     </div>
-                                    <div class="card-footer">
+                                    <div class="card-footer text-end">
                                         <form action="{{ route('select-customer-company') }}" method="post">
                                             @csrf
                                             <input type="hidden" name="id" value="${item.id}">
-                                            <button class="btn btn-success">Apply</button>
+                                            <button class="btn btn-primary">Apply</button>
                                         </form>
                                     </div>
                                 </div>`;

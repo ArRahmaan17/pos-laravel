@@ -144,4 +144,9 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/validate-discount-code/{id?}', [CustomerProductTransactionController::class, 'validateDiscountCode'])->name('validate-discount-code');
         });
     });
+    Route::name('test')->as('test.')->prefix('test')->group(function () {
+        Route::get('/', function () {
+            return view('test.index');
+        })->name('index')->middleware([checkPageAuthorization::class]);
+    });
 });
