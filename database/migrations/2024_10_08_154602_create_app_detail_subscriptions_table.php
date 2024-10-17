@@ -20,7 +20,6 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->string('planFeature')->nullable(false);
-            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

@@ -22,7 +22,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Role</th>
+                                    <th scope="col">Subscription</th>
                                     <th scope="col">Description</th>
                                     <th scope="col">Price/month</th>
                                     <th scope="col">Action</th>
@@ -48,15 +48,64 @@
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
-                            <div class="col mb-3">
-                                <label for="name" class="form-label">Role Name</label>
-                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Role Name" />
+                            <div class="col mb-0">
+                                <label for="name" class="form-label">Subscription Name</label>
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Subscription Name" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-0">
-                                <label for="description" class="form-label">Role Description</label>
-                                <textarea name="description" placeholder="Enter Description Role" class="form-control" style="resize:none" id="description" cols="10" rows="3"></textarea>
+                                <label for="description" class="form-label">Subscription Description</label>
+                                <textarea name="description" placeholder="Enter Description Subscription" class="form-control" style="resize:none" id="description" cols="10"
+                                    rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col mb-0">
+                                <label for="price" class="form-label">Subscription Price</label>
+                                <input type="text" id="price" name="price" class="form-control" placeholder="Enter Subscription Price" />
+                            </div>
+                        </div>
+                        <div class="row align-items-center align-self-middle px-3">
+                            <label for="planFeature" class="form-label col-10 mb-0">Plan Feature</label>
+                            <button type="button" class="btn btn-warning btn-sm col-2" onclick="repeaterFeature()">Add Feture</button>
+                        </div>
+                        <div class="row container" id="container-subscription-plan">
+                            <div class="col-12 mb-1">
+                                <label for="planFeatureInit1" class="form-label">Subscription Feature</label>
+                                <div class="row">
+                                    <div class="col-10">
+                                        <input type="text" id="planFeatureInit1" name="planFeature[]" class="form-control"
+                                            placeholder="Enter Feature Plan" />
+                                    </div>
+                                    <div class="col-2">
+                                        <button type="button" class="btn btn-danger delete-plan">Hapus</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-1">
+                                <label for="planFeatureInit2" class="form-label">Subscription Feature</label>
+                                <div class="row">
+                                    <div class="col-10">
+                                        <input type="text" id="planFeatureInit2" name="planFeature[]" class="form-control"
+                                            placeholder="Enter Feature Plan" />
+                                    </div>
+                                    <div class="col-2">
+                                        <button type="button" class="btn btn-danger delete-plan">Hapus</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-1">
+                                <label for="planFeatureInit3" class="form-label">Subscription Feature</label>
+                                <div class="row">
+                                    <div class="col-10">
+                                        <input type="text" id="planFeatureInit3" name="planFeature[]" class="form-control"
+                                            placeholder="Enter Feature Plan" />
+                                    </div>
+                                    <div class="col-2">
+                                        <button type="button" class="btn btn-danger delete-plan">Hapus</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -80,6 +129,29 @@
     <script>
         window.datatableAppSubscription = null;
         window.state = 'add';
+
+        function repeaterFeature() {
+            let index = $('#container-subscription-plan').find('.col-12.mb-1').length + 1;
+            $('#container-subscription-plan').append(`<div class="col-12 mb-1">
+                    <label for="planFeatureAdd${index}" class="form-label">Subscription Feature</label>
+                    <div class="row">
+                        <div class="col-10">
+                            <input type="text" id="planFeatureAdd${index}" name="planFeature[]" class="form-control"
+                                placeholder="Enter Feature Plan" />
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-danger delete-plan">Hapus</button>
+                        </div>
+                    </div>
+                </div>`);
+            deletePlanFeature();
+        }
+
+        function deletePlanFeature() {
+            $('.delete-plan').click(function() {
+                $(this).parents('.col-12.mb-1').remove();
+            });
+        }
 
         function actionData() {
             $('.edit').click(function() {
@@ -105,9 +177,20 @@
                     success: function(response) {
                         $('#modal-app-subscription').find("form")
                             .find('input, textarea').map(function(index, element) {
-                                if (response.data[element.name]) {
-                                    $(`[name=${element.name}]`).val(response.data[element
-                                        .name])
+                                if (element.name != '_token') {
+                                    if (element.name == 'planFeature[]') {
+                                        response.data.plan_feature.forEach((data, index) => {
+                                            if (index > 2) {
+                                                repeaterFeature();
+                                               $($(`input[name="${element.name}"]`)[index]).val(data.planFeature)
+                                            } else {
+                                                $($(`input[name="${element.name}"]`)[index]).val(data.planFeature)
+                                            }
+                                        });
+                                    } else if (response.data[element.name]) {
+                                        $(`[name=${element.name}]`).val(response.data[element
+                                            .name])
+                                    }
                                 }
                             });
                     },
@@ -193,7 +276,7 @@
         function detail_table(d) {
             let html = ``;
             d.plans.forEach(element => {
-            html += `<li class="list-group-item d-flex align-items-center">
+                html += `<li class="list-group-item d-flex align-items-center">
                         <i class='bx bxs-check-circle me-3 text-success' ></i>
                         ${element.planFeature}
                     </li>`
@@ -206,6 +289,7 @@
                 </div>`
             );
         }
+
         $(function() {
             window.datatableAppSubscription = $("#table-app-subscription").DataTable({
                 ajax: "{{ route('dev.app-subscription.data-table') }}",
@@ -246,7 +330,7 @@
                     orderable: true,
                     searchable: true,
                     render: $.fn.dataTable.render.number('.', ',', 2, 'Rp.')
-                },{
+                }, {
                     target: 4,
                     name: 'action',
                     data: 'action',
@@ -354,6 +438,7 @@
                 $('#modal-app-subscription .is-invalid').removeClass('is-invalid')
                 $('#table-app-subscription tbody').find('tr').removeClass('selected');
             });
+            deletePlanFeature();
         });
     </script>
 @endpush

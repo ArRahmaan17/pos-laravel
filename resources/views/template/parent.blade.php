@@ -113,8 +113,18 @@
                             </div>
                         </div>
 
-                        <ul class="navbar-nav flex-row align-items-center ms-auto">
+                        <ul class="navbar-nav flex-row justify-content-between align-items-center ms-auto">
                             <!-- User -->
+                            @if (env('APP_SUBS') == 'ON')
+                                <li class="nav-item me-4">
+                                    <div class="">
+                                        <button data-bs-toggle="modal" data-bs-target="#AppSubscriptionModal"
+                                            class="{{ isset(session('userLogged')['subscription']['name']) ? 'btn btn-success' : 'btn btn-warning' }} buy-now">
+                                            {{ session('userLogged')['subscription']['name'] ?? 'Choose Subscription' }}
+                                        </button>
+                                    </div>
+                                </li>
+                            @endif
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                                     <div class="avatar avatar-online">
@@ -150,7 +160,6 @@
                                     </li>
                                 </ul>
                             </li>
-                            <!--/ User -->
                         </ul>
                     </div>
                 </nav>
@@ -162,20 +171,23 @@
                     <!-- Content -->
                     <div class="container-fluid flex-grow-1 container-p-y">
                         @yield('content')
-
-                        <div class="modal fade" id="AppSubscriptionModal" tabindex="-1" aria-modal="true" role="dialog">
+                        <div class="modal fade" id="AppSubscriptionModal" tabindex="-1" aria-modal="true" role="dialog" data-bs-backdrop="static"
+                            data-bs-keyboard="false">
                             <div class="modal-dialog modal-xl" role="document">
                                 <div class="modal-content">
+                                    <div class="modal-header m-0">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
                                     <div class="modal-body">
                                         <div class="pb-4 rounded-top">
-                                            <div class="container-fluid py-6 px-xl-4 px-4">
+                                            <div class="container-fluid py-6 px-xl-4 px-auto">
                                                 <h3 class="text-center mb-2 mt-4">Pricing Plans</h3>
                                                 <p class="text-center mb-0">
                                                     Choose the best plan to fit your needs.
                                                 </p>
                                                 <div class="d-flex align-items-center justify-content-center flex-wrap gap-2 pt-6 pb-6">
                                                     <label class="form-check form-switch ms-sm-6 ps-sm-6 me-0">
-                                                        <input type="checkbox" class="form-check-input price-duration-toggler" checked="" />
+                                                        <input type="checkbox" class="form-check-input price-duration-toggler" />
                                                         <span class="form-check-label fs-6 text-body">Annually</span>
                                                     </label>
                                                 </div>
@@ -186,9 +198,11 @@
                                                         <div class="col-12 col-lg-4 mb-md-0">
                                                             <div class="card border-primary border shadow-none">
                                                                 <div class="card-body position-relative pt-4">
-                                                                    <div class="position-absolute end-0 me-5 top-0 mt-4">
-                                                                        <span class="badge bg-label-primary rounded-1">Popular</span>
-                                                                    </div>
+                                                                    @if (isset(session('userLogged')['subscription']['name']))
+                                                                        <div class="position-absolute end-0 me-5 top-0 mt-4">
+                                                                            <span class="badge bg-label-primary rounded-1">Popular</span>
+                                                                        </div>
+                                                                    @endif
                                                                     <div class="my-5 pt-6 text-center">
                                                                         <img src="../../assets/img/icons/unicons/wallet-round.png" alt="Pro Image"
                                                                             width="120" />
@@ -207,14 +221,13 @@
                                                                                 {{ numberFormat($subscription->price) }}</h1>
                                                                             <sub class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
                                                                         </div>
-                                                                        <small class="price-yearly price-yearly-toggle text-muted d-none">USD
+                                                                        <small class="price-yearly price-yearly-toggle text-muted d-none">Rp.
                                                                             {{ numberFormat($subscription->price * 12 - ($subscription->price * 5) / 100) }}
-                                                                            /
-                                                                            year</small>
+                                                                            / year</small>
                                                                     </div>
 
                                                                     <ul class="list-group my-5 pt-9">
-                                                                        @foreach ($subscription->plans as $plan)
+                                                                        @foreach ($subscription->planFeature as $plan)
                                                                             <li class="mb-4 d-flex align-items-center">
                                                                                 <span class="badge w-px-30 h-px-30 rounded-pill bg-label-primary me-2"><i
                                                                                         class="bx bx-check bx-xs"></i></span>
@@ -223,11 +236,119 @@
                                                                         @endforeach
                                                                     </ul>
 
-                                                                    <a href="auth-register-basic.html" class="btn btn-primary d-grid w-100">Upgrade</a>
+                                                                    <button type="button" data-subscription="{{ $subscription->id }}"
+                                                                        class="btn btn-primary d-grid w-100 buy-now process-subscription">{{ isset(session('userLogged')['subscription']['name']) ? 'Current Plan' : 'Upgrade Plan' }}</button>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="SubscriptionProcessModal" tabindex="-1" aria-modal="true" role="dialog"
+                            data-bs-backdrop="static" data-bs-keyboard="false">
+                            <div class="modal-dialog modal-xl" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header m-0">
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-lg-7 card-body border-end p-md-8">
+                                                <h4 class="mb-2">Checkout</h4>
+                                                <div class="row g-5 py-3">
+                                                    <div class="col-md col-lg-12 col-xl-6">
+                                                        <div class="form-check border border-3 border-secondary rounded">
+                                                            <label
+                                                                class="form-check-label d-flex gap-4 align-items-center px-3"
+                                                                for="customPaymentMethod1">
+                                                                <input name="payment-method" class="form-check-input" type="radio"
+                                                                    value="credit-card" id="customPaymentMethod1">
+                                                                <span class="col-11 d-flex justify-content-start align-items-center">
+                                                                    <i class='bx bx-qr-scan h1 pt-3'></i>
+                                                                    <span class="ms-4 fw-bold text-heading">Qris</span>
+                                                                </span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <h4 class="mb-6">Billing Details</h4>
+                                                <div class="row g-6">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label" for="billings-email">Email Address</label>
+                                                        <input type="text" id="billings-email" class="form-control"
+                                                            placeholder="john.doe@gmail.com">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label" for="billings-password">Password</label>
+                                                        <input type="password" id="billings-password" class="form-control" placeholder="Password">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label" for="billings-country">Country</label>
+                                                        <select id="billings-country" class="form-select" data-allow-clear="true">
+                                                            <option value="">Select</option>
+                                                            <option value="Australia">Australia</option>
+                                                            <option value="Brazil">Brazil</option>
+                                                            <option value="Canada">Canada</option>
+                                                            <option value="China">China</option>
+                                                            <option value="France">France</option>
+                                                            <option value="Germany">Germany</option>
+                                                            <option value="India">India</option>
+                                                            <option value="Turkey">Turkey</option>
+                                                            <option value="Ukraine">Ukraine</option>
+                                                            <option value="United Arab Emirates">United Arab Emirates</option>
+                                                            <option value="United Kingdom">United Kingdom</option>
+                                                            <option value="United States">United States</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label" for="billings-zip">Billing Zip / Postal Code</label>
+                                                        <input type="text" id="billings-zip" class="form-control billings-zip-code"
+                                                            placeholder="Zip / Postal Code">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 card-body p-md-8">
+                                                <h4 class="mb-2">Order Summary</h4>
+                                                <p class="mb-8">It can help you manage and service orders before,<br> during and after fulfilment.</p>
+                                                <div class="bg-lighter p-3 rounded">
+                                                    <p>A simple start for everyone</p>
+                                                    <div class="d-flex align-items-center mb-4" id="container-subscription">
+                                                        <h1 class="text-heading mb-0">Rp. 59.99</h1>
+                                                        <sub class="h6 text-body mb-n3">/month</sub>
+                                                    </div>
+                                                    <div class="d-grid">
+                                                        <button type="button" data-bs-target="#AppSubscriptionModal" data-bs-toggle="modal"
+                                                            class="btn btn-primary">Change Plan</button>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-5">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <p class="mb-0">Subtotal</p>
+                                                        <h6 class="mb-0">$85.99</h6>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center mt-2">
+                                                        <p class="mb-0">Tax</p>
+                                                        <h6 class="mb-0">$4.99</h6>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="d-flex justify-content-between align-items-center mt-4 pb-1">
+                                                        <p class="mb-0">Total</p>
+                                                        <h6 class="mb-0">$90.98</h6>
+                                                    </div>
+                                                    <div class="d-grid mt-5">
+                                                        <button class="btn btn-success">
+                                                            <span class="me-2">Proceed with Payment</span>
+                                                            <i class="bx bx-right-arrow-alt scaleX-n1-rtl"></i>
+                                                        </button>
+                                                    </div>
+
+                                                    <p class="mt-8">By continuing, you accept to our Terms of Services and Privacy Policy. Please note
+                                                        that payments are non-refundable.</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -296,6 +417,8 @@
         </script>
     @endif
     <script>
+        window.process_subscription = null;
+
         function serializeObject(node) {
             var o = {};
             var a = node.serializeArray();
@@ -396,6 +519,28 @@
                     [5, 10, 25, 50, "All"]
                 ],
                 "responsive": true
+            });
+            $('.process-subscription').click(function() {
+                window.process_subscription = {id: $(this).data('subscription'), year: $('.price-duration-toggler').prop('checked')};
+                $('#AppSubscriptionModal').modal('hide');
+                $('#SubscriptionProcessModal').modal('show');
+            });
+            $('#SubscriptionProcessModal').on('shown.bs.modal', function() {
+                if (window.process_subscription == null) {
+                    $(this).modal('hide')
+                }else{
+                $.ajax({
+                    type: "get",
+                    url: `{{route('dev.app-subscription.show')}}/${window.process_subscription.id}`,
+                    dataType: "json",
+                    success: function (response) {
+                        
+                    }
+                });
+}
+            });
+            $('#SubscriptionProcessModal').on('hidden.bs.modal', function() {
+                window.process_subscription == null;
             });
         });
     </script>

@@ -11,7 +11,7 @@ class AppSubscription extends Model
     use HasFactory;
     protected $fillable = ['name', 'description', 'price'];
 
-    public function plans(): HasMany
+    public function planFeature(): HasMany
     {
         return $this->hasMany(AppDetailSubscription::class, 'subscriptionId', 'id');
     }
