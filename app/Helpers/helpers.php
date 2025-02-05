@@ -40,34 +40,17 @@ if (! function_exists('lastCompanyOrderCode')) {
         $data = CustomerProductTransaction::where('companyId', session('userLogged')['company']['id'])
             ->orderBy('id', 'DESC')
             ->first();
-<<<<<<< HEAD
         $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
         if ($data && explode(
             buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
             $data->orderCode
         )) {
             $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(
-=======
-        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
-        if ($data && explode(
-            buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
-            $data->orderCode
-        )) {
-            $lastOrder = buatSingkatan(
-                session('userLogged')['company']['name']
-            ) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                 intval(
                     implode(
                         '',
                         explode(
-<<<<<<< HEAD
                             buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
-=======
-                            buatSingkatan(
-                                session('userLogged')['company']['name']
-                            ) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                             $data->orderCode
                         )
                     )
@@ -337,7 +320,6 @@ function getSql($model)
     return $sql;
 }
 
-<<<<<<< HEAD
     // Check if the number starts with the country code and remove it
     if (strpos($cleaned, '62') === 0) {
         $cleaned = substr($cleaned, 2);
@@ -358,12 +340,6 @@ if (! function_exists('checkPermissionMenu')) {
     function checkPermissionMenu($id, $role)
     {
         return DB::table('customer_role_accessibilities')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false;
-=======
-if (! function_exists('checkPermissionMenu')) {
-    function checkPermissionMenu($id, $role)
-    {
-        return (DB::table('customer_roles')->where('id', $role)->count()) ? (DB::table('customer_role_accessibilities')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false) : (DB::table('role_menus')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false);
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
     }
 }
 if (! function_exists('buildMenu')) {
