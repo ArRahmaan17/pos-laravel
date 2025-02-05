@@ -31,47 +31,60 @@ class CustomerRoleAccessibilityController extends Controller
         if (getRole() === 'Developer') {
             $where = [['customer_roles.userId', '<>', 0]];
         }
-        $totalData = CustomerRole::select('customer_roles.*')
+        $totalData =  CustomerRole::with('role_menus')
+            ->select('customer_roles.name', 'customer_roles.id')
+            ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
+            ->join('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
+            ->join('customer_companies as cc', 'ucr.companyId', '=', 'cc.id')
             ->where($where)
             ->orderBy('customer_roles.id', 'asc')
-            ->groupBy('customer_roles.id')
+            ->groupBy('customer_roles.name', 'customer_roles.id')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerRole::with('role_menus')->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
-                ->select('customer_roles.*');
+            $assets = CustomerRole::with('role_menus')
+                ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
+                ->join('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
+                ->join('customer_companies as cc', 'ucr.companyId', '=', 'cc.id')
+                ->select('customer_roles.name', 'customer_roles.id');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $assets = $assets->where($where)->groupBy('customer_roles.id')->get();
+            $assets = $assets->where($where)->groupBy('customer_roles.name', 'customer_roles.id')->get();
         } else {
-            $assets = CustomerRole::with('role_menus')->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
-                ->select('customer_roles.*')
-                ->where('customer_roles.name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('customer_roles.description', 'like', '%'.$request['search']['value'].'%');
+            $assets = CustomerRole::with('role_menus')
+                ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
+                ->join('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
+                ->join('customer_companies as cc', 'ucr.companyId', '=', 'cc.id')
+                ->select('customer_roles.name', 'customer_roles.id')
+                ->where('customer_roles.name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('customer_roles.description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->where($where)->groupBy('customer_roles.id')->get();
+            $assets = $assets->where($where)->groupBy('customer_roles.name', 'customer_roles.id')->get();
 
-            $totalFiltered = CustomerRole::select('customer_roles.*')
-                ->where('customer_roles.name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('customer_roles.description', 'like', '%'.$request['search']['value'].'%');
+            $totalFiltered = CustomerRole::select('customer_roles.name', 'customer_roles.id')
+                ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
+                ->join('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
+                ->join('customer_companies as cc', 'ucr.companyId', '=', 'cc.id')
+                ->where('customer_roles.name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('customer_roles.description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->where($where)->groupBy('customer_roles.id')->count();
+            $totalFiltered = $totalFiltered->where($where)->groupBy('customer_roles.name', 'customer_roles.id')->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
@@ -79,7 +92,7 @@ class CustomerRoleAccessibilityController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['menu'] = $item->role_menus;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role-accessibility='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-role-accessibility='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role-accessibility='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-role-accessibility='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [

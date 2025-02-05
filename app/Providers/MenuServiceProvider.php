@@ -24,13 +24,14 @@ class MenuServiceProvider extends ServiceProvider
     {
         $sidebarAppMenu = AppMenu::where('place', 0)->get()->setHidden([])->toArray();
         $profileAppMenu = AppMenu::where('place', 1)->get()->setHidden([])->toArray();
-        $sidebarAppMenu = buildTree($sidebarAppMenu);
-        $profileAppMenu = buildTree($profileAppMenu);
+        $sidebarAppMenu = buildTree($sidebarAppMenu, 0);
+        $profileAppMenu = buildTree($profileAppMenu, 0);
         $subscriptions = AppSubscription::all();
         // $sidebarAppMenu = [];
         // $profileAppMenu = [];
-        // $sidebarAppMenu = buildTree($sidebarAppMenu);
-        // $profileAppMenu = buildTree($profileAppMenu);
+        // $subscriptions = [];
+        $sidebarAppMenu = buildTree($sidebarAppMenu);
+        $profileAppMenu = buildTree($profileAppMenu);
         View::composer('*', function ($view) use ($sidebarAppMenu, $profileAppMenu, $subscriptions) {
             $view->with([
                 'sidebarAppMenu' => $sidebarAppMenu,

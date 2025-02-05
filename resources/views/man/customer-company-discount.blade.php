@@ -72,7 +72,7 @@
                         <div class="mb-3">
                             <label for="code" class="form-label">Code *</label>
                             <input type="text" id="code" name="code" class="form-control discount-code"
-                                placeholder="{{ buatSingkatan(session('userLogged')['company']['name'] ?? 'Doglex Code') }}DISCOUNT">
+                                placeholder="{{ buatSingkatan(session('userLogged')['company']['name']) }}DISCOUNT">
                             <div class="invalid-feedback">test</div>
                         </div>
                         <div class="mb-3">
@@ -444,7 +444,7 @@
             });
             $('.discount-code')
                 .inputmask(
-                    `{{ buatSingkatan(session('userLogged')['company']['name'] ?? 'Doglex Code') }}A{1,30}`);
+                    `{{ buatSingkatan(session('userLogged')['company']['name']) }}A{1,30}`);
             $('.discount-percentage').inputmask({
                 regex: '^([1-9]%|[1-9][0-9]%|100%)$',
             });

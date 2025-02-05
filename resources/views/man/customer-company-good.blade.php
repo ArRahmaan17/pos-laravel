@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
 @endpush
 @section('content')
-    <div class="card-body">
+    <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex align-middle">
@@ -12,8 +12,8 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-company-good" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-company-good">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-success" id="add-customer-company-good" data-bs-toggle="modal" data-bs-target="#modal-customer-company-good">Add
+                            <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -38,8 +38,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-company-good" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
+    <div class="modal fade" id="modal-customer-company-good" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -58,35 +57,29 @@
                                     <input type="radio" class="btn-check" name="status" value="archive" id="archive-btn">
                                     <label class="btn btn-outline-danger" for="archive-btn"><i class='bx bx-archive-in'></i>
                                         Archive</label>
-                                    <input type="radio" class="btn-check" name="status" value="draft" id="draft-btn"
-                                        checked="">
-                                    <label class="btn btn-outline-warning" for="draft-btn"><i
-                                            class='bx bx-hourglass'></i>Draft</label>
+                                    <input type="radio" class="btn-check" name="status" value="draft" id="draft-btn" checked="">
+                                    <label class="btn btn-outline-warning" for="draft-btn"><i class='bx bx-hourglass'></i>Draft</label>
                                     <input type="radio" class="btn-check" name="status" value="publish" id="publish-btn">
-                                    <label class="btn btn-outline-success" for="publish-btn"><i
-                                            class='bx bxs-slideshow'></i>Publish</label>
+                                    <label class="btn btn-outline-success" for="publish-btn"><i class='bx bxs-slideshow'></i>Publish</label>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" id="name" name="name" class="form-control"
-                                    placeholder="Enter Name" />
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Name" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="stock" class="form-label">Stock</label>
-                                <input type="text" id="stock" name="stock" class="form-control number"
-                                    placeholder="Enter Stock" />
+                                <input type="text" id="stock" name="stock" class="form-control number" placeholder="Enter Stock" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="price" class="form-label">Price</label>
-                                <input type="text" id="price" name="price" class="form-control price"
-                                    placeholder="Enter Price" />
+                                <input type="text" id="price" name="price" class="form-control price" placeholder="Enter Price" />
                             </div>
                         </div>
                         <div class="row">
@@ -104,14 +97,14 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                    <img src="{{ asset('customer-product/default-product.webp') }}" alt="user-avatar"
-                                        class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
+                                    <img src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded" height="100"
+                                        width="100" id="uploadedAvatar" />
                                     <div class="button-wrapper">
                                         <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
                                             <span class="d-none d-sm-block">Upload new photo</span>
                                             <i class="bx bx-upload d-block d-sm-none"></i>
-                                            <input type="file" id="upload" name="picture"
-                                                class="account-file-input" hidden accept="image/png, image/jpeg" />
+                                            <input type="file" id="upload" name="picture" class="account-file-input" hidden
+                                                accept="image/png, image/jpeg" />
                                         </label>
                                         <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
                                             <i class="bx bx-reset d-block d-sm-none"></i>
@@ -438,7 +431,7 @@
                 $('#edit-customer-company-good').addClass('d-none');
                 $('#modal-customer-company-good .is-invalid').removeClass('is-invalid')
                 $('#table-customer-company-good tbody').find('tr').removeClass('selected');
-                $('#uploadedAvatar').prop('src', `{{ asset('customer-product/default-product.webp') }}`);
+                $('#uploadedAvatar').prop('src', `{{ asset('customer-product/default-product.png') }}`);
             });
             $('#modal-customer-company-good').on('shown.bs.modal', function() {
                 setTimeout(() => {
