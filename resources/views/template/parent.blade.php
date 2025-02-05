@@ -106,9 +106,19 @@
 
                     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                         <div class="navbar-nav align-items-center">
+<<<<<<< HEAD
                             <div class="nav-item d-flex align-items-center text-capitalize">
                                 <i class='bx bxs-user-account'></i> &nbsp;
                                 <span class="d-none d-sm-block col-1 col-sm-10 col-md-12 text-truncate">{!! session('userLogged')['user']['name'] !!}</span>
+=======
+                            <div class="nav-item d-flex align-items-center text-truncate d-none d-md-block">
+                                <i class='bx bxs-user-account'></i>
+                                {!! ' Logged in&nbsp;<i>' . session('userLogged')['user']['name'] . '</i> &nbsp;as&nbsp;<i>' . session('userLogged')['role']['name'] . '</i>' ?? '' !!}
+                            </div>
+                            <div class="nav-item d-block align-items-center align-middle d-md-none">
+                                <i class='bx bxs-user-account'></i>
+                                {!! session('userLogged')['user']['name'] !!}
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                             </div>
                         </div>
 
@@ -118,9 +128,18 @@
                                 <li class="nav-item me-4">
                                     <div class="">
                                         <button data-bs-toggle="modal" data-bs-target="#AppSubscriptionModal"
+<<<<<<< HEAD
                                             class="{{ isset(session('userLogged')['subscription']['name']) ? 'btn btn-success' : 'btn btn-warning' }} buy-now">
                                             {!! session('userLogged')['subscription']['name'] ??
                                                 '<i class="bx bxs-layer-plus mb-1" ></i><span class="d-none d-md-inline-block">Choose Subscription</span>' !!}
+=======
+                                            class="{{ isset(session('userLogged')['subscription']['name']) ? 'btn btn-success' : 'btn btn-warning' }} buy-now d-none d-md-inline-block">
+                                            {{ session('userLogged')['subscription']['name'] ?? 'Choose Subscription' }}
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
+                                        </button>
+                                        <button data-bs-toggle="modal" title="Choose Subscription" data-bs-target="#AppSubscriptionModal"
+                                            class="{{ isset(session('userLogged')['subscription']['name']) ? 'btn btn-success' : 'btn btn-warning' }} buy-now d-md-none d-inline-block">
+                                            {!!  (!empty(session('userLogged')['subscription']['name'])) ?"<i class='bx bx-check-double' ></i>" : "<i class='mb-1 bx bxs-coupon'></i>" !!}
                                         </button>
                                     </div>
                                 </li>
@@ -373,9 +392,15 @@
 
                     <!-- Footer -->
                     <footer class="content-footer footer bg-footer-theme">
+<<<<<<< HEAD
                         <div class="d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
                             <div class="mb-2 ms-4">
                                 ©
+=======
+                        <div class="container-fluid d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+                            <div class="mb-2 mb-md-0">
+                                © 2024 -
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                                 <script>
                                     document.write(new Date().getFullYear());
                                 </script>
@@ -512,14 +537,22 @@
         let timeoutId;
         return function(...args) {
             if (timeoutId) {
+<<<<<<< HEAD
                 clearTimeout(timeoutId);
             }
             timeoutId = setTimeout(() => {
                 func.apply(this, args);
+=======
+                clearTimeout(timeoutId); // Hapus timeout sebelumnya
+            }
+            timeoutId = setTimeout(() => {
+                func.apply(this, args); // Panggil fungsi dengan argumen
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
             }, delay);
         };
     }
 
+<<<<<<< HEAD
     function dataToOption(allData, attr = false) {
         let html = "<option value=''>Mohon Pilih</option>";
 
@@ -536,6 +569,8 @@
     }
 
 
+=======
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
     function serializeFiles(node) {
         let form = $(node),
             formData = new FormData(),

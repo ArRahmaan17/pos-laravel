@@ -78,6 +78,8 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="alert alert-info">The user account created here will use the default password: <b>{{ defaultPassword() }}</b> please note the
+                        username and password if you have more than 1 companies in our application</div>
                     <form action="#" id="form-customer-user">
                         @csrf
                         <input type="hidden" name="id">
@@ -118,7 +120,7 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="roleId" value="{{ session('userLogged')['user']['id'] }}">
+                                    <input type="hidden" name="roleId" value="{{ session('userLogged')['company']['userId'] }}">
                                 @endif
                             </div>
                         </div>
@@ -159,25 +161,38 @@
                                         @endforeach
                                     </select>
                                 @else
+<<<<<<< HEAD
                                     <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['user']['id'] }}">
+=======
+                                    <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['company']['userId'] }}">
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="customerRoleIdLink" class="form-label">Customer User Role</label>
-                                <select class="form-control select2" name="customerRoleIdLink" id="customerRoleIdLink">
-                                    <option value="">Select Role</option>
-                                    @foreach ($customer_roles as $role)
-                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
-                                </select>
+                                @if (getRole() === 'Developer')
+                                    <label for="customerRoleIdLink" class="form-label">Customer User Role</label>
+                                    <select class="form-control select2" name="customerRoleIdLink" id="customerRoleIdLink">
+                                        <option value="">Select Role</option>
+                                        @foreach ($customer_roles as $role)
+                                            <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['role']['id'] }}">
+                                @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="time_limit" class="form-label">LifeTime Link</label>
+<<<<<<< HEAD
                                 <input type="text" id="time_limit" name="time_limit" class="form-control" placeholder="(Minutes/Hours/Days)" />
+=======
+                                <input type="text" id="time_limit" name="time_limit" placeholder="60 minutes / 1 hours / 1 days" class="form-control"
+                                    placeholder="(Minutes/Hours/Days)" />
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                             </div>
                         </div>
                         <div id="container-link" class="row px-3 d-none">
@@ -192,7 +207,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" id="create-registration-link" class="btn btn-primary">Generate</button>
+                    <button type="button" id="create-registration-link" class="btn btn-primary"><i class='bx bx-key'></i>Generate</button>
                 </div>
             </div>
         </div>
@@ -204,7 +219,7 @@
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
-        window.datatableAppRole = null;
+        window.dataTableAppRole = null;
         window.state = 'add';
 
         function actionData() {
@@ -225,12 +240,12 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-user");
                 $("#edit-customer-user").data("customer-user", idAppRole);
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-user tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
 
                 $('#modal-customer-user').modal('show');
                 $('#modal-customer-user').find('.modal-title').html(`Edit @yield('title')`);
@@ -276,12 +291,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-user tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idAppRole = $(this).data("customer-user");
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -317,7 +332,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppRole.ajax.reload()
+                                    window.dataTableAppRole.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -342,7 +357,7 @@
         }
 
         $(function() {
-            window.datatableAppRole = $("#table-customer-user").DataTable({
+            window.dataTableAppRole = $("#table-customer-user").DataTable({
                 ajax: "{{ route('man.customer-user.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -396,7 +411,7 @@
                     }
                 }]
             });
-            window.datatableAppRole.on('draw.dt', function() {
+            window.dataTableAppRole.on('draw.dt', function() {
                 actionData();
             });
             $('#save-customer-user').click(function() {
@@ -416,7 +431,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload();
+                        window.dataTableAppRole.ajax.reload();
 
                     },
                     error: function(error) {
@@ -485,7 +500,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload()
+                        window.dataTableAppRole.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-customer-user .is-invalid').removeClass('is-invalid')

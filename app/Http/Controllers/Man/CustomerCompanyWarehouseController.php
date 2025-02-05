@@ -17,17 +17,12 @@ class CustomerCompanyWarehouseController extends Controller
      */
     public function index()
     {
-        $users = User::user_manager();
-
-        return view('man.customer-company-warehouse', compact('users'));
+        return view('man.customer-company-warehouse');
     }
 
     public function dataTable(Request $request)
     {
         $where = [['companyId', '=', session('userLogged')['company']['id']]];
-        if (getRole() === 'Developer') {
-            $where = [['companyId', '<>', 0]];
-        }
         $totalData = CustomerCompanyWarehouse::with(['racks'])->where($where)->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
@@ -39,16 +34,16 @@ class CustomerCompanyWarehouseController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             $assets = $assets->where($where)->get();
         } else {
             $assets = CustomerCompanyWarehouse::with(['racks'])->select('*')
-                ->where('name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
+                ->where('name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -57,11 +52,11 @@ class CustomerCompanyWarehouseController extends Controller
             $assets = $assets->where($where)->get();
 
             $totalFiltered = CustomerCompanyWarehouse::with(['racks'])->select('*')
-                ->where('name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
+                ->where('name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where($where)->count();
         }
@@ -72,7 +67,7 @@ class CustomerCompanyWarehouseController extends Controller
             $row['name'] = $item->name;
             $row['description'] = $item->description;
             $row['racks'] = $item->racks;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-warehouse='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-warehouse='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-warehouse='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-warehouse='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -91,16 +86,12 @@ class CustomerCompanyWarehouseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'userId' => 'required',
-            'companyId' => 'required',
             'name' => 'required|min:2|max:30',
             'description' => 'required|min:2|max:100',
             'racks' => 'required|array',
             'racks.*.name' => 'min:2|max:30',
             'racks.*.description' => 'min:2|max:100',
         ], [
-            'userId.required' => 'The user field is required.',
-            'companyId.required' => 'The company field is required.',
             'racks.required' => 'The racks field must be at least 1 rack item.',
             'racks.array' => 'The racks field does not match the data required by the server',
             'racks.*.name.min' => 'The rack name field must be at least 2 characters.',
@@ -110,7 +101,10 @@ class CustomerCompanyWarehouseController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            $warehouse = CustomerCompanyWarehouse::create($request->except('_token', 'userId', 'racks'));
+            $data = $request->except('_token', 'userId', 'racks');
+            $data['companyId'] = session('userLogged')['company']['id'];
+            $data['userId'] = session('userLogged')['user']['id'];
+            $warehouse = CustomerCompanyWarehouse::create($data);
             $racks = [];
             foreach ($request->only('racks')['racks'] as $index => $rack) {
                 $racks[] = array_merge($rack, [
@@ -139,14 +133,8 @@ class CustomerCompanyWarehouseController extends Controller
     {
         $where = [
             ['id', $id],
-            ['companyId', '<>', 0],
+            ['companyId', '=', session('userLogged')['company']['id']],
         ];
-        if (getRole() != 'Developer') {
-            $where = [
-                ['id', $id],
-                ['companyId', '=', session('userLogged')['company']['id']],
-            ];
-        }
         $warehouse = CustomerCompanyWarehouse::with(['racks', 'company'])->where($where)->first();
         $response = ['message' => 'Showing resources successfully', 'data' => $warehouse];
         $code = 200;
@@ -164,16 +152,12 @@ class CustomerCompanyWarehouseController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'userId' => 'required',
-            'companyId' => 'required',
             'name' => 'required|min:2|max:30',
             'description' => 'required|min:2|max:100',
             'racks' => 'required|array',
             'racks.*.name' => 'min:2|max:30',
             'racks.*.description' => 'min:2|max:100',
         ], [
-            'userId.required' => 'The user field is required.',
-            'companyId.required' => 'The company field is required.',
             'racks.required' => 'The racks field must be at least 1 rack item.',
             'racks.array' => 'The racks field does not match the data required by the server',
             'racks.*.name.min' => 'The rack name field must be at least 2 characters.',
@@ -183,7 +167,7 @@ class CustomerCompanyWarehouseController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            CustomerCompanyWarehouse::where([['id', $id], ['companyId', $request->companyId]])
+            CustomerCompanyWarehouse::where([['id', $id], ['companyId', session('userLogged')['company']['id']]])
                 ->update($request->except('racks', '_token', 'userId', 'companyId'));
             CustomerGoodWarehouse::whereNotIn('rackId', collect($request->racks)
                 ->map(function ($rack_request) {
@@ -216,11 +200,11 @@ class CustomerCompanyWarehouseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id, $companyId)
+    public function destroy(string $id)
     {
         DB::beginTransaction();
         try {
-            CustomerCompanyWarehouse::where([['id', $id], ['companyId', $companyId]])->delete();
+            CustomerCompanyWarehouse::where([['id', $id], ['companyId', session('userLogged')['company']['id']]])->delete();
             CustomerGoodWarehouse::where('warehouseId', $id)->delete();
             CustomerWarehouseRack::where('warehouseId', $id)->delete();
             DB::commit();

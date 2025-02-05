@@ -17,10 +17,7 @@ class CustomerWareHouseRackGoodController extends Controller
      */
     public function index()
     {
-        $where = [['userId', '=', session('userLogged')['user']['id'] ?? 1]];
-        if (getRole() == 'Developer') {
-            $where = [['userId', '<>', 0]];
-        }
+        $where = [['userId', '=', session('userLogged')['company']['userId']]];
         $companies = CustomerCompany::where($where)->get();
 
         return view('man.customer-good-rack', compact('companies'));
@@ -70,13 +67,5 @@ class CustomerWareHouseRackGoodController extends Controller
         }
 
         return response()->json($response, $code);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

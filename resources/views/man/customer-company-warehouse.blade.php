@@ -13,8 +13,7 @@
                     </div>
                     <div class="col-6 text-end">
                         <button class="btn btn-success" id="add-customer-company-warehouse" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-company-warehouse">Add <i
-                                class='bx bxs-file-plus pb-1'></i></button>
+                            data-bs-target="#modal-customer-company-warehouse">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -37,8 +36,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-company-warehouse" tabindex="-1" aria-hidden="true"
-        data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modal-customer-company-warehouse" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -52,42 +50,18 @@
                         </div>
                         @csrf
                         <input type="hidden" name="id">
-                        <div class="row">
-                            <div class="col mb-3">
-                                @if (getRole() === 'Developer')
-                                    <label for="userId" class="form-label">Customer User</label>
-                                    <select class="form-control select2" name="userId" id="userId">
-                                        <option value="">Select User</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->username }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <input type="hidden" name="userId" value="{{ session('userLogged')['user']['id'] }}">
-                                @endif
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label for="companyId" class="form-label">Your Company</label>
-                                <select class="form-control select2" name="companyId" id="companyId">
-                                    <option value=''>Mohon Pilih</option>
-                                </select>
-                            </div>
-                        </div>
+                        <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="name" class="form-label">Warehouse Name</label>
-                                <input type="text" id="name" name="name" class="form-control"
-                                    placeholder="Enter Warehouse Name" />
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Warehouse Name" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-0">
                                 <label for="description" class="form-label">Warehouse Description</label>
-                                <textarea name="description" placeholder="Enter Description Warehouse" class="form-control" style="resize:none"
-                                    id="description" cols="10" rows="3"></textarea>
+                                <textarea name="description" placeholder="Enter Description Warehouse" class="form-control" style="resize:none" id="description" cols="10"
+                                    rows="3"></textarea>
                             </div>
                         </div>
                     </form>
@@ -101,23 +75,19 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="rack[name]" class="form-label">Rack Name</label>
-                                <input type="text" id="rack[name]" name="rack[name]" class="form-control"
-                                    placeholder="Enter Rack Name" />
+                                <input type="text" id="rack[name]" name="rack[name]" class="form-control" placeholder="Enter Rack Name" />
                             </div>
                         </div>
                         <div class="row mb-2">
                             <div class="col mb-0">
                                 <label for="rack[description]" class="form-label">Rack Description</label>
-                                <textarea name="rack[description]" placeholder="Enter Description Rack" class="form-control" style="resize:none"
-                                    id="rack[description]" cols="10" rows="3"></textarea>
+                                <textarea name="rack[description]" placeholder="Enter Description Rack" class="form-control" style="resize:none" id="rack[description]" cols="10"
+                                    rows="3"></textarea>
                             </div>
                         </div>
-                        <button id="add-rack" type="button" class="btn btn-icon btn-success"><i
-                                class='bx bx-add-to-queue'></i></button>
-                        <button id="remove-rack" type="button" class="btn btn-icon btn-danger d-none"><i
-                                class='bx bx-trash'></i></button>
-                        <button id="edit-rack" type="button" class="btn btn-icon btn-warning d-none"><i
-                                class='bx bx-pencil'></i></button>
+                        <button id="add-rack" type="button" class="btn btn-icon btn-success"><i class='bx bx-add-to-queue'></i></button>
+                        <button id="remove-rack" type="button" class="btn btn-icon btn-danger d-none"><i class='bx bx-trash'></i></button>
+                        <button id="edit-rack" type="button" class="btn btn-icon btn-warning d-none"><i class='bx bx-pencil'></i></button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -138,7 +108,7 @@
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script>
-        window.datatableAppRole = null;
+        window.dataTableAppRole = null;
         window.state = 'add';
 
         function actionData() {
@@ -146,12 +116,12 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-company-warehouse");
                 $("#edit-customer-company-warehouse").data("customer-company-warehouse", idAppRole);
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
                 $('#modal-customer-company-warehouse').modal('show');
                 $('#modal-customer-company-warehouse').find('.modal-title').html(`Edit @yield('title')`);
                 $('#save-customer-company-warehouse').addClass('d-none');
@@ -191,12 +161,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idAppRole = $(this).data("customer-company-warehouse");
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -232,7 +202,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppRole.ajax.reload()
+                                    window.dataTableAppRole.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -256,7 +226,7 @@
             });
         }
         $(function() {
-            window.datatableAppRole = $("#table-customer-company-warehouse").DataTable({
+            window.dataTableAppRole = $("#table-customer-company-warehouse").DataTable({
                 ajax: "{{ route('man.customer-company-warehouse.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -312,7 +282,7 @@
                     }
                 }]
             });
-            window.datatableAppRole.on('draw.dt', function() {
+            window.dataTableAppRole.on('draw.dt', function() {
                 actionData();
             });
             $('#userId').change(function() {
@@ -349,7 +319,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload();
+                        window.dataTableAppRole.ajax.reload();
                     },
                     error: function(error) {
                         $('#modal-customer-company-warehouse .is-invalid')
@@ -407,7 +377,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload()
+                        window.dataTableAppRole.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-customer-company-warehouse .is-invalid').removeClass(
@@ -487,13 +457,7 @@
                 $('#edit-customer-company-warehouse').addClass('d-none');
                 $('#modal-customer-company-warehouse .is-invalid').removeClass('is-invalid')
                 $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
-            });
-            $('#modal-customer-company-warehouse').on('shown.bs.modal', function() {
-                setTimeout(() => {
-                    $('.select2').select2({
-                        dropdownParent: $('#modal-customer-company-warehouse'),
-                    });
-                }, 140);
+                $('#container-rack').html('');
             });
         });
     </script>

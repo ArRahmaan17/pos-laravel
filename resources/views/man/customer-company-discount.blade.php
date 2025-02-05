@@ -13,8 +13,7 @@
                     </div>
                     <div class="col-6 text-end">
                         <button class="btn btn-success" id="add-customer-company-discount" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-company-discount">Add <i
-                                class='bx bxs-file-plus pb-1'></i></button>
+                            data-bs-target="#modal-customer-company-discount">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -28,6 +27,7 @@
                                     <th scope="col">Percentage</th>
                                     <th scope="col">Max Discount</th>
                                     <th scope="col">Min Transaction</th>
+                                    <th scope="col">Max Apply</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Action</th>
                                 </tr>
@@ -40,8 +40,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-company-discount" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
+    <div class="modal fade" id="modal-customer-company-discount" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -59,13 +58,10 @@
                                     <input type="radio" class="btn-check" name="status" value="archive" id="archive-btn">
                                     <label class="btn btn-outline-danger" for="archive-btn"><i class='bx bx-archive-in'></i>
                                         Archive</label>
-                                    <input type="radio" class="btn-check" name="status" value="draft" id="draft-btn"
-                                        checked="">
-                                    <label class="btn btn-outline-warning" for="draft-btn"><i
-                                            class='bx bx-hourglass'></i>Draft</label>
+                                    <input type="radio" class="btn-check" name="status" value="draft" id="draft-btn" checked="">
+                                    <label class="btn btn-outline-warning" for="draft-btn"><i class='bx bx-hourglass'></i>Draft</label>
                                     <input type="radio" class="btn-check" name="status" value="publish" id="publish-btn">
-                                    <label class="btn btn-outline-success" for="publish-btn"><i
-                                            class='bx bxs-slideshow'></i>Publish</label>
+                                    <label class="btn btn-outline-success" for="publish-btn"><i class='bx bxs-slideshow'></i>Publish</label>
                                 </div>
                             </div>
                         </div>
@@ -73,31 +69,38 @@
                             <label for="code" class="form-label">Code *</label>
                             <input type="text" id="code" name="code" class="form-control discount-code"
                                 placeholder="{{ buatSingkatan(session('userLogged')['company']['name']) }}DISCOUNT">
+<<<<<<< HEAD
                             <div class="invalid-feedback">test</div>
+=======
+                            <div class="invalid-feedback"></div>
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description *</label>
-                            <input type="text" id="description" name="description" class="form-control"
-                                placeholder="Discount Description">
-                            <div class="invalid-feedback">test</div>
+                            <input type="text" id="description" name="description" class="form-control" placeholder="Discount Description">
+                            <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
                             <label for="percentage" class="form-label">Percentage *</label>
-                            <input type="text" id="percentage" name="percentage"
-                                class="form-control discount-percentage" placeholder="10%">
-                            <div class="invalid-feedback">test</div>
+                            <input type="text" id="percentage" name="percentage" class="form-control discount-percentage" placeholder="10%">
+                            <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
                             <label for="maxTransactionDiscount" class="form-label">Max Transaction Discount *</label>
-                            <input type="text" id="maxTransactionDiscount" name="maxTransactionDiscount"
-                                class="form-control price-discount" placeholder="10.000,00">
-                            <div class="invalid-feedback">test</div>
+                            <input type="text" id="maxTransactionDiscount" name="maxTransactionDiscount" class="form-control price-discount"
+                                placeholder="10.000,00">
+                            <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
                             <label for="minTransactionPrice" class="form-label">Min Transaction Price *</label>
-                            <input type="text" id="minTransactionPrice" name="minTransactionPrice"
-                                class="form-control price-discount" placeholder="50.000,00">
-                            <div class="invalid-feedback">test</div>
+                            <input type="text" id="minTransactionPrice" name="minTransactionPrice" class="form-control price-discount"
+                                placeholder="50.000,00">
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="maxApply" class="form-label">Max Applied Discount *</label>
+                            <input type="text" id="maxApply" name="maxApply" class="form-control max-apply" placeholder="10">
+                            <div class="invalid-feedback"></div>
                         </div>
                     </form>
                 </div>
@@ -120,7 +123,7 @@
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
-        window.datatableCustomerCompanyDiscount = null;
+        window.dataTableCustomerCompanyDiscount = null;
         window.state = 'add';
 
         function actionData() {
@@ -128,12 +131,12 @@
                 window.state = 'update';
                 let idCustomerCompany = $(this).data("customer-company-discount");
                 $("#edit-customer-company-discount").data("customer-company-discount", idCustomerCompany);
-                if (window.datatableCustomerCompanyDiscount.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length == 0) {
                     $('#table-customer-company-discount tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableCustomerCompanyDiscount.rows('.selected').data()[0];
+                var data = window.dataTableCustomerCompanyDiscount.rows('.selected').data()[0];
 
                 $('#modal-customer-company-discount').modal('show');
                 $('#modal-customer-company-discount').find('.modal-title').html(`Edit @yield('title')`);
@@ -179,12 +182,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableCustomerCompanyDiscount.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length == 0) {
                     $('#table-customer-company-discount tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idCustomerCompany = $(this).data("customer-company-discount");
-                var data = window.datatableCustomerCompanyDiscount.rows('.selected').data()[0];
+                var data = window.dataTableCustomerCompanyDiscount.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -220,7 +223,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableCustomerCompanyDiscount.ajax
+                                    window.dataTableCustomerCompanyDiscount.ajax
                                         .reload()
                                 },
                                 error: function(error) {
@@ -246,7 +249,7 @@
         }
 
         $(function() {
-            window.datatableCustomerCompanyDiscount = $("#table-customer-company-discount").DataTable({
+            window.dataTableCustomerCompanyDiscount = $("#table-customer-company-discount").DataTable({
                 ajax: "{{ route('man.customer-company-discount.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -307,6 +310,15 @@
                     render: $.fn.dataTable.render.number('.', ',', 2, 'Rp.')
                 }, {
                     target: 6,
+                    name: 'max_apply',
+                    data: 'max_apply',
+                    orderable: true,
+                    searchable: true,
+                    render: (data, type, row, meta) => {
+                        return `<div class='text-wrap'>${data}</div>`
+                    }
+                }, {
+                    target: 7,
                     name: 'status',
                     data: 'status',
                     orderable: true,
@@ -315,7 +327,7 @@
                         return `<div class='text-wrap'>${data}</div>`
                     }
                 }, {
-                    target: 7,
+                    target: 8,
                     name: 'action',
                     data: 'action',
                     orderable: false,
@@ -325,7 +337,7 @@
                     }
                 }]
             });
-            window.datatableCustomerCompanyDiscount.on('draw.dt', function() {
+            window.dataTableCustomerCompanyDiscount.on('draw.dt', function() {
                 actionData();
             });
             $('#save-customer-company-discount').click(function() {
@@ -345,7 +357,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableCustomerCompanyDiscount.ajax.reload();
+                        window.dataTableCustomerCompanyDiscount.ajax.reload();
                     },
                     error: function(error) {
                         $('#modal-customer-company-discount .is-invalid').removeClass(
@@ -395,7 +407,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableCustomerCompanyDiscount.ajax.reload()
+                        window.dataTableCustomerCompanyDiscount.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-customer-company-discount .is-invalid').removeClass(
@@ -443,13 +455,22 @@
                 }, 140);
             });
             $('.discount-code')
+<<<<<<< HEAD
                 .inputmask(
                     `{{ buatSingkatan(session('userLogged')['company']['name']) }}A{1,30}`);
+=======
+                .inputmask(`{{ buatSingkatan(session('userLogged')['company']['name']) }}{1,30}`);
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
             $('.discount-percentage').inputmask({
-                regex: '^([1-9]%|[1-9][0-9]%|100%)$',
+                regex: '^([1-9]%|[1-9][0-9]%|100%)$'
             });
             $('.price-discount').inputmask('currency', {
                 radixPoint: ',',
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false
+            });
+            $('.max-apply').inputmask('integer', {
                 groupSeparator: ".",
                 rightAlign: false,
                 allowMinus: false

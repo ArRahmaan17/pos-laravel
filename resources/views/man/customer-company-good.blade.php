@@ -74,18 +74,25 @@
                             <div class="col mb-3">
                                 <label for="stock" class="form-label">Stock</label>
                                 <input type="text" id="stock" name="stock" class="form-control number" placeholder="Enter Stock" />
+<<<<<<< HEAD
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="buyPrice" class="form-label">Buy Price</label>
                                 <input type="text" id="buyPrice" name="buyPrice" class="form-control price" placeholder="Enter Price" />
+=======
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="price" class="form-label">Price</label>
+<<<<<<< HEAD
                                 <input type="text" id="price" name="price" class="form-control price" placeholder="Enter Buy Price" />
+=======
+                                <input type="text" id="price" name="price" class="form-control price" placeholder="Enter Price" />
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                             </div>
                         </div>
                         <div class="row">
@@ -103,8 +110,13 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <div class="d-flex align-items-start align-items-sm-center gap-4">
+<<<<<<< HEAD
                                     <img src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded" height="100"
                                         width="100" id="uploadedAvatar" />
+=======
+                                    <img src="{{ asset('customer-product/default-product.webp') }}" alt="user-avatar" class="d-block rounded"
+                                        height="100" width="100" id="uploadedAvatar" />
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                                     <div class="button-wrapper">
                                         <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
                                             <span class="d-none d-sm-block">Upload new photo</span>
@@ -143,7 +155,7 @@
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
-        window.datatableCustomerCompanyGood = null;
+        window.dataTableCustomerCompanyGood = null;
         window.state = 'add';
 
         function actionData() {
@@ -151,12 +163,12 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-company-good");
                 $("#edit-customer-company-good").data("customer-company-good", idAppRole);
-                if (window.datatableCustomerCompanyGood.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableCustomerCompanyGood.rows('.selected').data()[0];
+                var data = window.dataTableCustomerCompanyGood.rows('.selected').data()[0];
 
                 $('#modal-customer-company-good').modal('show');
                 $('#modal-customer-company-good').find('.modal-title').html(`Edit @yield('title')`);
@@ -211,12 +223,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableCustomerCompanyGood.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idAppRole = $(this).data("customer-company-good");
-                var data = window.datatableCustomerCompanyGood.rows('.selected').data()[0];
+                var data = window.dataTableCustomerCompanyGood.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -252,7 +264,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableCustomerCompanyGood.ajax.reload()
+                                    window.dataTableCustomerCompanyGood.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -277,7 +289,7 @@
         }
 
         $(function() {
-            window.datatableCustomerCompanyGood = $("#table-customer-company-good").DataTable({
+            window.dataTableCustomerCompanyGood = $("#table-customer-company-good").DataTable({
                 ajax: "{{ route('man.customer-company-good.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -345,7 +357,7 @@
                     }
                 }, ]
             });
-            window.datatableCustomerCompanyGood.on('draw.dt', function() {
+            window.dataTableCustomerCompanyGood.on('draw.dt', function() {
                 actionData();
             });
             $('#save-customer-company-good').click(function() {
@@ -368,7 +380,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableCustomerCompanyGood.ajax.reload();
+                        window.dataTableCustomerCompanyGood.ajax.reload();
                     },
                     error: function(error) {
                         $('#modal-customer-company-good .is-invalid').removeClass('is-invalid')
@@ -409,7 +421,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableCustomerCompanyGood.ajax.reload()
+                        window.dataTableCustomerCompanyGood.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-customer-company-good .is-invalid').removeClass('is-invalid')
@@ -475,6 +487,17 @@
                     accountUserImage.src = resetImage;
                 };
             }
+            $('.price').inputmask('currency', {
+                radixPoint: ',',
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false
+            });
+            $('.number').inputmask('integer', {
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false,
+            });
         });
     </script>
 @endpush

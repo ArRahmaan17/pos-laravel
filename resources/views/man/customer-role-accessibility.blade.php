@@ -13,8 +13,7 @@
                     </div>
                     <div class="col-6 text-end">
                         <button class="btn btn-success" id="add-customer-role-accessibility" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-role-accessibility">Add <i
-                                class='bx bxs-file-plus pb-1'></i></button>
+                            data-bs-target="#modal-customer-role-accessibility">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -36,8 +35,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-role-accessibility" tabindex="-1" aria-hidden="true"
-        data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modal-customer-role-accessibility" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -59,7 +57,7 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="userId" value="{{ session('userLogged')['user']['id'] }}">
+                                    <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
                                 @endif
                             </div>
                         </div>
@@ -78,10 +76,8 @@
                                     <table class="table table-flush-spacing mb-0">
                                         <tbody>
                                             <tr>
-                                                <td class="text-nowrap fw-medium text-heading">Manager Access <i
-                                                        class="bx bx-info-circle" data-bs-toggle="tooltip"
-                                                        data-bs-placement="top"
-                                                        aria-label="Allows a full access to the system"
+                                                <td class="text-nowrap fw-medium text-heading">Manager Access <i class="bx bx-info-circle"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Allows a full access to the system"
                                                         data-bs-original-title="Allows a full access to the system"></i>
                                                 </td>
                                                 <td>
@@ -101,13 +97,11 @@
                                                     <td>
                                                         <div class="d-flex justify-content-end">
                                                             <div class="form-check form-check-reverse mb-0">
-                                                                <label class="form-check-label"
-                                                                    for="access{{ $menu->id }}">
+                                                                <label class="form-check-label" for="access{{ $menu->id }}">
                                                                     Access
                                                                 </label>
-                                                                <input class="form-check-input menu-access" name="menuId[]"
-                                                                    type="checkbox" value="{{ $menu->id }}"
-                                                                    id="access{{ $menu->id }}">
+                                                                <input class="form-check-input menu-access" name="menuId[]" type="checkbox"
+                                                                    value="{{ $menu->id }}" id="access{{ $menu->id }}">
                                                             </div>
                                                         </div>
                                                     </td>
@@ -138,7 +132,7 @@
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script>
-        window.datatableAppRole = null;
+        window.dataTableAppRole = null;
         window.state = 'add';
 
         function actionData() {
@@ -146,12 +140,12 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-role-accessibility");
                 $("#edit-customer-role-accessibility").data("customer-role-accessibility", idAppRole);
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-role-accessibility tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
                 $('#modal-customer-role-accessibility').modal('show');
                 $('#modal-customer-role-accessibility').find('.modal-title').html(`Edit @yield('title')`);
                 $('#save-customer-role-accessibility').addClass('d-none');
@@ -201,12 +195,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-role-accessibility tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idAppRole = $(this).data("customer-role-accessibility");
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -242,7 +236,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppRole.ajax.reload()
+                                    window.dataTableAppRole.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -266,7 +260,7 @@
             });
         }
         $(function() {
-            window.datatableAppRole = $("#table-customer-role-accessibility").DataTable({
+            window.dataTableAppRole = $("#table-customer-role-accessibility").DataTable({
                 ajax: "{{ route('man.customer-role-accessibility.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -313,7 +307,7 @@
                     }
                 }]
             });
-            window.datatableAppRole.on('draw.dt', function() {
+            window.dataTableAppRole.on('draw.dt', function() {
                 actionData();
             });
             $('#userId').change(function() {
@@ -348,7 +342,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload();
+                        window.dataTableAppRole.ajax.reload();
 
                     },
                     error: function(error) {
@@ -388,7 +382,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload()
+                        window.dataTableAppRole.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-customer-role-accessibility .is-invalid').removeClass(
@@ -412,6 +406,9 @@
             });
             $('#modal-customer-role-accessibility').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
+                $('#form-customer-role-accessibility').find('[type=checkbox]').map((index, element) => {
+                    $(element).attr('checked', false);
+                })
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
                 $('#save-customer-role-accessibility').removeClass('d-none');
                 $('#edit-customer-role-accessibility').addClass('d-none');
