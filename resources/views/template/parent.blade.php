@@ -37,7 +37,7 @@
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('/assets/img/favicon/favicon.ico') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -106,10 +106,9 @@
 
                     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                         <div class="navbar-nav align-items-center">
-                            <div class="nav-item d-flex align-items-center">
-                                <i class='bx bxs-user-account'></i>
-                                {!! ' Logged in&nbsp;<i>' . session('userLogged')['user']['name'] . '</i> &nbsp;as&nbsp;<i>' . session('userLogged')['role']['name'] . '</i>' ??
-                                    'Login as :' !!}
+                            <div class="nav-item d-flex align-items-center text-capitalize">
+                                <i class='bx bxs-user-account'></i> &nbsp;
+                                <span class="d-none d-sm-block col-1 col-sm-10 col-md-12 text-truncate">{!! session('userLogged')['user']['name'] !!}</span>
                             </div>
                         </div>
 
@@ -120,7 +119,8 @@
                                     <div class="">
                                         <button data-bs-toggle="modal" data-bs-target="#AppSubscriptionModal"
                                             class="{{ isset(session('userLogged')['subscription']['name']) ? 'btn btn-success' : 'btn btn-warning' }} buy-now">
-                                            {{ session('userLogged')['subscription']['name'] ?? 'Choose Subscription' }}
+                                            {!! session('userLogged')['subscription']['name'] ??
+                                                '<i class="bx bxs-layer-plus mb-1" ></i><span class="d-none d-md-inline-block">Choose Subscription</span>' !!}
                                         </button>
                                     </div>
                                 </li>
@@ -128,20 +128,19 @@
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ !empty(session('userLogged')->user->foto) && session('userLogged')->user->foto !== null ? asset(session('userLogged')->user->foto) : '../assets/img/avatars/1.png' }}"
+                                        <img src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset(session('userLogged')['user']['profile_picture']) : asset('assets/img/avatars/1.png') }}"
                                             alt class="w-px-40 h-100 rounded-circle" />
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
                                         <a class="dropdown-item" href="#">
-                                            <div class="d-flex">
-                                                <div class="flex-shrink-0 me-3">
-                                                    <div class="avatar avatar-online">
-                                                        <img src="{{ !empty(session('userLogged')['user']['foto']) && session('userLogged')['user']['foto'] !== null ? asset(session('userLogged')['user']['foto']) : '../assets/img/avatars/1.png' }}"
-                                                            alt class="w-px-40 h-100 rounded-circle" />
-                                                    </div>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="avatar avatar-online">
+                                                    <img src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset(session('userLogged')['user']['profile_picture']) : asset('assets/img/avatars/1.png') }}"
+                                                        alt class="w-px-40 h-100 rounded-circle" />
                                                 </div>
+                                                <div>{{ buatSingkatan(session('userLogged')['company']['name']) }}</div>
                                             </div>
                                         </a>
                                     </li>
@@ -153,10 +152,16 @@
                                         <div class="dropdown-divider"></div>
                                     </li>
                                     <li>
-                                        {{-- <a class="dropdown-item" href="{{ route('logout.system') }}">
+                                        <a class="dropdown-item" href="{{ route('auth.change-company') }}">
+                                            <i class='bx bxs-door-open me-2'></i>
+                                            <span class="align-middle">Change Company</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('auth.logout') }}">
                                             <i class="bx bx-power-off me-2"></i>
                                             <span class="align-middle">Log Out System</span>
-                                        </a> --}}
+                                        </a>
                                     </li>
                                 </ul>
                             </li>
@@ -210,7 +215,8 @@
                                                                     <h4 class="card-title text-center text-capitalize mb-1">
                                                                         {{ $subscription->name }}
                                                                     </h4>
-                                                                    <p class="text-center mb-5">{{ $subscription->description }}</p>
+                                                                    <p class="text-center mb-5">
+                                                                        {{ $subscription->description }}</p>
                                                                     <div class="text-center h-px-50">
                                                                         <div class="d-flex justify-content-center">
                                                                             <sup class="h6 text-body pricing-currency mt-2 mb-0 me-1">Rp.</sup>
@@ -218,7 +224,8 @@
                                                                                 {{ numberFormat($subscription->price - ($subscription->price * 5) / 100) }}
                                                                             </h1>
                                                                             <h1 class="price-toggle price-monthly text-primary mb-0">
-                                                                                {{ numberFormat($subscription->price) }}</h1>
+                                                                                {{ numberFormat($subscription->price) }}
+                                                                            </h1>
                                                                             <sub class="h6 text-body pricing-duration mt-auto mb-1">/month</sub>
                                                                         </div>
                                                                         <small class="price-yearly price-yearly-toggle text-muted d-none">Rp.
@@ -263,8 +270,7 @@
                                                 <div class="row g-5 py-3">
                                                     <div class="col-md col-lg-12 col-xl-6">
                                                         <div class="form-check border border-3 border-secondary rounded">
-                                                            <label
-                                                                class="form-check-label d-flex gap-4 align-items-center px-3"
+                                                            <label class="form-check-label d-flex gap-4 align-items-center px-3"
                                                                 for="customPaymentMethod1">
                                                                 <input name="payment-method" class="form-check-input" type="radio"
                                                                     value="credit-card" id="customPaymentMethod1">
@@ -279,7 +285,8 @@
                                                 <h4 class="mb-6">Billing Details</h4>
                                                 <div class="row g-6">
                                                     <div class="col-md-6">
-                                                        <label class="form-label" for="billings-email">Email Address</label>
+                                                        <label class="form-label" for="billings-email">Email
+                                                            Address</label>
                                                         <input type="text" id="billings-email" class="form-control"
                                                             placeholder="john.doe@gmail.com">
                                                     </div>
@@ -300,13 +307,15 @@
                                                             <option value="India">India</option>
                                                             <option value="Turkey">Turkey</option>
                                                             <option value="Ukraine">Ukraine</option>
-                                                            <option value="United Arab Emirates">United Arab Emirates</option>
+                                                            <option value="United Arab Emirates">United Arab Emirates
+                                                            </option>
                                                             <option value="United Kingdom">United Kingdom</option>
                                                             <option value="United States">United States</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <label class="form-label" for="billings-zip">Billing Zip / Postal Code</label>
+                                                        <label class="form-label" for="billings-zip">Billing Zip /
+                                                            Postal Code</label>
                                                         <input type="text" id="billings-zip" class="form-control billings-zip-code"
                                                             placeholder="Zip / Postal Code">
                                                     </div>
@@ -314,7 +323,8 @@
                                             </div>
                                             <div class="col-lg-5 card-body p-md-8">
                                                 <h4 class="mb-2">Order Summary</h4>
-                                                <p class="mb-8">It can help you manage and service orders before,<br> during and after fulfilment.</p>
+                                                <p class="mb-8">It can help you manage and service orders before,<br>
+                                                    during and after fulfilment.</p>
                                                 <div class="bg-lighter p-3 rounded">
                                                     <p>A simple start for everyone</p>
                                                     <div class="d-flex align-items-center mb-4" id="container-subscription">
@@ -323,7 +333,8 @@
                                                     </div>
                                                     <div class="d-grid">
                                                         <button type="button" data-bs-target="#AppSubscriptionModal" data-bs-toggle="modal"
-                                                            class="btn btn-primary">Change Plan</button>
+                                                            class="btn btn-primary">Change
+                                                            Plan</button>
                                                     </div>
                                                 </div>
                                                 <div class="mt-5">
@@ -347,7 +358,8 @@
                                                         </button>
                                                     </div>
 
-                                                    <p class="mt-8">By continuing, you accept to our Terms of Services and Privacy Policy. Please note
+                                                    <p class="mt-8">By continuing, you accept to our Terms of
+                                                        Services and Privacy Policy. Please note
                                                         that payments are non-refundable.</p>
                                                 </div>
                                             </div>
@@ -361,14 +373,14 @@
 
                     <!-- Footer -->
                     <footer class="content-footer footer bg-footer-theme">
-                        <div class="container-fluid d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
-                            <div class="mb-2 mb-md-0">
+                        <div class="d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+                            <div class="mb-2 ms-4">
                                 ©
                                 <script>
                                     document.write(new Date().getFullYear());
                                 </script>
                                 , made with ❤️ by
-                                <a href="https://devwandering.com" target="_blank" class="footer-link fw-bolder">Doglex's</a>
+                                <a href="https://www.rahmaanms.my.id" target="_blank" class="footer-link fw-bolder">Doglex's</a>
                             </div>
                         </div>
                     </footer>
@@ -418,6 +430,25 @@
     @endif
     <script>
         window.process_subscription = null;
+
+        function copyToClipboard(element = 'registration-link-code', ) {
+            const codeSnippet = (document.getElementById(element).innerText != '') ? document.getElementById(element).innerText : document.getElementById(
+                element).value;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeSnippet;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            navigator.clipboard.writeText(tempTextArea.value);
+            iziToast.success({
+                id: 'alert-create-registration-link-action',
+                title: 'Success',
+                message: `Coppied text ${codeSnippet}`,
+                position: 'topRight',
+                layout: 1,
+                displayMode: 'replace'
+            });
+            tempTextArea.remove();
+        }
 
         function serializeObject(node) {
             var o = {};
@@ -471,73 +502,92 @@
                 definitions: {
                     '*': {
                         validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
-                        casing: "lower"
-                    }
+                    casing: "lower"
                 }
-            });
-        }
+            }
+        });
+    }
 
-        function debounce(func, delay) {
-            let timeoutId;
-            return function(...args) {
-                if (timeoutId) {
-                    clearTimeout(timeoutId); // Hapus timeout sebelumnya
-                }
-                timeoutId = setTimeout(() => {
-                    func.apply(this, args); // Panggil fungsi dengan argumen
-                }, delay);
-            };
-        }
-
-        function serializeFiles(node) {
-            let form = $(node),
-                formData = new FormData(),
-                formParams = form.serializeArray();
-
-            $.each(form.find('input[type="file"]'), function(i, tag) {
-                if ($(tag)[0].files.length > 0) {
-                    $.each($(tag)[0].files, function(i, file) {
-                        formData.append(tag.name, file);
-                    });
-                }
-            });
-
-            $.each(formParams, function(i, val) {
-                formData.append(val.name, val.value);
-            });
-            return formData;
+    function debounce(func, delay) {
+        let timeoutId;
+        return function(...args) {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            timeoutId = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
         };
-        $(function() {
-            $(".menu-sub").find('.menu-link.bg-primary').parents('.menu-item:not(:first)').map((index, element) => {
-                $(element).addClass('open');
-                $(element).children('.menu-link.menu-toggle').addClass('bg-primary text-white')
-            });
-            $.extend($.fn.dataTable.defaults, {
-                "pageLength": 5,
-                "aLengthMenu": [
-                    [5, 10, 25, 50, -1],
-                    [5, 10, 25, 50, "All"]
-                ],
-                "responsive": true
-            });
-            $('.process-subscription').click(function() {
-                window.process_subscription = {id: $(this).data('subscription'), year: $('.price-duration-toggler').prop('checked')};
-                $('#AppSubscriptionModal').modal('hide');
-                $('#SubscriptionProcessModal').modal('show');
-            });
-            $('#SubscriptionProcessModal').on('shown.bs.modal', function() {
-                if (window.process_subscription == null) {
-                    $(this).modal('hide')
-                }else{
+    }
+
+    function dataToOption(allData, attr = false) {
+        let html = "<option value=''>Mohon Pilih</option>";
+
+        allData.forEach(data => {
+            if (attr) {
+                html +=
+                    `<option data-attr="${data.attribute}" value="${data.id ? data.id : data.name}">${data.name} ( ${data.attribute} )</option>`;
+            } else {
+                html += `<option value="${data.id ? data.id : data.name}">${data.name}</option>`;
+            }
+        });
+
+        return html;
+    }
+
+
+    function serializeFiles(node) {
+        let form = $(node),
+            formData = new FormData(),
+            formParams = form.serializeArray();
+
+        $.each(form.find('input[type="file"]'), function(i, tag) {
+            if ($(tag)[0].files.length > 0) {
+                $.each($(tag)[0].files, function(i, file) {
+                    formData.append(tag.name, file);
+                });
+            }
+        });
+
+        $.each(formParams, function(i, val) {
+            formData.append(val.name, val.value);
+        });
+        return formData;
+    };
+    $(function() {
+        $(".menu-sub").find('.menu-link.bg-primary').parents('.menu-item:not(:first)').map((index, element) => {
+            $(element).addClass('open');
+            $(element).children('.menu-link.menu-toggle').addClass('bg-primary text-white')
+        });
+        $.extend($.fn.dataTable.defaults, {
+            "pageLength": 5,
+            "aLengthMenu": [
+                [5, 10, 25, 50, -1],
+                [5, 10, 25, 50, "All"]
+            ],
+            "responsive": true
+        });
+        $('.process-subscription').click(function() {
+            window.process_subscription = {
+                id: $(this).data('subscription'),
+                year: $('.price-duration-toggler').prop('checked')
+            };
+            $('#AppSubscriptionModal').modal('hide');
+            $('#SubscriptionProcessModal').modal('show');
+        });
+        $('#SubscriptionProcessModal').on('shown.bs.modal', function() {
+            if (window.process_subscription == null) {
+                $(this).modal('hide')
+            } else {
                 $.ajax({
                     type: "get",
-                    url: `{{route('dev.app-subscription.show')}}/${window.process_subscription.id}`,
-                    dataType: "json",
-                    success: function (response) {
-                        
-                    }
-                });
-}
+                    url: `{{ route('dev.app-subscription.show') }}/${window.process_subscription.id}`,
+                        dataType: "json",
+                        success: function(response) {
+
+                        }
+                    });
+                }
             });
             $('#SubscriptionProcessModal').on('hidden.bs.modal', function() {
                 window.process_subscription == null;

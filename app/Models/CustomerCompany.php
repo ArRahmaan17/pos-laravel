@@ -23,6 +23,11 @@ class CustomerCompany extends Model
         return $this->hasOne(BusinessType::class, 'id', 'businessId');
     }
 
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'userId');
+    }
+
     public function racks(): HasMany
     {
         return $this->hasMany(CustomerWarehouseRack::class, 'id', 'warehouseId');

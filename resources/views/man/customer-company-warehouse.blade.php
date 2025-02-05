@@ -318,10 +318,10 @@
             $('#userId').change(function() {
                 $.ajax({
                     type: "GET",
-                    url: `{{ route('man.customer-company.company') }}/${this.value}`,
+                    url: `{{ route('man.customer-company.company') }}`,
                     dataType: "json",
                     success: function(response) {
-                        $('#companyId').html(response.data)
+                        $('#companyId').html(dataToOption(response.data, true))
                     }
                 });
             });

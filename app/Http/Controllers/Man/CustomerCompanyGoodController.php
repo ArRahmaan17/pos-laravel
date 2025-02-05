@@ -102,7 +102,7 @@ class CustomerCompanyGoodController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->except('_token', 'id');
-            $data['picture'] = 'default-product.webp';
+            $data['picture'] = 'default-product.png';
             if ($request->picture) {
                 $filename = md5($request->name.now('Asia/Jakarta')->format('Y-m-d')).'.'.$request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
@@ -160,7 +160,7 @@ class CustomerCompanyGoodController extends Controller
             $data = $request->except('_token', 'id');
             if ($request->file('picture')) {
                 $product = CustomerCompanyGood::find($id);
-                if ($product->picture != 'default-product.webp') {
+                if ($product->picture != 'default-product.png') {
                     Storage::disk('customer-product')->delete($product->picture);
                 }
                 $filename = md5($request->name.now('Asia/Jakarta')->format('Y-m-d')).'.'.$request->file('picture')->clientExtension();

@@ -44,10 +44,9 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-user" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-user">Add <i class='bx bxs-file-plus pb-1'></i></button>
-                        <button class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#modal-create-registration-link">Generate Registration Link <i
+                        <button class="btn btn-success" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">Add <i
+                                class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-create-registration-link">Generate Registration Link <i
                                 class='bx bx-link-alt pb-1'></i></button>
                     </div>
                 </div>
@@ -71,8 +70,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-user" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
+    <div class="modal fade" id="modal-customer-user" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -86,29 +84,26 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" id="name" name="name" class="form-control"
-                                    placeholder="Enter Name" />
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Name" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="username" class="form-label">Username</label>
-                                <input type="text" id="username" name="username" class="form-control"
-                                    placeholder="Enter Username" />
+                                <input type="text" id="username" name="username" class="form-control" placeholder="Enter Username" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="email" class="form-label">email</label>
-                                <input type="text" id="email" name="email" class="form-control email"
-                                    placeholder="Enter Email" />
+                                <input type="text" id="email" name="email" class="form-control email" placeholder="Enter Email" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="phone_number" class="form-label">phone number</label>
-                                <input type="text" id="phone_number" name="phone_number"
-                                    class="form-control phone_number" placeholder="Enter Phone Number" />
+                                <input type="text" id="phone_number" name="phone_number" class="form-control phone_number"
+                                    placeholder="Enter Phone Number" />
                             </div>
                         </div>
                         <div class="row">
@@ -141,8 +136,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-create-registration-link" tabindex="-1" aria-hidden="true"
-        data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modal-create-registration-link" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -165,8 +159,7 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="managerIdLink"
-                                        value="{{ session('userLogged')['user']['id'] }}">
+                                    <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['user']['id'] }}">
                                 @endif
                             </div>
                         </div>
@@ -184,8 +177,7 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="time_limit" class="form-label">LifeTime Link</label>
-                                <input type="text" id="time_limit" name="time_limit" class="form-control"
-                                    placeholder="(Minutes/Hours/Days)" />
+                                <input type="text" id="time_limit" name="time_limit" class="form-control" placeholder="(Minutes/Hours/Days)" />
                             </div>
                         </div>
                         <div id="container-link" class="row px-3 d-none">
@@ -216,6 +208,19 @@
         window.state = 'add';
 
         function actionData() {
+            $('.login-as').click(function() {
+                $.ajax({
+                    type: "POST",
+                    url: `{{ route('auth.login-as') }}/${$(this).data('user-customer')}`,
+                    data: {
+                        '_token': `{{ csrf_token() }}`
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        location.reload();
+                    }
+                });
+            });
             $('.edit').click(function() {
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-user");
@@ -336,22 +341,6 @@
             });
         }
 
-        function copyToClipboard() {
-            const codeSnippet = document.getElementById('registration-link-code').innerText;
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = codeSnippet;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            navigator.clipboard.writeText(tempTextArea.value);
-            iziToast.success({
-                id: 'alert-create-registration-link-action',
-                title: 'Success',
-                message: `Coppied text`,
-                position: 'topRight',
-                layout: 1,
-                displayMode: 'replace'
-            });
-        }
         $(function() {
             window.datatableAppRole = $("#table-customer-user").DataTable({
                 ajax: "{{ route('man.customer-user.data-table') }}",

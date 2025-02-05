@@ -26,12 +26,17 @@ class CustomerCompanyController extends Controller
 
     public function dataTable(Request $request)
     {
-        $totalData = CustomerCompany::join('users as uc', 'customer_companies.userId', '=', 'uc.id')
+        $where = [['userId', '=', session('userLogged')['user']['id']]];
+        if (getRole() === 'Developer') {
+            $where = [['userId', '<>', null]];
+        }
+        $totalData = CustomerCompany::with('address', 'type', 'user')
             ->orderBy('customer_companies.id', 'asc')
+            ->where($where)
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompany::with('address', 'type')->join('users as uc', 'customer_companies.userId', '=', 'uc.id')
+            $assets = CustomerCompany::with('address', 'type', 'user')
                 ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId');
 
             if ($request['length'] != '-1') {
@@ -39,33 +44,33 @@ class CustomerCompanyController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $assets = $assets->get();
+            $assets = $assets->where($where)->get();
         } else {
-            $assets = CustomerCompany::with('address', 'type')->join('users as uc', 'customer_companies.userId', '=', 'uc.id')
+            $assets = CustomerCompany::with('address', 'type', 'user')
                 ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId')
-                ->where('customer_companies.name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('customer_companies.phone_number', 'like', '%'.$request['search']['value'].'%');
+                ->where('customer_companies.name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('customer_companies.phone_number', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->get();
+            $assets = $assets->where($where)->get();
 
-            $totalFiltered = CustomerCompany::join('users as uc', 'customer_companies.userId', '=', 'uc.id')
+            $totalFiltered = CustomerCompany::with('address', 'type', 'user')
                 ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId')
-                ->where('customer_companies.name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('customer_companies.phone_number', 'like', '%'.$request['search']['value'].'%');
+                ->where('customer_companies.name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('customer_companies.phone_number', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->count();
+            $totalFiltered = $totalFiltered->where($where)->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
@@ -74,8 +79,9 @@ class CustomerCompanyController extends Controller
             $row['name'] = $item->name;
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['business'] = $item->type->name;
-            $row['address'] = $item->address->place.'<br>'.$item->address->address.' '.$item->address->city.' '.$item->address->province.' '.$item->address->zipCode;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['address'] = $item->address->place . '<br>' . $item->address->address . ' ' . $item->address->city . ' ' . $item->address->province . ' ' . $item->address->zipCode;
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button class='btn btn-icon " . ($item->id != session('userLogged')['company']['id'] ? 'btn-info activate' : 'btn-danger logout') . "' data-customer-company='" . $item->id . "' >" . ($item->id != session('userLogged')['company']['id'] ? "<i class='bx bxs-log-in' ></i>" : "<i class='bx bxs-log-out' ></i>") . "</button>";
+            // <button data-customer-company='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>
             $dataFiltered[] = $row;
         }
         $response = [
@@ -126,7 +132,7 @@ class CustomerCompanyController extends Controller
         try {
             $data = $request->except('address', '_token');
             if ($request->has('picture')) {
-                $profile_picture = md5(now('Asia/Jakarta')->format('Y-m-d H:i:s')).'.'.$request->file('picture')->getClientOriginalExtension();
+                $profile_picture = md5(now('Asia/Jakarta')->format('Y-m-d H:i:s')) . '.' . $request->file('picture')->getClientOriginalExtension();
                 $profile_picture = Storage::disk('company-profile')
                     ->putFileAs('/', $request->picture, $profile_picture);
                 $data['picture'] = $profile_picture;
@@ -173,7 +179,10 @@ class CustomerCompanyController extends Controller
         if (getRole() === 'Developer') {
             $where = [['userId', '<>', null]];
         }
-        $data = CustomerCompany::with('address', 'type')->where($where)->get();
+        $data = CustomerCompany::with('address', 'type')->where($where)->get()->map(function ($company) {
+            $company->attribute = buatSingkatan($company->name);
+            return $company;
+        });
         $code = 200;
         $response = ['message' => 'Showing resource successfully', 'data' => $data];
         if (empty($data)) {
@@ -192,8 +201,8 @@ class CustomerCompanyController extends Controller
         $request->validate([
             'picture' => ['file', 'extensions:jpg,png'],
             'name' => ['required', 'min:6', 'max:30'],
-            'phone_number' => ['required', 'min:10', 'max:19', 'unique:customer_companies,phone_number,'.$id],
-            'email' => ['required', 'email', 'unique:customer_companies,email,'.$id],
+            'phone_number' => ['required', 'min:10', 'max:19', 'unique:customer_companies,phone_number,' . $id],
+            'email' => ['required', 'email', 'unique:customer_companies,email,' . $id],
             'businessId' => ['required'],
             'address.place' => ['required', 'min:4', 'max:30'],
             'address.address' => ['required', 'min:4', 'max:30'],
@@ -223,7 +232,7 @@ class CustomerCompanyController extends Controller
             $data = $request->except('address', '_token');
             if ($request->has('picture')) {
                 $company = CustomerCompany::find($id);
-                $profile_picture = md5(now('Asia/Jakarta')->format('Y-m-d H:i:s')).'.'.$request->file('picture')
+                $profile_picture = md5(now('Asia/Jakarta')->format('Y-m-d H:i:s')) . '.' . $request->file('picture')
                     ->getClientOriginalExtension();
                 if ($company->picture != 'default-picture.png') {
                     Storage::disk('company-profile')

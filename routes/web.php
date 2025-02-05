@@ -48,8 +48,12 @@ Route::middleware([Authorization::class])->group(function () {
     Route::get('/', function () {
         return view('home');
     })->name('home')->middleware([checkPageAuthorization::class]);
-    Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
-    Route::get('/change-company', [AuthController::class, 'changeCompany'])->name('auth.change-company')->middleware([checkPageAuthorization::class]);
+    Route::name('auth.')->prefix('auth')->group(function () {
+        Route::post('/login-as/{id?}', [AuthController::class, 'loginAs'])->name('login-as');
+        Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::get('/request-change-password', [AuthController::class, 'requestChangePassword'])->name('request-change-password');
+        Route::get('/change-company', [AuthController::class, 'changeCompany'])->name('change-company')->middleware([checkPageAuthorization::class]);
+    });
     Route::name('dev')->as('dev.')->prefix('dev')->group(function () {
         Route::name('app-role')->as('app-role.')->prefix('app-role')->group(function () {
             Route::get('/', [AppRoleController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
@@ -114,6 +118,9 @@ Route::middleware([Authorization::class])->group(function () {
         Route::name('customer-user')->as('customer-user.')->prefix('customer-user')->group(function () {
             Route::get('/', [UserCustomerController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
             Route::post('/', [UserCustomerController::class, 'store'])->name('store');
+            Route::get('/profile', [UserCustomerController::class, 'profile'])->name('profile')->middleware([checkPageAuthorization::class]);
+            Route::post('/update-profile', [UserCustomerController::class, 'updateProfile'])->name('update-profile');
+            Route::patch('/generate-affiliate-code', [UserCustomerController::class, 'generateAffiliateCode'])->name('generate-affiliate-code');
             Route::post('/generate-link', [UserCustomerController::class, 'generateRegistrationLink'])->name('registration-link');
             Route::put('/{id?}', [UserCustomerController::class, 'update'])->name('update');
             Route::get('/data-table', [UserCustomerController::class, 'dataTable'])->name('data-table');

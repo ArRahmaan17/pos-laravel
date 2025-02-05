@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('username')->nullable(false)->unique();
             $table->string('email')->nullable(true)->unique();
             $table->string('phone_number')->nullable(true)->unique();
-            $table->string('password');
-            $table->boolean('hr')->default(false);
+            $table->string('password')->nullable(false);
+            $table->string('profile_picture')->nullable(true);
             $table->string('affiliate_code')->nullable(true);
             $table->timestamps();
         });

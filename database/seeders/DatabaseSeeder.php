@@ -123,7 +123,6 @@ class DatabaseSeeder extends Seeder
                     'email' => 'rahmaan@ms.dev',
                     'phone_number' => '89522983270',
                     'password' => Hash::make('mamanrecing'),
-                    'hr' => true,
                     'created_at' => now('Asia/Jakarta'),
                     'updated_at' => now('Asia/Jakarta'),
                 ],
@@ -133,7 +132,6 @@ class DatabaseSeeder extends Seeder
                     'email' => 'rahmaan@ms.man',
                     'phone_number' => '89522983271',
                     'password' => Hash::make('mamanrecing'),
-                    'hr' => true,
                     'created_at' => now('Asia/Jakarta'),
                     'updated_at' => now('Asia/Jakarta'),
                 ],
@@ -143,7 +141,6 @@ class DatabaseSeeder extends Seeder
                     'email' => 'rahmaan@ms.cash',
                     'phone_number' => '89522983272',
                     'password' => Hash::make('mamanrecing'),
-                    'hr' => false,
                     'created_at' => now('Asia/Jakarta'),
                     'updated_at' => now('Asia/Jakarta'),
                 ],
@@ -153,7 +150,6 @@ class DatabaseSeeder extends Seeder
                     'email' => 'rahmaan@ms.adm',
                     'phone_number' => '89522983273',
                     'password' => Hash::make('mamanrecing'),
-                    'hr' => false,
                     'created_at' => now('Asia/Jakarta'),
                     'updated_at' => now('Asia/Jakarta'),
                 ],
@@ -329,25 +325,25 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now('Asia/Jakarta'),
             ],
         );
-        \App\Models\AppSubscription::insert([
-            [
-                'name' => 'Basic',
-                'description' => 'A simple start for everyone',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Standard',
-                'description' => 'For small to medium businesses',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Enterprise',
-                'description' => 'Solution for big organizations',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+//         \App\Models\AppSubscription::insert([
+//             [
+//                 'name' => 'Basic',
+//                 'description' => 'A simple start for everyone',
+//                 'created_at' => now(),
+//                 'updated_at' => now(),
+//             ],
+//             [
+//                 'name' => 'Standard',
+//                 'description' => 'For small to medium businesses',
+//                 'created_at' => now(),
+//                 'updated_at' => now(),
+//             ],
+//             [
+//                 'name' => 'Enterprise',
+//                 'description' => 'Solution for big organizations',
+//                 'created_at' => now(),
+//                 'updated_at' => now(),
+//             ],
+//         ]);
     }
 }

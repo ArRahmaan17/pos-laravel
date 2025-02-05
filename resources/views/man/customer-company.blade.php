@@ -12,8 +12,8 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-company" data-bs-toggle="modal" data-bs-target="#modal-customer-company">Add <i
-                                class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-success" id="add-customer-company" data-bs-toggle="modal"
+                            data-bs-target="#modal-customer-company">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -39,22 +39,24 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-company" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg" role="document">
+    <div class="modal fade" id="modal-customer-company" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+        data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">Register Your @yield('title')</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-customer-company" method="POST" class="container mt-2" enctype="multipart/form-data">
+                    <form action="#" id="form-customer-company" method="POST" class="container mt-2"
+                        enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="id">
                         <p class="mb-4">Please provide all required details to register your business with us.</p>
                         <div class="mb-3">
                             @if (getRole() === 'Developer')
                                 <label for="userId" class="form-label">Customer *</label>
-                                <select id="userId" name="userId" class="form-select select2">
+                                <select id="userId" name="userId" class="form-control select2">
                                     <option value="" disabled selected>Please Select</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->username }})
@@ -67,13 +69,14 @@
                             @endif
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
-                            <img src="{{ asset('/cp/default-picture.png') }}" alt="user-avatar" class="d-block rounded" height="100" width="100"
-                                id="uploadedAvatar" />
+                            <img src="{{ asset('/cp/default-picture.png') }}" alt="user-avatar" class="d-block rounded"
+                                height="100" width="100" id="uploadedAvatar" />
                             <div class="button-wrapper">
                                 <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
                                     <span class="d-none d-sm-block">Upload new photo</span>
                                     <i class="bx bx-upload d-block d-sm-none"></i>
-                                    <input type="file" name="picture" id="upload" class="account-file-input" hidden accept="image/png, image/jpeg" />
+                                    <input type="file" name="picture" id="upload" class="account-file-input" hidden
+                                        accept="image/png, image/jpeg" />
                                 </label>
                                 <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
                                     <i class="bx bx-reset d-block d-sm-none"></i>
@@ -85,7 +88,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="businessId" class="form-label">Type of Business *</label>
-                            <select id="businessId" name="businessId" class="form-select select2">
+                            <select id="businessId" name="businessId" class="form-control select2">
                                 <option value="" disabled selected>Please Select</option>
                                 @foreach ($types as $type)
                                     <option value="{{ $type->id }}">{{ $type->name }}</option>
@@ -95,48 +98,52 @@
                         </div>
                         <div class="mb-3">
                             <label for="name" class="form-label">Business Name *</label>
-                            <input type="text" id="name" name="name" class="form-control" placeholder="Business Name">
+                            <input type="text" id="name" name="name" class="form-control"
+                                placeholder="Business Name">
                             <div class="invalid-feedback">test</div>
 
                         </div>
                         <div class="mb-3">
                             <label for="phone_number" class="form-label">Contact Number *</label>
-                            <input type="text" id="phone_number" name="phone_number" class="form-control phone_number"
-                                placeholder="(+62) 895-222-2222">
+                            <input type="text" id="phone_number" name="phone_number"
+                                class="form-control phone_number" placeholder="(+62) 895-222-2222">
                             <div class="invalid-feedback">test</div>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">E-mail *</label>
-                            <input type="text" id="email" name="email" class="form-control email" placeholder="example@example.com">
+                            <input type="text" id="email" name="email" class="form-control email"
+                                placeholder="example@example.com">
                             <div class="invalid-feedback">test</div>
                         </div>
                         <div class="mb-3">
                             <div class="row">
                                 <div class="col-6">
                                     <label for="address[place]" class="form-label">Building *</label>
-                                    <input type="text" id="address[place]" name="address[place]" class="form-control mb-2" placeholder="Building">
+                                    <input type="text" id="address[place]" name="address[place]"
+                                        class="form-control mb-2" placeholder="Building">
                                     <div class="invalid-feedback">test</div>
                                 </div>
                                 <div class="col-6">
                                     <label for="address[address]" class="form-label">Address *</label>
-                                    <input type="text" id="address[address]" name="address[address]" class="form-control mb-2"
-                                        placeholder="Street Address">
+                                    <input type="text" id="address[address]" name="address[address]"
+                                        class="form-control mb-2" placeholder="Street Address">
                                     <div class="invalid-feedback">test</div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
-                                    <input type="text" id="address[city]" name="address[city]" class="form-control" placeholder="City">
+                                    <input type="text" id="address[city]" name="address[city]" class="form-control"
+                                        placeholder="City">
                                     <div class="invalid-feedback">test</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="text" id="address[province]" name="address[province]" class="form-control"
-                                        placeholder="State / Province">
+                                    <input type="text" id="address[province]" name="address[province]"
+                                        class="form-control" placeholder="State / Province">
                                     <div class="invalid-feedback">test</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="text" id="address[zipCode]" name="address[zipCode]" class="form-control"
-                                        placeholder="Postal / Zip Code">
+                                    <input type="text" id="address[zipCode]" name="address[zipCode]"
+                                        class="form-control" placeholder="Postal / Zip Code">
                                     <div class="invalid-feedback">test</div>
                                 </div>
                             </div>
@@ -199,6 +206,7 @@
                                             `{{ url('/') }}/cp/` + response.data[name])
                                     } else {
                                         $("[name='" + element.name + "']").val(response.data[name])
+                                            .trigger('change')
                                     }
                                 }
                             });
@@ -476,8 +484,7 @@
                     $('.select2').select2({
                         dropdownParent: $('#modal-customer-company'),
                     });
-                    $('.select2-container').addClass('form-control')
-                }, 140);
+                }, 170);
             });
             formattedInput();
             let accountUserImage = document.getElementById('uploadedAvatar');
