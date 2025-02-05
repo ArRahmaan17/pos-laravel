@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="modal fade" id="modal-customer-company-discount" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">Add @yield('title')</h2>
@@ -69,11 +69,7 @@
                             <label for="code" class="form-label">Code *</label>
                             <input type="text" id="code" name="code" class="form-control discount-code"
                                 placeholder="{{ buatSingkatan(session('userLogged')['company']['name']) }}DISCOUNT">
-<<<<<<< HEAD
-                            <div class="invalid-feedback">test</div>
-=======
                             <div class="invalid-feedback"></div>
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description *</label>
@@ -455,12 +451,7 @@
                 }, 140);
             });
             $('.discount-code')
-<<<<<<< HEAD
-                .inputmask(
-                    `{{ buatSingkatan(session('userLogged')['company']['name']) }}A{1,30}`);
-=======
                 .inputmask(`{{ buatSingkatan(session('userLogged')['company']['name']) }}{1,30}`);
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
             $('.discount-percentage').inputmask({
                 regex: '^([1-9]%|[1-9][0-9]%|100%)$'
             });

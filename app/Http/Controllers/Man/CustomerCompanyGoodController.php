@@ -90,7 +90,8 @@ class CustomerCompanyGoodController extends Controller
         $request->validate([
             'name' => 'required|min:6|max:40',
             'stock' => 'required|max:8',
-            'price' => 'required|max:16',
+            'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'buyPrice' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'status' => 'required|in:archive,draft,publish',
             'companyId' => 'required|exists:customer_companies,id',
             'unitId' => 'required|exists:app_good_units,id',
@@ -102,13 +103,9 @@ class CustomerCompanyGoodController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->except('_token', 'id');
-<<<<<<< HEAD
             $data['picture'] = 'default-product.png';
-=======
-            $data['picture'] = 'default-product.webp';
             $data['price'] = str_replace('.', '', $request->price);
             $data['price'] = str_replace(',', '.', $data['price']);
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
             if ($request->picture) {
                 $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
@@ -152,8 +149,8 @@ class CustomerCompanyGoodController extends Controller
             'name' => 'required|min:6|max:40',
             'id' => 'required|numeric',
             'stock' => 'required|max:8',
-            'price' => 'required|max:16',
-            'status' => 'required|in:archive,draft,publish',
+            'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'buyPrice' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'status' => 'required|in:archive,draft,publish',
             'companyId' => 'required|exists:customer_companies,id',
             'picture' => 'image|between:50,800|dimensions:ratio=1/1',

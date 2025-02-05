@@ -71,7 +71,7 @@
         </div>
     </div>
     <div class="modal fade" id="modal-customer-user" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">Add New @yield('title')</h5>
@@ -139,7 +139,7 @@
         </div>
     </div>
     <div class="modal fade" id="modal-create-registration-link" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Create Registration Link</h5>
@@ -161,11 +161,7 @@
                                         @endforeach
                                     </select>
                                 @else
-<<<<<<< HEAD
-                                    <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['user']['id'] }}">
-=======
                                     <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['company']['userId'] }}">
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                                 @endif
                             </div>
                         </div>
@@ -187,12 +183,7 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="time_limit" class="form-label">LifeTime Link</label>
-<<<<<<< HEAD
-                                <input type="text" id="time_limit" name="time_limit" class="form-control" placeholder="(Minutes/Hours/Days)" />
-=======
-                                <input type="text" id="time_limit" name="time_limit" placeholder="60 minutes / 1 hours / 1 days" class="form-control"
-                                    placeholder="(Minutes/Hours/Days)" />
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
+                                <input type="text" id="time_limit" name="time_limit" placeholder="60 minutes / 1 hours / 1 days" class="form-control" />
                             </div>
                         </div>
                         <div id="container-link" class="row px-3 d-none">

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class CustomerCompanyGood extends Model
 {
-    protected $fillable = ['name', 'price', 'stock', 'picture', 'companyId', 'unitId', 'status'];
+    protected $fillable = ['name', 'price', 'buyPrice', 'stock', 'picture', 'companyId', 'unitId', 'status'];
 
     use HasFactory;
 

@@ -37,7 +37,7 @@
         </div>
     </div>
     <div class="modal fade" id="modal-app-subscription" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel3">Add New @yield('title')</h5>
@@ -67,48 +67,108 @@
                             </div>
                         </div>
                         <div class="row align-items-center align-self-middle px-3">
-                            <label for="planFeature" class="form-label col-10 mb-0">Plan Feature</label>
-                            <button type="button" class="btn btn-warning btn-sm col-2" onclick="repeaterFeature()">Add Feture</button>
-                        </div>
-                        <div class="row container" id="container-subscription-plan">
-                            <div class="col-12 mb-1">
-                                <label for="planFeatureInit1" class="form-label">Subscription Feature</label>
-                                <div class="row">
-                                    <div class="col-10">
-                                        <input type="text" id="planFeatureInit1" name="planFeature[]" class="form-control"
-                                            placeholder="Enter Feature Plan" />
-                                    </div>
-                                    <div class="col-2">
-                                        <button type="button" class="btn btn-danger delete-plan">Hapus</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 mb-1">
-                                <label for="planFeatureInit2" class="form-label">Subscription Feature</label>
-                                <div class="row">
-                                    <div class="col-10">
-                                        <input type="text" id="planFeatureInit2" name="planFeature[]" class="form-control"
-                                            placeholder="Enter Feature Plan" />
-                                    </div>
-                                    <div class="col-2">
-                                        <button type="button" class="btn btn-danger delete-plan">Hapus</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 mb-1">
-                                <label for="planFeatureInit3" class="form-label">Subscription Feature</label>
-                                <div class="row">
-                                    <div class="col-10">
-                                        <input type="text" id="planFeatureInit3" name="planFeature[]" class="form-control"
-                                            placeholder="Enter Feature Plan" />
-                                    </div>
-                                    <div class="col-2">
-                                        <button type="button" class="btn btn-danger delete-plan">Hapus</button>
-                                    </div>
-                                </div>
-                            </div>
+                            <label for="planFeatureInit1" class="form-label col-10 mb-0">Plan Feature</label>
                         </div>
                     </form>
+                    <div class="row container" id="container-subscription-plan">
+                        <div class="col-12 mb-1">
+                            <label for="planFeatureInit1" class="form-label">Subscription Feature</label>
+                            <div class="row">
+                                <input type="hidden" name="category" value="transaction" />
+                                <div class="col-10">
+                                    <input type="text" name="text_feature" class="form-control" readonly value="... transactions in 1 month" />
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" id="planFeatureInit1" name="amount" class="form-control number" placeholder="Enter amount" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-1">
+                            <label for="planFeatureInit2" class="form-label">Subscription Feature</label>
+                            <div class="row">
+                                <input type="hidden" name="category" value="data" />
+                                <div class="col-10">
+                                    <input type="text" name="text_feature" class="form-control" readonly value="... data store in 1 month" />
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" id="planFeatureInit2" name="amount" class="form-control number" placeholder="Enter amount" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-1">
+                            <label for="planFeatureInit3" class="form-label">Subscription Feature</label>
+                            <div class="row">
+                                <input type="hidden" name="category" value="file" />
+                                <div class="col-10">
+                                    <input type="text" name="text_feature" class="form-control" readonly value=" ... max size file upload" />
+                                </div>
+                                <div class="col-2">
+                                    <input type="text" id="planFeatureInit3" name="amount" class="form-control number" placeholder="Enter amount" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-1">
+                            <label for="planFeatureInit4 class="form-label">Subscription Feature</label>
+                            <div class="row">
+                                <input type="hidden" name="category" value="logic" />
+                                <div class="col-10">
+                                    <input type="text" name="text_feature" class="form-control" readonly value="max priority response" />
+                                </div>
+                                <div class="col-2">
+                                    <select name="status" id="planFeatureInit4" class="form-select">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-1">
+                            <label for="planFeatureInit5" class="form-label">Subscription Feature</label>
+                            <div class="row">
+                                <input type="hidden" name="category" value="full_access_report" />
+                                <div class="col-10">
+                                    <input type="text" name="text_feature" class="form-control" readonly value="report template fully access" />
+                                </div>
+                                <div class="col-2">
+                                    <select name="status" id="planFeatureInit5" class="form-select">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-1">
+                            <label for="planFeatureInit6" class="form-label">Subscription Feature</label>
+                            <div class="row">
+                                <input type="hidden" name="category" value="custom_report" />
+                                <div class="col-10">
+                                    <input type="text" name="text_feature" class="form-control" readonly value="request custom report template" />
+                                </div>
+                                <div class="col-2">
+                                    <select name="status" id="planFeatureInit6" class="form-select">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 mb-1">
+                            <label for="planFeatureInit7" class="form-label">Subscription Feature</label>
+                            <div class="row">
+                                <input type="hidden" name="category" value="custom_menu" />
+                                <div class="col-10">
+                                    <input type="text" id="planFeatureInit7" name="text_feature" class="form-control" readonly
+                                        value="request custom menu" />
+                                </div>
+                                <div class="col-2">
+                                    <select name="status" class="form-select">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
@@ -130,29 +190,6 @@
     <script>
         window.dataTableAppSubscription = null;
         window.state = 'add';
-
-        function repeaterFeature() {
-            let index = $('#container-subscription-plan').find('.col-12.mb-1').length + 1;
-            $('#container-subscription-plan').append(`<div class="col-12 mb-1">
-                    <label for="planFeatureAdd${index}" class="form-label">Subscription Feature</label>
-                    <div class="row">
-                        <div class="col-10">
-                            <input type="text" id="planFeatureAdd${index}" name="planFeature[]" class="form-control"
-                                placeholder="Enter Feature Plan" />
-                        </div>
-                        <div class="col-2">
-                            <button type="button" class="btn btn-danger delete-plan">Hapus</button>
-                        </div>
-                    </div>
-                </div>`);
-            deletePlanFeature();
-        }
-
-        function deletePlanFeature() {
-            $('.delete-plan').click(function() {
-                $(this).parents('.col-12.mb-1').remove();
-            });
-        }
 
         function actionData() {
             $('.edit').click(function() {
@@ -179,15 +216,15 @@
                         $('#modal-app-subscription').find("form")
                             .find('input, textarea').map(function(index, element) {
                                 if (element.name != '_token') {
-                                    if (element.name == 'planFeature[]' && first) {
+                                    if (element.name == 'text_feature[]' && first) {
                                         response.data.plan_feature.forEach((data, indexPlanFeature) => {
                                             if (indexPlanFeature > 2) {
                                                 repeaterFeature();
                                                 $($(`input[name="${element.name}"]`)[indexPlanFeature]).val(data
-                                                    .planFeature)
+                                                    .text_feature)
                                             } else {
                                                 $($(`input[name="${element.name}"]`)[indexPlanFeature]).val(data
-                                                    .planFeature)
+                                                    .text_feature)
                                             }
                                         });
                                         first = false;
@@ -287,7 +324,7 @@
             d.plans.forEach(element => {
                 html += `<li class="list-group-item d-flex align-items-center">
                         <i class='bx bxs-check-circle me-3 text-success' ></i>
-                        ${element.planFeature}
+                        ${element.text_feature}
                     </li>`
             });
             return (
@@ -366,6 +403,15 @@
             });
             $('#save-app-subscription').click(function() {
                 let data = serializeObject($('#form-app-subscription'));
+                data.details = $.map($('#container-subscription-plan').find('.col-12.mb-1'), (form_container, index) => {
+                    let result = {};
+                    $(form_container).find('input,select').toArray().forEach(input_element => {
+                        if (input_element.value != '') {
+                            result[input_element.name] = input_element.value;
+                        }
+                    });
+                    return result;
+                });
                 $.ajax({
                     type: "POST",
                     url: `{{ route('dev.app-subscription.store') }}`,
@@ -446,19 +492,18 @@
                 $('#edit-app-subscription').addClass('d-none');
                 $('#modal-app-subscription .is-invalid').removeClass('is-invalid')
                 $('#table-app-subscription tbody').find('tr').removeClass('selected');
-                $('#container-subscription-plan').find('.col-12.mb-1').map((index, element) => {
-                    if ($('#container-subscription-plan').find('.col-12.mb-1').length > 3) {
-                        $(element).remove();
-                    }
-                })
             });
-            deletePlanFeature();
             $('.price').inputmask('currency', {
                 radixPoint: ',',
                 groupSeparator: ".",
                 rightAlign: false,
                 allowMinus: false
             });
+            $('.number').inputmask('integer', {
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false
+            })
         });
     </script>
 @endpush

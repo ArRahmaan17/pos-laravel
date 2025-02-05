@@ -319,23 +319,23 @@ function getSql($model)
 
     return $sql;
 }
+// function formatIndonesianPhoneNumber($){
+//     // Check if the number starts with the country code and remove it
+//     if (strpos($cleaned, '62') === 0) {
+//         $cleaned = substr($cleaned, 2);
+//     }
 
-    // Check if the number starts with the country code and remove it
-    if (strpos($cleaned, '62') === 0) {
-        $cleaned = substr($cleaned, 2);
-    }
+//     // Ensure the number starts with 0
+//     if ($cleaned[0] !== '+62') {
+//         $cleaned = '+62' . $cleaned;
+//     }
 
-    // Ensure the number starts with 0
-    if ($cleaned[0] !== '+62') {
-        $cleaned = '+62' . $cleaned;
-    }
+//     // Format the number (e.g., (021) 123-4567 or 0812-345-6789)
+//     // This is just a basic example; you may need to adjust formatting based on specific needs
+//     $formatted = preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})/', '$1 $2-$3-$4', $cleaned);
 
-    // Format the number (e.g., (021) 123-4567 or 0812-345-6789)
-    // This is just a basic example; you may need to adjust formatting based on specific needs
-    $formatted = preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})/', '$1 $2-$3-$4', $cleaned);
-
-    return $formatted;
-}
+//     return $formatted;
+// }
 if (! function_exists('checkPermissionMenu')) {
     function checkPermissionMenu($id, $role)
     {
