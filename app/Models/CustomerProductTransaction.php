@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CustomerProductTransaction extends Model
 {
-    protected $fillable = ['orderCode', 'userId', 'companyId', 'total', 'discount'];
+    protected $fillable = ['orderCode', 'userId', 'companyId', 'total', 'discount', 'status'];
 
     use HasFactory;
 
