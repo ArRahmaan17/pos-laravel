@@ -30,22 +30,22 @@ function buatSingkatan($kalimat)
     return strtoupper(implode('', array_map(fn($kata) => $kata[0] . $kata[1], explode(' ', $kalimat))));
 }
 if (! function_exists('lastCompanyOrderCode')) {
-    function lastCompanyOrderCode()
+    function lastCompanyOrderCode($transaction_status = 'OUT')
     {
         $data = CustomerProductTransaction::where('companyId', session('userLogged')['company']['id'])
             ->orderBy('id', 'DESC')
             ->first();
-        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
+        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
         if ($data && explode(
-            buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
+            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
             $data->orderCode
         )) {
-            $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(
+            $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(
                 intval(
                     implode(
                         '',
                         explode(
-                            buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
+                            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
                             $data->orderCode
                         )
                     )

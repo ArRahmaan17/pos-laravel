@@ -21,8 +21,8 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->integer('quantity');
-            $table->decimal('price', 16, 2);
-            $table->decimal('total', 16, 2);
+            $table->decimal('price', 16, 2)->nullable(true);
+            $table->decimal('total', 16, 2)->nullable(true);
             $table->timestamps();
         });
     }

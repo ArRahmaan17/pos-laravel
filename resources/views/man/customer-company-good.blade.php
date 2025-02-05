@@ -78,8 +78,14 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
+                                <label for="buyPrice" class="form-label">Buy Price</label>
+                                <input type="text" id="buyPrice" name="buyPrice" class="form-control price" placeholder="Enter Price" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-3">
                                 <label for="price" class="form-label">Price</label>
-                                <input type="text" id="price" name="price" class="form-control price" placeholder="Enter Price" />
+                                <input type="text" id="price" name="price" class="form-control price" placeholder="Enter Buy Price" />
                             </div>
                         </div>
                         <div class="row">
@@ -441,6 +447,17 @@
                     });
                 }, 140);
             });
+            $('.price').inputmask('currency', {
+                radixPoint: ',',
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false
+            });
+            $('.number').inputmask('integer', {
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false
+            })
             formattedInput();
             let accountUserImage = document.getElementById('uploadedAvatar');
             const fileInput = document.querySelector('.account-file-input'),
