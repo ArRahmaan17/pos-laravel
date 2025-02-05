@@ -4,6 +4,7 @@ use App\Models\CustomerProductTransaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 if (! function_exists('getRole')) {
     function getRole()
@@ -25,6 +26,10 @@ function numberFormat($number)
 {
     return number_format($number, 2, ',', '.');
 }
+function defaultPassword()
+{
+    return Str::lower(implode('', explode(' ', session('userLogged')['company']['name'])));
+}
 function buatSingkatan($kalimat)
 {
     return strtoupper(implode('', array_map(fn($kata) => $kata[0] . $kata[1], explode(' ', $kalimat))));
@@ -35,17 +40,34 @@ if (! function_exists('lastCompanyOrderCode')) {
         $data = CustomerProductTransaction::where('companyId', session('userLogged')['company']['id'])
             ->orderBy('id', 'DESC')
             ->first();
+<<<<<<< HEAD
         $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
         if ($data && explode(
             buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
             $data->orderCode
         )) {
             $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(
+=======
+        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
+        if ($data && explode(
+            buatSingkatan(session('userLogged')['company']['name']) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
+            $data->orderCode
+        )) {
+            $lastOrder = buatSingkatan(
+                session('userLogged')['company']['name']
+            ) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                 intval(
                     implode(
                         '',
                         explode(
+<<<<<<< HEAD
                             buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
+=======
+                            buatSingkatan(
+                                session('userLogged')['company']['name']
+                            ) . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
                             $data->orderCode
                         )
                     )
@@ -59,12 +81,7 @@ if (! function_exists('lastCompanyOrderCode')) {
         return $lastOrder;
     }
 }
-if (! function_exists('splitKodeGolongan')) {
-    function splitKodeGolongan($kodegolongan)
-    {
-        return implode('.', str_split($kodegolongan));
-    }
-}
+
 if (! function_exists('stringPad')) {
     function stringPad($word, $length = 2, $pad = '0', $type = STR_PAD_LEFT)
     {
@@ -85,11 +102,33 @@ function unFormattedPhoneNumber($formattedNumber)
 
     return $unformattedNumber;
 }
+function formatIndonesianPhoneNumber($phoneNumber)
+{
+    // Remove any non-digit characters
+    $cleaned = preg_replace('/\D/', '', $phoneNumber);
+
+    // Check if the number starts with the country code and remove it
+    if (strpos($cleaned, '62') === 0) {
+        $cleaned = substr($cleaned, 2);
+    }
+
+    // Ensure the number starts with 0
+    if ($cleaned[0] !== '+62') {
+        $cleaned = '+62' . $cleaned;
+    }
+
+    // Format the number (e.g., (021) 123-4567 or 0812-345-6789)
+    // This is just a basic example; you may need to adjust formatting based on specific needs
+    $formatted = preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})/', '$1 $2-$3-$4', $cleaned);
+
+    return $formatted;
+}
 
 function company_profile_asset($filename)
 {
     return Storage::disk('company-profile')->get($filename);
 }
+
 if (! function_exists('dataToOption')) {
     function dataToOption($allData, $attr = false)
     {
@@ -125,27 +164,10 @@ function removeDuplicate($array)
     return $uniqueArray;
 }
 
-if (! function_exists('classificationType')) {
-    function classificationType(array $conditions)
-    {
-        return DB::table('masterkapitalisasi')->where('kodegolongan', $conditions['kodegolongan'])->where('kodebidang', $conditions['kodebidang'])->first();
-    }
-}
 if (! function_exists('convertStringToNumber')) {
     function convertStringToNumber($string)
     {
         return implode('', explode('.', $string));
-    }
-}
-if (! function_exists('getkdunit')) {
-    function getkdunit($sp2d)
-    {
-        return DB::table('anggaran.sp2d')
-            ->where([
-                'kdper' => $sp2d['kdper'],
-                'nosp2d' => $sp2d['nosp2d'],
-                'tglsp2d' => $sp2d['tglsp2d'],
-            ])->first()->kdunit;
     }
 }
 if (! function_exists('convertAlphabeticalToNumberDate')) {
@@ -257,25 +279,7 @@ if (! function_exists('convertNumericDateToAlphabetical')) {
         }
     }
 }
-if (! function_exists('kodeOrganisasi')) {
-    function kodeOrganisasi()
-    {
-        $copi = clone session('organisasi');
-        unset($copi->organisasi, $copi->tahunorganisasi, $copi->wajibsusut);
 
-        return implode('.', array_values((array) $copi));
-
-        return implode('.', array_values((array) $copi));
-
-        return implode('.', array_values((array) $copi));
-    }
-}
-if (! function_exists('getOrganisasi')) {
-    function getOrganisasi()
-    {
-        return session('organisasi')->organisasi;
-    }
-}
 if (! function_exists('buildTree')) {
     function buildTree(array &$elements, $idParent = 0)
     {
@@ -332,11 +336,8 @@ function getSql($model)
 
     return $sql;
 }
-function formatIndonesianPhoneNumber($phoneNumber)
-{
-    // Remove any non-digit characters
-    $cleaned = preg_replace('/\D/', '', $phoneNumber);
 
+<<<<<<< HEAD
     // Check if the number starts with the country code and remove it
     if (strpos($cleaned, '62') === 0) {
         $cleaned = substr($cleaned, 2);
@@ -357,6 +358,12 @@ if (! function_exists('checkPermissionMenu')) {
     function checkPermissionMenu($id, $role)
     {
         return DB::table('customer_role_accessibilities')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false;
+=======
+if (! function_exists('checkPermissionMenu')) {
+    function checkPermissionMenu($id, $role)
+    {
+        return (DB::table('customer_roles')->where('id', $role)->count()) ? (DB::table('customer_role_accessibilities')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false) : (DB::table('role_menus')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false);
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
     }
 }
 if (! function_exists('buildMenu')) {
@@ -411,20 +418,5 @@ if (! function_exists('limitOffsetToArray')) {
         }
 
         return $data;
-    }
-}
-
-if (! function_exists('generateIdKontrak')) {
-
-    function generateNextIdKontrak()
-    {
-        $data = DB::table('kontrak')
-            ->orderByDesc('id')
-            ->first();
-        // dd($data);
-        $next = $data ? $data->id + 1 : 1;
-        // dd($next);
-
-        return $next;
     }
 }

@@ -64,7 +64,7 @@ class AppSubscriptionController extends Controller
             $row['name'] = $item->name;
             $row['description'] = $item->description;
             $row['price'] = $item->price;
-            $row['plans'] = $item->plans;
+            $row['plans'] = $item->planFeature;
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-app-subscription='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-app-subscription='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }

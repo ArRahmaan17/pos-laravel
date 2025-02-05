@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Dev\AppGoodUnitController;
 use App\Http\Controllers\Dev\AppMenuController;
 use App\Http\Controllers\Dev\AppRoleController;
 use App\Http\Controllers\Dev\AppSubscriptionController;
@@ -70,6 +71,14 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/data-table', [AppMenuController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [AppMenuController::class, 'show'])->name('show');
             Route::delete('/{id?}', [AppMenuController::class, 'destroy'])->name('delete');
+        });
+        Route::name('app-good-unit')->as('app-good-unit.')->prefix('app-good-unit')->group(function () {
+            Route::get('/', [AppGoodUnitController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
+            Route::post('/', [AppGoodUnitController::class, 'store'])->name('store');
+            Route::put('/{id?}', [AppGoodUnitController::class, 'update'])->name('update');
+            Route::get('/data-table', [AppGoodUnitController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [AppGoodUnitController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [AppGoodUnitController::class, 'destroy'])->name('delete');
         });
         Route::name('app-subscription')->as('app-subscription.')->prefix('app-subscription')->group(function () {
             Route::get('/', [AppSubscriptionController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
@@ -149,13 +158,14 @@ Route::middleware([Authorization::class])->group(function () {
             Route::put('/{rackId?}/{id?}', [CustomerWareHouseRackGoodController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerWareHouseRackGoodController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerWareHouseRackGoodController::class, 'racks'])->name('show');
-            Route::delete('/{id?}', [CustomerWareHouseRackGoodController::class, 'destroy'])->name('delete');
         });
         Route::name('customer-product-transaction')->as('customer-product-transaction.')->prefix('customer-product-transaction')->group(function () {
             Route::get('/', [CustomerProductTransactionController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
             Route::post('/', [CustomerProductTransactionController::class, 'store'])->name('store');
+            Route::post('/validate-transaction-items', [CustomerProductTransactionController::class, 'validateTransactionItems'])->name('validate-transaction-items');
             Route::get('/transaction-receipt/{orderCode?}/print', [CustomerProductTransactionController::class, 'viewPdf'])->name('print-transaction-receipt');
             Route::get('/product-data-table', [CustomerProductTransactionController::class, 'productDataTable'])->name('product-data-table');
+            Route::get('/data-table', [CustomerProductTransactionController::class, 'dataTable'])->name('data-table');
             Route::get('/discount-data-table', [CustomerProductTransactionController::class, 'discountDataTable'])->name('discount-data-table');
             Route::get('/validate-discount-code/{id?}', [CustomerProductTransactionController::class, 'validateDiscountCode'])->name('validate-discount-code');
         });

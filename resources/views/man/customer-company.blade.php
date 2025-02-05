@@ -65,7 +65,7 @@
                                 </select>
                                 <div class="invalid-feedback">test</div>
                             @else
-                                <input type="hidden" name="userId" value="{{ session('userLogged')['user']['id'] }}">
+                                <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
                             @endif
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
@@ -169,7 +169,7 @@
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
-        window.datatableCustomerCompany = null;
+        window.dataTableCustomerCompany = null;
         window.state = 'add';
 
         function actionData() {
@@ -177,12 +177,12 @@
                 window.state = 'update';
                 let idCustomerCompany = $(this).data("customer-company");
                 $("#edit-customer-company").data("customer-company", idCustomerCompany);
-                if (window.datatableCustomerCompany.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompany.rows('.selected').data().length == 0) {
                     $('#table-customer-company tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableCustomerCompany.rows('.selected').data()[0];
+                var data = window.dataTableCustomerCompany.rows('.selected').data()[0];
 
                 $('#modal-customer-company').modal('show');
                 $('#modal-customer-company').find('.modal-title').html(`Edit @yield('title')`);
@@ -243,12 +243,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableCustomerCompany.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompany.rows('.selected').data().length == 0) {
                     $('#table-customer-company tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idCustomerCompany = $(this).data("customer-company");
-                var data = window.datatableCustomerCompany.rows('.selected').data()[0];
+                var data = window.dataTableCustomerCompany.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -284,7 +284,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableCustomerCompany.ajax.reload()
+                                    window.dataTableCustomerCompany.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -309,7 +309,7 @@
         }
 
         $(function() {
-            window.datatableCustomerCompany = $("#table-customer-company").DataTable({
+            window.dataTableCustomerCompany = $("#table-customer-company").DataTable({
                 ajax: "{{ route('man.customer-company.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -372,7 +372,7 @@
                     }
                 }]
             });
-            window.datatableCustomerCompany.on('draw.dt', function() {
+            window.dataTableCustomerCompany.on('draw.dt', function() {
                 actionData();
             });
             $('#save-customer-company').click(function() {
@@ -395,7 +395,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableCustomerCompany.ajax.reload();
+                        window.dataTableCustomerCompany.ajax.reload();
 
                     },
                     error: function(error) {
@@ -443,7 +443,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableCustomerCompany.ajax.reload()
+                        window.dataTableCustomerCompany.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-customer-company .is-invalid').removeClass('is-invalid')

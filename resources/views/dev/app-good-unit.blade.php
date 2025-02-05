@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'Employee Role')
+@section('title', 'App Good Unit')
 @push('css')
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
 @endpush
@@ -12,17 +12,17 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-role" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-role">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-success" id="add-app-good-unit" data-bs-toggle="modal" data-bs-target="#modal-app-good-unit">Add <i
+                                class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table-customer-role">
+                        <table class="table" id="table-app-good-unit">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Role</th>
+                                    <th scope="col">Unit</th>
                                     <th scope="col">Description</th>
                                     <th scope="col">Action</th>
                                 </tr>
@@ -35,8 +35,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-role" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
+    <div class="modal fade" id="modal-app-good-unit" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -44,37 +43,19 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-customer-role">
+                    <form action="#" id="form-app-good-unit">
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="userId" class="form-label">Customer User</label>
-                                @if (getRole() === 'Developer')
-                                    <select class="form-control select2" name="userId" id="userId">
-                                        <option value="">Select User</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->username }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
-                                @endif
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label for="name" class="form-label">Role Name</label>
-                                <input type="text" id="name" name="name" class="form-control"
-                                    placeholder="Enter Role Name" />
+                                <label for="name" class="form-label">Unit Name</label>
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Unit Name" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-0">
-                                <label for="description" class="form-label">Role Description</label>
-                                <textarea name="description" placeholder="Enter Description Role" class="form-control" style="resize:none"
-                                    id="description" cols="10" rows="3"></textarea>
+                                <label for="description" class="form-label">Unit Description</label>
+                                <textarea name="description" placeholder="Enter Description Unit" class="form-control" style="resize:none" id="description" cols="10" rows="3"></textarea>
                             </div>
                         </div>
                     </form>
@@ -83,9 +64,9 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-role" class="btn btn-success">Save
+                    <button type="button" id="save-app-good-unit" class="btn btn-success">Save
                         changes</button>
-                    <button type="button" id="edit-customer-role" class="btn btn-warning d-none">Update
+                    <button type="button" id="edit-app-good-unit" class="btn btn-warning d-none">Update
                         changes</button>
                 </div>
             </div>
@@ -94,36 +75,35 @@
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script>
-        window.dataTableAppRole = null;
+        window.dataTableAppUnit = null;
         window.state = 'add';
 
         function actionData() {
             $('.edit').click(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("customer-role");
-                $("#edit-customer-role").data("customer-role", idAppRole);
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-customer-role tbody').find('tr').removeClass('selected');
+                let idAppUnit = $(this).data("app-good-unit");
+                $("#edit-app-good-unit").data("app-good-unit", idAppUnit);
+                if (window.dataTableAppUnit.rows('.selected').data().length == 0) {
+                    $('#table-app-good-unit tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.dataTableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppUnit.rows('.selected').data()[0];
 
-                $('#modal-customer-role').modal('show');
-                $('#modal-customer-role').find('.modal-title').html(`Edit @yield('title')`);
-                $('#save-customer-role').addClass('d-none');
-                $('#edit-customer-role').removeClass('d-none');
+                $('#modal-app-good-unit').modal('show');
+                $('#modal-app-good-unit').find('.modal-title').html(`Edit @yield('title')`);
+                $('#save-app-good-unit').addClass('d-none');
+                $('#edit-app-good-unit').removeClass('d-none');
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('man.customer-role.show') }}/" + idAppRole,
+                    url: "{{ route('dev.app-good-unit.show') }}/" + idAppUnit,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role').find("form")
-                            .find('select, input, textarea').map(function(index, element) {
+                        $('#modal-app-good-unit').find("form")
+                            .find('input, textarea').map(function(index, element) {
                                 if (response.data[element.name]) {
                                     $(`[name=${element.name}]`).val(response.data[element
                                         .name])
@@ -132,7 +112,7 @@
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-customer-role-action',
+                            id: 'alert-app-good-unit-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -144,12 +124,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-customer-role tbody').find('tr').removeClass('selected');
+                if (window.dataTableAppUnit.rows('.selected').data().length == 0) {
+                    $('#table-app-good-unit tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("customer-role");
-                var data = window.dataTableAppRole.rows('.selected').data()[0];
+                let idAppUnit = $(this).data("app-good-unit");
+                var data = window.dataTableAppUnit.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -160,7 +140,7 @@
                     id: 'question',
                     zindex: 9999,
                     title: 'Confirmation',
-                    message: "Are you sure you want to delete this role data?",
+                    message: "Are you sure you want to delete this application's role data?",
                     position: 'center',
                     icon: 'bx bx-question-mark',
                     buttons: [
@@ -170,26 +150,26 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('man.customer-role.delete') }}/" +
-                                    idAppRole,
+                                url: "{{ route('dev.app-good-unit.delete') }}/" +
+                                    idAppUnit,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
                                 },
                                 dataType: "json",
                                 success: function(response) {
                                     iziToast.success({
-                                        id: 'alert-customer-role-action',
+                                        id: 'alert-app-good-unit-form',
                                         title: 'Success',
                                         message: response.message,
                                         position: 'topRight',
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.dataTableAppRole.ajax.reload()
+                                    window.dataTableAppUnit.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
-                                        id: 'alert-customer-role-action',
+                                        id: 'alert-app-good-unit-action',
                                         title: 'Error',
                                         message: error.responseJSON.message,
                                         position: 'topRight',
@@ -209,8 +189,8 @@
             });
         }
         $(function() {
-            window.dataTableAppRole = $("#table-customer-role").DataTable({
-                ajax: "{{ route('man.customer-role.data-table') }}",
+            window.dataTableAppUnit = $("#table-app-good-unit").DataTable({
+                ajax: "{{ route('dev.app-good-unit.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -254,38 +234,38 @@
                     }
                 }]
             });
-            window.dataTableAppRole.on('draw.dt', function() {
+            window.dataTableAppUnit.on('draw.dt', function() {
                 actionData();
             });
-            $('#save-customer-role').click(function() {
-                let data = serializeObject($('#form-customer-role'));
+            $('#save-app-good-unit').click(function() {
+                let data = serializeObject($('#form-app-good-unit'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-role.store') }}`,
+                    url: `{{ route('dev.app-good-unit.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role').modal('hide')
+                        $('#modal-app-good-unit').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-app-good-unit-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.dataTableAppRole.ajax.reload();
+                        window.dataTableAppUnit.ajax.reload();
 
                     },
                     error: function(error) {
-                        $('#modal-customer-role .is-invalid').removeClass('is-invalid')
+                        $('#modal-app-good-unit .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-role').find('[name=' + indexInArray +
+                            $('#modal-app-good-unit').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-app-good-unit-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -295,34 +275,34 @@
                     }
                 });
             });
-            $('#edit-customer-role').click(function() {
-                let data = serializeObject($('#form-customer-role'));
+            $('#edit-app-good-unit').click(function() {
+                let data = serializeObject($('#form-app-good-unit'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('man.customer-role.update') }}/${data.id}`,
+                    url: `{{ route('dev.app-good-unit.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-role').modal('hide')
+                        $('#modal-app-good-unit').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-app-good-unit-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.dataTableAppRole.ajax.reload()
+                        window.dataTableAppUnit.ajax.reload()
                     },
                     error: function(error) {
-                        $('#modal-customer-role .is-invalid').removeClass('is-invalid')
+                        $('#modal-app-good-unit .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-role').find('[name=' + indexInArray +
+                            $('#modal-app-good-unit').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-role-form',
+                            id: 'alert-app-good-unit-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -332,20 +312,13 @@
                     }
                 });
             });
-            $('#modal-customer-role').on('hidden.bs.modal', function() {
+            $('#modal-app-good-unit').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
-                $('#save-customer-role').removeClass('d-none');
-                $('#edit-customer-role').addClass('d-none');
-                $('#modal-customer-role .is-invalid').removeClass('is-invalid')
-                $('#table-customer-role tbody').find('tr').removeClass('selected');
-            });
-            $('#modal-customer-role').on('shown.bs.modal', function() {
-                setTimeout(() => {
-                    $('.select2').select2({
-                        dropdownParent: $('#modal-customer-role'),
-                    });
-                }, 140);
+                $('#save-app-good-unit').removeClass('d-none');
+                $('#edit-app-good-unit').addClass('d-none');
+                $('#modal-app-good-unit .is-invalid').removeClass('is-invalid')
+                $('#table-app-good-unit tbody').find('tr').removeClass('selected');
             });
         });
     </script>

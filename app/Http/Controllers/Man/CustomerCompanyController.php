@@ -175,7 +175,7 @@ class CustomerCompanyController extends Controller
 
     public function company()
     {
-        $where = [['userId', '=', session('userLogged')['user']['id']]];
+        $where = [['userId', '=', session('userLogged')['company']['userId']]];
         if (getRole() === 'Developer') {
             $where = [['userId', '<>', null]];
         }

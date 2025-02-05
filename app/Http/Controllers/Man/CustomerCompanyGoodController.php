@@ -34,16 +34,16 @@ class CustomerCompanyGoodController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             $assets = $assets->get();
         } else {
             $assets = CustomerCompanyGood::with('unit')->select('*')
-                ->where('customer_company_goods.name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('customer_company_goods.price', 'like', '%'.$request['search']['value'].'%');
+                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -52,11 +52,11 @@ class CustomerCompanyGoodController extends Controller
             $assets = $assets->get();
 
             $totalFiltered = CustomerCompanyGood::select('*')
-                ->where('customer_company_goods.name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('customer_company_goods.price', 'like', '%'.$request['search']['value'].'%');
+                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->count();
         }
@@ -68,8 +68,8 @@ class CustomerCompanyGoodController extends Controller
             $row['price'] = $item->price;
             $row['stock'] = $item->stock;
             $row['unit'] = $item->unit->name;
-            $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">' . $item->status . '</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">' . $item->status . '</span>' : '<span class="badge bg-label-success">' . $item->status . '</span>');
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -89,11 +89,11 @@ class CustomerCompanyGoodController extends Controller
     {
         $request->validate([
             'name' => 'required|min:6|max:40',
-            'stock' => 'required|numeric|max_digits:8',
-            'price' => 'required|numeric|max_digits:16',
+            'stock' => 'required|max:8',
+            'price' => 'required|max:16',
             'status' => 'required|in:archive,draft,publish',
-            'companyId' => 'required',
-            'unitId' => 'required',
+            'companyId' => 'required|exists:customer_companies,id',
+            'unitId' => 'required|exists:app_good_units,id',
             'picture' => 'image|between:50,800|dimensions:ratio=1/1',
         ], [
             'unitId' => 'The unit field is required.',
@@ -102,9 +102,15 @@ class CustomerCompanyGoodController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->except('_token', 'id');
+<<<<<<< HEAD
             $data['picture'] = 'default-product.png';
+=======
+            $data['picture'] = 'default-product.webp';
+            $data['price'] = str_replace('.', '', $request->price);
+            $data['price'] = str_replace(',', '.', $data['price']);
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
             if ($request->picture) {
-                $filename = md5($request->name.now('Asia/Jakarta')->format('Y-m-d')).'.'.$request->file('picture')->clientExtension();
+                $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
                 Storage::disk('customer-product')->putFileAs('/', $request->picture, $filename);
             }
@@ -145,11 +151,11 @@ class CustomerCompanyGoodController extends Controller
         $request->validate([
             'name' => 'required|min:6|max:40',
             'id' => 'required|numeric',
-            'stock' => 'required|numeric|max_digits:8',
-            'price' => 'required|numeric|max_digits:16',
+            'stock' => 'required|max:8',
+            'price' => 'required|max:16',
             'status' => 'required|in:archive,draft,publish',
-            'unitId' => 'required',
-            'companyId' => 'required',
+            'status' => 'required|in:archive,draft,publish',
+            'companyId' => 'required|exists:customer_companies,id',
             'picture' => 'image|between:50,800|dimensions:ratio=1/1',
         ], [
             'unitId' => 'The unit field is required.',
@@ -163,10 +169,12 @@ class CustomerCompanyGoodController extends Controller
                 if ($product->picture != 'default-product.png') {
                     Storage::disk('customer-product')->delete($product->picture);
                 }
-                $filename = md5($request->name.now('Asia/Jakarta')->format('Y-m-d')).'.'.$request->file('picture')->clientExtension();
+                $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
                 Storage::disk('customer-product')->putFileAs('/', $request->file('picture'), $filename);
             }
+            $data['price'] = str_replace('.', '', $request->price);
+            $data['price'] = str_replace(',', '.', $data['price']);
             CustomerCompanyGood::where([
                 ['id', $id],
                 ['companyId', session('userLogged')['company']['id']],

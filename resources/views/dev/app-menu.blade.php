@@ -138,7 +138,7 @@
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script>
-        window.datatableAppMenu = null;
+        window.dataTableAppMenu = null;
         window.state = 'add';
 
         function actionData() {
@@ -146,12 +146,12 @@
                 window.state = 'update';
                 let idAppMenu = $(this).data("app-menu");
                 $("#edit-app-menu").data("app-menu", idAppMenu);
-                if (window.datatableAppMenu.rows('.selected').data().length == 0) {
+                if (window.dataTableAppMenu.rows('.selected').data().length == 0) {
                     $('#table-app-menu tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppMenu.rows('.selected').data()[0];
+                var data = window.dataTableAppMenu.rows('.selected').data()[0];
 
                 $('#modal-app-menu').modal('show');
                 $('#modal-app-menu').find('.modal-title').html(`Edit @yield('title')`);
@@ -205,12 +205,12 @@
                 window.state = 'add';
                 let idAppMenu = $(this).data("app-menu");
                 $("#edit-app-menu").data("app-menu", idAppMenu);
-                if (window.datatableAppMenu.rows('.selected').data().length == 0) {
+                if (window.dataTableAppMenu.rows('.selected').data().length == 0) {
                     $('#table-app-menu tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppMenu.rows('.selected').data()[0];
+                var data = window.dataTableAppMenu.rows('.selected').data()[0];
 
                 $('#modal-app-menu').modal('show');
                 $('#modal-app-menu').find('.modal-title').html(`Add Child @yield('title')`);
@@ -255,12 +255,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppMenu.rows('.selected').data().length == 0) {
+                if (window.dataTableAppMenu.rows('.selected').data().length == 0) {
                     $('#table-app-menu tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idAppMenu = $(this).data("app-menu");
-                var data = window.datatableAppMenu.rows('.selected').data()[0];
+                var data = window.dataTableAppMenu.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -296,7 +296,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppMenu.ajax.reload()
+                                    window.dataTableAppMenu.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -320,7 +320,7 @@
             });
         }
         $(function() {
-            window.datatableAppMenu = $("#table-app-menu").DataTable({
+            window.dataTableAppMenu = $("#table-app-menu").DataTable({
                 ajax: "{{ route('dev.app-menu.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -367,7 +367,7 @@
                     }
                 }]
             });
-            window.datatableAppMenu.on('draw.dt', function() {
+            window.dataTableAppMenu.on('draw.dt', function() {
                 actionData();
             });
             $('#save-app-menu').click(function() {
@@ -390,7 +390,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppMenu.ajax.reload();
+                        window.dataTableAppMenu.ajax.reload();
 
                     },
                     error: function(error) {
@@ -428,7 +428,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppMenu.ajax.reload()
+                        window.dataTableAppMenu.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-app-menu .is-invalid').removeClass('is-invalid')

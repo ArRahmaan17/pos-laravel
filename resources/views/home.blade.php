@@ -2,11 +2,22 @@
 @section('title', 'Home')
 @section('content')
     <div class="row">
+<<<<<<< HEAD
         @if (session('error'))
             <div class="col-12">
                 <div class="alert alert-danger">{{ session('error') }}</div>
             </div>
         @endif
+=======
+        @session('error')
+            <div class="col-12">
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <strong>Errors! {!! session('error') !!}</strong>
+                </div>
+            </div>
+        @endsession
+>>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
         <div class="col-lg-8 mb-4 order-0">
             <div class="card">
                 <div class="d-flex align-items-end row">

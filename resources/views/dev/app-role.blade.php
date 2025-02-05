@@ -77,7 +77,7 @@
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script>
-        window.datatableAppRole = null;
+        window.dataTableAppRole = null;
         window.state = 'add';
 
         function actionData() {
@@ -85,12 +85,12 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("app-role");
                 $("#edit-app-role").data("app-role", idAppRole);
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-app-role tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
 
                 $('#modal-app-role').modal('show');
                 $('#modal-app-role').find('.modal-title').html(`Edit @yield('title')`);
@@ -124,12 +124,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-app-role tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idAppRole = $(this).data("app-role");
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -165,7 +165,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppRole.ajax.reload()
+                                    window.dataTableAppRole.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -189,7 +189,7 @@
             });
         }
         $(function() {
-            window.datatableAppRole = $("#table-app-role").DataTable({
+            window.dataTableAppRole = $("#table-app-role").DataTable({
                 ajax: "{{ route('dev.app-role.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -234,7 +234,7 @@
                     }
                 }]
             });
-            window.datatableAppRole.on('draw.dt', function() {
+            window.dataTableAppRole.on('draw.dt', function() {
                 actionData();
             });
             $('#save-app-role').click(function() {
@@ -254,7 +254,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload();
+                        window.dataTableAppRole.ajax.reload();
 
                     },
                     error: function(error) {
@@ -292,7 +292,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload()
+                        window.dataTableAppRole.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-app-role .is-invalid').removeClass('is-invalid')

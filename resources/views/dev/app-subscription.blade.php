@@ -63,7 +63,7 @@
                         <div class="row mb-3">
                             <div class="col mb-0">
                                 <label for="price" class="form-label">Subscription Price</label>
-                                <input type="text" id="price" name="price" class="form-control" placeholder="Enter Subscription Price" />
+                                <input type="text" id="price" name="price" class="form-control price" placeholder="Enter Subscription Price" />
                             </div>
                         </div>
                         <div class="row align-items-center align-self-middle px-3">
@@ -126,8 +126,9 @@
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
-        window.datatableAppSubscription = null;
+        window.dataTableAppSubscription = null;
         window.state = 'add';
 
         function repeaterFeature() {
@@ -158,38 +159,46 @@
                 window.state = 'update';
                 let idAppSubscription = $(this).data("app-subscription");
                 $("#edit-app-subscription").data("app-subscription", idAppSubscription);
-                if (window.datatableAppSubscription.rows('.selected').data().length == 0) {
+                if (window.dataTableAppSubscription.rows('.selected').data().length == 0) {
                     $('#table-app-subscription tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppSubscription.rows('.selected').data()[0];
+                var data = window.dataTableAppSubscription.rows('.selected').data()[0];
 
                 $('#modal-app-subscription').modal('show');
                 $('#modal-app-subscription').find('.modal-title').html(`Edit @yield('title')`);
                 $('#save-app-subscription').addClass('d-none');
                 $('#edit-app-subscription').removeClass('d-none');
-
                 $.ajax({
                     type: "GET",
                     url: "{{ route('dev.app-subscription.show') }}/" + idAppSubscription,
                     dataType: "json",
                     success: function(response) {
+                        let first = true;
                         $('#modal-app-subscription').find("form")
                             .find('input, textarea').map(function(index, element) {
                                 if (element.name != '_token') {
-                                    if (element.name == 'planFeature[]') {
-                                        response.data.plan_feature.forEach((data, index) => {
-                                            if (index > 2) {
+                                    if (element.name == 'planFeature[]' && first) {
+                                        response.data.plan_feature.forEach((data, indexPlanFeature) => {
+                                            if (indexPlanFeature > 2) {
                                                 repeaterFeature();
-                                               $($(`input[name="${element.name}"]`)[index]).val(data.planFeature)
+                                                $($(`input[name="${element.name}"]`)[indexPlanFeature]).val(data
+                                                    .planFeature)
                                             } else {
-                                                $($(`input[name="${element.name}"]`)[index]).val(data.planFeature)
+                                                $($(`input[name="${element.name}"]`)[indexPlanFeature]).val(data
+                                                    .planFeature)
                                             }
                                         });
+                                        first = false;
                                     } else if (response.data[element.name]) {
-                                        $(`[name=${element.name}]`).val(response.data[element
-                                            .name])
+                                        if (element.name == 'price') {
+                                            $(`[name=${element.name}]`).val(numberFormat(response.data[element
+                                                .name], ''))
+                                        } else {
+                                            $(`[name=${element.name}]`).val(response.data[element
+                                                .name])
+                                        }
                                     }
                                 }
                             });
@@ -208,12 +217,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppSubscription.rows('.selected').data().length == 0) {
+                if (window.dataTableAppSubscription.rows('.selected').data().length == 0) {
                     $('#table-app-subscription tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idAppSubscription = $(this).data("app-subscription");
-                var data = window.datatableAppSubscription.rows('.selected').data()[0];
+                var data = window.dataTableAppSubscription.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -249,7 +258,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppSubscription.ajax.reload()
+                                    window.dataTableAppSubscription.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -291,7 +300,7 @@
         }
 
         $(function() {
-            window.datatableAppSubscription = $("#table-app-subscription").DataTable({
+            window.dataTableAppSubscription = $("#table-app-subscription").DataTable({
                 ajax: "{{ route('dev.app-subscription.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -341,12 +350,12 @@
                     }
                 }]
             });
-            window.datatableAppSubscription.on('draw.dt', function() {
+            window.dataTableAppSubscription.on('draw.dt', function() {
                 actionData();
             });
-            window.datatableAppSubscription.on('click', 'td.parent', function(e) {
+            window.dataTableAppSubscription.on('click', 'td.parent', function(e) {
                 let tr = e.target.closest('tr');
-                let row = window.datatableAppSubscription.row(tr);
+                let row = window.dataTableAppSubscription.row(tr);
                 if (row.child.isShown()) {
                     // This row is already open - close it
                     row.child.hide();
@@ -372,7 +381,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppSubscription.ajax.reload();
+                        window.dataTableAppSubscription.ajax.reload();
 
                     },
                     error: function(error) {
@@ -410,7 +419,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppSubscription.ajax.reload()
+                        window.dataTableAppSubscription.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-app-subscription .is-invalid').removeClass('is-invalid')
@@ -437,8 +446,19 @@
                 $('#edit-app-subscription').addClass('d-none');
                 $('#modal-app-subscription .is-invalid').removeClass('is-invalid')
                 $('#table-app-subscription tbody').find('tr').removeClass('selected');
+                $('#container-subscription-plan').find('.col-12.mb-1').map((index, element) => {
+                    if ($('#container-subscription-plan').find('.col-12.mb-1').length > 3) {
+                        $(element).remove();
+                    }
+                })
             });
             deletePlanFeature();
+            $('.price').inputmask('currency', {
+                radixPoint: ',',
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false
+            });
         });
     </script>
 @endpush

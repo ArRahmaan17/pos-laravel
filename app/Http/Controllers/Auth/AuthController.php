@@ -36,15 +36,16 @@ class AuthController extends Controller
             if (empty($role) || empty($role->user) || empty($role->role)) {
                 $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
             }
-            $hasPrivileges = true;
+            $hasPrivileges = false;
             if (! in_array($role->role->name, ['Developer', 'Manager'])) {
                 $role['company'] = UserCustomerRole::employeeCompany($role->userId);
+                $role['company']['address'] = CompanyAddress::where('companyId', $role['company']['id'])->first()->toArray();
                 if (UserCustomerRole::employeeMenu($role->userId) == 0) {
-                    $hasPrivileges = false;
+                    $hasPrivileges = true;
                 }
             }
             session()->flush();
-            if ($hasPrivileges) {
+            if (!$hasPrivileges) {
                 session(['userLogged' => collect($role)->toArray()]);
             }
 
