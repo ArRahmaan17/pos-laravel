@@ -68,7 +68,6 @@ class UserCustomerController extends Controller
             }
             $assets = $assets->where('cc.name', session('userLogged')['company']['name'])->get();
         } else {
-<<<<<<< HEAD
             $assets = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
                 ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
                 ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
@@ -76,15 +75,6 @@ class UserCustomerController extends Controller
                 ->orWhere('cr.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('cc.phone_number', 'like', '%' . $request['search']['value'] . '%')
                 ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id');
-=======
-            $assets = User::join('customer_roles as cr', 'cr.userId', '=', 'users.id')
-                ->join('user_customer_roles as ucr', 'ucr.roleId', '=', 'cr.id')
-                ->join('users as uc', 'ucr.userId', '=', 'uc.id')
-                ->select('uc.name', 'uc.phone_number', 'cr.name as role_name', 'uc.username', 'uc.id')
-                ->where('uc.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('cr.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('uc.phone_number', 'like', '%' . $request['search']['value'] . '%');
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
 
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
@@ -95,7 +85,6 @@ class UserCustomerController extends Controller
             }
             $assets = $assets->where('cc.name', session('userLogged')['company']['name'])->get();
 
-<<<<<<< HEAD
             $totalFiltered = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
                 ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
                 ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
@@ -103,15 +92,6 @@ class UserCustomerController extends Controller
                 ->where('cc.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('cr.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('cc.phone_number', 'like', '%' . $request['search']['value'] . '%');
-=======
-            $totalFiltered = User::join('customer_roles as cr', 'cr.userId', '=', 'users.id')
-                ->join('user_customer_roles as ucr', 'ucr.roleId', '=', 'cr.id')
-                ->join('users as uc', 'ucr.userId', '=', 'uc.id')
-                ->select('uc.name', 'uc.phone_number', 'cr.name as role_name', 'uc.username', 'uc.id')
-                ->where('uc.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('cr.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('uc.phone_number', 'like', '%' . $request['search']['value'] . '%');
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
 
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
@@ -125,11 +105,7 @@ class UserCustomerController extends Controller
             $row['name'] = $item->name . '<br><small>(' . $item->username . ')</small>';
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['role'] = $item->role_name;
-<<<<<<< HEAD
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-user-customer='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-user-customer='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>" . (in_array(getRole(), ['Developer', 'Manager']) ? '<button class="btn btn-icon btn-info login-as" data-user-customer="' . $item->id . '"><i class="bx bx-log-in"></i></button>' : '');
-=======
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-user-customer='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-user-customer='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
             $dataFiltered[] = $row;
         }
         $response = [
@@ -204,11 +180,7 @@ class UserCustomerController extends Controller
             'username' => 'required|unique:users,username,' . $id,
             'email' => 'required|unique:users,email,' . $id,
             'phone_number' => 'required|unique:users,phone_number,' . $id,
-<<<<<<< HEAD
             'roleId' => 'required|exists:user_customer_roles,id',
-=======
-            'roleId' => 'required',
->>>>>>> cb3cc10 (feat: product transaction (model), authentication (module), app good unit (module, model), customer company (module), customer company discount (module,model, migration), company good (module,migration), company warehouse (module), customer role (module, model), warehouse rack (module), user customer (module), check authorization page (middleware), customer role (model))
         ]);
         DB::beginTransaction();
         try {

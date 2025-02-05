@@ -19,7 +19,10 @@ return new class extends Migration
                 ->on('app_subscriptions')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->string('planFeature')->nullable(false);
+            $table->string('text_feature')->nullable(false);
+            $table->integer('amount')->nullable(true);
+            $table->boolean('status')->nullable(true);
+            $table->enum('category', ['file', 'logic', 'custom_menu', 'transaction', 'data', 'custom_report', 'full_access_report']);
             $table->timestamps();
         });
     }

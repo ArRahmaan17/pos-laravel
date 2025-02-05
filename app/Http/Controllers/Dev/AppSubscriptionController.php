@@ -84,18 +84,31 @@ class AppSubscriptionController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|min:6|max:40',
+            'name' => 'required|min:5|max:40|unique:app_subscriptions,name',
             'description' => 'required|min:6|max:40',
-            'price' => 'required|numeric|max_digits:16',
-            'planFeature' => 'required|array',
+            'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'details' => 'required|array',
+            'details.*.text_feature' => 'required|string',
+            'details.*.category' => 'required|in:file,logic,custom_menu,transaction,data,custom_report,full_access_report',
+            'details.*.amount' => 'required_if:category,file|required_if:category,transaction|required_if:category,data|regex:/(\d{1,3}(?:\.\d{3})*)/i',
+            'details.*.status' => 'required_if:category,logic|required_if:category,custom_menu|required_if:category,custom_report|required_if:category,full_access_report|in:true,false',
         ]);
         DB::beginTransaction();
         try {
-            $data = $request->except('_token', 'id', 'planFeature');
+            $data = $request->except('_token', 'id', 'details');
+            $data['price'] = numberFormat($data['price']);
             $subscription = AppSubscription::create($data);
-            $subs_feature = array_map(function ($data) use ($subscription) {
-                return ['subscriptionId' => $subscription->id, 'planFeature' => $data, 'created_at' => now('Asia/Jakarta'), 'updated_at' => now('Asia/Jakarta')];
-            }, $request->planFeature);
+            $subs_feature = array_map(function ($detail) use ($subscription) {
+                return [
+                    'subscriptionId' => $subscription->id,
+                    'text_feature' => $detail['text_feature'],
+                    'category' => $detail['category'],
+                    'amount' => numberFormat($detail['amount']) ?? null,
+                    'status' => $detail['status'] ?? null,
+                    'created_at' => now('Asia/Jakarta'),
+                    'updated_at' => now('Asia/Jakarta')
+                ];
+            }, $request->details);
             AppDetailSubscription::insert($subs_feature);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
@@ -132,7 +145,7 @@ class AppSubscriptionController extends Controller
         $request->validate([
             'name' => 'required|min:6|max:40',
             'description' => 'required|min:6|max:40',
-            'price' => 'required|numeric|max_digits:16',
+            'price' => 'required|numeric|max_digits:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'planFeature' => 'required|array',
         ]);
         DB::beginTransaction();

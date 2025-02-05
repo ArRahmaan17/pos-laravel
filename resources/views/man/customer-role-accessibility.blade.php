@@ -36,7 +36,7 @@
         </div>
     </div>
     <div class="modal fade" id="modal-customer-role-accessibility" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel3">Add New @yield('title')</h5>
