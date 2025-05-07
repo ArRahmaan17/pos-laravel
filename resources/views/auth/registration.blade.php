@@ -122,7 +122,7 @@
                             </div>
                         @endif
                         <!-- /Logo -->
-                        <form id="formAuthentication" enctype="multipart/form-data" class="mb-3"
+                        <form id="form-registration" class="mb-3"
                             action="{{ route('auth.registration.process') }}" method="POST">
                             <div class="divider">
                                 <div class="divider-text">
@@ -150,8 +150,7 @@
                                     <label for="user[username]" class="form-label">Username</label>
                                     <input type="text"
                                         class="form-control @error('user.username') is-invalid @enderror"
-                                        id="user[username]"name="user[username]" value="{{ old('user.username') }}"
-                                        autofocus />
+                                        id="user[username]"name="user[username]" value="{{ old('user.username') }}" />
                                     @error('user.username')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -351,22 +350,22 @@
                 }
             });
             $('.select2').select2();
-            let accountUserImage = document.getElementById('uploadedAvatar');
-            const fileInput = document.querySelector('.account-file-input'),
-                resetFileInput = document.querySelector('.account-image-reset');
+            // let accountUserImage = document.getElementById('uploadedAvatar');
+            // const fileInput = document.querySelector('.account-file-input'),
+            //     resetFileInput = document.querySelector('.account-image-reset');
 
-            if (accountUserImage) {
-                const resetImage = accountUserImage.src;
-                fileInput.onchange = () => {
-                    if (fileInput.files[0]) {
-                        accountUserImage.src = window.URL.createObjectURL(fileInput.files[0]);
-                    }
-                };
-                resetFileInput.onclick = () => {
-                    fileInput.value = '';
-                    accountUserImage.src = resetImage;
-                };
-            }
+            // if (accountUserImage) {
+            //     const resetImage = accountUserImage.src;
+            //     fileInput.onchange = () => {
+            //         if (fileInput.files[0]) {
+            //             accountUserImage.src = window.URL.createObjectURL(fileInput.files[0]);
+            //         }
+            //     };
+            //     resetFileInput.onclick = () => {
+            //         fileInput.value = '';
+            //         accountUserImage.src = resetImage;
+            //     };
+            // }
         });
     </script>
 </body>

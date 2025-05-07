@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\CustomerProductTransaction;
+use App\Models\CustomerTemporaryProduct;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -37,20 +38,28 @@ function buatSingkatan($kalimat)
 if (! function_exists('lastCompanyOrderCode')) {
     function lastCompanyOrderCode($transaction_status = 'OUT')
     {
-        $data = CustomerProductTransaction::where('companyId', session('userLogged')['company']['id'])
-            ->orderBy('id', 'DESC')
-            ->first();
-        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
+        if ($transaction_status == 'OUT') {
+            $data = CustomerProductTransaction::where('orderCode', 'like', '%' . $transaction_status . '%')
+                ->where('companyId', session('userLogged')['company']['id'])
+                ->orderBy('id', 'DESC')
+                ->first();
+        } else {
+            $data = CustomerTemporaryProduct::where('orderCode', 'like', '%' . $transaction_status . '%')
+                ->where('companyId', session('userLogged')['company']['id'])
+                ->orderBy('id', 'DESC')
+                ->first();
+        }
+        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now()->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
         if ($data && explode(
-            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
+            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now()->format('Y-m-d') . '-',
             $data->orderCode
         )) {
-            $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-' . str_pad(
+            $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now()->format('Y-m-d') . '-' . str_pad(
                 intval(
                     implode(
                         '',
                         explode(
-                            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now('Asia/Jakarta')->format('Y-m-d') . '-',
+                            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now()->format('Y-m-d') . '-',
                             $data->orderCode
                         )
                     )
@@ -74,10 +83,7 @@ if (! function_exists('stringPad')) {
 
 function unFormattedPhoneNumber($formattedNumber)
 {
-    // Remove any characters that are not digits
     $unformattedNumber = preg_replace('/\D/', '', $formattedNumber);
-
-    // Ensure the number starts with '62' after removing non-digit characters
     if (substr($unformattedNumber, 0, 2) !== '62') {
         return 'Invalid Indonesian phone number.';
     }
@@ -87,21 +93,13 @@ function unFormattedPhoneNumber($formattedNumber)
 }
 function formatIndonesianPhoneNumber($phoneNumber)
 {
-    // Remove any non-digit characters
     $cleaned = preg_replace('/\D/', '', $phoneNumber);
-
-    // Check if the number starts with the country code and remove it
     if (strpos($cleaned, '62') === 0) {
         $cleaned = substr($cleaned, 2);
     }
-
-    // Ensure the number starts with 0
     if ($cleaned[0] !== '+62') {
         $cleaned = '+62' . $cleaned;
     }
-
-    // Format the number (e.g., (021) 123-4567 or 0812-345-6789)
-    // This is just a basic example; you may need to adjust formatting based on specific needs
     $formatted = preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})/', '$1 $2-$3-$4', $cleaned);
 
     return $formatted;
@@ -129,21 +127,13 @@ if (! function_exists('dataToOption')) {
 }
 function removeDuplicate($array)
 {
-    // Initialize an empty array to store unique IDs
     $uniqueIds = [];
-
-    // Iterate through the input array
     foreach ($array as $item) {
-        // Check if the ID of the current item exists in $uniqueIds array
         if (! in_array($item, $uniqueIds)) {
-            // If ID doesn't exist, add it to $uniqueIds and keep the item
             $uniqueIds[] = $item;
             $uniqueArray[] = $item;
         }
-        // If ID already exists, skip adding it to $uniqueArray (thus removing duplicate)
     }
-
-    // Return the array with unique IDs
     return $uniqueArray;
 }
 
@@ -362,7 +352,7 @@ if (! function_exists('buildMenu')) {
                     </li>';
                     } else {
                         $html .= '<li class="menu-item">
-                    <a href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '" class="menu-link ' . (Route::is($element['route']) ? 'bg-primary rounded-sm text-white' : '') . '">
+                    <a href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '" class="menu-link ' . (Route::is($element['route']) ? 'bg-primary text-white rounded-sm' : '') . '">
                         <i class="menu-icon tf-icons ' . $element['icon'] . '"></i>
                         <div data-i18n="' . $element['name'] . '">' . $element['name'] . '</div>
                     </a>

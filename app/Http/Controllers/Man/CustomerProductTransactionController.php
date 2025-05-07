@@ -303,8 +303,8 @@ class CustomerProductTransactionController extends Controller
                     'quantity' => $product['quantity'],
                     'price' => $goods[$product['id']]->price,
                     'total' => $goods[$product['id']]->price * intval($product['quantity']),
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ];
             }
             CustomerDetailProductTransaction::insert($dataDetail);

@@ -53,6 +53,54 @@
                             SELECT YOUR COMPANY
                         </div>
                         <div class="d-flex row company-container justify-content-center gap-2 gap-md-5 mt-5">
+                            <div class="card col-12 col-sm-5 col-md-4 col-lg-3" aria-hidden="true">
+                                <img src="..." class="card-img-top placeholder-glow" alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title placeholder-glow">
+                                        <span class="placeholder col-6"></span>
+                                    </h5>
+                                    <p class="card-text placeholder-glow">
+                                        <span class="placeholder col-7"></span>
+                                        <span class="placeholder col-4"></span>
+                                        <span class="placeholder col-4"></span>
+                                        <span class="placeholder col-6"></span>
+                                        <span class="placeholder col-8"></span>
+                                    </p>
+                                    <a class="btn btn-primary disabled placeholder col-6" aria-disabled="true"></a>
+                                </div>
+                            </div>
+                            <div class="card col-12 col-sm-5 col-md-4 col-lg-3" aria-hidden="true">
+                                <img src="..." class="card-img-top placeholder-glow" alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title placeholder-glow">
+                                        <span class="placeholder col-6"></span>
+                                    </h5>
+                                    <p class="card-text placeholder-glow">
+                                        <span class="placeholder col-7"></span>
+                                        <span class="placeholder col-4"></span>
+                                        <span class="placeholder col-4"></span>
+                                        <span class="placeholder col-6"></span>
+                                        <span class="placeholder col-8"></span>
+                                    </p>
+                                    <a class="btn btn-primary disabled placeholder col-6" aria-disabled="true"></a>
+                                </div>
+                            </div>
+                            <div class="card col-12 col-sm-5 col-md-4 col-lg-3" aria-hidden="true">
+                                <img src="..." class="card-img-top placeholder-glow" alt="...">
+                                <div class="card-body">
+                                    <h5 class="card-title placeholder-glow">
+                                        <span class="placeholder col-6"></span>
+                                    </h5>
+                                    <p class="card-text placeholder-glow">
+                                        <span class="placeholder col-7"></span>
+                                        <span class="placeholder col-4"></span>
+                                        <span class="placeholder col-4"></span>
+                                        <span class="placeholder col-6"></span>
+                                        <span class="placeholder col-8"></span>
+                                    </p>
+                                    <a class="btn btn-primary disabled placeholder col-6" aria-disabled="true"></a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -80,7 +128,8 @@
                 url: `{{ route('list-company') }}`,
                 dataType: "json",
                 success: function(response) {
-                    const cardContainer = document.querySelector('.company-container')
+                    const cardContainer = document.querySelector('.company-container');
+                    cardContainer.innerHTML = ``;
                     response.data.forEach(item => {
                         const card = `
                                <div class="card mb-4 col-12 col-sm-5 col-md-4 col-lg-3">

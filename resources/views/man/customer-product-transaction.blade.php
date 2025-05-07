@@ -44,11 +44,10 @@
                 </div>
             </form>
             <div class="col-12 text-end">
-                <div class="btn-group" role="group" aria-label="Basic example">
-                    <button type="button" data-bs-toggle="modal" data-bs-target="#modal-customer-product" class="btn btn-icon btn-outline-success"><i
-                            class="bx bx-plus"></i></button>
-                    <button type="button" class="btn btn-icon btn-outline-danger clear-cart"><i class="bx bx-x"></i></button>
-                </div>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#modal-customer-product" class="btn-sm btn btn-outline-success"><i
+                        class="bx bx-plus mb-1"></i><span class="d-none d-md-inline-block">Add</span></button>
+                <button type="button" class="btn-sm btn btn-outline-danger clear-cart"><i class="bx bx-x mb-1"></i><span
+                        class="d-none d-md-inline-block">Remove</span></button>
             </div>
             <div class="mt-3 container-product">
                 <ul class="list-group cart-product py-1 px-2" style="min-height: 350px;max-height: 350px; overflow-y:scroll;">
@@ -280,13 +279,10 @@
                     data.quantity = 1;
                     $('.cart-product').append(`<div id="${data.id}" data-product='${JSON.stringify(data)}' class="list-group-item cart-item d-flex flex-wrap justify-content-between">
                         <div class="row align-items-center">
-                            <div class="col-1">
-                                <input class="form-check-input me-2" type="checkbox">
-                            </div>
                             <div class="col-3">
                                 <img src="../customer-product/${data.picture}" width="45px" alt="${data.name}" class="rounded">
                             </div>
-                            <div class="col-7 align-self-center pt-2">
+                            <div class="col-8 align-self-center pt-2">
                                 <h5 class="mb-1">${data.name}</h5>
                                 <p class="mb-1">Unit: ${data.unit}</p>
                             </div>

@@ -229,8 +229,8 @@
             });
             $('.edit').click(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("customer-user");
-                $("#edit-customer-user").data("customer-user", idAppRole);
+                let idCustomerUser = $(this).data("customer-user");
+                $("#edit-customer-user").data("customer-user", idCustomerUser);
                 if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-user tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
@@ -245,7 +245,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('man.customer-user.show') }}/" + idAppRole,
+                    url: "{{ route('man.customer-user.show') }}/" + idCustomerUser,
                     dataType: "json",
                     success: function(response) {
                         let formElement = $('#modal-customer-user').find("form");
@@ -286,7 +286,7 @@
                     $('#table-customer-user tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("customer-user");
+                let idCustomerUser = $(this).data("customer-user");
                 var data = window.dataTableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
@@ -309,7 +309,7 @@
                             $.ajax({
                                 type: "DELETE",
                                 url: "{{ route('man.customer-user.delete') }}/" +
-                                    idAppRole,
+                                    idCustomerUser,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
                                 },

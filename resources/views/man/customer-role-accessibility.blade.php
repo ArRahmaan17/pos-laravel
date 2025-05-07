@@ -93,15 +93,15 @@
                                             </tr>
                                             @foreach ($menus as $menu)
                                                 <tr>
-                                                    <td class="text-nowrap fw-medium text-heading">{{ $menu->name }}</td>
+                                                    <td class="text-nowrap fw-medium text-heading">{{ $menu['name'] }}</td>
                                                     <td>
                                                         <div class="d-flex justify-content-end">
                                                             <div class="form-check form-check-reverse mb-0">
-                                                                <label class="form-check-label" for="access{{ $menu->id }}">
+                                                                <label class="form-check-label" for="access{{ $menu['id'] }}">
                                                                     Access
                                                                 </label>
                                                                 <input class="form-check-input menu-access" name="menuId[]" type="checkbox"
-                                                                    value="{{ $menu->id }}" id="access{{ $menu->id }}">
+                                                                    value="{{ $menu['id'] }}" id="access{{ $menu['id'] }}">
                                                             </div>
                                                         </div>
                                                     </td>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('throttle:100,1')->group(function () {
+    Route::get('/check-available-user', [AuthController::class, 'checkAvailableUser'])
+        ->name('check-available-user');
+    Route::get('/company-types', [AuthController::class, 'companyTypes'])
+        ->name('company-types');
+    Route::get('/company-types', [AuthController::class, 'companyTypes'])
+        ->name('check-company-availability');
 });

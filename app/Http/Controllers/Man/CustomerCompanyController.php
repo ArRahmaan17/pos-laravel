@@ -132,7 +132,7 @@ class CustomerCompanyController extends Controller
         try {
             $data = $request->except('address', '_token');
             if ($request->has('picture')) {
-                $profile_picture = md5(now('Asia/Jakarta')->format('Y-m-d H:i:s')) . '.' . $request->file('picture')->getClientOriginalExtension();
+                $profile_picture = md5(now()->format('Y-m-d H:i:s')) . '.' . $request->file('picture')->getClientOriginalExtension();
                 $profile_picture = Storage::disk('company-profile')
                     ->putFileAs('/', $request->picture, $profile_picture);
                 $data['picture'] = $profile_picture;
@@ -232,7 +232,7 @@ class CustomerCompanyController extends Controller
             $data = $request->except('address', '_token');
             if ($request->has('picture')) {
                 $company = CustomerCompany::find($id);
-                $profile_picture = md5(now('Asia/Jakarta')->format('Y-m-d H:i:s')) . '.' . $request->file('picture')
+                $profile_picture = md5(now()->format('Y-m-d H:i:s')) . '.' . $request->file('picture')
                     ->getClientOriginalExtension();
                 if ($company->picture != 'default-picture.png') {
                     Storage::disk('company-profile')

@@ -12,7 +12,7 @@ class AppMenu extends Model
 
     protected $fillable = ['name', 'route', 'icon', 'parent', 'dev_only', 'place'];
 
-    protected $hidden = ['dev_only', 'id', 'place', 'parent'];
+    protected $hidden = ['dev_only', 'place', 'created_at', 'updated_at'];
 
     public static function getChildMenu($id)
     {
@@ -21,7 +21,7 @@ class AppMenu extends Model
 
     public static function customer_menu()
     {
-        return self::where('dev_only', 0)->get();
+        return self::where('dev_only', 0)->orderBy('created_at')->get()->toArray();
     }
 
     public function child(): HasMany

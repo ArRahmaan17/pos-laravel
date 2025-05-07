@@ -14,6 +14,7 @@ use App\Http\Controllers\Man\CustomerRoleAccessibilityController;
 use App\Http\Controllers\Man\CustomerRoleController;
 use App\Http\Controllers\Man\CustomerWareHouseRackGoodController;
 use App\Http\Controllers\Man\UserCustomerController;
+use App\Http\Controllers\ReportController;
 use App\Http\Middleware\Authorization;
 use App\Http\Middleware\checkPageAuthorization;
 use App\Http\Middleware\UnAuthorization;
@@ -90,6 +91,9 @@ Route::middleware([Authorization::class])->group(function () {
         });
     });
     Route::name('man')->as('man.')->prefix('man')->group(function () {
+        Route::name('report')->as('report.')->prefix('report')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
+        });
         Route::name('customer-company')->as('customer-company.')->prefix('customer-company')->group(function () {
             Route::get('/', [CustomerCompanyController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
             Route::post('/', [CustomerCompanyController::class, 'store'])->name('store');
@@ -139,8 +143,10 @@ Route::middleware([Authorization::class])->group(function () {
         Route::name('customer-company-good')->as('customer-company-good.')->prefix('customer-company-good')->group(function () {
             Route::get('/', [CustomerCompanyGoodController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
             Route::post('/', [CustomerCompanyGoodController::class, 'store'])->name('store');
+            Route::post('/store-temp-product/{date}', [CustomerCompanyGoodController::class, 'storeTodayTempProduct'])->name('store-temp-product');
             Route::post('/{id?}', [CustomerCompanyGoodController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyGoodController::class, 'dataTable'])->name('data-table');
+            Route::get('/temp-product', [CustomerCompanyGoodController::class, 'tempProduct'])->name('temp-product');
             Route::get('/{id?}', [CustomerCompanyGoodController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerCompanyGoodController::class, 'destroy'])->name('delete');
         });
@@ -156,7 +162,6 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/', [CustomerWareHouseRackGoodController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
             Route::post('/', [CustomerWareHouseRackGoodController::class, 'store'])->name('store');
             Route::put('/{rackId?}/{id?}', [CustomerWareHouseRackGoodController::class, 'update'])->name('update');
-            Route::get('/data-table', [CustomerWareHouseRackGoodController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerWareHouseRackGoodController::class, 'racks'])->name('show');
         });
         Route::name('customer-product-transaction')->as('customer-product-transaction.')->prefix('customer-product-transaction')->group(function () {

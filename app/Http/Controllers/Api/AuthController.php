@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\BusinessType;
@@ -10,17 +10,13 @@ use App\Models\CustomerRole;
 use App\Models\User;
 use App\Models\UserCustomerRole;
 use App\Models\UserRole;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function index()
-    {
-        return view('auth.index');
-    }
-
     public function login(Request $request)
     {
         $request->validate([
@@ -225,41 +221,38 @@ class AuthController extends Controller
             return redirect()->back();
         }
     }
-
-    public function logout()
+    public function checkAvailableUser(Request $request)
     {
-        session()->flush();
-
-        return redirect()->route('home');
-    }
-
-    public function customerCompany()
-    {
-        $where = [['userId', '=', session('userLogged')['user']['id']]];
-        if (getRole() === 'Developer') {
-            $where = [['userId', '<>', null]];
+        $request->validate([
+            'name' => 'required|string',
+            'username' => 'required|string|max:25|min:5|unique:users,name',
+            'email' => 'required|string|unique:users,email|email',
+            'phone_number' => 'required|string|unique:users,phone_number|regex:/8\d{10,11}$/',
+        ]);
+        $checkUser = User::where([
+            'username' => $request->username,
+        ])->orWhere(function (Builder $query) use ($request) {
+            $query->where('email', $request->email)->where('phone_number', $request->phone_number);
+        })->count();
+        if ($checkUser >= 1) {
+            $response = ['message' => 'User already exists'];
+            $code = 422;
+        } else {
+            $response = ['message' => 'User still available'];
+            $code = 200;
         }
-        $data = CustomerCompany::with('address', 'type')->where($where)->get();
-        $code = 200;
-        $response = ['message' => 'Showing resource successfully', 'data' => $data];
-        if (empty($data)) {
-            $code = 404;
-            $response = ['message' => 'Failed showing resource', 'data' => $data];
-        }
-
         return response()->json($response, $code);
     }
-    public function requestChangePassword()
+    public function companyTypes()
     {
-        return view('auth.change-password');
-    }
-
-    public function changeCompany()
-    {
-        $data = session('userLogged');
-        unset($data['company']);
-        session(['userLogged' => $data]);
-
-        return redirect()->route('home');
+        $allCompanyTypes = BusinessType::all()->toArray();
+        if ($allCompanyTypes) {
+            $response = ['message' => 'Successfully fetch company types', 'data'=> $allCompanyTypes];
+            $code = 200;
+        } else {
+            $response = ['message' => 'Failed fetch company types', 'data'=> $allCompanyTypes];
+            $code = 404;
+        }
+        return response()->json($response, $code);
     }
 }

@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('app_subscriptions', function (Blueprint $table) {
+        Schema::create('app_payment_methods', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('description');
-            $table->decimal('price', 16, 2);
+            $table->string('icon');
+            $table->text('description');
+            $table->boolean('tax_coverage')->default(false);
+            $table->integer('tax')->default(11);
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('app_subscriptions');
+        Schema::dropIfExists('app_payment_methods');
     }
 };

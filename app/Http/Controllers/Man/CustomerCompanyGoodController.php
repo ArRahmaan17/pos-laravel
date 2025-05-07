@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Man;
 use App\Http\Controllers\Controller;
 use App\Models\AppGoodUnit;
 use App\Models\CustomerCompanyGood;
+use App\Models\CustomerTemporaryProduct;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use League\CommonMark\Extension\SmartPunct\EllipsesParser;
 
 class CustomerCompanyGoodController extends Controller
 {
@@ -88,14 +91,14 @@ class CustomerCompanyGoodController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|min:6|max:40',
+            'name' => 'required|min:6|max:40|unique:customer_temporary_products,name',
             'stock' => 'required|max:8',
             'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'buyPrice' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'status' => 'required|in:archive,draft,publish',
             'companyId' => 'required|exists:customer_companies,id',
             'unitId' => 'required|exists:app_good_units,id',
-            'picture' => 'image|between:50,800|dimensions:ratio=1/1',
+            'picture' => 'image|between:1,800|dimensions:ratio=1/1',
         ], [
             'unitId' => 'The unit field is required.',
             'companyId' => 'The company field is required.',
@@ -104,14 +107,18 @@ class CustomerCompanyGoodController extends Controller
         try {
             $data = $request->except('_token', 'id');
             $data['picture'] = 'default-product.png';
-            $data['price'] = str_replace('.', '', $request->price);
-            $data['price'] = str_replace(',', '.', $data['price']);
+            $data['companyId'] = session('userLogged')['company']['id'];
+            $data['userId'] = session('userLogged')['user']['id'];
+            $data['price'] = str_replace(',', '.', str_replace('.', '', $request->price));
+            $data['buyPrice'] = str_replace(',', '.', str_replace('.', '', $request->buyPrice));
             if ($request->picture) {
-                $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
+                $filename = md5($request->name . now()->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
-                Storage::disk('customer-product')->putFileAs('/', $request->picture, $filename);
+                Storage::disk('public')->makeDirectory('temp-customer-product');
+                Storage::disk('temp-customer-product')->putFileAs('/', $request->picture, $filename);
             }
-            CustomerCompanyGood::create($data);
+            $data['orderCode'] = lastCompanyOrderCode('IN');
+            CustomerTemporaryProduct::create($data);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -119,6 +126,96 @@ class CustomerCompanyGoodController extends Controller
             DB::rollBack();
             $response = ['message' => 'failed creating resource'];
             $code = 422;
+        }
+
+        return response()->json($response, $code);
+    }
+
+    public function storeTodayTempProduct(String $date)
+    {
+        DB::beginTransaction();
+        try {
+            if (!in_array(getRole(), ['Developer', 'Manager'])) {
+                throw new Exception('Not Authorize');
+            }
+            $data = CustomerTemporaryProduct::with('product')->whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
+            $dataUpdate = [];
+            $dataDelete = [];
+            $dataInsert = [];
+            foreach ($data as $index => $value) {
+                $record = [
+                    'stock' => $value->stock,
+                    'name' => $value->name,
+                    'picture' => $value->picture,
+                    'price' => $value->price,
+                    'buyPrice' => $value->buyPrice,
+                    'unitId' => $value->unitId,
+                    'companyId' => $value->companyId,
+                    'status' => $value->status,
+                    'picture' => $value->picture,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+                if ($value->customerCompanyGoodId) {
+                    $record['id'] = $value->customerCompanyGoodId;
+                    if (count(explode('REMOVE', $value->orderCode)) > 1) {
+                        $record['product'] = $value->product;
+                        $dataDelete[] = $record;
+                    } else {
+                        $dataUpdate[] = $record;
+                    }
+                } else {
+                    $dataInsert[] = $record;
+                }
+            }
+            if (!empty($dataInsert)) {
+                CustomerCompanyGood::insert($dataInsert);
+                foreach ($dataInsert as $index => $value) {
+                    Storage::disk('public-asset')->move('temp-customer-product/' . $value['picture'], 'customer-product/' . $value['picture']);
+                }
+            }
+            if (!empty($dataUpdate)) {
+                CustomerCompanyGood::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buyPrice', 'unitId']);
+                foreach ($dataUpdate as $index => $value) {
+                    if (Storage::disk('public-asset')->exists('temp-customer-product/' . $value['picture'])) {
+                        Storage::disk('public-asset')->move('temp-customer-product/' . $value['picture'], 'customer-product/' . $value['picture']);
+                    }
+                }
+            }
+            if (!empty($dataDelete)) {
+                foreach ($dataDelete as $index => $value) {
+                    if ($value['product']['picture'] != 'default-product.png') {
+                        Storage::disk('customer-product')->delete($value['product']['picture']);
+                    }
+                }
+                CustomerCompanyGood::whereIn(
+                    'id',
+                    array_map(function ($data) {
+                        return $data['id'];
+                    }, $dataDelete)
+                )->delete();
+            }
+            CustomerTemporaryProduct::whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1]);
+            $response = ['message' => 'creating resource successfully'];
+            $code = 200;
+            DB::commit();
+        } catch (\Exception $th) {
+            DB::rollBack();
+            $response = ['message' => 'failed creating resource' . ($th->getCode() == 0) ? ', ' . $th->getMessage() : ''];
+            $code = 422;
+        }
+
+        return response()->json($response, $code);
+    }
+
+    public function tempProduct()
+    {
+        $data = CustomerTemporaryProduct::with('unit', 'product')->whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
+        $response = ['message' => 'showing resource successfully', 'data' => $data];
+        $code = 200;
+        if (empty($data)) {
+            $response = ['message' => 'failed showing resource', 'data' => $data];
+            $code = 404;
         }
 
         return response()->json($response, $code);
@@ -146,14 +243,14 @@ class CustomerCompanyGoodController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required|min:6|max:40',
+            'name' => 'required|min:6|max:40|unique:customer_temporary_products,name,' . $id,
             'id' => 'required|numeric',
             'stock' => 'required|max:8',
             'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'buyPrice' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'status' => 'required|in:archive,draft,publish',
             'companyId' => 'required|exists:customer_companies,id',
-            'picture' => 'image|between:50,800|dimensions:ratio=1/1',
+            'picture' => 'image|between:1,800|dimensions:ratio=1/1',
         ], [
             'unitId' => 'The unit field is required.',
             'companyId' => 'The unit field is required.',
@@ -161,21 +258,19 @@ class CustomerCompanyGoodController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->except('_token', 'id');
+            $data['picture'] = CustomerCompanyGood::find($id)->picture;
             if ($request->file('picture')) {
-                $product = CustomerCompanyGood::find($id);
-                if ($product->picture != 'default-product.png') {
-                    Storage::disk('customer-product')->delete($product->picture);
-                }
-                $filename = md5($request->name . now('Asia/Jakarta')->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
+                $filename = md5($request->name . now()->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
-                Storage::disk('customer-product')->putFileAs('/', $request->file('picture'), $filename);
+                Storage::disk('temp-customer-product')->putFileAs('/', $request->file('picture'), $filename);
             }
-            $data['price'] = str_replace('.', '', $request->price);
-            $data['price'] = str_replace(',', '.', $data['price']);
-            CustomerCompanyGood::where([
-                ['id', $id],
-                ['companyId', session('userLogged')['company']['id']],
-            ])->update($data);
+            $data['price'] = str_replace(',', '.', str_replace('.', '', $request->price));
+            $data['buyPrice'] = str_replace(',', '.', str_replace('.', '', $request->buyPrice));
+            $data['companyId'] = session('userLogged')['company']['id'];
+            $data['userId'] = session('userLogged')['user']['id'];
+            $data['customerCompanyGoodId'] = $id;
+            $data['orderCode'] = lastCompanyOrderCode('RESTOCK');
+            CustomerTemporaryProduct::create($data);
             $response = ['message' => 'updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -195,11 +290,18 @@ class CustomerCompanyGoodController extends Controller
     {
         DB::beginTransaction();
         try {
-            Storage::disk('customer-product')->delete(CustomerCompanyGood::find($id)->picture);
-            CustomerCompanyGood::where([
-                ['id', $id],
-                ['companyId', session('userLogged')['company']['id']],
-            ])->delete();
+            $data = [
+                'orderCode' => lastCompanyOrderCode('REMOVE'),
+                'customerCompanyGoodId' => $id,
+                'companyId' => session('userLogged')['company']['id'],
+                'userId' => session('userLogged')['user']['id'],
+            ];
+            CustomerTemporaryProduct::create($data);
+            // Storage::disk('customer-product')->delete(CustomerCompanyGood::find($id)->picture);
+            // CustomerCompanyGood::where([
+            //     ['id', $id],
+            //     ['userId', session('userLogged')['company']['id']],
+            // ])->delete();
             $response = ['message' => 'deleting resource successfully'];
             $code = 200;
             DB::commit();

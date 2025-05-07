@@ -109,8 +109,8 @@ class CustomerCompanyWarehouseController extends Controller
             foreach ($request->only('racks')['racks'] as $index => $rack) {
                 $racks[] = array_merge($rack, [
                     'warehouseId' => $warehouse['id'],
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
             CustomerWarehouseRack::insert($racks);

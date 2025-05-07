@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('customer_product_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('orderCode');
+            $table->string('orderCode')->unique();
             $table->bigInteger('userId')->unsigned();
             $table->foreign('userId')
                 ->references('id')

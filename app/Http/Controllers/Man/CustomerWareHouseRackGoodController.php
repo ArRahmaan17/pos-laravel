@@ -17,9 +17,7 @@ class CustomerWareHouseRackGoodController extends Controller
      */
     public function index()
     {
-        $where = [['userId', '=', session('userLogged')['company']['userId']]];
-        $companies = CustomerCompany::where($where)->get();
-
+        $companies = CustomerCompany::where('userId', '=', session('userLogged')['company']['userId'])->get();
         return view('man.customer-good-rack', compact('companies'));
     }
 

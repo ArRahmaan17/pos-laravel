@@ -38,7 +38,7 @@ class UserCustomerController extends Controller
             $id = session('userLogged')['user']['id'];
         }
         $role = $request->roleId;
-        $link = route('auth.registration') . '?action=' . base64_encode($id . '|' . now('Asia/Jakarta')->add($request->time_limit) . '|' . $role . '|' . env('APP_SECRET'));
+        $link = route('auth.registration') . '?action=' . base64_encode($id . '|' . now()->add($request->time_limit) . '|' . $role . '|' . env('APP_SECRET'));
 
         return response()->json(['message' => 'registration link created successfully', 'link' => $link]);
     }
@@ -48,16 +48,15 @@ class UserCustomerController extends Controller
         $totalData = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
             ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
             ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
-            ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')
+            ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id'])
             ->orderBy('id', 'asc')
-            ->where('cc.name', session('userLogged')['company']['name'])
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
             $assets = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
                 ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
                 ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
-                ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id');
+                ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id']);
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -66,7 +65,7 @@ class UserCustomerController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $assets = $assets->where('cc.name', session('userLogged')['company']['name'])->get();
+            $assets = $assets->get();
         } else {
             $assets = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
                 ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
@@ -74,7 +73,7 @@ class UserCustomerController extends Controller
                 ->where('cc.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('cr.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('cc.phone_number', 'like', '%' . $request['search']['value'] . '%')
-                ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id');
+                ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id']);
 
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
@@ -83,12 +82,12 @@ class UserCustomerController extends Controller
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->where('cc.name', session('userLogged')['company']['name'])->get();
+            $assets = $assets->get();
 
             $totalFiltered = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
                 ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
                 ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
-                ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')
+                ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id'])
                 ->where('cc.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('cr.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('cc.phone_number', 'like', '%' . $request['search']['value'] . '%');
@@ -96,7 +95,7 @@ class UserCustomerController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->where('cc.name', session('userLogged')['company']['name'])->count();
+            $totalFiltered = $totalFiltered->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
@@ -105,7 +104,7 @@ class UserCustomerController extends Controller
             $row['name'] = $item->name . '<br><small>(' . $item->username . ')</small>';
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['role'] = $item->role_name;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-user-customer='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-user-customer='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>" . (in_array(getRole(), ['Developer', 'Manager']) ? '<button class="btn btn-icon btn-info login-as" data-user-customer="' . $item->id . '"><i class="bx bx-log-in"></i></button>' : '');
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-user='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-user='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>" . (in_array(getRole(), ['Developer', 'Manager']) ? '<button class="btn btn-icon btn-info login-as" data-customer-user="' . $item->id . '"><i class="bx bx-log-in"></i></button>' : '');
             $dataFiltered[] = $row;
         }
         $response = [
