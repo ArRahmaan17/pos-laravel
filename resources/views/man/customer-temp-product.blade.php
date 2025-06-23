@@ -541,7 +541,7 @@
                 changeProductPhoto(indexAccordion);
             } else {
                 container.append(
-                    `<form><input type="hidden" name="id" value="${data.id}"><input type="hidden" name="status" value="${status}"><input type="hidden" name="companyId" value="{{ session('userLogged')['company']['id'] }}"></form><div>Product will be remove</div>`
+                    `<form><input type="hidden" name="customerCompanyGoodId" value="${data.customerCompanyGoodId}"><input type="hidden" name="status" value="${status}"><input type="hidden" name="companyId" value="{{ session('userLogged')['company']['id'] }}"></form><div>Product will be remove</div>`
                 );
             }
             if (status == 'RESTOCK') {
@@ -566,7 +566,7 @@
                 processing: true,
                 serverSide: true,
                 order: [
-                    [1, 'desc']
+                    [2, 'desc']
                 ],
                 columns: [{
                     class: 'dt-control',

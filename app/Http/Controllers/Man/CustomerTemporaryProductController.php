@@ -7,7 +7,6 @@ use App\Models\AppGoodUnit;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerTemporaryProduct;
 use Exception;
-use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -142,7 +141,6 @@ class CustomerTemporaryProductController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            $data = $request->except('_token');
             $dataIn = collect($request->products)->filter(function ($value, $key) {
                 return $value['status'] == 'IN';
             })->toArray();
@@ -198,6 +196,7 @@ class CustomerTemporaryProductController extends Controller
                 $dataRemove[$index]['userId'] = session('userLogged')['user']['id'];
                 $dataRemove[$index]['created_at'] = now();
                 $dataRemove[$index]['updated_at'] = now();
+                $dataRemove[$index]['orderCode'] = $orderCode['remove'];
                 unset($dataRemove[$index]['status']);
             }
             CustomerTemporaryProduct::insert($dataIn);

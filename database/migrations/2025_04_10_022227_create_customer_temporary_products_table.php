@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('customer_temporary_products', function (Blueprint $table) {
             $table->id();
-            $table->string('orderCode')->unique();
+            $table->string('orderCode');
+            $table->index(['orderCode', 'companyId']);
             $table->bigInteger('companyId')->unsigned()->nullable(true);
             $table->bigInteger('userId')->unsigned();
             $table->bigInteger('customerCompanyGoodId')

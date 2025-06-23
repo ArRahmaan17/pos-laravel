@@ -183,7 +183,8 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="time_limit" class="form-label">LifeTime Link</label>
-                                <input type="text" id="time_limit" name="time_limit" placeholder="60 minutes / 1 hours / 1 days" class="form-control" />
+                                <input type="text" id="time_limit" name="time_limit" placeholder="60 minutes / 1 hours / 1 days"
+                                    class="form-control" />
                             </div>
                         </div>
                         <div id="container-link" class="row px-3 d-none">
@@ -217,7 +218,7 @@
             $('.login-as').click(function() {
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('auth.login-as') }}/${$(this).data('user-customer')}`,
+                    url: `{{ route('auth.login-as') }}/${$(this).data('customer-user')}`,
                     data: {
                         '_token': `{{ csrf_token() }}`
                     },
