@@ -29,6 +29,7 @@ return new class extends Migration
                 ->unsigned()
                 ->nullable(true);
             $table->boolean('accepted')->default(false);
+            $table->bigInteger('accepted_by')->unsigned()->nullable(true);
             $table->foreign('unitId')
                 ->on('app_good_units')
                 ->references('id')
@@ -45,6 +46,11 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreign('userId')
+                ->on('users')
+                ->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreign('accepted_by')
                 ->on('users')
                 ->references('id')
                 ->cascadeOnDelete()

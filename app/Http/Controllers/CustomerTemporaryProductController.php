@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Man;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\AppGoodUnit;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerTemporaryProduct;
@@ -10,9 +9,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use League\CommonMark\Extension\SmartPunct\EllipsesParser;
+use Illuminate\Validation\Rule;
 
-class CustomerCompanyGoodController extends Controller
+class CustomerTemporaryProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,16 +20,15 @@ class CustomerCompanyGoodController extends Controller
     {
         $units = AppGoodUnit::get();
 
-        return view('man.customer-company-good', compact('units'));
+        return view('man.customer-temp-product', compact('units'));
     }
 
     public function dataTable(Request $request)
     {
-        $totalData = CustomerCompanyGood::orderBy('customer_company_goods.id', 'asc')->where('companyId', session('userLogged')['company']['id'])
-            ->count();
+        $totalData = CustomerTemporaryProduct::select('orderCode', 'userId', 'companyId', 'accepted', 'accepted_by', DB::raw('DATE(created_at) as created_at'))->orderBy('id', 'asc')->groupByRaw('orderCode, userId, companyId, accepted, accepted_by, DATE(created_at)')->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompanyGood::with('unit')->select('*');
+            $assets = CustomerTemporaryProduct::with('changedProduct', 'changedProduct.unit', 'changedProduct.product', 'accepter')->select('orderCode', 'userId', 'companyId', 'accepted', 'accepted_by', DB::raw('DATE(created_at) as created_at'));
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -39,11 +37,11 @@ class CustomerCompanyGoodController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $assets = $assets->where('companyId', session('userLogged')['company']['id'])->get();
+            $assets = $assets->groupByRaw('orderCode, userId, companyId, accepted, accepted_by, DATE(created_at)')->get();
         } else {
-            $assets = CustomerCompanyGood::with('unit')->select('*')
-                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+            $assets = CustomerTemporaryProduct::with('changedProduct', 'changedProduct.unit', 'changedProduct.product', 'accepter')->select('orderCode', 'userId', 'companyId', 'accepted', 'accepted_by', DB::raw('DATE(created_at) as created_at'))
+                ->where('orderCode', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('created_at', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
@@ -52,31 +50,27 @@ class CustomerCompanyGoodController extends Controller
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->where('companyId', session('userLogged')['company']['id'])->get();
+            $assets = $assets->groupByRaw('orderCode, userId, companyId, accepted, accepted_by, DATE(created_at)')->get();
 
-            $totalFiltered = CustomerCompanyGood::select('*')
-                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+            $totalFiltered = CustomerTemporaryProduct::select('orderCode', 'userId', 'companyId', 'accepted', 'accepted_by', DB::raw('DATE(created_at) as created_at'))
+                ->where('orderCode', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('created_at', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->count();
+            $totalFiltered = $totalFiltered->groupByRaw('orderCode, userId, companyId, accepted, accepted_by, DATE(created_at)')->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
-            $row['name'] = $item->name;
-            $row['price'] = $item->price;
-            $row['buyPrice'] = $item->buyPrice;
-            $row['stock'] = $item->stock;
-            $row['unit'] = $item->unit->name;
-            $row['unitId'] = $item->unit->id;
-            $row['picture'] = $item->picture;
-            $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">' . $item->status . '</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">' . $item->status . '</span>' : '<span class="badge bg-label-success">' . $item->status . '</span>');
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
-            $row['action_temp'] = "<button class='btn btn-icon btn-warning edit-temp' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-danger delete-temp'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['orderCode'] = $item->orderCode;
+            $row['created_at'] = $item->created_at;
+            $row['accepted_by'] = $item->accepter->name ?? 'Not Accepted';
+            $row['changedProduct'] = $item->changedProduct;
+            $row['status'] = (!$item->accepted) ? '<span class="badge bg-label-danger"><i class="bx bx-x"  ></i> </span>' : '<span class="badge bg-label-success"><i class="bx bx-check"></i> </span>';
+            $row['action'] = ((!$item->accepted) ? "<button class='btn btn-icon btn-success acc' data-customer-temporary-product='" . $item->id . "' ><i class='bx bx-check' ></i></button>" : "") .  "<button class='btn btn-icon btn-warning edit' data-customer-temporary-product='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-temporary-product='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -94,22 +88,70 @@ class CustomerCompanyGoodController extends Controller
      */
     public function store(Request $request)
     {
+        $attributesName = [
+            'name' => 'Name',
+            'stock' => 'Stock',
+            'price' => 'Price',
+            'buyPrice' => 'Buy Price',
+            'status' => 'Status',
+            'companyId' => 'Company',
+            'unitId' => 'Unit',
+            'picture' => 'Picture',
+        ];
         $request->validate([
-            'name' => 'required|min:6|max:40|unique:customer_temporary_products,name|unique:customer_company_goods,name',
-            'stock' => 'required|max:8',
-            'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
-            'buyPrice' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
-            'status' => 'required|in:archive,draft,publish',
-            'companyId' => 'required|exists:customer_companies,id',
-            'unitId' => 'required|exists:app_good_units,id',
-            'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
+            'products.*.name' => ['required_if:products.*.status,IN', 'required_if:products.*.status,RESTOCK', 'min:6', 'max:40', function ($attribute, $value, $fail) use ($request) {
+                preg_match('/products\.(\d+)\.name/', $attribute, $indexes);
+                $products = $request->products;
+                $product = $products[$indexes[1]];
+                if (!$product) {
+                    return;
+                }
+                $query = DB::table('customer_temporary_products')->where('name', $product['name']);
+                if (!empty($product['id']) && $product['status'] != 'REMOVE') {
+                    $query->where('id', '!=', $product['id']);
+                }
+                if ($query->exists()) {
+                    $fail("The name '{$value}' has already been taken.");
+                }
+            }, function ($attribute, $value, $fail) use ($request) {
+                preg_match('/products\.(\d+)\.name/', $attribute, $indexes);
+                $products = $request->products;
+                $product = $products[$indexes[1]];
+                if (!$product) {
+                    return;
+                }
+                $query = DB::table('customer_company_goods')->where('name', $product['name']);
+                if (!empty($product['id']) && $product['status'] != 'REMOVE') {
+                    $query->where('id', '!=', $product['id']);
+                }
+                if ($query->exists()) {
+                    $fail("The name '{$value}' has already been taken.");
+                }
+            }],
+            'products.*.stock' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:8|regex:/(\d{1,3}(?:\.\d{3})*)/i',
+            'products.*.price' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'products.*.buyPrice' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'products.*.status' => 'required|in:IN,RESTOCK,REMOVE',
+            'products.*.companyId' => 'required|exists:customer_companies,id|in:' . session('userLogged')['company']['id'],
+            'products.*.unitId' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:app_good_units,id',
+            'products.*.picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ], [
             'unitId' => 'The unit field is required.',
             'companyId' => 'The company field is required.',
         ]);
         DB::beginTransaction();
         try {
-            $data = $request->except('_token', 'id');
+            $data = $request->except('_token');
+            $dataIn = collect($request->products)->filter(function ($value, $key) {
+                return $value['status'] == 'IN';
+            });
+            $dataRestock = collect($request->products)->filter(function ($value, $key) {
+                return $value['status'] == 'RESTOCK';
+            });
+            $dataRemove = collect($request->products)->filter(function ($value, $key) {
+                return $value['status'] == 'REMOVE';
+            });
+            dd($dataIn, $dataRestock, $dataRemove);
             $data['picture'] = 'default-product.png';
             $data['companyId'] = session('userLogged')['company']['id'];
             $data['userId'] = session('userLogged')['user']['id'];
@@ -129,6 +171,7 @@ class CustomerCompanyGoodController extends Controller
             $code = 200;
             DB::commit();
         } catch (\Throwable $th) {
+            dd($th);
             DB::rollBack();
             $response = ['message' => 'failed creating resource'];
             $code = 422;
@@ -201,7 +244,7 @@ class CustomerCompanyGoodController extends Controller
                     }, $dataDelete)
                 )->delete();
             }
-            CustomerTemporaryProduct::whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1, 'accepted_by' => session('userLogged')['user']['id']]);
+            CustomerTemporaryProduct::whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1]);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -249,7 +292,7 @@ class CustomerCompanyGoodController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required|min:6|max:40|unique:customer_company_goods,name|unique:customer_temporary_products,name,' . $id,
+            'name' => 'required|min:6|max:40|unique:customer_temporary_products,name,' . $id,
             'id' => 'required|numeric',
             'stock' => 'required|max:8',
             'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
@@ -303,6 +346,11 @@ class CustomerCompanyGoodController extends Controller
                 'userId' => session('userLogged')['user']['id'],
             ];
             CustomerTemporaryProduct::create($data);
+            // Storage::disk('customer-product')->delete(CustomerCompanyGood::find($id)->picture);
+            // CustomerCompanyGood::where([
+            //     ['id', $id],
+            //     ['userId', session('userLogged')['company']['id']],
+            // ])->delete();
             $response = ['message' => 'deleting resource successfully'];
             $code = 200;
             DB::commit();

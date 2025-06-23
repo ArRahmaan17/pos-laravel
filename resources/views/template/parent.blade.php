@@ -125,7 +125,7 @@
                             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset(session('userLogged')['user']['profile_picture']) : asset('assets/img/avatars/1.png') }}"
+                                        <img src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('assets/img/avatars/1.png') }}"
                                             alt class="w-px-40 h-100 rounded-circle" />
                                     </div>
                                 </a>
@@ -134,7 +134,7 @@
                                         <a class="dropdown-item" href="#">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 <div class="avatar avatar-online">
-                                                    <img src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset(session('userLogged')['user']['profile_picture']) : asset('assets/img/avatars/1.png') }}"
+                                                    <img src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('assets/img/avatars/1.png') }}"
                                                         alt class="w-px-40 h-100 rounded-circle" />
                                                 </div>
                                                 <div>{{ buatSingkatan(session('userLogged')['company']['name']) }}</div>
@@ -484,6 +484,17 @@
                 }
             }
         });
+        $('.price').inputmask('currency', {
+            radixPoint: ',',
+            groupSeparator: ".",
+            rightAlign: false,
+            allowMinus: false
+        });
+        $('.number').inputmask('integer', {
+            groupSeparator: ".",
+            rightAlign: false,
+            allowMinus: false
+        });
     }
 
     function debounce(func, delay) {
@@ -533,6 +544,7 @@
         return formData;
     };
     $(function() {
+        window.company = `{{ buatSingkatan(session('userLogged')['company']['name']) }}`;
         $(".menu-sub").find('.menu-link.bg-primary').parents('.menu-item:not(:first)').map((index, element) => {
             $(element).addClass('open');
             $(element).children('.menu-link.menu-toggle').addClass('bg-primary text-white')

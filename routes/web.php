@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CustomerTemporaryProductController;
 use App\Http\Controllers\Dev\AppGoodUnitController;
 use App\Http\Controllers\Dev\AppMenuController;
 use App\Http\Controllers\Dev\AppRoleController;
@@ -173,6 +174,16 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/data-table', [CustomerProductTransactionController::class, 'dataTable'])->name('data-table');
             Route::get('/discount-data-table', [CustomerProductTransactionController::class, 'discountDataTable'])->name('discount-data-table');
             Route::get('/validate-discount-code/{id?}', [CustomerProductTransactionController::class, 'validateDiscountCode'])->name('validate-discount-code');
+        });
+        Route::name('customer-temp-product')->as('customer-temp-product.')->prefix('customer-temp-product')->group(function () {
+            Route::get('/', [CustomerTemporaryProductController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
+            Route::post('/', [CustomerTemporaryProductController::class, 'store'])->name('store');
+            Route::post('/store-temp-product/{date}', [CustomerTemporaryProductController::class, 'storeTodayTempProduct'])->name('store-temp-product');
+            Route::post('/{id?}', [CustomerTemporaryProductController::class, 'update'])->name('update');
+            Route::get('/data-table', [CustomerTemporaryProductController::class, 'dataTable'])->name('data-table');
+            Route::get('/temp-product', [CustomerTemporaryProductController::class, 'tempProduct'])->name('temp-product');
+            Route::get('/{id?}', [CustomerTemporaryProductController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [CustomerTemporaryProductController::class, 'destroy'])->name('delete');
         });
     });
 });

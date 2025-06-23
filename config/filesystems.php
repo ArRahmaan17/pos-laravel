@@ -49,6 +49,13 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+        'customer-profile-picture' => [
+            'driver' => 'local',
+            'root' => public_path('/customer-profile-picture'),
+            'url' => env('APP_URL') . '',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
         'customer-product' => [
             'driver' => 'local',
             'root' => public_path('customer-product'),

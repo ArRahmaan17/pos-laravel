@@ -35,6 +35,7 @@ function buatSingkatan($kalimat)
 {
     return strtoupper(implode('', array_map(fn($kata) => $kata[0] . $kata[1], explode(' ', $kalimat))));
 }
+
 if (! function_exists('lastCompanyOrderCode')) {
     function lastCompanyOrderCode($transaction_status = 'OUT')
     {

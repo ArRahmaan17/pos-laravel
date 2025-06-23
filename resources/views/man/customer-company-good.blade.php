@@ -176,7 +176,7 @@
                 $("#edit-customer-company-good").data("customer-company-good", idAppRole);
                 if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
-                    $(this).parents('tr').addClass('selected')
+                    $(this).parents('tr').addClass('selected');
                 }
 
                 var data = window.dataTableCustomerCompanyGood.rows('.selected').data()[0];
@@ -312,7 +312,7 @@
                     </h2>
                     <div id="accordion${data.id}" class="accordion-collapse collapse" aria-labelledby="heading${data.id}" data-bs-parent="#accordionTempProduct">
                         <div class="accordion-body">
-                            ${data.orderCode.split('IN').length > 1 ? `Buy price ${data.buyPrice}, sell price ${data.price}, and stock ${data.stock}` : data.orderCode.split('RESTOCK').length > 1 ?`Restock ${data.stock}, buying price ${data.buyPrice} and price ${data.price}` : `Product will be deleted`}
+                            ${data.orderCode.split('IN').length > 1 ? `Buy price ${data.buyPrice}, sell price ${data.price}, and stock ${data.stock}` : data.orderCode.split('RESTOCK').length > 1 ?`Restock ${data.stock}, buying price ${data.buyPrice} and price ${data.price}` : `Product will be remove`}
                         </div>
                     </div>
                 </div>`;
@@ -578,20 +578,9 @@
                     accountUserImage.src = resetImage;
                 };
             }
-            // $('.price').inputmask('currency', {
-            //     radixPoint: ',',
-            //     groupSeparator: ".",
-            //     rightAlign: false,
-            //     allowMinus: false
-            // });
-            // $('.number').inputmask('integer', {
-            //     groupSeparator: ".",
-            //     rightAlign: false,
-            //     allowMinus: false,
-            // });
-            $(window).resize(function() {
+            $(window).resize(debounce(function() {
                 initializeDataTable();
-            });
+            }, 1500));
         });
     </script>
 @endpush

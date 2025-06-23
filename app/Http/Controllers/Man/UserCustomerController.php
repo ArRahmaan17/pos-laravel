@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompanyAddress;
 use App\Models\CustomerRole;
 use App\Models\User;
 use App\Models\UserCustomerRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UserCustomerController extends Controller
 {
@@ -205,10 +207,34 @@ class UserCustomerController extends Controller
             'phone_number' => 'required|unique:users,phone_number,' . $id,
             'email' => 'required|email|unique:users,email,' . $id,
             'username' => 'required|unique:users,username,' . $id,
+            'profile_picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ]);
         DB::beginTransaction();
         try {
-            User::where('id', $id)->update($request->except('_token'));
+            $data = $request->except('_token');
+            if ($request->profile_picture) {
+                if (Storage::disk('public-asset')->directories('customer-profile-picture')) {
+                    Storage::disk('public-asset')->makeDirectory('customer-profile-picture');
+                }
+                $filename = md5($request->name . now()->format('Y-m-d')) . '.' . $request->file('profile_picture')->clientExtension();
+                $data['profile_picture'] = $filename;
+                Storage::disk('customer-profile-picture')->putFileAs('/', $request->profile_picture, $filename);
+            }
+            User::where('id', $id)->update($data);
+            session()->flush();
+            $role = UserCustomerRole::with('user', 'role')->where('userId', $id)->first();
+            $hasPrivileges = false;
+            if (! in_array($role->role->name, ['Developer', 'Manager'])) {
+                $role['company'] = UserCustomerRole::employeeCompany($role->userId);
+                $role['company']['address'] = CompanyAddress::where('companyId', $role['company']['id'])->first()->toArray();
+                if (UserCustomerRole::employeeMenu($role->userId) == 0) {
+                    $hasPrivileges = true;
+                }
+            }
+            session()->flush();
+            if (!$hasPrivileges) {
+                session(['userLogged' => collect($role)->toArray()]);
+            }
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -216,6 +242,7 @@ class UserCustomerController extends Controller
             DB::rollBack();
             $response = ['message' => 'Failed updating resource'];
             $code = 422;
+dd($th);
         }
 
         return response()->json($response, $code);
