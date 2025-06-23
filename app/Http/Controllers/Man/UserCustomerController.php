@@ -216,7 +216,7 @@ class UserCustomerController extends Controller
                 if (Storage::disk('public-asset')->directories('customer-profile-picture')) {
                     Storage::disk('public-asset')->makeDirectory('customer-profile-picture');
                 }
-                $filename = md5($request->name . now()->format('Y-m-d')) . '.' . $request->file('profile_picture')->clientExtension();
+                $filename = md5($request->name . now()->format('Y-m-d h:i:s')) . '.' . $request->file('profile_picture')->clientExtension();
                 $data['profile_picture'] = $filename;
                 Storage::disk('customer-profile-picture')->putFileAs('/', $request->profile_picture, $filename);
             }

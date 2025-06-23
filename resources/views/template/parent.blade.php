@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>{{ session('userLogged')['company']['name'] }} | {{ env('APP_NAME') }} - @yield('title')</title>
+    <title>{{ env('APP_NAME') }} - @yield('title')</title>
     <style>
         *::-webkit-scrollbar {
             width: 1px;
@@ -470,40 +470,45 @@
 
         function formattedInput() {
             $('.phone_number').inputmask('(+62) 999-999-9999[9]')
+            $('.price').inputmask('currency', {
+                radixPoint: ',',
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false
+            });
+            $('.number').inputmask('integer', {
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false
+            });
             $('.email').inputmask({
                 mask: "*{1,15}[.*{1,15}][.*{1,15}][.*{1,15}]@*{1,15}[.*{2,6}][.*{1,2}]",
                 greedy: false,
-                onBeforePaste: function(pastedValue, opts) {
-                    pastedValue = pastedValue.toLowerCase();
-                    return pastedValue.replace("mailto:", "");
-                },
                 definitions: {
                     '*': {
+                        casing: "lower",
                         validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
-                    casing: "lower"
-                }
-            }
-        });
-        $('.price').inputmask('currency', {
-            radixPoint: ',',
-            groupSeparator: ".",
-            rightAlign: false,
-            allowMinus: false
-        });
-        $('.number').inputmask('integer', {
-            groupSeparator: ".",
-            rightAlign: false,
-            allowMinus: false
+                },
+            },
+            onBeforePaste: function(pastedValue, opts) {
+                pastedValue = pastedValue.toLowerCase();
+                return pastedValue.replace("mailto:", "");
+            },
         });
     }
-
+    // context = 'body'
     function debounce(func, delay) {
         let timeoutId;
         return function(...args) {
             if (timeoutId) {
                 clearTimeout(timeoutId);
+                // $(context).find('#block_loading').remove();
+                // $(context).prepend(
+                //     `<div id='block_loading' style='height:100vh;background:#00000038;position:relative;z-index: 2000;display:flex;justify-content:center;align-items: center;'><div class="spinner-border spinner-border-lg text-dark" role="status"><span class="visually-hidden">Loading...</span></div>`
+                // );
             }
             timeoutId = setTimeout(() => {
+                // $(context).find('#block_loading').remove();
                 func.apply(this, args);
             }, delay);
         };

@@ -87,10 +87,30 @@
         </div>
     </div>
     <template id="template-form-product">
-        <form>
-            <input type="hidden" name="id">
+        <form autocomplete="off">
+            <input type="hidden" name="customerCompanyGoodId">
             <input type="hidden" name="status">
             <input type="hidden" name="companyId" value="{{ session('userLogged')['company']['id'] }}">
+            <div class="row">
+                <div class="col mb-3">
+                    <div class="d-flex align-items-start align-items-sm-center gap-4">
+                        <img src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded user-avatar" height="100"
+                            width="100" />
+                        <div class="button-wrapper">
+                            <label class="btn btn-primary me-2 mb-4" tabindex="0">
+                                <span class="d-none d-sm-block">Upload new photo</span>
+                                <i class="bx bx-upload d-block d-sm-none"></i>
+                                <input type="file" name="picture" class="account-file-input" hidden accept="image/png, image/jpeg" />
+                            </label>
+                            <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
+                                <i class="bx bx-reset d-block d-sm-none"></i>
+                                <span class="d-none d-sm-block">Reset</span>
+                            </button>
+                            <p class="text-muted mb-0">Allowed JPG or PNG and Square Ratio Photo. Max size of 800K</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row">
                 <div class="col mb-3">
                     <label for="name" class="form-label">Name</label>
@@ -125,26 +145,6 @@
                             </option>
                         @endforeach
                     </select>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col mb-3">
-                    <div class="d-flex align-items-start align-items-sm-center gap-4">
-                        <img src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded user-avatar" height="100"
-                            width="100" />
-                        <div class="button-wrapper">
-                            <label class="btn btn-primary me-2 mb-4" tabindex="0">
-                                <span class="d-none d-sm-block">Upload new photo</span>
-                                <i class="bx bx-upload d-block d-sm-none"></i>
-                                <input type="file" name="picture" class="account-file-input" hidden accept="image/png, image/jpeg" />
-                            </label>
-                            <button type="button" class="btn btn-outline-secondary account-image-reset mb-4">
-                                <i class="bx bx-reset d-block d-sm-none"></i>
-                                <span class="d-none d-sm-block">Reset</span>
-                            </button>
-                            <p class="text-muted mb-0">Allowed JPG or PNG and Square Ratio Photo. Max size of 800K</p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </form>
@@ -292,9 +292,9 @@
                     ],
                 });
             });
-            $('.edit-temp').click(function() {
+            $('.edit-temp').click(debounce(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("customer-company-good");
+                let goodId = $(this).data("customer-company-good");
                 if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected');
@@ -303,23 +303,23 @@
                 var data = window.dataTableCustomerCompanyGood.rows('.selected').data()[0];
                 generateProductAccordion('RESTOCK', {
                     ...data,
-                    id: idAppRole
+                    customerCompanyGoodId: goodId
                 });
                 $('#table-customer-company-good tbody').find('tr').removeClass('selected');
-            });
-            $('.delete-temp').click(function() {
+            }, 500));
+            $('.delete-temp').click(debounce(function() {
                 if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("customer-company-good");
+                let goodId = $(this).data("customer-company-good");
                 var data = window.dataTableCustomerCompanyGood.rows('.selected').data()[0];
                 generateProductAccordion('REMOVE', {
                     ...data,
-                    id: idAppRole
+                    customerCompanyGoodId: goodId
                 });
                 $('#table-customer-company-good tbody').find('tr').removeClass('selected');
-            });
+            }, 500));
         }
 
         function initializeDataTable() {
@@ -509,7 +509,7 @@
                                 <h2 class="accordion-header">
                                     <button class="accordion-button ${status == 'IN'? '' :((status == 'RESTOCK')?'text-warning': 'text-danger')}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${window.lastProductAccordion}"
                                         aria-expanded="false" aria-controls="collapse${window.lastProductAccordion}">
-                                        ${status == 'IN' ? `${status} Temporary Product ${window.lastProductAccordion}` : `${status} ${data.name}`}
+                                        ${status == 'IN' ? `${status} Temporary Product` : `${status} ${data.name}`}
                                     </button>
                                 </h2>
                                 <div id="collapse${window.lastProductAccordion}" class="accordion-collapse collapse show">
@@ -523,8 +523,12 @@
                 const clone = template[0].content.cloneNode(true);
                 container.append(clone);
                 formattedInput();
+                container.find(`.select2`).attr('id', `unitId${window.lastProductAccordion}`)
                 setTimeout(() => {
-                    $('.select2').select2({
+                    if (container.find(`.select2`).hasClass("select2-hidden-accessible")) {
+                        container.find(`.select2`).select2('destroy');
+                    }
+                    container.find(`.select2`).select2({
                         dropdownParent: $('#modal-customer-temp-product'),
                     });
                 }, 140);
@@ -635,9 +639,9 @@
                     }
                 }
             });
-            $('#add-temporary-product').click(function() {
-                generateProductAccordion();
-            });
+            $('#add-temporary-product').click(debounce(function() {
+                generateProductAccordion()
+            }, 500));
             $('#save-customer-temp-product').click(function() {
                 let data = new FormData();
                 let products = [];

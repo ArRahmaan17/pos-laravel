@@ -440,7 +440,7 @@
                 $('#edit-customer-company-discount').addClass('d-none');
                 $('#modal-customer-company-discount .is-invalid').removeClass('is-invalid')
                 $('#table-customer-company-discount tbody').find('tr').removeClass('selected');
-                $('#uploadedAvatar').prop('src', `{{ asset('cp/default-picture.png') }}`);
+                $('#uploadedAvatar').prop('src', `{{ asset('cp/default-company.png') }}`);
             });
             $('#modal-customer-company-discount').on('shown.bs.modal', function() {
                 setTimeout(() => {

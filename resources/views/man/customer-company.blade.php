@@ -69,7 +69,7 @@
                             @endif
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
-                            <img src="{{ asset('/cp/default-picture.png') }}" alt="user-avatar" class="d-block rounded"
+                            <img src="{{ asset('/cp/default-company.png') }}" alt="user-avatar" class="d-block rounded"
                                 height="100" width="100" id="uploadedAvatar" />
                             <div class="button-wrapper">
                                 <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
@@ -477,7 +477,7 @@
                 $('#edit-customer-company').addClass('d-none');
                 $('#modal-customer-company .is-invalid').removeClass('is-invalid')
                 $('#table-customer-company tbody').find('tr').removeClass('selected');
-                $('#uploadedAvatar').prop('src', `{{ asset('cp/default-picture.png') }}`);
+                $('#uploadedAvatar').prop('src', `{{ asset('cp/default-company.png') }}`);
             });
             $('#modal-customer-company').on('shown.bs.modal', function() {
                 setTimeout(() => {

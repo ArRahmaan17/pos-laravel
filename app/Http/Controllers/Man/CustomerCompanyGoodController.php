@@ -116,7 +116,7 @@ class CustomerCompanyGoodController extends Controller
             $data['price'] = str_replace(',', '.', str_replace('.', '', $request->price));
             $data['buyPrice'] = str_replace(',', '.', str_replace('.', '', $request->buyPrice));
             if ($request->picture) {
-                $filename = md5($request->name . now()->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
+                $filename = md5($request->name . now()->format('Y-m-d h:i:s')) . '.' . $request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
                 if (Storage::disk('public-asset')->directories('temp-customer-product')) {
                     Storage::disk('public-asset')->makeDirectory('temp-customer-product');
@@ -249,7 +249,7 @@ class CustomerCompanyGoodController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required|min:6|max:40|unique:customer_company_goods,name|unique:customer_temporary_products,name,' . $id,
+            'name' => 'required|min:6|max:40|unique:customer_company_goods,name,' . $id . '|unique:customer_temporary_products,name',
             'id' => 'required|numeric',
             'stock' => 'required|max:8',
             'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
@@ -266,7 +266,7 @@ class CustomerCompanyGoodController extends Controller
             $data = $request->except('_token', 'id');
             $data['picture'] = CustomerCompanyGood::find($id)->picture;
             if ($request->file('picture')) {
-                $filename = md5($request->name . now()->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
+                $filename = md5($request->name . now()->format('Y-m-d h:i:s')) . '.' . $request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
                 Storage::disk('temp-customer-product')->putFileAs('/', $request->file('picture'), $filename);
             }

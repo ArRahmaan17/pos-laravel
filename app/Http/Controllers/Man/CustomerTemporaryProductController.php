@@ -7,6 +7,7 @@ use App\Models\AppGoodUnit;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerTemporaryProduct;
 use Exception;
+use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -107,8 +108,8 @@ class CustomerTemporaryProductController extends Controller
                     return;
                 }
                 $query = DB::table('customer_temporary_products')->where('name', $product['name']);
-                if (!empty($product['id']) && $product['status'] != 'REMOVE') {
-                    $query->where('id', '!=', $product['id']);
+                if (!empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
+                    $query->where('customerCompanyGoodId', '!=', $product['customerCompanyGoodId']);
                 }
                 if ($query->exists()) {
                     $fail("The name '{$value}' has already been taken.");
@@ -121,8 +122,8 @@ class CustomerTemporaryProductController extends Controller
                     return;
                 }
                 $query = DB::table('customer_company_goods')->where('name', $product['name']);
-                if (!empty($product['id']) && $product['status'] != 'REMOVE') {
-                    $query->where('id', '!=', $product['id']);
+                if (!empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
+                    $query->where('id', '!=', $product['customerCompanyGoodId']);
                 }
                 if ($query->exists()) {
                     $fail("The name '{$value}' has already been taken.");
@@ -144,29 +145,64 @@ class CustomerTemporaryProductController extends Controller
             $data = $request->except('_token');
             $dataIn = collect($request->products)->filter(function ($value, $key) {
                 return $value['status'] == 'IN';
-            });
+            })->toArray();
             $dataRestock = collect($request->products)->filter(function ($value, $key) {
                 return $value['status'] == 'RESTOCK';
-            });
+            })->toArray();
             $dataRemove = collect($request->products)->filter(function ($value, $key) {
                 return $value['status'] == 'REMOVE';
-            });
-            dd($dataIn, $dataRestock, $dataRemove);
-            $data['picture'] = 'default-product.png';
-            $data['companyId'] = session('userLogged')['company']['id'];
-            $data['userId'] = session('userLogged')['user']['id'];
-            $data['price'] = str_replace(',', '.', str_replace('.', '', $request->price));
-            $data['buyPrice'] = str_replace(',', '.', str_replace('.', '', $request->buyPrice));
-            if ($request->picture) {
-                $filename = md5($request->name . now()->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
-                $data['picture'] = $filename;
-                if (Storage::disk('public-asset')->directories('temp-customer-product')) {
-                    Storage::disk('public-asset')->makeDirectory('temp-customer-product');
+            })->toArray();
+            $orderCode = ['in' => lastCompanyOrderCode('IN'), 'restock' => lastCompanyOrderCode('RESTOCK'), 'remove' => lastCompanyOrderCode('REMOVE')];
+            foreach ($dataIn as $index => $valueIn) {
+                $dataIn[$index]['companyId'] = session('userLogged')['company']['id'];
+                $dataIn[$index]['userId'] = session('userLogged')['user']['id'];
+                $dataIn[$index]['price'] = str_replace(',', '.', str_replace('.', '', $dataIn[$index]['price']));
+                $dataIn[$index]['buyPrice'] = str_replace(',', '.', str_replace('.', '', $dataIn[$index]['buyPrice']));
+                if (!empty($dataIn[$index]['picture'])) {
+                    $filename = md5($dataIn[$index]['name'] . now()->format('Y-m-d h:i:s')) . '.' . $dataIn[$index]['picture']->extension();
+                    if (Storage::disk('public-asset')->directories('temp-customer-product')) {
+                        Storage::disk('public-asset')->makeDirectory('temp-customer-product');
+                    }
+                    Storage::disk('temp-customer-product')->putFileAs('/', $dataIn[$index]['picture'], $filename);
+                    $dataIn[$index]['picture'] = $filename;
+                } else {
+                    $dataIn[$index]['picture'] = 'default-product.png';
                 }
-                Storage::disk('temp-customer-product')->putFileAs('/', $request->picture, $filename);
+                $dataIn[$index]['orderCode'] = $orderCode['in'];
+                $dataIn[$index]['created_at'] = now();
+                $dataIn[$index]['updated_at'] = now();
+                unset($dataIn[$index]['status']);
+                $dataIn[$index]['status'] = 'publish';
             }
-            $data['orderCode'] = lastCompanyOrderCode('IN');
-            CustomerTemporaryProduct::create($data);
+            foreach ($dataRestock as $index => $valueRestock) {
+                $dataRestock[$index]['companyId'] = session('userLogged')['company']['id'];
+                $dataRestock[$index]['userId'] = session('userLogged')['user']['id'];
+                $dataRestock[$index]['price'] = str_replace(',', '.', str_replace('.', '', $dataRestock[$index]['price']));
+                $dataRestock[$index]['buyPrice'] = str_replace(',', '.', str_replace('.', '', $dataRestock[$index]['buyPrice']));
+                if (!empty($dataRestock[$index]['picture'])) {
+                    $filename = md5($dataRestock[$index]['name'] . now()->format('Y-m-d h:i:s')) . '.' . $dataRestock[$index]['picture']->extension();
+                    if (Storage::disk('public-asset')->directories('temp-customer-product')) {
+                        Storage::disk('public-asset')->makeDirectory('temp-customer-product');
+                    }
+                    Storage::disk('temp-customer-product')->putFileAs('/', $dataRestock[$index]['picture'], $filename);
+                    $dataRestock[$index]['picture'] = $filename;
+                }
+                $dataRestock[$index]['orderCode'] = $orderCode['restock'];
+                $dataRestock[$index]['created_at'] = now();
+                $dataRestock[$index]['updated_at'] = now();
+                unset($dataRestock[$index]['status']);
+                $dataRestock[$index]['status'] = 'publish';
+            }
+            foreach ($dataRemove as $index => $valueRemove) {
+                $dataRemove[$index]['companyId'] = session('userLogged')['company']['id'];
+                $dataRemove[$index]['userId'] = session('userLogged')['user']['id'];
+                $dataRemove[$index]['created_at'] = now();
+                $dataRemove[$index]['updated_at'] = now();
+                unset($dataRemove[$index]['status']);
+            }
+            CustomerTemporaryProduct::insert($dataIn);
+            CustomerTemporaryProduct::insert($dataRestock);
+            CustomerTemporaryProduct::insert($dataRemove);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -309,7 +345,7 @@ class CustomerTemporaryProductController extends Controller
             $data = $request->except('_token', 'id');
             $data['picture'] = CustomerCompanyGood::find($id)->picture;
             if ($request->file('picture')) {
-                $filename = md5($request->name . now()->format('Y-m-d')) . '.' . $request->file('picture')->clientExtension();
+                $filename = md5($request->name . now()->format('Y-m-d h:i:s')) . '.' . $request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
                 Storage::disk('temp-customer-product')->putFileAs('/', $request->file('picture'), $filename);
             }
