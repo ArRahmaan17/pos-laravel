@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Man;
 
+use App\Http\Controllers\Controller;
 use App\Models\AppGoodUnit;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerTemporaryProduct;
@@ -9,7 +10,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class CustomerTemporaryProductController extends Controller
 {

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\CustomerTemporaryProductController;
+use App\Http\Controllers\Man\CustomerTemporaryProductController;
 use App\Http\Controllers\Dev\AppGoodUnitController;
 use App\Http\Controllers\Dev\AppMenuController;
 use App\Http\Controllers\Dev\AppRoleController;
