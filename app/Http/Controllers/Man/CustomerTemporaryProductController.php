@@ -25,11 +25,18 @@ class CustomerTemporaryProductController extends Controller
 
     public function dataTable(Request $request)
     {
-        $totalData = CustomerTemporaryProduct::select('orderCode', 'userId', 'companyId', 'accepted', 'accepted_by', DB::raw('DATE(created_at) as created_at'))->orderBy('id', 'asc')->groupByRaw('orderCode, userId, companyId, accepted, accepted_by, DATE(created_at)')->count();
+        $totalData = CustomerTemporaryProduct::select(DB::raw('DATE(created_at) as created_at'))->orderBy('created_at', 'desc')->where('companyId', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerTemporaryProduct::with('changedProduct', 'changedProduct.unit', 'changedProduct.product', 'accepter')->select('orderCode', 'userId', 'companyId', 'accepted', 'accepted_by', DB::raw('DATE(created_at) as created_at'));
-
+            $assets = CustomerTemporaryProduct::with('changedProduct', 'changedProduct.unit', 'changedProduct.reference', 'changedProduct.creater', 'changedProduct.reference.unit')
+                ->select(
+                    'transaction_created',
+                    DB::raw('sum(accepted = 1) as sum_accepted'),
+                    DB::raw('sum(accepted = 0) as sum_not_accepted'),
+                    DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-IN-%') as sum_product_in"),
+                    DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-RESTOCK-%') as sum_product_restock"),
+                    DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-REMOVE-%') as sum_product_remove"),
+                );
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
                     ->offset($request['start']);
@@ -37,11 +44,16 @@ class CustomerTemporaryProductController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $assets = $assets->groupByRaw('orderCode, userId, companyId, accepted, accepted_by, DATE(created_at)')->get();
+            $assets = $assets->where('companyId', session('userLogged')['company']['id'])->groupByRaw('transaction_created, companyId')->get();
         } else {
-            $assets = CustomerTemporaryProduct::with('changedProduct', 'changedProduct.unit', 'changedProduct.product', 'accepter')->select('orderCode', 'userId', 'companyId', 'accepted', 'accepted_by', DB::raw('DATE(created_at) as created_at'))
-                ->where('orderCode', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('created_at', 'like', '%' . $request['search']['value'] . '%');
+            $assets = CustomerTemporaryProduct::with('changedProduct', 'changedProduct.unit', 'changedProduct.reference', 'changedProduct.creater', 'changedProduct.reference.unit')->select(
+                'transaction_created',
+                DB::raw('sum(accepted = 1) as sum_accepted'),
+                DB::raw('sum(accepted = 0) as sum_not_accepted'),
+                DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-IN-%') as sum_product_in"),
+                DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-RESTOCK-%') as sum_product_restock"),
+                DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-REMOVE-%') as sum_product_remove"),
+            )->where('orderCode', 'like', '%' . $request['search']['value'] . '%')->orWhere('created_at', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
@@ -50,27 +62,36 @@ class CustomerTemporaryProductController extends Controller
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->groupByRaw('orderCode, userId, companyId, accepted, accepted_by, DATE(created_at)')->get();
+            $assets = $assets->where('companyId', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->get();
 
-            $totalFiltered = CustomerTemporaryProduct::select('orderCode', 'userId', 'companyId', 'accepted', 'accepted_by', DB::raw('DATE(created_at) as created_at'))
+            $totalFiltered = CustomerTemporaryProduct::select(
+                'transaction_created',
+                DB::raw('sum(accepted = 1) as sum_accepted'),
+                DB::raw('sum(accepted = 0) as sum_not_accepted'),
+                DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-IN-%') as sum_product_in"),
+                DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-RESTOCK-%') as sum_product_restock"),
+                DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-REMOVE-%') as sum_product_remove"),
+            )
                 ->where('orderCode', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('created_at', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->groupByRaw('orderCode, userId, companyId, accepted, accepted_by, DATE(created_at)')->count();
+            $totalFiltered = $totalFiltered->where('companyId', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
-            $row['orderCode'] = $item->orderCode;
-            $row['created_at'] = $item->created_at;
-            $row['accepted_by'] = $item->accepter->name ?? 'Not Accepted';
+            $row['transaction_created'] = $item->transaction_created;
+            $row['sum_not_accepted'] = $item->sum_not_accepted;
+            $row['sum_accepted'] = $item->sum_accepted;
+            $row['sum_product_in'] = $item->sum_product_in;
+            $row['sum_product_restock'] = $item->sum_product_restock;
+            $row['sum_product_remove'] = $item->sum_product_remove;
             $row['changedProduct'] = $item->changedProduct;
-            $row['status'] = (!$item->accepted) ? '<span class="badge bg-label-danger"><i class="bx bx-x"  ></i> </span>' : '<span class="badge bg-label-success"><i class="bx bx-check"></i> </span>';
-            $row['action'] = ((!$item->accepted) ? "<button class='btn btn-icon btn-success acc' data-customer-temporary-product='" . $item->id . "' ><i class='bx bx-check' ></i></button>" : "") .  "<button class='btn btn-icon btn-warning edit' data-customer-temporary-product='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-temporary-product='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = ((!$item->accepted && in_array(session('userLogged')['role']['name'], ['Manager', 'Developer'])) ? "<button class='btn btn-icon btn-success acc' data-customer-temporary-product='" . $item->transaction_created . "' ><i class='bx bx-check' ></i></button>" : "") .  "<button class='btn btn-icon btn-warning edit' data-customer-temporary-product='" . $item->transaction_created . "' ><i class='bx bx-pencil' ></i></button><button data-customer-temporary-product='" . $item->transaction_created . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -134,13 +155,14 @@ class CustomerTemporaryProductController extends Controller
             'products.*.status' => 'required|in:IN,RESTOCK,REMOVE',
             'products.*.companyId' => 'required|exists:customer_companies,id|in:' . session('userLogged')['company']['id'],
             'products.*.unitId' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:app_good_units,id',
+            'products.*.customerCompanyGoodId' => 'required_if:products.*.status,REMOVE|required_if:products.*.status,RESTOCK|exists:customer_company_goods,id',
             'products.*.picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
-        ], [
-            'unitId' => 'The unit field is required.',
-            'companyId' => 'The company field is required.',
         ]);
         DB::beginTransaction();
         try {
+            $dataExists = collect($request->products)->filter(function ($value, $ket) {
+                return !empty($value['id']);
+            });
             $dataIn = collect($request->products)->filter(function ($value, $key) {
                 return $value['status'] == 'IN';
             })->toArray();
@@ -206,7 +228,6 @@ class CustomerTemporaryProductController extends Controller
             $code = 200;
             DB::commit();
         } catch (\Throwable $th) {
-            dd($th);
             DB::rollBack();
             $response = ['message' => 'failed creating resource'];
             $code = 422;
@@ -215,14 +236,14 @@ class CustomerTemporaryProductController extends Controller
         return response()->json($response, $code);
     }
 
-    public function storeTodayTempProduct(String $date)
+    public function storeTempProduct(String $date)
     {
         DB::beginTransaction();
         try {
             if (!in_array(getRole(), ['Developer', 'Manager'])) {
                 throw new Exception('Not Authorize');
             }
-            $data = CustomerTemporaryProduct::with('product')->whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
+            $data = CustomerTemporaryProduct::with('product')->whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
             $dataUpdate = [];
             $dataDelete = [];
             $dataInsert = [];
@@ -279,7 +300,7 @@ class CustomerTemporaryProductController extends Controller
                     }, $dataDelete)
                 )->delete();
             }
-            CustomerTemporaryProduct::whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1]);
+            CustomerTemporaryProduct::whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1]);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -292,9 +313,12 @@ class CustomerTemporaryProductController extends Controller
         return response()->json($response, $code);
     }
 
-    public function tempProduct()
+    public function show(string $date)
     {
-        $data = CustomerTemporaryProduct::with('unit', 'product')->whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
+        $data = CustomerTemporaryProduct::with('reference')->where('transaction_created', $date)->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get()->map(function ($temp) {
+            $temp['status'] = statusTransaction($temp['orderCode']);
+            return $temp;
+        });
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -308,7 +332,7 @@ class CustomerTemporaryProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function showTemp(string $id)
     {
         $data = CustomerCompanyGood::where([['id', $id], ['companyId', session('userLogged')['company']['id']]])->first();
         $response = ['message' => 'showing resource successfully', 'data' => $data];

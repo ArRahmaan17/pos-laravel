@@ -21,12 +21,18 @@
                         <table class="table" id="table-customer-temp-product">
                             <thead>
                                 <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Order Code</th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Accepted</th>
-                                    <th scope="col">Accepted By</th>
-                                    <th scope="col">Action</th>
+                                    <th scope="col" rowspan="2">#</th>
+                                    <th scope="col" rowspan="2">transaction created</th>
+                                    <th scope="col" colspan="2" data-dt-order="disable" class="text-center">Accepted</th>
+                                    <th scope="col" colspan="3" data-dt-order="disable" class="text-center">Prodcut</th>
+                                    <th scope="col" rowspan="2">Action</th>
+                                </tr>
+                                <tr>
+                                    <th scope="col">No</th>
+                                    <th scope="col">Yes</th>
+                                    <th scope="col">In</th>
+                                    <th scope="col">Restock</th>
+                                    <th scope="col">Remove</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -88,6 +94,10 @@
     </div>
     <template id="template-form-product">
         <form autocomplete="off">
+            <div class="d-flex">
+                <button type="button" class="btn btn-danger remove-temp ms-auto"><i class='bx bxs-trash-alt'></i> Remove Temporary Product</button>
+            </div>
+            <input type="hidden" name="id">
             <input type="hidden" name="customerCompanyGoodId">
             <input type="hidden" name="status">
             <input type="hidden" name="companyId" value="{{ session('userLogged')['company']['id'] }}">
@@ -149,6 +159,27 @@
             </div>
         </form>
     </template>
+    <template id="template-table-detail-product-temporary">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">OrderCode</th>
+                        <th scope="col">Creater</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Buy Price</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Accepted</th>
+                        <th scope="col">Accepter</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </template>
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
@@ -156,8 +187,8 @@
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
-        window.dataTableCustomerTemporaryProduct = null;
-        window.dataTableCustomerCompanyGood = null;
+        window.dataTableCustomerTemporaryProduct = undefined;
+        window.dataTableCustomerCompanyGood = undefined;
         window.productImageSelection = [];
         window.lastProductAccordion = 1;
         window.state = 'add';
@@ -165,8 +196,8 @@
         function actionData() {
             $('.edit').click(function() {
                 window.state = 'update';
-                let orderCode = $(this).data("customer-temp-product");
-                $("#edit-customer-temp-product").data("customer-temp-product", orderCode)
+                let orderCode = $(this).data("customer-temporary-product");
+                $("#edit-customer-temp-product").data("customer-temporary-product", orderCode)
                 if (window.dataTableCustomerTemporaryProduct.rows('.selected').data().length == 0) {
                     $('#table-customer-temp-product tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
@@ -183,38 +214,12 @@
                     type: "GET",
                     url: "{{ route('man.customer-temp-product.show') }}/" + orderCode,
                     dataType: "json",
-                    success: function(response) {
-                        let formElement = $('#modal-customer-temp-product').find("form");
-                        formElement.find('[name=id]')
-                            .val(response.data.id)
-                            .trigger('change');
-                        formElement.find('[name=name]')
-                            .val(response.data.name)
-                            .trigger('change');
-                        formElement.find('[name=stock]')
-                            .val(response.data.stock)
-                            .trigger('change');
-                        formElement.find('[name=price]')
-                            .val(parseInt(response.data.price))
-                            .trigger('change');
-                        formElement.find('[name=unitId]')
-                            .val(response.data.unitId)
-                            .trigger('change');
-                        formElement.find('[name=companyId]')
-                            .val(response.data.companyId)
-                            .trigger('change');
-                        formElement.find('[name=buyPrice]')
-                            .val(parseInt(response.data.buyPrice))
-                            .trigger('change');
-                        formElement.find('[name=status]').map((key, element) => {
-                            if ($(element).val() == response.data.status) {
-                                $(element).prop('checked', true);
-                            } else {
-                                $(element).prop('checked', false);
-                            }
-                        })
-                        $("#uploadedAvatar").prop('src',
-                            `{{ url('/') }}/customer-product/` + response.data.picture)
+                    success: function({
+                        data
+                    }) {
+                        data.forEach(temp => {
+                            generateProductAccordion(temp.status, temp);
+                        });
                     },
                     error: function(error) {
                         iziToast.error({
@@ -322,165 +327,207 @@
             }, 500));
         }
 
-        function initializeDataTable() {
-            if ($.fn.dataTable.isDataTable('#table-customer-temp-product')) {
-                window.dataTableCustomerTemporaryProduct.off('draw.dt');
-                window.dataTableCustomerTemporaryProduct.destroy();
-                window.dataTableCustomerTemporaryProduct = undefined;
-                $('#table-customer-temp-product').find('tbody').html('');
+        function initializeDataTable(context = $('#modal-customer-temp-product')) {
+            if (context.hasClass('show')) {
+                if ($.fn.dataTable.isDataTable('#table-customer-company-good')) {
+                    window.dataTableCustomerCompanyGood.off('draw');
+                    window.dataTableCustomerCompanyGood.clear().destroy();
+                    window.dataTableCustomerCompanyGood = undefined;
+                    $('#table-customer-company-good').find('tbody').html('');
+                }
+                window.dataTableCustomerCompanyGood = $("#table-customer-company-good").DataTable({
+                    ajax: "{{ route('man.customer-company-good.data-table') }}",
+                    processing: true,
+                    serverSide: true,
+                    order: [
+                        [1, 'desc']
+                    ],
+                    columns: [{
+                        target: 0,
+                        name: 'order_number',
+                        data: 'order_number',
+                        orderable: false,
+                        searchable: false,
+                        render: (data, type, row, meta) => {
+                            return `<div class='text-wrap'>${data}</div>`
+                        }
+                    }, {
+                        target: 1,
+                        name: 'name',
+                        data: 'name',
+                        orderable: true,
+                        searchable: true,
+                        render: (data, type, row, meta) => {
+                            return `<div class='text-wrap'>${data}</div>`
+                        }
+                    }, {
+                        target: 2,
+                        name: 'stock',
+                        data: 'stock',
+                        orderable: true,
+                        searchable: true,
+                        render: $.fn.dataTable.render.number('.', ',', 0, '')
+                    }, {
+                        target: 3,
+                        name: 'price',
+                        data: 'price',
+                        orderable: true,
+                        searchable: true,
+                        render: $.fn.dataTable.render.number('.', ',', 2, 'Rp.')
+                    }, {
+                        target: 4,
+                        name: 'unit',
+                        data: 'unit',
+                        orderable: false,
+                        searchable: false,
+                        render: (data, type, row, meta) => {
+                            return `<div class='d-flex gap-1'>${data}</div>`
+                        }
+                    }, {
+                        target: 5,
+                        name: 'status',
+                        data: 'status',
+                        orderable: true,
+                        searchable: true,
+                        render: (data, type, row, meta) => {
+                            return `<div class='d-flex gap-1'>${data}</div>`
+                        }
+                    }, {
+                        target: 6,
+                        name: 'action_temp',
+                        data: 'action_temp',
+                        orderable: false,
+                        searchable: false,
+                        render: (data, type, row, meta) => {
+                            return `<div class='d-flex gap-1'>${data}</div>`
+                        }
+                    }, ]
+                });
+                window.dataTableCustomerCompanyGood.on('draw', function() {
+                    actionData();
+                });
+            } else {
+                if ($.fn.dataTable.isDataTable('#table-customer-temp-product')) {
+                    window.dataTableCustomerTemporaryProduct.off('draw');
+                    window.dataTableCustomerTemporaryProduct.clear().destroy();
+                    window.dataTableCustomerTemporaryProduct = undefined;
+                    $('#table-customer-temp-product').find('tbody').html('');
+                }
+                window.dataTableCustomerTemporaryProduct = $("#table-customer-temp-product").DataTable({
+                    ajax: "{{ route('man.customer-temp-product.data-table') }}",
+                    processing: true,
+                    serverSide: true,
+                    order: [
+                        [1, 'desc']
+                    ],
+                    columns: [{
+                        class: 'dt-control',
+                        orderable: false,
+                        data: null,
+                        defaultContent: ''
+                    }, {
+                        target: 1,
+                        name: 'transaction_created',
+                        data: 'transaction_created',
+                        orderable: true,
+                        searchable: true,
+                        render: $.fn.dataTable.render.date(),
+
+                    }, {
+                        target: 2,
+                        name: 'sum_not_accepted',
+                        data: 'sum_not_accepted',
+                        orderable: true,
+                        searchable: true,
+                        render: (data, type, row, meta) => {
+                            return `<div class='text-wrap'>${data}</div>`
+                        }
+                    }, {
+                        target: 3,
+                        name: 'sum_accepted',
+                        data: 'sum_accepted',
+                        orderable: true,
+                        searchable: true,
+                        render: (data, type, row, meta) => {
+                            return `<div class='d-flex gap-1'>${data}</div>`
+                        }
+                    }, {
+                        target: 4,
+                        name: 'sum_product_in',
+                        data: 'sum_product_in',
+                        orderable: true,
+                        searchable: true,
+                        render: (data, type, row, meta) => {
+                            return `<div class='d-flex gap-1'>${data}</div>`
+                        }
+                    }, {
+                        target: 5,
+                        name: 'sum_product_restock',
+                        data: 'sum_product_restock',
+                        orderable: true,
+                        searchable: true,
+                        render: (data, type, row, meta) => {
+                            return `<div class='d-flex gap-1'>${data}</div>`
+                        }
+                    }, {
+                        target: 6,
+                        name: 'sum_product_remove',
+                        data: 'sum_product_remove',
+                        orderable: true,
+                        searchable: true,
+                        render: (data, type, row, meta) => {
+                            return `<div class='d-flex gap-1'>${data}</div>`
+                        }
+                    }, {
+                        target: 7,
+                        name: 'action',
+                        data: 'action',
+                        orderable: false,
+                        searchable: false,
+                        render: (data, type, row, meta) => {
+                            return `<div class='d-flex gap-1'>${data}</div>`
+                        }
+                    }, ]
+                });
+                window.dataTableCustomerTemporaryProduct.on('draw', function() {
+                    actionData();
+                });
+                const detailRows = [];
+                window.dataTableCustomerTemporaryProduct.on('click', 'tbody td.dt-control', function() {
+                    let tr = event.target.closest('tr');
+                    let row = window.dataTableCustomerTemporaryProduct.row(tr);
+                    let idx = detailRows.indexOf(tr.id);
+
+                    if (row.child.isShown()) {
+                        tr.classList.remove('details');
+                        row.child.hide();
+                        detailRows.splice(idx, 1);
+                    } else {
+                        tr.classList.add('details');
+                        row.child(detailTableCustomerTemporaryProduct()).show();
+                        let containerDetail = $(`tr[data-dt-row=${[row[0][0]]}]`);
+                        containerDetail.find('tbody').append(dataDetailTableCustomerTemporaryProduct(row.data()))
+                        if (idx === -1) {
+                            detailRows.push(tr.id);
+                        }
+                    }
+                });
             }
-            if ($.fn.dataTable.isDataTable('#table-customer-company-good')) {
-                window.dataTableCustomerCompanyGood.off('draw.dt');
-                window.dataTableCustomerCompanyGood.destroy();
-                window.dataTableCustomerCompanyGood = undefined;
-                $('#table-customer-company-good').find('tbody').html('');
-            }
-            window.dataTableCustomerTemporaryProduct = $("#table-customer-temp-product").DataTable({
-                ajax: "{{ route('man.customer-temp-product.data-table') }}",
-                processing: true,
-                serverSide: true,
-                order: [
-                    [1, 'desc']
-                ],
-                columns: [{
-                    class: 'dt-control',
-                    orderable: false,
-                    data: null,
-                    defaultContent: ''
-                }, {
-                    target: 1,
-                    name: 'orderCode',
-                    data: 'orderCode',
-                    orderable: true,
-                    searchable: true,
-                    render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'>${data}</div>`
-                    }
-                }, {
-                    target: 2,
-                    name: 'created_at',
-                    data: 'created_at',
-                    orderable: true,
-                    searchable: true,
-                    render: $.fn.dataTable.render.date(),
-                }, {
-                    target: 3,
-                    name: 'status',
-                    data: 'status',
-                    orderable: true,
-                    searchable: true,
-                    render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
-                    }
-                }, {
-                    target: 4,
-                    name: 'accepted_by',
-                    data: 'accepted_by',
-                    orderable: true,
-                    searchable: true,
-                    render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
-                    }
-                }, {
-                    target: 5,
-                    name: 'action',
-                    data: 'action',
-                    orderable: false,
-                    searchable: false,
-                    render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
-                    }
-                }, ]
-            });
-            window.dataTableCustomerTemporaryProduct.on('draw.dt', function() {
-                actionData();
-            });
-            window.dataTableCustomerCompanyGood = $("#table-customer-company-good").DataTable({
-                ajax: "{{ route('man.customer-company-good.data-table') }}",
-                processing: true,
-                serverSide: true,
-                order: [
-                    [1, 'desc']
-                ],
-                columns: [{
-                    target: 0,
-                    name: 'order_number',
-                    data: 'order_number',
-                    orderable: false,
-                    searchable: false,
-                    render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'>${data}</div>`
-                    }
-                }, {
-                    target: 1,
-                    name: 'name',
-                    data: 'name',
-                    orderable: true,
-                    searchable: true,
-                    render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'>${data}</div>`
-                    }
-                }, {
-                    target: 2,
-                    name: 'stock',
-                    data: 'stock',
-                    orderable: true,
-                    searchable: true,
-                    render: $.fn.dataTable.render.number('.', ',', 0, '')
-                }, {
-                    target: 3,
-                    name: 'price',
-                    data: 'price',
-                    orderable: true,
-                    searchable: true,
-                    render: $.fn.dataTable.render.number('.', ',', 2, 'Rp.')
-                }, {
-                    target: 4,
-                    name: 'unit',
-                    data: 'unit',
-                    orderable: false,
-                    searchable: false,
-                    render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
-                    }
-                }, {
-                    target: 5,
-                    name: 'status',
-                    data: 'status',
-                    orderable: true,
-                    searchable: true,
-                    render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
-                    }
-                }, {
-                    target: 6,
-                    name: 'action_temp',
-                    data: 'action_temp',
-                    orderable: false,
-                    searchable: false,
-                    render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
-                    }
-                }, ]
-            });
-            window.dataTableCustomerCompanyGood.on('draw.dt', function() {
-                actionData();
-            });
         }
 
-        function detailTableCustomerTemporaryProduct(d) {
-            let html = ``;
-            d.changedProduct.forEach(product => {
-                html += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                    ${product.name?? product.product.name}
-                    <span class="badge bg-primary">${product.stock?? product.product.stock}</span>
-                  </li>`
+        function dataDetailTableCustomerTemporaryProduct(d) {
+            let contentTableBody = ``;
+            d.changedProduct.forEach(changed => {
+                contentTableBody +=
+                    `<tr><td>${changed.orderCode}</td><td>${changed.creater.name}</td><td>${changed?.reference?.name?? changed.name}</td><td>${changed?.reference?.stock??changed.stock}</td><td>${changed?.reference?.price??changed.price}</td><td>${changed?.reference?.buyPrice?? changed.buyPrice}</td><td>${changed?.reference?.unit.name??changed.unit.name}</td><td>${changed.accepted==0 ? '<span class="badge bg-label-danger"><i class="bx bx-x"></i></span>' : '<span class="badge bg-label-success"><i class="bx bx-check"></i></span>'}</td><td>${changed.accepter?.name??'-'}</td></tr>`
             });
-            return (
-                `<ul class="list-group">
-                  ${html}
-                </ul>`
-            );
+            return contentTableBody
+        }
+
+        function detailTableCustomerTemporaryProduct() {
+            const template = $('#template-table-detail-product-temporary')
+            const html = template[0].content.cloneNode(true);
+            return (html);
         }
 
         function changeProductPhoto() {
@@ -505,11 +552,11 @@
 
         function generateProductAccordion(status = 'IN', data = null) {
             const accordionTemporaryProduct = $('#accordion-temporary-product');
-            accordionTemporaryProduct.append(`<div class="accordion-item shadow-sm" data-id=${window.lastProductAccordion}>
+            accordionTemporaryProduct.append(`<div class="accordion-item shadow-sm mb-3" data-id=${window.lastProductAccordion}>
                                 <h2 class="accordion-header">
                                     <button class="accordion-button ${status == 'IN'? '' :((status == 'RESTOCK')?'text-warning': 'text-danger')}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${window.lastProductAccordion}"
                                         aria-expanded="false" aria-controls="collapse${window.lastProductAccordion}">
-                                        ${status == 'IN' ? `${status} Temporary Product` : `${status} ${data.name}`}
+                                        ${status == 'IN' ? `${status} Temporary Product` : `${status} ${data?.reference?.name??data.name}`}
                                     </button>
                                 </h2>
                                 <div id="collapse${window.lastProductAccordion}" class="accordion-collapse collapse show">
@@ -541,104 +588,54 @@
                 changeProductPhoto(indexAccordion);
             } else {
                 container.append(
-                    `<form><input type="hidden" name="customerCompanyGoodId" value="${data.customerCompanyGoodId}"><input type="hidden" name="status" value="${status}"><input type="hidden" name="companyId" value="{{ session('userLogged')['company']['id'] }}"></form><div>Product will be remove</div>`
+                    `<form><div class="d-flex"><button type="button" class="btn btn-danger remove-temp ms-auto"><i class='bx bxs-trash-alt'></i> Remove Temporary Product</button></div><input type="hidden" name="id" value="${data?.id??''}"><input type="hidden" name="customerCompanyGoodId" value="${data.customerCompanyGoodId}"><input type="hidden" name="status" value="${status}"><input type="hidden" name="companyId" value="{{ session('userLogged')['company']['id'] }}"></form><div>Product will be remove</div>`
                 );
             }
-            if (status == 'RESTOCK') {
+            if (data != null && status != 'REMOVE') {
                 $.each(data, function(key, value) {
                     if (key != 'status' && key != 'picture') {
-                        if (key.split('rice').length > 1) {
-                            container.find(`[name=${key}]`).val(parseInt(value)).trigger('change');
-                        } else {
-                            container.find(`[name=${key}]`).val(value).trigger('change');
-                        }
+                        container.find(`[name=${key}]`).val(key.split('rice').length > 1 ? parseInt(value) : value).trigger('change');
                     }
                 });
-                container.find('.user-avatar').attr('src', `{{ asset('customer-product/${data.picture}') }}`);
+                container.find('.user-avatar').attr('src', (status == 'RESTOCK' ?
+                    `{{ asset('customer-product/${data?.reference?.picture ?? data?.picture}') }}` :
+                    `{{ asset('temp-customer-product/${data?.picture}') }}`));
             }
             container.find('[name=status]').val(status);
+            container.find('.remove-temp').click(function() {
+                iziToast.question({
+                    timeout: 5000,
+                    layout: 2,
+                    close: false,
+                    overlay: true,
+                    color: 'red',
+                    displayMode: 'once',
+                    id: 'question',
+                    zindex: 9999,
+                    title: 'Confirmation',
+                    message: "Are you sure you want to delete this temporary product?",
+                    position: 'center',
+                    icon: 'bx bx-question-mark',
+                    buttons: [
+                        ['<button><b>OK</b></button>', function(instance, toast) {
+                            instance.hide({
+                                transitionOut: 'fadeOut'
+                            }, toast, 'button');
+                            container.find('.remove-temp').parents('.accordion-item').remove()
+                        }, true],
+                        ['<button>CANCEL</button>', function(instance, toast) {
+                            instance.hide({
+                                transitionOut: 'fadeOut'
+                            }, toast, 'button');
+                        }],
+                    ],
+                });
+
+            });
             window.lastProductAccordion++;
         }
 
         $(function() {
-            window.dataTableCustomerTemporaryProduct = $("#table-customer-temp-product").DataTable({
-                ajax: "{{ route('man.customer-temp-product.data-table') }}",
-                processing: true,
-                serverSide: true,
-                order: [
-                    [2, 'desc']
-                ],
-                columns: [{
-                    class: 'dt-control',
-                    orderable: false,
-                    data: null,
-                    defaultContent: ''
-                }, {
-                    target: 1,
-                    name: 'orderCode',
-                    data: 'orderCode',
-                    orderable: true,
-                    searchable: true,
-                    render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'>${data}</div>`
-                    }
-                }, {
-                    target: 2,
-                    name: 'created_at',
-                    data: 'created_at',
-                    orderable: true,
-                    searchable: true,
-                    render: $.fn.dataTable.render.date(),
-                }, {
-                    target: 3,
-                    name: 'status',
-                    data: 'status',
-                    orderable: true,
-                    searchable: true,
-                    render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
-                    }
-                }, {
-                    target: 4,
-                    name: 'accepted_by',
-                    data: 'accepted_by',
-                    orderable: true,
-                    searchable: true,
-                    render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
-                    }
-                }, {
-                    target: 5,
-                    name: 'action',
-                    data: 'action',
-                    orderable: false,
-                    searchable: false,
-                    render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
-                    }
-                }, ]
-            });
-            window.dataTableCustomerTemporaryProduct.on('draw.dt', function() {
-                actionData();
-            });
-            const detailRows = [];
-            window.dataTableCustomerTemporaryProduct.on('click', 'tbody td.dt-control', function() {
-                let tr = event.target.closest('tr');
-                let row = window.dataTableCustomerTemporaryProduct.row(tr);
-                let idx = detailRows.indexOf(tr.id);
-
-                if (row.child.isShown()) {
-                    tr.classList.remove('details');
-                    row.child.hide();
-                    detailRows.splice(idx, 1);
-                } else {
-                    tr.classList.add('details');
-                    row.child(detailTableCustomerTemporaryProduct(row.data())).show();
-                    if (idx === -1) {
-                        detailRows.push(tr.id);
-                    }
-                }
-            });
             $('#add-temporary-product').click(debounce(function() {
                 generateProductAccordion()
             }, 500));
@@ -750,6 +747,7 @@
                 $('#edit-customer-temp-product').addClass('d-none');
                 $('#modal-customer-temp-product .is-invalid').removeClass('is-invalid')
                 $('#table-customer-temp-product tbody').find('tr').removeClass('selected');
+                initializeDataTable()
             });
             $('#modal-customer-temp-product').on('shown.bs.modal', function() {
                 setTimeout(() => {
@@ -763,6 +761,7 @@
             $(window).resize(debounce(function() {
                 initializeDataTable();
             }, 1500));
+            initializeDataTable();
         });
     </script>
 @endpush

@@ -10,12 +10,16 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class CustomerTemporaryProduct extends Model
 {
     use HasFactory;
-    protected $fillable = ['orderCode', 'userId', 'companyId', 'customerCompanyGoodId', 'name', 'picture', 'stock', 'price', 'buyPrice', 'unitId', 'accepted', 'accepted_by', 'status'];
+    protected $fillable = ['orderCode', 'transaction_created',  'userId', 'companyId', 'customerCompanyGoodId', 'name', 'picture', 'stock', 'price', 'buyPrice', 'unitId', 'accepted', 'accepted_by', 'status'];
+    public function creater(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'userId');
+    }
     public function unit(): HasOne
     {
         return $this->hasOne(AppGoodUnit::class, 'id', 'unitId');
     }
-    public function product(): HasOne
+    public function reference(): HasOne
     {
         return $this->hasOne(CustomerCompanyGood::class, 'id', 'customerCompanyGoodId');
     }
@@ -25,6 +29,6 @@ class CustomerTemporaryProduct extends Model
     }
     public function changedProduct(): HasMany
     {
-        return $this->hasMany(CustomerTemporaryProduct::class, 'orderCode', 'orderCode');
+        return $this->hasMany(CustomerTemporaryProduct::class, 'transaction_created', 'transaction_created');
     }
 }

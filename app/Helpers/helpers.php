@@ -327,6 +327,11 @@ function getSql($model)
 
 //     return $formatted;
 // }
+function statusTransaction($orderCode)
+{
+    preg_match('/-[A-Z]{2,7}-/i', $orderCode, $result);
+    return str_replace('-', '', $result[0]);
+}
 if (! function_exists('checkPermissionMenu')) {
     function checkPermissionMenu($id, $role)
     {
