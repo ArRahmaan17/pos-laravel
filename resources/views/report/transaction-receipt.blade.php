@@ -9,14 +9,14 @@
         body {
             font-family: Arial, sans-serif;
             width: 385px;
-            padding: 0;
-            margin-left: -40px;
-            margin-top: -60px;
+            padding: 0px;
+            margin: -60px -40px -60px -40px;
         }
 
-        h2,
+        h3,
         p {
             text-align: center;
+            margin-bottom: -3px;
         }
 
         .address {
@@ -62,6 +62,7 @@
         .product {
             float: left;
             font-size: 15px;
+            min-height: fit-content;
         }
 
         .container-subtotal {
@@ -73,11 +74,15 @@
             display: block;
             text-align: end;
         }
+
+        .items {
+            min-height: 120px;
+        }
     </style>
 </head>
 
 <body>
-    <h2>{{ session('userLogged')['company']['name'] }}</h2>
+    <h3>{{ session('userLogged')['company']['name'] }}</h3>
     <div class="address">
         {{ session('userLogged')['company']['address']['place'] . ',' . session('userLogged')['company']['address']['address'] . ',' . session('userLogged')['company']['address']['city'] . ',' . session('userLogged')['company']['address']['province'] . ',' . session('userLogged')['company']['address']['zipCode'] }}
     </div>

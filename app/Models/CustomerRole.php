@@ -32,11 +32,6 @@ class CustomerRole extends Model
             ->where($where)->get();
     }
 
-    public static function exists_role($where)
-    {
-        return self::where($where)->get();
-    }
-
     public function role_users(): HasMany
     {
         return $this->HasMany(

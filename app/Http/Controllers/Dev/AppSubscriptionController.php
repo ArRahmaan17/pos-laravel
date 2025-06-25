@@ -64,8 +64,8 @@ class AppSubscriptionController extends Controller
             $row['name'] = $item->name;
             $row['description'] = $item->description;
             $row['price'] = $item->price;
-            $row['plans'] = $item->plans;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-app-subscription='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-app-subscription='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['plans'] = $item->planFeature;
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-app-subscription='" . $item->id . "' ><i class='bx bx-pencil' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -81,21 +81,35 @@ class AppSubscriptionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|min:6|max:40',
+            'name' => 'required|min:5|max:40|unique:app_subscriptions,name',
             'description' => 'required|min:6|max:40',
-            'price' => 'required|numeric|max_digits:16',
-            'planFeature' => 'required|array',
+            'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'details' => 'required|array',
+            'details.*.text_feature' => 'required|string',
+            'details.*.category' => 'required|in:file,logic,custom_menu,transaction,data,custom_report,full_access_report',
+            'details.*.amount' => 'required_if:category,file|required_if:category,transaction|required_if:category,data|regex:/(\d{1,3}(?:\.\d{3})*)/i',
+            'details.*.status' => 'required_if:category,logic|required_if:category,custom_menu|required_if:category,custom_report|required_if:category,full_access_report|in:0,1',
         ]);
         DB::beginTransaction();
         try {
-            $data = $request->except('_token', 'id', 'planFeature');
+            $data = $request->except('_token', 'id', 'details');
+            $data['price'] = intval(convertStringToNumber($data['price']));
             $subscription = AppSubscription::create($data);
-            $subs_feature = array_map(function ($data) use ($subscription) {
-                return ['subscriptionId' => $subscription->id, 'planFeature' => $data, 'created_at' => now('Asia/Jakarta'), 'updated_at' => now('Asia/Jakarta')];
-            }, $request->planFeature);
+            $subs_feature = array_map(function ($detail) use ($subscription) {
+                return [
+                    'subscriptionId' => $subscription->id,
+                    'text_feature' => $detail['text_feature'],
+                    'category' => $detail['category'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'amount' => !empty($detail['amount']) ? intval(convertStringToNumber($detail['amount'])) : null,
+                    'status' => !empty($detail['status'])? intval($detail['status']) : null,
+                ];
+            }, $request->details);
             AppDetailSubscription::insert($subs_feature);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
@@ -132,7 +146,7 @@ class AppSubscriptionController extends Controller
         $request->validate([
             'name' => 'required|min:6|max:40',
             'description' => 'required|min:6|max:40',
-            'price' => 'required|numeric|max_digits:16',
+            'price' => 'required|numeric|max_digits:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'planFeature' => 'required|array',
         ]);
         DB::beginTransaction();
@@ -140,7 +154,7 @@ class AppSubscriptionController extends Controller
             $data = $request->except('_token', 'id', 'planFeature');
             AppSubscription::where('id', $id)->update($data);
             $subs_feature = array_map(function ($data) use ($id) {
-                return ['subscriptionId' => $id, 'planFeature' => $data, 'created_at' => now('Asia/Jakarta'), 'updated_at' => now('Asia/Jakarta')];
+                return ['subscriptionId' => $id, 'planFeature' => $data, 'created_at' => now(), 'updated_at' => now()];
             }, $request->planFeature);
             AppDetailSubscription::where('subscriptionId', $id)->delete();
             AppDetailSubscription::insert($subs_feature);

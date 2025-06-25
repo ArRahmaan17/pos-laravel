@@ -1,9 +1,11 @@
 <?php
 
 use App\Models\CustomerProductTransaction;
+use App\Models\CustomerTemporaryProduct;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 if (! function_exists('getRole')) {
     function getRole()
@@ -25,31 +27,43 @@ function numberFormat($number)
 {
     return number_format($number, 2, ',', '.');
 }
+function defaultPassword()
+{
+    return Str::lower(implode('', explode(' ', session('userLogged')['company']['name'])));
+}
 function buatSingkatan($kalimat)
 {
-    return strtoupper(implode('', array_map(fn ($kata) => $kata[0], explode(' ', $kalimat))));
+    return strtoupper(implode('', array_map(fn($kata) => $kata[0] . $kata[1], explode(' ', $kalimat))));
 }
+
 if (! function_exists('lastCompanyOrderCode')) {
-    function lastCompanyOrderCode()
+    function lastCompanyOrderCode($transaction_status = 'OUT', $date = null)
     {
-        $data = CustomerProductTransaction::where('companyId', session('userLogged')['company']['id'])
-            ->orderBy('id', 'DESC')
-            ->first();
-        $lastOrder = buatSingkatan(session('userLogged')['company']['name']).'-'.now('Asia/Jakarta')->format('Y-m-d').'-'.str_pad(1, 5, '0', STR_PAD_LEFT);
+        if (!$date) {
+            $date = now()->format('Y-m-d');
+        }
+        if ($transaction_status == 'OUT') {
+            $data = CustomerProductTransaction::where('orderCode', 'like', '%' . $transaction_status . '%')
+                ->where('companyId', session('userLogged')['company']['id'])->whereRaw("DATE(created_at) = '" . $date . "'")
+                ->orderBy('id', 'DESC')
+                ->first();
+        } else {
+            $data = CustomerTemporaryProduct::where('orderCode', 'like', '%' . $transaction_status . '%')
+                ->where('companyId', session('userLogged')['company']['id'])->where('transaction_created', $date)
+                ->orderBy('id', 'DESC')
+                ->first();
+        }
+        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
         if ($data && explode(
-            buatSingkatan(session('userLogged')['company']['name']).'-'.now('Asia/Jakarta')->format('Y-m-d').'-',
+            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-',
             $data->orderCode
         )) {
-            $lastOrder = buatSingkatan(
-                session('userLogged')['company']['name']
-            ).'-'.now('Asia/Jakarta')->format('Y-m-d').'-'.str_pad(
+            $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-' . str_pad(
                 intval(
                     implode(
                         '',
                         explode(
-                            buatSingkatan(
-                                session('userLogged')['company']['name']
-                            ).'-'.now('Asia/Jakarta')->format('Y-m-d').'-',
+                            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-',
                             $data->orderCode
                         )
                     )
@@ -63,12 +77,7 @@ if (! function_exists('lastCompanyOrderCode')) {
         return $lastOrder;
     }
 }
-if (! function_exists('splitKodeGolongan')) {
-    function splitKodeGolongan($kodegolongan)
-    {
-        return implode('.', str_split($kodegolongan));
-    }
-}
+
 if (! function_exists('stringPad')) {
     function stringPad($word, $length = 2, $pad = '0', $type = STR_PAD_LEFT)
     {
@@ -78,10 +87,7 @@ if (! function_exists('stringPad')) {
 
 function unFormattedPhoneNumber($formattedNumber)
 {
-    // Remove any characters that are not digits
     $unformattedNumber = preg_replace('/\D/', '', $formattedNumber);
-
-    // Ensure the number starts with '62' after removing non-digit characters
     if (substr($unformattedNumber, 0, 2) !== '62') {
         return 'Invalid Indonesian phone number.';
     }
@@ -89,20 +95,34 @@ function unFormattedPhoneNumber($formattedNumber)
 
     return $unformattedNumber;
 }
+function formatIndonesianPhoneNumber($phoneNumber)
+{
+    $cleaned = preg_replace('/\D/', '', $phoneNumber);
+    if (strpos($cleaned, '62') === 0) {
+        $cleaned = substr($cleaned, 2);
+    }
+    if ($cleaned[0] !== '+62') {
+        $cleaned = '+62' . $cleaned;
+    }
+    $formatted = preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})/', '$1 $2-$3-$4', $cleaned);
+
+    return $formatted;
+}
 
 function company_profile_asset($filename)
 {
     return Storage::disk('company-profile')->get($filename);
 }
+
 if (! function_exists('dataToOption')) {
     function dataToOption($allData, $attr = false)
     {
         $html = "<option value=''>Mohon Pilih</option>";
         foreach ($allData as $index => $data) {
             if ($attr) {
-                $html .= "<option data-attr='".$data->attribute."' value='".(isset($data->id) ? $data->id : $data->name)."'>".$data->name.' ( Tersedia di '.$data->attribute.')</option>';
+                $html .= "<option data-attr='" . $data->attribute . "' value='" . (isset($data->id) ? $data->id : $data->name) . "'>" . $data->name . ' ( Tersedia di ' . $data->attribute . ')</option>';
             } else {
-                $html .= "<option value='".(isset($data->id) ? $data->id : $data->name)."'>".$data->name.'</option>';
+                $html .= "<option value='" . (isset($data->id) ? $data->id : $data->name) . "'>" . $data->name . '</option>';
             }
         }
 
@@ -111,45 +131,20 @@ if (! function_exists('dataToOption')) {
 }
 function removeDuplicate($array)
 {
-    // Initialize an empty array to store unique IDs
     $uniqueIds = [];
-
-    // Iterate through the input array
     foreach ($array as $item) {
-        // Check if the ID of the current item exists in $uniqueIds array
         if (! in_array($item, $uniqueIds)) {
-            // If ID doesn't exist, add it to $uniqueIds and keep the item
             $uniqueIds[] = $item;
             $uniqueArray[] = $item;
         }
-        // If ID already exists, skip adding it to $uniqueArray (thus removing duplicate)
     }
-
-    // Return the array with unique IDs
     return $uniqueArray;
 }
 
-if (! function_exists('classificationType')) {
-    function classificationType(array $conditions)
-    {
-        return DB::table('masterkapitalisasi')->where('kodegolongan', $conditions['kodegolongan'])->where('kodebidang', $conditions['kodebidang'])->first();
-    }
-}
 if (! function_exists('convertStringToNumber')) {
     function convertStringToNumber($string)
     {
         return implode('', explode('.', $string));
-    }
-}
-if (! function_exists('getkdunit')) {
-    function getkdunit($sp2d)
-    {
-        return DB::table('anggaran.sp2d')
-            ->where([
-                'kdper' => $sp2d['kdper'],
-                'nosp2d' => $sp2d['nosp2d'],
-                'tglsp2d' => $sp2d['tglsp2d'],
-            ])->first()->kdunit;
     }
 }
 if (! function_exists('convertAlphabeticalToNumberDate')) {
@@ -161,43 +156,43 @@ if (! function_exists('convertAlphabeticalToNumberDate')) {
             $stringDate = explode(' ', $stringDate);
             switch ($stringDate[1]) {
                 case 'Januari':
-                    $str = $stringDate[2].'-'.$number[0].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[0] . '-' . $stringDate[0];
                     break;
                 case 'Februari':
-                    $str = $stringDate[2].'-'.$number[1].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[1] . '-' . $stringDate[0];
                     break;
                 case 'Maret':
-                    $str = $stringDate[2].'-'.$number[2].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[2] . '-' . $stringDate[0];
                     break;
                 case 'April':
-                    $str = $stringDate[2].'-'.$number[3].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[3] . '-' . $stringDate[0];
                     break;
                 case 'Mei':
-                    $str = $stringDate[2].'-'.$number[4].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[4] . '-' . $stringDate[0];
                     break;
                 case 'Juni':
-                    $str = $stringDate[2].'-'.$number[5].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[5] . '-' . $stringDate[0];
                     break;
                 case 'Juli':
-                    $str = $stringDate[2].'-'.$number[6].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[6] . '-' . $stringDate[0];
                     break;
                 case 'Agustus':
-                    $str = $stringDate[2].'-'.$number[7].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[7] . '-' . $stringDate[0];
                     break;
                 case 'September':
-                    $str = $stringDate[2].'-'.$number[8].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[8] . '-' . $stringDate[0];
                     break;
                 case 'Oktober':
-                    $str = $stringDate[2].'-'.$number[9].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[9] . '-' . $stringDate[0];
                     break;
                 case 'November':
-                    $str = $stringDate[2].'-'.$number[10].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[10] . '-' . $stringDate[0];
                     break;
                 case 'Desember':
-                    $str = $stringDate[2].'-'.$number[11].'-'.$stringDate[0];
+                    $str = $stringDate[2] . '-' . $number[11] . '-' . $stringDate[0];
                     break;
                 default:
-                    $str = $stringDate[2].'- not valid -'.$stringDate[0];
+                    $str = $stringDate[2] . '- not valid -' . $stringDate[0];
                     break;
             }
 
@@ -215,43 +210,43 @@ if (! function_exists('convertNumericDateToAlphabetical')) {
             $stringDate = explode('-', $stringDate);
             switch ($stringDate[1]) {
                 case '01':
-                    $str = $stringDate[2].' '.$number[0].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[0] . ' ' . $stringDate[0];
                     break;
                 case '02':
-                    $str = $stringDate[2].' '.$number[1].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[1] . ' ' . $stringDate[0];
                     break;
                 case '03':
-                    $str = $stringDate[2].' '.$number[2].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[2] . ' ' . $stringDate[0];
                     break;
                 case '04':
-                    $str = $stringDate[2].' '.$number[3].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[3] . ' ' . $stringDate[0];
                     break;
                 case '05':
-                    $str = $stringDate[2].' '.$number[4].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[4] . ' ' . $stringDate[0];
                     break;
                 case '06':
-                    $str = $stringDate[2].' '.$number[5].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[5] . ' ' . $stringDate[0];
                     break;
                 case '07':
-                    $str = $stringDate[2].' '.$number[6].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[6] . ' ' . $stringDate[0];
                     break;
                 case '08':
-                    $str = $stringDate[2].' '.$number[7].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[7] . ' ' . $stringDate[0];
                     break;
                 case '09':
-                    $str = $stringDate[2].' '.$number[8].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[8] . ' ' . $stringDate[0];
                     break;
                 case '10':
-                    $str = $stringDate[2].' '.$number[9].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[9] . ' ' . $stringDate[0];
                     break;
                 case '11':
-                    $str = $stringDate[2].' '.$number[10].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[10] . ' ' . $stringDate[0];
                     break;
                 case '12':
-                    $str = $stringDate[2].' '.$number[11].' '.$stringDate[0];
+                    $str = $stringDate[2] . ' ' . $number[11] . ' ' . $stringDate[0];
                     break;
                 default:
-                    $str = $stringDate[2].'  not valid  '.$stringDate[0];
+                    $str = $stringDate[2] . '  not valid  ' . $stringDate[0];
                     break;
             }
 
@@ -261,37 +256,17 @@ if (! function_exists('convertNumericDateToAlphabetical')) {
         }
     }
 }
-if (! function_exists('kodeOrganisasi')) {
-    function kodeOrganisasi()
-    {
-        $copi = clone session('organisasi');
-        unset($copi->organisasi, $copi->tahunorganisasi, $copi->wajibsusut);
 
-        return implode('.', array_values((array) $copi));
-
-        return implode('.', array_values((array) $copi));
-
-        return implode('.', array_values((array) $copi));
-    }
-}
-if (! function_exists('getOrganisasi')) {
-    function getOrganisasi()
-    {
-        return session('organisasi')->organisasi;
-    }
-}
 if (! function_exists('buildTree')) {
     function buildTree(array &$elements, $idParent = 0)
     {
         $branch = [];
         foreach ($elements as $element) {
-            $element = (array) $element;
-            if ($element['parent'] == $idParent) {
+            if ($idParent === $element['parent']) {
                 $children = buildTree($elements, $element['id']);
                 if ($children) {
                     $element['children'] = $children;
                 }
-                unset($element['parent']);
                 $branch[] = $element;
             }
         }
@@ -311,7 +286,6 @@ if (! function_exists('buildTreeMenu')) {
                 if ($children) {
                     $element['children'] = $children;
                 }
-                unset($element['parent']);
                 $branch[] = $element;
             }
         }
@@ -327,7 +301,7 @@ function getSql($model)
             $pos = strpos($sql, $needle);
             if ($pos !== false) {
                 if (gettype($replace) === 'string') {
-                    $replace = ' "'.addslashes($replace).'" ';
+                    $replace = ' "' . addslashes($replace) . '" ';
                 }
                 $sql = substr_replace($sql, $replace, $pos, strlen($needle));
             }
@@ -339,51 +313,32 @@ function getSql($model)
 
     return $sql;
 }
-function formatIndonesianPhoneNumber($phoneNumber)
+// function formatIndonesianPhoneNumber($){
+//     // Check if the number starts with the country code and remove it
+//     if (strpos($cleaned, '62') === 0) {
+//         $cleaned = substr($cleaned, 2);
+//     }
+
+//     // Ensure the number starts with 0
+//     if ($cleaned[0] !== '+62') {
+//         $cleaned = '+62' . $cleaned;
+//     }
+
+//     // Format the number (e.g., (021) 123-4567 or 0812-345-6789)
+//     // This is just a basic example; you may need to adjust formatting based on specific needs
+//     $formatted = preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})/', '$1 $2-$3-$4', $cleaned);
+
+//     return $formatted;
+// }
+function statusTransaction($orderCode)
 {
-    // Remove any non-digit characters
-    $cleaned = preg_replace('/\D/', '', $phoneNumber);
-
-    // Check if the number starts with the country code and remove it
-    if (strpos($cleaned, '62') === 0) {
-        $cleaned = substr($cleaned, 2);
-    }
-
-    // Ensure the number starts with 0
-    if ($cleaned[0] !== '+62') {
-        $cleaned = '+62'.$cleaned;
-    }
-
-    // Format the number (e.g., (021) 123-4567 or 0812-345-6789)
-    // This is just a basic example; you may need to adjust formatting based on specific needs
-    $formatted = preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})/', '$1 $2-$3-$4', $cleaned);
-
-    return $formatted;
-}
-if (! function_exists('buildTreeOrganisasi')) {
-    function buildTreeOrganisasi(array &$elements, $idParent = '0')
-    {
-        $branch = [];
-        foreach ($elements as $element) {
-            $element = (array) $element;
-            if ($element['parent'] === $idParent) {
-                // dd($elements, $element['parent'], $element['id']);
-                $children = buildTreeOrganisasi($elements, $element['id']);
-                if ($children) {
-                    $element['children'] = $children;
-                }
-                unset($element['parent']);
-                $branch[] = $element;
-            }
-        }
-
-        return $branch;
-    }
+    preg_match('/-[A-Z]{2,7}-/i', $orderCode, $result);
+    return str_replace('-', '', $result[0]);
 }
 if (! function_exists('checkPermissionMenu')) {
     function checkPermissionMenu($id, $role)
     {
-        return DB::table('role_menus')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false;
+        return DB::table('customer_role_accessibilities')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false;
     }
 }
 if (! function_exists('buildMenu')) {
@@ -398,26 +353,26 @@ if (! function_exists('buildMenu')) {
                         $children = buildMenu($element['children']);
                         $html .= '<li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons '.$element['icon'].'"></i>
-                            <div data-i18n="Layouts">'.$element['name'].'</div>
+                            <i class="menu-icon tf-icons ' . $element['icon'] . '"></i>
+                            <div data-i18n="Layouts">' . $element['name'] . '</div>
                         </a>
 
-                        <ul class="menu-sub">'.$children.'</ul>
+                        <ul class="menu-sub">' . $children . '</ul>
                     </li>';
                     } else {
                         $html .= '<li class="menu-item">
-                    <a href="'.(Route::has($element['route']) ? route($element['route']) : $element['route']).'" class="menu-link '.(Route::is($element['route']) ? 'bg-primary rounded-sm text-white' : '').'">
-                        <i class="menu-icon tf-icons '.$element['icon'].'"></i>
-                        <div data-i18n="'.$element['name'].'">'.$element['name'].'</div>
+                    <a href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '" class="menu-link ' . (Route::is($element['route']) ? 'bg-primary text-white rounded-sm' : '') . '">
+                        <i class="menu-icon tf-icons ' . $element['icon'] . '"></i>
+                        <div data-i18n="' . $element['name'] . '">' . $element['name'] . '</div>
                     </a>
                 </li>';
                     }
                 } elseif ($place == 1) {
                     $html .= '<li>
-                        <a class="dropdown-item '.(Route::is($element['route']) ? 'bg-primary' : '').'" href="'.(Route::has($element['route']) ? route($element['route']) : $element['route']).'">
-                            <span class="d-flex align-items-center align-middle '.(Route::is($element['route']) ? 'bg-primary rounded-sm text-white' : '').'">
-                                <i class="flex-shrink-0 me-2 '.$element['icon'].'"></i>
-                                <span class="flex-grow-1 align-middle">'.$element['name'].'</span>
+                        <a class="dropdown-item ' . (Route::is($element['route']) ? 'bg-primary' : '') . '" href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '">
+                            <span class="d-flex align-items-center align-middle ' . (Route::is($element['route']) ? 'bg-primary rounded-sm text-white' : '') . '">
+                                <i class="flex-shrink-0 me-2 ' . $element['icon'] . '"></i>
+                                <span class="flex-grow-1 align-middle">' . $element['name'] . '</span>
                             </span>
                         </a>
                     </li>';
@@ -438,20 +393,5 @@ if (! function_exists('limitOffsetToArray')) {
         }
 
         return $data;
-    }
-}
-
-if (! function_exists('generateIdKontrak')) {
-
-    function generateNextIdKontrak()
-    {
-        $data = DB::table('kontrak')
-            ->orderByDesc('id')
-            ->first();
-        // dd($data);
-        $next = $data ? $data->id + 1 : 1;
-        // dd($next);
-
-        return $next;
     }
 }

@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\AppGoodUnit;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -20,8 +22,6 @@ class DatabaseSeeder extends Seeder
                 'icon' => 'bx bxs-home',
                 'parent' => 0,
                 'dev_only' => 0,
-                'created_at' => '2024-10-04 01:39:18',
-                'updated_at' => '2024-10-04 01:40:03',
                 'place' => 0,
             ],
             [
@@ -30,8 +30,6 @@ class DatabaseSeeder extends Seeder
                 'icon' => 'bx bxs-data',
                 'parent' => 0,
                 'dev_only' => 1,
-                'created_at' => '2024-10-04 01:40:39',
-                'updated_at' => '2024-10-04 01:40:39',
                 'place' => 0,
             ],
             [
@@ -40,8 +38,6 @@ class DatabaseSeeder extends Seeder
                 'icon' => 'bx bx-list-ol',
                 'parent' => 2,
                 'dev_only' => 1,
-                'created_at' => '2024-10-04 01:42:46',
-                'updated_at' => '2024-10-04 01:42:46',
                 'place' => 0,
             ],
             [
@@ -50,8 +46,6 @@ class DatabaseSeeder extends Seeder
                 'icon' => 'bx bxs-user-check',
                 'parent' => 2,
                 'dev_only' => 1,
-                'created_at' => '2024-10-04 01:43:20',
-                'updated_at' => '2024-10-04 01:43:20',
                 'place' => 0,
             ],
             [
@@ -60,8 +54,6 @@ class DatabaseSeeder extends Seeder
                 'icon' => 'bx bxs-building-house',
                 'parent' => 0,
                 'dev_only' => 0,
-                'created_at' => '2024-10-04 01:44:19',
-                'updated_at' => '2024-10-04 01:44:19',
                 'place' => 0,
             ],
             [
@@ -70,18 +62,6 @@ class DatabaseSeeder extends Seeder
                 'icon' => 'bx bxs-user-check',
                 'parent' => 5,
                 'dev_only' => 0,
-                'created_at' => '2024-10-04 01:45:49',
-                'updated_at' => '2024-10-04 01:45:49',
-                'place' => 0,
-            ],
-            [
-                'name' => 'Employee',
-                'route' => 'man.customer-user.index',
-                'icon' => 'bx bxs-user-detail',
-                'parent' => 5,
-                'dev_only' => 0,
-                'created_at' => '2024-10-04 01:46:47',
-                'updated_at' => '2024-10-04 01:46:47',
                 'place' => 0,
             ],
             [
@@ -90,8 +70,14 @@ class DatabaseSeeder extends Seeder
                 'icon' => 'bx bxs-user-detail',
                 'parent' => 5,
                 'dev_only' => 0,
-                'created_at' => '2024-10-04 01:47:35',
-                'updated_at' => '2024-10-04 01:47:35',
+                'place' => 0,
+            ],
+            [
+                'name' => 'Employee',
+                'route' => 'man.customer-user.index',
+                'icon' => 'bx bxs-user-detail',
+                'parent' => 5,
+                'dev_only' => 0,
                 'place' => 0,
             ],
             [
@@ -100,8 +86,6 @@ class DatabaseSeeder extends Seeder
                 'icon' => 'bx bx-library',
                 'parent' => 0,
                 'dev_only' => 0,
-                'created_at' => '2024-10-04 01:50:38',
-                'updated_at' => '2024-10-04 01:50:38',
                 'place' => 0,
             ],
             [
@@ -110,8 +94,62 @@ class DatabaseSeeder extends Seeder
                 'icon' => 'bx bxs-book-content',
                 'parent' => 9,
                 'dev_only' => 0,
-                'created_at' => '2024-10-04 01:55:58',
-                'updated_at' => '2024-10-04 01:55:58',
+                'place' => 0,
+            ],
+            [
+                'name' => 'Profile',
+                'route' => 'man.customer-user.profile',
+                'icon' => 'bx bxs-user-circle',
+                'parent' => 0,
+                'dev_only' => 0,
+                'place' => 1,
+            ],
+            [
+                'name' => 'List Company',
+                'route' => 'man.customer-company.index',
+                'icon' => 'bx bxs-building',
+                'parent' => 2,
+                'dev_only' => 1,
+                'place' => 0,
+            ],
+            [
+                'name' => 'Discount',
+                'route' => 'man.customer-company-discount.index',
+                'icon' => 'bx bxs-discount',
+                'parent' => 9,
+                'dev_only' => 0,
+                'place' => 0,
+            ],
+            [
+                'name' => 'Warehouse',
+                'route' => 'man.customer-company-warehouse.index',
+                'icon' => 'bx bxs-grid',
+                'parent' => 5,
+                'dev_only' => 0,
+                'place' => 0,
+            ],
+            [
+                'name' => 'Warehouse Shelf',
+                'route' => 'man.customer-warehouse-rack-good.index',
+                'icon' => 'bx bx-grid-vertical',
+                'parent' => 5,
+                'dev_only' => 0,
+                'place' => 0,
+            ],
+            [
+                'name' => 'Transaction',
+                'route' => 'man.customer-product-transaction.index',
+                'icon' => 'bx bx-cart',
+                'parent' => 0,
+                'dev_only' => 0,
+                'place' => 0,
+            ],
+            [
+                'name' => 'Subscription',
+                'route' => 'dev.app-subscription.index',
+                'icon' => 'bx bx-layer-plus',
+                'parent' => 2,
+                'dev_only' => 0,
                 'place' => 0,
             ],
         ]);
@@ -123,9 +161,8 @@ class DatabaseSeeder extends Seeder
                     'email' => 'rahmaan@ms.dev',
                     'phone_number' => '89522983270',
                     'password' => Hash::make('mamanrecing'),
-                    'hr' => true,
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
                     'name' => 'maman manager',
@@ -133,9 +170,8 @@ class DatabaseSeeder extends Seeder
                     'email' => 'rahmaan@ms.man',
                     'phone_number' => '89522983271',
                     'password' => Hash::make('mamanrecing'),
-                    'hr' => true,
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
                     'name' => 'maman cashier',
@@ -143,9 +179,8 @@ class DatabaseSeeder extends Seeder
                     'email' => 'rahmaan@ms.cash',
                     'phone_number' => '89522983272',
                     'password' => Hash::make('mamanrecing'),
-                    'hr' => false,
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
                     'name' => 'maman admin',
@@ -153,9 +188,8 @@ class DatabaseSeeder extends Seeder
                     'email' => 'rahmaan@ms.adm',
                     'phone_number' => '89522983273',
                     'password' => Hash::make('mamanrecing'),
-                    'hr' => false,
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
             ]
         );
@@ -163,64 +197,64 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Developer',
                 'description' => 'Developer App',
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Manager',
                 'description' => 'Customer Manager',
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ]);
         \App\Models\BusinessType::insert([
             [
                 'name' => 'Physical Retail Stores',
                 'description' => 'Retail stores like supermarkets and clothing outlets.',
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Restaurants and Cafes',
                 'description' => 'Establishments serving food and beverages where customers pay after ordering.',
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Beauty Salons and Spas',
                 'description' => 'Businesses offering services like haircuts and massages.',
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Cinemas',
                 'description' => 'Movie theaters where customers buy tickets and snacks.',
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Bookstores',
                 'description' => 'Shops selling books and stationery.',
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Gyms and Fitness Centers',
                 'description' => 'Gyms that may use cashiers for payments for classes.',
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Gas Stations',
                 'description' => 'Fuel stations where customers pay after filling up.',
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Home Goods Stores',
                 'description' => 'Stores selling household items and furniture.',
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ]);
         \App\Models\CustomerCompany::insert([
@@ -232,8 +266,8 @@ class DatabaseSeeder extends Seeder
                 'email' => fake('ID')->email(),
                 'businessId' => 1,
                 'affiliate_code' => generateAffiliateCode(),
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'name' => 'Doglex Cafe',
@@ -243,8 +277,8 @@ class DatabaseSeeder extends Seeder
                 'email' => fake('ID')->email(),
                 'businessId' => 2,
                 'affiliate_code' => generateAffiliateCode(),
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ]);
         \App\Models\CompanyAddress::insert([
@@ -270,14 +304,14 @@ class DatabaseSeeder extends Seeder
                 [
                     'userId' => 1,
                     'roleId' => 1,
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
                     'userId' => 2,
                     'roleId' => 2,
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
             ]
         );
@@ -287,29 +321,29 @@ class DatabaseSeeder extends Seeder
                     'userId' => 1,
                     'name' => 'Administrator',
                     'description' => 'Customer Administrator',
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
                     'userId' => 1,
                     'name' => 'Cashier',
                     'description' => 'Customer Cashier',
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
                     'userId' => 2,
                     'name' => 'Administrator',
                     'description' => 'Customer Administrator',
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
                 [
                     'userId' => 2,
                     'name' => 'Cashier',
                     'description' => 'Customer Cashier',
-                    'created_at' => now('Asia/Jakarta'),
-                    'updated_at' => now('Asia/Jakarta'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ],
             ]
         );
@@ -318,36 +352,59 @@ class DatabaseSeeder extends Seeder
                 'userId' => 3,
                 'roleId' => 2,
                 'companyId' => 1,
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'userId' => 4,
                 'roleId' => 2,
                 'companyId' => 2,
-                'created_at' => now('Asia/Jakarta'),
-                'updated_at' => now('Asia/Jakarta'),
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         );
-        \App\Models\AppSubscription::insert([
-            [
-                'name' => 'Basic',
-                'description' => 'A simple start for everyone',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Standard',
-                'description' => 'For small to medium businesses',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Enterprise',
-                'description' => 'Solution for big organizations',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+        //         \App\Models\AppSubscription::insert([
+        //             [
+        //                 'name' => 'Basic',
+        //                 'description' => 'A simple start for everyone',
+        //                 'created_at' => now(),
+        //                 'updated_at' => now(),
+        //             ],
+        //             [
+        //                 'name' => 'Standard',
+        //                 'description' => 'For small to medium businesses',
+        //                 'created_at' => now(),
+        //                 'updated_at' => now(),
+        //             ],
+        //             [
+        //                 'name' => 'Enterprise',
+        //                 'description' => 'Solution for big organizations',
+        //                 'created_at' => now(),
+        //                 'updated_at' => now(),
+        //             ],
+        //         ]);
+
+        \App\Models\AppGoodUnit::insert([
+            ['name' => 'Liter (L)', 'description' => 'Used to measure liquid volumes, typically for beverages or cleaning products.'],
+            ['name' => 'Gallon (Gal)', 'description' => 'A unit of liquid capacity commonly used in the U.S.'],
+            ['name' => 'Milliliter (mL)', 'description' => 'Smaller volume measurement used for smaller liquid quantities, such as perfume or medicine.'],
+            ['name' => 'Kilogram (kg)', 'description' => 'Used for measuring heavy products like food items, clothing, or large items.'],
+            ['name' => 'Gram (g)', 'description' => 'Smaller unit of weight, typically used for food packaging or small goods.'],
+            ['name' => 'Pound (lbs)', 'description' => 'Used in the U.S. for measuring the weight of products like food, furniture, etc.'],
+            ['name' => 'Piece (pcs)', 'description' => 'Used for individual items, such as clothing or gadgets.'],
+            ['name' => 'Pair (pr)', 'description' => 'Used for items that come in sets of two, like shoes or socks.'],
+            ['name' => 'Set', 'description' => 'A collection of related items sold together, such as a cutlery set or bedding set.'],
+            ['name' => 'Dozen (dz)', 'description' => 'Used for items sold in groups of 12, such as eggs or roses.'],
+            ['name' => 'Box', 'description' => 'Refers to a box containing a number of products, typically food or accessories.'],
+            ['name' => 'Pack', 'description' => 'Used for products sold in a grouped set, like a pack of juice boxes or tissues.'],
+            ['name' => 'Meter (m)', 'description' => 'Used for measuring length, often for fabric, rope, or plumbing products.'],
+            ['name' => 'Centimeter (cm)', 'description' => 'Smaller unit of length, commonly used for clothing sizes and small accessories.'],
+            ['name' => 'Square Meter (m²)', 'description' => 'Used to measure the area of a surface, such as flooring or carpet.'],
+            ['name' => 'Minute (min)', 'description' => 'Used to measure short durations of time, such as for gym sessions or car washes.'],
+            ['name' => 'Hour (hr)', 'description' => 'Used for longer periods, like renting equipment or booking services.'],
+            ['name' => 'Roll', 'description' => 'Used for items that come in a rolled form, like paper or fabric.'],
+            ['name' => 'Sheet', 'description' => 'Used for products sold as individual sheets, like paper or towels.'],
+            ['name' => 'Bottle', 'description' => 'Used for liquid products like water, soda, or wine, typically measured in milliliters or liters.'],
         ]);
     }
 }

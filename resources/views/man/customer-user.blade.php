@@ -44,10 +44,9 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-user" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-user">Add <i class='bx bxs-file-plus pb-1'></i></button>
-                        <button class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#modal-create-registration-link">Generate Registration Link <i
+                        <button class="btn btn-success" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">Add <i
+                                class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-create-registration-link">Generate Registration Link <i
                                 class='bx bx-link-alt pb-1'></i></button>
                     </div>
                 </div>
@@ -71,44 +70,42 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-user" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg" role="document">
+    <div class="modal fade" id="modal-customer-user" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">Add New @yield('title')</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <div class="alert alert-info">The user account created here will use the default password: <b>{{ defaultPassword() }}</b> please note the
+                        username and password if you have more than 1 companies in our application</div>
                     <form action="#" id="form-customer-user">
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" id="name" name="name" class="form-control"
-                                    placeholder="Enter Name" />
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Name" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="username" class="form-label">Username</label>
-                                <input type="text" id="username" name="username" class="form-control"
-                                    placeholder="Enter Username" />
+                                <input type="text" id="username" name="username" class="form-control" placeholder="Enter Username" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="email" class="form-label">email</label>
-                                <input type="text" id="email" name="email" class="form-control email"
-                                    placeholder="Enter Email" />
+                                <input type="text" id="email" name="email" class="form-control email" placeholder="Enter Email" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="phone_number" class="form-label">phone number</label>
-                                <input type="text" id="phone_number" name="phone_number"
-                                    class="form-control phone_number" placeholder="Enter Phone Number" />
+                                <input type="text" id="phone_number" name="phone_number" class="form-control phone_number"
+                                    placeholder="Enter Phone Number" />
                             </div>
                         </div>
                         <div class="row">
@@ -123,7 +120,7 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="roleId" value="{{ session('userLogged')['user']['id'] }}">
+                                    <input type="hidden" name="roleId" value="{{ session('userLogged')['company']['userId'] }}">
                                 @endif
                             </div>
                         </div>
@@ -141,9 +138,8 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-create-registration-link" tabindex="-1" aria-hidden="true"
-        data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg" role="document">
+    <div class="modal fade" id="modal-create-registration-link" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Create Registration Link</h5>
@@ -165,27 +161,30 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="managerIdLink"
-                                        value="{{ session('userLogged')['user']['id'] }}">
+                                    <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['company']['userId'] }}">
                                 @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="customerRoleIdLink" class="form-label">Customer User Role</label>
-                                <select class="form-control select2" name="customerRoleIdLink" id="customerRoleIdLink">
-                                    <option value="">Select Role</option>
-                                    @foreach ($customer_roles as $role)
-                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
-                                </select>
+                                @if (getRole() === 'Developer')
+                                    <label for="customerRoleIdLink" class="form-label">Customer User Role</label>
+                                    <select class="form-control select2" name="customerRoleIdLink" id="customerRoleIdLink">
+                                        <option value="">Select Role</option>
+                                        @foreach ($customer_roles as $role)
+                                            <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['role']['id'] }}">
+                                @endif
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="time_limit" class="form-label">LifeTime Link</label>
-                                <input type="text" id="time_limit" name="time_limit" class="form-control"
-                                    placeholder="(Minutes/Hours/Days)" />
+                                <input type="text" id="time_limit" name="time_limit" placeholder="60 minutes / 1 hours / 1 days"
+                                    class="form-control" />
                             </div>
                         </div>
                         <div id="container-link" class="row px-3 d-none">
@@ -200,7 +199,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" id="create-registration-link" class="btn btn-primary">Generate</button>
+                    <button type="button" id="create-registration-link" class="btn btn-primary"><i class='bx bx-key'></i>Generate</button>
                 </div>
             </div>
         </div>
@@ -212,20 +211,33 @@
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
-        window.datatableAppRole = null;
+        window.dataTableAppRole = null;
         window.state = 'add';
 
         function actionData() {
+            $('.login-as').click(function() {
+                $.ajax({
+                    type: "POST",
+                    url: `{{ route('auth.login-as') }}/${$(this).data('customer-user')}`,
+                    data: {
+                        '_token': `{{ csrf_token() }}`
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        location.reload();
+                    }
+                });
+            });
             $('.edit').click(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("customer-user");
-                $("#edit-customer-user").data("customer-user", idAppRole);
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                let idCustomerUser = $(this).data("customer-user");
+                $("#edit-customer-user").data("customer-user", idCustomerUser);
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-user tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
 
                 $('#modal-customer-user').modal('show');
                 $('#modal-customer-user').find('.modal-title').html(`Edit @yield('title')`);
@@ -234,7 +246,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('man.customer-user.show') }}/" + idAppRole,
+                    url: "{{ route('man.customer-user.show') }}/" + idCustomerUser,
                     dataType: "json",
                     success: function(response) {
                         let formElement = $('#modal-customer-user').find("form");
@@ -271,12 +283,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-user tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("customer-user");
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                let idCustomerUser = $(this).data("customer-user");
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -298,7 +310,7 @@
                             $.ajax({
                                 type: "DELETE",
                                 url: "{{ route('man.customer-user.delete') }}/" +
-                                    idAppRole,
+                                    idCustomerUser,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
                                 },
@@ -312,7 +324,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppRole.ajax.reload()
+                                    window.dataTableAppRole.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -336,24 +348,8 @@
             });
         }
 
-        function copyToClipboard() {
-            const codeSnippet = document.getElementById('registration-link-code').innerText;
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = codeSnippet;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            navigator.clipboard.writeText(tempTextArea.value);
-            iziToast.success({
-                id: 'alert-create-registration-link-action',
-                title: 'Success',
-                message: `Coppied text`,
-                position: 'topRight',
-                layout: 1,
-                displayMode: 'replace'
-            });
-        }
         $(function() {
-            window.datatableAppRole = $("#table-customer-user").DataTable({
+            window.dataTableAppRole = $("#table-customer-user").DataTable({
                 ajax: "{{ route('man.customer-user.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -407,7 +403,7 @@
                     }
                 }]
             });
-            window.datatableAppRole.on('draw.dt', function() {
+            window.dataTableAppRole.on('draw.dt', function() {
                 actionData();
             });
             $('#save-customer-user').click(function() {
@@ -427,7 +423,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload();
+                        window.dataTableAppRole.ajax.reload();
 
                     },
                     error: function(error) {
@@ -496,7 +492,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload()
+                        window.dataTableAppRole.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-customer-user .is-invalid').removeClass('is-invalid')

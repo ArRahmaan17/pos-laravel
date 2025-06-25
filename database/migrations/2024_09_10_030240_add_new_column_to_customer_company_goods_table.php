@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::table('customer_company_goods', function (Blueprint $table) {
             $table->bigInteger('companyId')->unsigned();
+            $table->foreign('companyId')
+                ->on('customer_companies')
+                ->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->index(['name', 'companyId', 'unitId']);
             $table->enum('status', ['draft', 'archive', 'publish']);
         });
     }

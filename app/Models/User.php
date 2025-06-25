@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -50,6 +51,6 @@ class User extends Authenticatable
         return self::select('users.*')
             ->join('user_roles as ur', 'users.id', '=', 'ur.userId')
             ->join('app_roles as ap', 'ur.roleId', '=', 'ap.id')
-            ->where('ap.id', 2)->where(($id == null) ? [['users.id', '<>', $id]] : [['users.id', '=', $id]])->get();
+            ->whereIn('ap.id', [1, 2])->where(($id == null) ? [['users.id', '<>', $id]] : [['users.id', '=', $id]])->get();
     }
 }

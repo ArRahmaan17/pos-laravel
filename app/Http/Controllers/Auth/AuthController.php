@@ -18,7 +18,7 @@ class AuthController extends Controller
 {
     public function index()
     {
-        return view('auth.login.index');
+        return view('auth.index');
     }
 
     public function login(Request $request)
@@ -36,15 +36,16 @@ class AuthController extends Controller
             if (empty($role) || empty($role->user) || empty($role->role)) {
                 $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
             }
-            $hasPrivileges = true;
+            $hasPrivileges = false;
             if (! in_array($role->role->name, ['Developer', 'Manager'])) {
                 $role['company'] = UserCustomerRole::employeeCompany($role->userId);
+                $role['company']['address'] = CompanyAddress::where('companyId', $role['company']['id'])->first()->toArray();
                 if (UserCustomerRole::employeeMenu($role->userId) == 0) {
-                    $hasPrivileges = false;
+                    $hasPrivileges = true;
                 }
             }
             session()->flush();
-            if ($hasPrivileges) {
+            if (!$hasPrivileges) {
                 session(['userLogged' => collect($role)->toArray()]);
             }
 
@@ -70,20 +71,49 @@ class AuthController extends Controller
 
         return redirect()->route('home');
     }
-
+    public function loginAs($id)
+    {
+        $where = [
+            'userId' => $id,
+            'companyId' => session('userLogged')['company']['id'],
+        ];
+        $user = UserCustomerRole::with('user', 'role')
+            ->where($where)
+            ->first()->toArray();
+        if (! empty($user)) {
+            $hasPrivileges = true;
+            $user['company'] = UserCustomerRole::employeeCompany($user['userId']);
+            if (UserCustomerRole::employeeMenu($user['userId']) == 0) {
+                $hasPrivileges = false;
+            }
+            if ($hasPrivileges) {
+                session()->flush();
+                session(['userLogged' => collect($user)->toArray()]);
+                $response = ['message' => 'successfully login as ' . $user['user']['username']];
+                $status = 200;
+            } else {
+                $response = ['message' => 'failed login as ' . $user['user']['username'] . ', please set role for the user'];
+                $status = 404;
+            }
+        } else {
+            $response = ['message' => 'failed login as ' . $user['user']['username'] . ', unexpected error on process login as'];
+            $status = 404;
+        }
+        return response()->json($response, $status);
+    }
     public function register(Request $request)
     {
         $types = BusinessType::all();
         if ($request->action) {
             [$managerId, $lifetime, $roleId, $secret] = explode('|', base64_decode($request->action));
-            if ($secret != env('APP_SECRET') || empty(User::find($managerId)) || empty(CustomerRole::find($roleId)) || now('Asia/Jakarta')->format('Y-m-d H:i:s') > date('Y-m-d H:i:s', strtotime($lifetime))) {
+            if ($secret != env('APP_SECRET') || empty(User::find($managerId)) || empty(CustomerRole::find($roleId)) || now()->format('Y-m-d H:i:s') > date('Y-m-d H:i:s', strtotime($lifetime))) {
                 abort(401, 'Token invalid');
             }
 
-            return view('auth.registration.index', compact('managerId', 'lifetime', 'roleId', 'types'));
+            return view('auth.registration', compact('managerId', 'lifetime', 'roleId', 'types'));
         }
 
-        return view('auth.registration.index', compact('types'));
+        return view('auth.registration', compact('types'));
     }
 
     public function registration(Request $request)
@@ -218,6 +248,10 @@ class AuthController extends Controller
         }
 
         return response()->json($response, $code);
+    }
+    public function requestChangePassword()
+    {
+        return view('auth.change-password');
     }
 
     public function changeCompany()

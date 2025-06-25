@@ -37,7 +37,7 @@
     </div>
     <div class="modal fade" id="modal-customer-role" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
         data-bs-keyboard="false">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel3">Add New @yield('title')</h5>
@@ -59,7 +59,7 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="userId" value="{{ session('userLogged')['user']['id'] }}">
+                                    <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
                                 @endif
                             </div>
                         </div>
@@ -97,7 +97,7 @@
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
     <script>
-        window.datatableAppRole = null;
+        window.dataTableAppRole = null;
         window.state = 'add';
 
         function actionData() {
@@ -105,12 +105,12 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-role");
                 $("#edit-customer-role").data("customer-role", idAppRole);
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-role tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
 
                 $('#modal-customer-role').modal('show');
                 $('#modal-customer-role').find('.modal-title').html(`Edit @yield('title')`);
@@ -144,12 +144,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.datatableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
                     $('#table-customer-role tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idAppRole = $(this).data("customer-role");
-                var data = window.datatableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -185,7 +185,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.datatableAppRole.ajax.reload()
+                                    window.dataTableAppRole.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -209,7 +209,7 @@
             });
         }
         $(function() {
-            window.datatableAppRole = $("#table-customer-role").DataTable({
+            window.dataTableAppRole = $("#table-customer-role").DataTable({
                 ajax: "{{ route('man.customer-role.data-table') }}",
                 processing: true,
                 serverSide: true,
@@ -254,7 +254,7 @@
                     }
                 }]
             });
-            window.datatableAppRole.on('draw.dt', function() {
+            window.dataTableAppRole.on('draw.dt', function() {
                 actionData();
             });
             $('#save-customer-role').click(function() {
@@ -274,7 +274,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload();
+                        window.dataTableAppRole.ajax.reload();
 
                     },
                     error: function(error) {
@@ -312,7 +312,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.datatableAppRole.ajax.reload()
+                        window.dataTableAppRole.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-customer-role .is-invalid').removeClass('is-invalid')
