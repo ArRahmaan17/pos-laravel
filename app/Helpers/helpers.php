@@ -37,30 +37,33 @@ function buatSingkatan($kalimat)
 }
 
 if (! function_exists('lastCompanyOrderCode')) {
-    function lastCompanyOrderCode($transaction_status = 'OUT')
+    function lastCompanyOrderCode($transaction_status = 'OUT', $date = null)
     {
+        if (!$date) {
+            $date = now()->format('Y-m-d');
+        }
         if ($transaction_status == 'OUT') {
             $data = CustomerProductTransaction::where('orderCode', 'like', '%' . $transaction_status . '%')
-                ->where('companyId', session('userLogged')['company']['id'])
+                ->where('companyId', session('userLogged')['company']['id'])->whereRaw("DATE(created_at) = '" . $date . "'")
                 ->orderBy('id', 'DESC')
                 ->first();
         } else {
             $data = CustomerTemporaryProduct::where('orderCode', 'like', '%' . $transaction_status . '%')
-                ->where('companyId', session('userLogged')['company']['id'])
+                ->where('companyId', session('userLogged')['company']['id'])->where('transaction_created', $date)
                 ->orderBy('id', 'DESC')
                 ->first();
         }
-        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now()->format('Y-m-d') . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
+        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
         if ($data && explode(
-            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now()->format('Y-m-d') . '-',
+            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-',
             $data->orderCode
         )) {
-            $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now()->format('Y-m-d') . '-' . str_pad(
+            $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-' . str_pad(
                 intval(
                     implode(
                         '',
                         explode(
-                            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . now()->format('Y-m-d') . '-',
+                            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-',
                             $data->orderCode
                         )
                     )

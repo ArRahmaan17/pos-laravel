@@ -137,14 +137,14 @@ class CustomerCompanyGoodController extends Controller
         return response()->json($response, $code);
     }
 
-    public function storeTodayTempProduct(String $date)
+    public function storeTempProduct(String $date)
     {
         DB::beginTransaction();
         try {
             if (!in_array(getRole(), ['Developer', 'Manager'])) {
                 throw new Exception('Not Authorize');
             }
-            $data = CustomerTemporaryProduct::with('product')->whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
+            $data = CustomerTemporaryProduct::with('reference')->whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
             $dataUpdate = [];
             $dataDelete = [];
             $dataInsert = [];
@@ -185,6 +185,7 @@ class CustomerCompanyGoodController extends Controller
                 foreach ($dataUpdate as $index => $value) {
                     if (Storage::disk('public-asset')->exists('temp-customer-product/' . $value['picture'])) {
                         Storage::disk('public-asset')->move('temp-customer-product/' . $value['picture'], 'customer-product/' . $value['picture']);
+                        Storage::disk('public-asset')->delete('temp-customer-product/' . $value['picture']);
                     }
                 }
             }

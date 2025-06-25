@@ -144,7 +144,7 @@ Route::middleware([Authorization::class])->group(function () {
         Route::name('customer-company-good')->as('customer-company-good.')->prefix('customer-company-good')->group(function () {
             Route::get('/', [CustomerCompanyGoodController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
             Route::post('/', [CustomerCompanyGoodController::class, 'store'])->name('store');
-            Route::post('/store-temp-product/{date}', [CustomerCompanyGoodController::class, 'storeTodayTempProduct'])->name('store-temp-product');
+            Route::post('/store-temp-product/{date?}', [CustomerCompanyGoodController::class, 'storeTempProduct'])->name('store-temp-product');
             Route::post('/{id?}', [CustomerCompanyGoodController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyGoodController::class, 'dataTable'])->name('data-table');
             Route::get('/temp-product', [CustomerCompanyGoodController::class, 'tempProduct'])->name('temp-product');
@@ -178,7 +178,7 @@ Route::middleware([Authorization::class])->group(function () {
         Route::name('customer-temp-product')->as('customer-temp-product.')->prefix('customer-temp-product')->group(function () {
             Route::get('/', [CustomerTemporaryProductController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
             Route::post('/', [CustomerTemporaryProductController::class, 'store'])->name('store');
-            Route::post('/store-temp-product/{date}', [CustomerTemporaryProductController::class, 'storeTodayTempProduct'])->name('store-temp-product');
+            Route::post('/store-temp-product/{date?}', [CustomerTemporaryProductController::class, 'storeTempProduct'])->name('store-temp-product');
             Route::post('/{id?}', [CustomerTemporaryProductController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerTemporaryProductController::class, 'dataTable'])->name('data-table');
             Route::get('/temp-product', [CustomerTemporaryProductController::class, 'tempProduct'])->name('temp-product');
