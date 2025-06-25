@@ -18,6 +18,7 @@ return new class extends Migration
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->index(['name', 'companyId', 'unitId']);
             $table->enum('status', ['draft', 'archive', 'publish']);
         });
     }

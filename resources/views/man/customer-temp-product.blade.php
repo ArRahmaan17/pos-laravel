@@ -554,12 +554,12 @@
             const accordionTemporaryProduct = $('#accordion-temporary-product');
             accordionTemporaryProduct.append(`<div class="accordion-item shadow-sm mb-3" data-id=${window.lastProductAccordion}>
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button ${status == 'IN'? '' :((status == 'RESTOCK')?'text-warning': 'text-danger')}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${window.lastProductAccordion}"
+                                    <button class="accordion-button ${data?.id ? 'collapsed': ''} ${status == 'IN'? '' :((status == 'RESTOCK')?'text-warning': 'text-danger')}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${window.lastProductAccordion}"
                                         aria-expanded="false" aria-controls="collapse${window.lastProductAccordion}">
                                         ${status == 'IN' ? `${status} Temporary Product` : `${status} ${data?.reference?.name??data.name}`}
                                     </button>
                                 </h2>
-                                <div id="collapse${window.lastProductAccordion}" class="accordion-collapse collapse show">
+                                <div id="collapse${window.lastProductAccordion}" class="accordion-collapse collapse ${data?.id ? '': 'show'}">
                                     <div class="accordion-body px-1">
                                     </div>
                                 </div>
@@ -682,12 +682,14 @@
                     error: function(error) {
                         $('#modal-customer-temp-product .is-invalid').removeClass('is-invalid')
                         $('#modal-customer-temp-product .border.border-danger').removeClass('border border-danger')
-                        $.each(error.responseJSON.errors, function(indexInArray, valueOfProduct) {
-                            let formContainer = $(
-                                `#modal-customer-temp-product #collapse${parseInt(indexInArray.split('.')[1])+1}`);
-                            formContainer.parents('.accordion-item.shadow-sm').addClass('border border-danger')
-                            formContainer.find(`[name=${indexInArray.split('.')[2]}]`).addClass('is-invalid')
-                        });
+                        if (error.responseJSON.errors.length > 0) {
+                            $.each(error.responseJSON.errors, function(indexInArray, valueOfProduct) {
+                                let formContainer = $(
+                                    `#modal-customer-temp-product #collapse${parseInt(indexInArray.split('.')[1])+1}`);
+                                formContainer.parents('.accordion-item.shadow-sm').addClass('border border-danger')
+                                formContainer.find(`[name=${indexInArray.split('.')[2]}]`).addClass('is-invalid')
+                            });
+                        }
                         iziToast.error({
                             id: 'alert-customer-temp-product-form',
                             title: 'Error',
@@ -700,17 +702,36 @@
                 });
             });
             $('#edit-customer-temp-product').click(function() {
-                let data = serializeFiles($('#form-customer-temp-product'));
+                let data = new FormData();
+                let products = [];
+                data.append('_token', `{{ csrf_token() }}`);
+                $('#accordion-temporary-product .accordion-item').each(function(index, product) {
+                    let form = $(product).find('form');
+                    let formParams = form.serializeArray();
+                    let productData = {};
+
+                    formParams.forEach(function(item) {
+                        if (item.value != '') {
+                            data.append(`products[${index}][${item.name}]`, item.value);
+                        }
+                    });
+                    form.find('input[type="file"]').each(function(i, tag) {
+                        let files = $(tag)[0].files;
+                        if (files.length > 0) {
+                            data.append(`products[${index}][${tag.name}]`, files[0]);
+                        }
+                    });
+                });
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-temp-product.update') }}/${$('#form-customer-temp-product').find('input[name=id]').val()}`,
+                    url: `{{ route('man.customer-temp-product.update') }}/{{ now()->format('Y-m-d') }}`,
                     data: data,
                     dataType: "json",
                     cache: false,
                     contentType: false,
                     processData: false,
                     success: function(response) {
-                        $('#modal-customer-temp-product').modal('hide')
+                        $('#modal-customer-temp-product').modal('hide');
                         iziToast.success({
                             id: 'alert-customer-temp-product-form',
                             title: 'Success',
@@ -719,20 +740,23 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.dataTableCustomerTemporaryProduct.ajax.reload()
+                        window.dataTableCustomerTemporaryProduct.ajax.reload();
                     },
                     error: function(error) {
                         $('#modal-customer-temp-product .is-invalid').removeClass('is-invalid')
-                        $.each(error.responseJSON.errors, function(indexInArray,
-                            valueOfElement) {
-                            $('#modal-customer-temp-product').find('[name=' +
-                                indexInArray +
-                                ']').addClass('is-invalid')
-                        });
+                        $('#modal-customer-temp-product .border.border-danger').removeClass('border border-danger')
+                        if (error.responseJSON.errors.length > 0) {
+                            $.each(error.responseJSON.errors, function(indexInArray, valueOfProduct) {
+                                let formContainer = $(
+                                    `#modal-customer-temp-product #collapse${parseInt(indexInArray.split('.')[1])+1}`);
+                                formContainer.parents('.accordion-item.shadow-sm').addClass('border border-danger')
+                                formContainer.find(`[name=${indexInArray.split('.')[2]}]`).addClass('is-invalid')
+                            });
+                        }
                         iziToast.error({
                             id: 'alert-customer-temp-product-form',
                             title: 'Error',
-                            message: error.responseJSON.message,
+                            message: error.responseJSON.message.replace(/\./g, ' '),
                             position: 'topRight',
                             layout: 2,
                             displayMode: 'replace'

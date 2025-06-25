@@ -120,110 +120,94 @@ class CustomerTemporaryProductController extends Controller
             'picture' => 'Picture',
         ];
         $request->validate([
-            'products.*.name' => ['required_if:products.*.status,IN', 'required_if:products.*.status,RESTOCK', 'min:6', 'max:40', function ($attribute, $value, $fail) use ($request) {
-                preg_match('/products\.(\d+)\.name/', $attribute, $indexes);
-                $products = $request->products;
-                $product = $products[$indexes[1]];
-                if (!$product) {
-                    return;
+            'products.*.name' => [
+                'required_if:products.*.status,IN',
+                'required_if:products.*.status,RESTOCK',
+                'min:6',
+                'max:40',
+                function ($attribute, $value, $fail) use ($request) {
+                    preg_match('/products\.(\d+)\.name/', $attribute, $indexes);
+                    $products = $request->products;
+                    $product = $products[$indexes[1]];
+                    if (!$product) {
+                        return;
+                    }
+                    $query = DB::table('customer_temporary_products')->where('name', $product['name']);
+                    if (!empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
+                        $query->where('customerCompanyGoodId', '!=', $product['customerCompanyGoodId'])->where('companyId', session('userLogged')['company']['id']);
+                    }
+                    if ($query->exists()) {
+                        $fail("The name '{$value}' has already been taken.");
+                    }
+                },
+                function ($attribute, $value, $fail) use ($request) {
+                    preg_match('/products\.(\d+)\.name/', $attribute, $indexes);
+                    $products = $request->products;
+                    $product = $products[$indexes[1]];
+                    if (!$product) {
+                        return;
+                    }
+                    $query = DB::table('customer_company_goods')->where('name', $product['name']);
+                    if (!empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
+                        $query->where('id', '!=', $product['customerCompanyGoodId'])->where('companyId', session('userLogged')['company']['id']);
+                    }
+                    if ($query->exists()) {
+                        $fail("The name '{$value}' has already been taken.");
+                    }
                 }
-                $query = DB::table('customer_temporary_products')->where('name', $product['name']);
-                if (!empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
-                    $query->where('customerCompanyGoodId', '!=', $product['customerCompanyGoodId']);
-                }
-                if ($query->exists()) {
-                    $fail("The name '{$value}' has already been taken.");
-                }
-            }, function ($attribute, $value, $fail) use ($request) {
-                preg_match('/products\.(\d+)\.name/', $attribute, $indexes);
-                $products = $request->products;
-                $product = $products[$indexes[1]];
-                if (!$product) {
-                    return;
-                }
-                $query = DB::table('customer_company_goods')->where('name', $product['name']);
-                if (!empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
-                    $query->where('id', '!=', $product['customerCompanyGoodId']);
-                }
-                if ($query->exists()) {
-                    $fail("The name '{$value}' has already been taken.");
-                }
-            }],
+            ],
             'products.*.stock' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:8|regex:/(\d{1,3}(?:\.\d{3})*)/i',
             'products.*.price' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'products.*.buyPrice' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'products.*.status' => 'required|in:IN,RESTOCK,REMOVE',
-            'products.*.companyId' => 'required|exists:customer_companies,id|in:' . session('userLogged')['company']['id'],
+            // 'products.*.companyId' => 'required|exists:customer_companies,id|in:' . session('userLogged')['company']['id'],
             'products.*.unitId' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:app_good_units,id',
             'products.*.customerCompanyGoodId' => 'required_if:products.*.status,REMOVE|required_if:products.*.status,RESTOCK|exists:customer_company_goods,id',
             'products.*.picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ]);
         DB::beginTransaction();
         try {
-            $dataExists = collect($request->products)->filter(function ($value, $ket) {
-                return !empty($value['id']);
-            });
-            $dataIn = collect($request->products)->filter(function ($value, $key) {
-                return $value['status'] == 'IN';
-            })->toArray();
-            $dataRestock = collect($request->products)->filter(function ($value, $key) {
-                return $value['status'] == 'RESTOCK';
-            })->toArray();
-            $dataRemove = collect($request->products)->filter(function ($value, $key) {
-                return $value['status'] == 'REMOVE';
-            })->toArray();
             $orderCode = ['in' => lastCompanyOrderCode('IN'), 'restock' => lastCompanyOrderCode('RESTOCK'), 'remove' => lastCompanyOrderCode('REMOVE')];
-            foreach ($dataIn as $index => $valueIn) {
-                $dataIn[$index]['companyId'] = session('userLogged')['company']['id'];
-                $dataIn[$index]['userId'] = session('userLogged')['user']['id'];
-                $dataIn[$index]['price'] = str_replace(',', '.', str_replace('.', '', $dataIn[$index]['price']));
-                $dataIn[$index]['buyPrice'] = str_replace(',', '.', str_replace('.', '', $dataIn[$index]['buyPrice']));
-                if (!empty($dataIn[$index]['picture'])) {
-                    $filename = md5($dataIn[$index]['name'] . now()->format('Y-m-d h:i:s')) . '.' . $dataIn[$index]['picture']->extension();
-                    if (Storage::disk('public-asset')->directories('temp-customer-product')) {
-                        Storage::disk('public-asset')->makeDirectory('temp-customer-product');
+            $default_data = [
+                'transaction_created' => now()->format('Y-m-d'),
+                'companyId' => session('userLogged')['company']['id'],
+                'userId' => session('userLogged')['user']['id'],
+                'customerCompanyGoodId' => null,
+                'name' => null,
+                'status' => null,
+                'picture' => null,
+                'stock' => null,
+                'price' => null,
+                'buyPrice' => null,
+                'unitId' => null,
+                'accepted' => 0,
+                'accepted_by' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+            $resultTempProduct = [];
+            foreach ($request->products as $key => $value) {
+                foreach ($default_data as $indexDefault => $valueDefault) {
+                    $resultTempProduct[$key][$indexDefault] = (!empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buyPrice']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
+                    if ($indexDefault == 'picture' && !empty($request->products[$key][$indexDefault])) {
+                        $filename = md5($request->products[$key]['name'] . now()->format('Y-m-d h:i:s')) . '.' . $request->products[$key][$indexDefault]->extension();
+                        if (Storage::disk('public-asset')->directories('temp-customer-product')) {
+                            Storage::disk('public-asset')->makeDirectory('temp-customer-product');
+                        }
+                        Storage::disk('temp-customer-product')->putFileAs('/', $request->products[$key][$indexDefault], $filename);
+                        $resultTempProduct[$key][$indexDefault] = $filename;
                     }
-                    Storage::disk('temp-customer-product')->putFileAs('/', $dataIn[$index]['picture'], $filename);
-                    $dataIn[$index]['picture'] = $filename;
-                } else {
-                    $dataIn[$index]['picture'] = 'default-product.png';
-                }
-                $dataIn[$index]['orderCode'] = $orderCode['in'];
-                $dataIn[$index]['created_at'] = now();
-                $dataIn[$index]['updated_at'] = now();
-                unset($dataIn[$index]['status']);
-                $dataIn[$index]['status'] = 'publish';
-            }
-            foreach ($dataRestock as $index => $valueRestock) {
-                $dataRestock[$index]['companyId'] = session('userLogged')['company']['id'];
-                $dataRestock[$index]['userId'] = session('userLogged')['user']['id'];
-                $dataRestock[$index]['price'] = str_replace(',', '.', str_replace('.', '', $dataRestock[$index]['price']));
-                $dataRestock[$index]['buyPrice'] = str_replace(',', '.', str_replace('.', '', $dataRestock[$index]['buyPrice']));
-                if (!empty($dataRestock[$index]['picture'])) {
-                    $filename = md5($dataRestock[$index]['name'] . now()->format('Y-m-d h:i:s')) . '.' . $dataRestock[$index]['picture']->extension();
-                    if (Storage::disk('public-asset')->directories('temp-customer-product')) {
-                        Storage::disk('public-asset')->makeDirectory('temp-customer-product');
+                    if ($indexDefault == 'status') {
+                        $resultTempProduct[$key]['orderCode'] = $orderCode[strtolower($resultTempProduct[$key][$indexDefault])];
+                        if (in_array($resultTempProduct[$key][$indexDefault], ['IN', 'RESTOCK'])) {
+                            $resultTempProduct[$key][$indexDefault] = 'publish';
+                        } else {
+                            $resultTempProduct[$key][$indexDefault] = null;
+                        }
                     }
-                    Storage::disk('temp-customer-product')->putFileAs('/', $dataRestock[$index]['picture'], $filename);
-                    $dataRestock[$index]['picture'] = $filename;
                 }
-                $dataRestock[$index]['orderCode'] = $orderCode['restock'];
-                $dataRestock[$index]['created_at'] = now();
-                $dataRestock[$index]['updated_at'] = now();
-                unset($dataRestock[$index]['status']);
-                $dataRestock[$index]['status'] = 'publish';
             }
-            foreach ($dataRemove as $index => $valueRemove) {
-                $dataRemove[$index]['companyId'] = session('userLogged')['company']['id'];
-                $dataRemove[$index]['userId'] = session('userLogged')['user']['id'];
-                $dataRemove[$index]['created_at'] = now();
-                $dataRemove[$index]['updated_at'] = now();
-                $dataRemove[$index]['orderCode'] = $orderCode['remove'];
-                unset($dataRemove[$index]['status']);
-            }
-            CustomerTemporaryProduct::insert($dataIn);
-            CustomerTemporaryProduct::insert($dataRestock);
-            CustomerTemporaryProduct::insert($dataRemove);
+            CustomerTemporaryProduct::insert($resultTempProduct);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -351,20 +335,49 @@ class CustomerTemporaryProductController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required|min:6|max:40|unique:customer_temporary_products,name,' . $id,
-            'id' => 'required|numeric',
-            'stock' => 'required|max:8',
-            'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
-            'buyPrice' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
-            'status' => 'required|in:archive,draft,publish',
-            'companyId' => 'required|exists:customer_companies,id',
-            'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
-        ], [
-            'unitId' => 'The unit field is required.',
-            'companyId' => 'The unit field is required.',
+            'products.*.name' => ['required_if:products.*.status,IN', 'required_if:products.*.status,RESTOCK', 'min:6', 'max:40', function ($attribute, $value, $fail) use ($request) {
+                preg_match('/products\.(\d+)\.name/', $attribute, $indexes);
+                $product = $request->products[$indexes[1]];
+                if (!$product) {
+                    return;
+                }
+                $query = DB::table('customer_temporary_products')->where('name', $product['name']);
+                if (!empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
+                    $query->where('customerCompanyGoodId', '!=', $product['customerCompanyGoodId'])->where('companyId', session('userLogged')['company']['id']);
+                }
+                if ($query->exists()) {
+                    $fail("The name '{$value}' has already been taken.");
+                }
+            }, function ($attribute, $value, $fail) use ($request) {
+                preg_match('/products\.(\d+)\.name/', $attribute, $indexes);
+                $products = $request->products;
+                $product = $products[$indexes[1]];
+                if (!$product) {
+                    return;
+                }
+                $query = DB::table('customer_company_goods')->where('name', $product['name']);
+                if (!empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
+                    $query->where('id', '!=', $product['customerCompanyGoodId'])->where('companyId', session('userLogged')['company']['id']);
+                }
+                if ($query->exists()) {
+                    $fail("The name '{$value}' has already been taken.");
+                }
+            }],
+            'products.*.stock' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:8|regex:/(\d{1,3}(?:\.\d{3})*)/i',
+            'products.*.price' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'products.*.buyPrice' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'products.*.status' => 'required|in:IN,RESTOCK,REMOVE',
+            'products.*.companyId' => 'required|exists:customer_companies,id|in:' . session('userLogged')['company']['id'],
+            'products.*.unitId' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:app_good_units,id',
+            'products.*.customerCompanyGoodId' => 'required_if:products.*.status,REMOVE|required_if:products.*.status,RESTOCK|exists:customer_company_goods,id',
+            'products.*.picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ]);
         DB::beginTransaction();
         try {
+            $dataExists = collect($request->products)->filter(function ($value, $key) {
+                return !empty($value['id']);
+            })->all();
+            dd($dataExists);
             $data = $request->except('_token', 'id');
             $data['picture'] = CustomerCompanyGood::find($id)->picture;
             if ($request->file('picture')) {
