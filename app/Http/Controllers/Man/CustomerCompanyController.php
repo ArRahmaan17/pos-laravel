@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
+use App\Models\AppGoodUnit;
 use App\Models\BusinessType;
 use App\Models\CompanyAddress;
 use App\Models\CustomerCompany;
@@ -171,6 +172,11 @@ class CustomerCompanyController extends Controller
         }
 
         return response()->json($response, $code);
+    }
+    public function profile()
+    {
+        $types = BusinessType::all();
+        return view('man.customer-company-profile', compact('types'));
     }
 
     public function company()

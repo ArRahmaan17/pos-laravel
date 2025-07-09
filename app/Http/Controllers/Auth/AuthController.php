@@ -32,21 +32,21 @@ class AuthController extends Controller
             ->orWhere('phone_number', $request->username)
             ->first();
         if (! empty($user) && Hash::check($request->password, $user->password)) {
-            $role = UserRole::with('user', 'role')->where('userId', $user->id)->first();
-            if (empty($role) || empty($role->user) || empty($role->role)) {
-                $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
+            $roleUser = UserRole::with('user', 'role')->where('userId', $user->id)->first();
+            if (empty($roleUser) || empty($roleUser->user) || empty($roleUser->role)) {
+                $roleUser = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
             }
             $hasPrivileges = false;
-            if (! in_array($role->role->name, ['Developer', 'Manager'])) {
-                $role['company'] = UserCustomerRole::employeeCompany($role->userId);
-                $role['company']['address'] = CompanyAddress::where('companyId', $role['company']['id'])->first()->toArray();
-                if (UserCustomerRole::employeeMenu($role->userId) == 0) {
+            if (! in_array($roleUser->role->name, ['Developer', 'Manager'])) {
+                $roleUser['company'] = UserCustomerRole::employeeCompany($roleUser->userId);
+                $roleUser['company']['address'] = CompanyAddress::where('companyId', $roleUser['company']['id'])->first()->toArray();
+                if (UserCustomerRole::employeeMenu($roleUser->userId) == 0) {
                     $hasPrivileges = true;
                 }
             }
             session()->flush();
             if (!$hasPrivileges) {
-                session(['userLogged' => collect($role)->toArray()]);
+                session(['userLogged' => collect($roleUser)->toArray()]);
             }
 
             return redirect()->route('select-customer-company');
@@ -71,6 +71,7 @@ class AuthController extends Controller
 
         return redirect()->route('home');
     }
+
     public function loginAs($id)
     {
         $where = [
@@ -80,7 +81,7 @@ class AuthController extends Controller
         $user = UserCustomerRole::with('user', 'role')
             ->where($where)
             ->first()->toArray();
-        if (! empty($user)) {
+        if (!empty($user)) {
             $hasPrivileges = true;
             $user['company'] = UserCustomerRole::employeeCompany($user['userId']);
             if (UserCustomerRole::employeeMenu($user['userId']) == 0) {
@@ -101,6 +102,7 @@ class AuthController extends Controller
         }
         return response()->json($response, $status);
     }
+
     public function register(Request $request)
     {
         $types = BusinessType::all();
@@ -249,9 +251,79 @@ class AuthController extends Controller
 
         return response()->json($response, $code);
     }
+
     public function requestChangePassword()
     {
         return view('auth.change-password');
+    }
+
+    public function requestActivateAccessPin()
+    {
+        return view('auth.activate-access-pin');
+    }
+
+    public function activateAccessPin(Request $request)
+    {
+        $currentPin = null;
+        $where = ['id' => session('userLogged')['user']['id']];
+        if ($request->has('current_access_pin')) {
+            $where = ['id' => session('userLogged')['user']['id'], 'pin' => $currentPin];
+        }
+        $request->validate([
+            'current_access_pin' => ['array', function ($attribute, $value, $fail) use ($currentPin) {
+                $currentPin = implode($value);
+                if (!User::where(['id' => session('userLogged')['user']['id'], 'pin' => Hash::make($currentPin)])->exists()) {
+                    $fail("The {$attribute} not match to our records");
+                };
+            }],
+            'current_access_pin.*' => 'nullable|numeric',
+            'access_pin' => ['array', function ($attribute, $value, $fail) {
+                if (count(array_filter($value, function ($val) {
+                    return $val == null;
+                })) == 6) {
+                    $fail("The {$attribute} must be 6 digits.");
+                }
+            }],
+            'access_pin.*' => 'required|numeric',
+            'confirm_access_pin' => ['array', function ($attribute, $value, $fail) {
+                if (count(array_filter($value, function ($val) {
+                    return $val == null;
+                })) == 6) {
+                    $fail("The {$attribute} must be 6 digits.");
+                }
+            }],
+            'confirm_access_pin.*' => 'required_with:access_pin|numeric|same:access_pin.*',
+        ]);
+        $message = ['success', 'Access Pin updated successfully'];
+        DB::beginTransaction();
+        try {
+            if (!User::where($where)->update(['pin' => Hash::make(implode('', $request->access_pin))])) {
+                $message = ['error', 'Unexpected error in our record, try again later.'];
+            }
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $message = ['error', 'Unexpected error in our record, try again later.'];
+        }
+        $roleUser = UserRole::with('user', 'role')->where('userId', session('userLogged')['user']['id'])->first();
+        if (empty($roleUser) || empty($roleUser->user) || empty($roleUser->role)) {
+            $roleUser = UserCustomerRole::with('user', 'role')->where('userId', session('userLogged')['user']['id'])->first();
+        }
+        $hasPrivileges = false;
+        if (!in_array($roleUser->role->name, ['Developer', 'Manager'])) {
+            $roleUser['company'] = UserCustomerRole::employeeCompany($roleUser->userId);
+            $roleUser['company']['address'] = CompanyAddress::where('companyId', $roleUser['company']['id'])->first()->toArray();
+            if (UserCustomerRole::employeeMenu($roleUser->userId) == 0) {
+                $hasPrivileges = true;
+            }
+        } else {
+            $roleUser['company'] = CustomerCompany::with('address')->where(['id' => session('userLogged')['company']['id'], 'userId' => session('userLogged')['user']['id']])->first()->toArray();
+        }
+        session()->flush();
+        if (!$hasPrivileges) {
+            session(['userLogged' => collect($roleUser)->toArray()]);
+        }
+        return redirect()->route('home')->with($message);
     }
 
     public function changeCompany()

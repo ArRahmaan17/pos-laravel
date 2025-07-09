@@ -481,6 +481,7 @@
                 rightAlign: false,
                 allowMinus: false
             });
+            $('.single_number').inputmask({mask:"9{1}", placeholder: "",});
             $('.email').inputmask({
                 mask: "*{1,15}[.*{1,15}][.*{1,15}][.*{1,15}]@*{1,15}[.*{2,6}][.*{1,2}]",
                 greedy: false,

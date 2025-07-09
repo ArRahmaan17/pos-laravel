@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('app_menus', function (Blueprint $table) {
+        Schema::create('app_subscription_template_feature', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('route');
-            $table->string('icon');
-            $table->integer('parent')->default(0);
-            $table->smallInteger('dev_only')->default(0);
-            $table->smallInteger('mandatory')->default(0);
+            $table->string('code');
+            $table->unique(['code', 'id']);
+            $table->string('description');
+            $table->enum('needed', ['heap', 'condition']);
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('app_menus');
+        Schema::dropIfExists('app_subscription_template_feature');
     }
 };

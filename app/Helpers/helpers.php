@@ -383,6 +383,70 @@ if (! function_exists('buildMenu')) {
         return $html;
     }
 }
+
+if (! function_exists('buildMenuRoleAccessibillity')) {
+    function buildMenuRoleAccessibillity(array &$elements)
+    {
+        $html = '';
+        foreach ($elements as $element) {
+            if (getRole() == 'Developer' || (getRole() == 'Manager' && $element['dev_only'] == 0)) {
+                if (isset($element['children'])) {
+                    $children = buildMenuRoleAccessibillity($element['children']);
+                    $html .= '<tr>
+                                <td colspan="2" class="text-nowrap fw-medium text-heading">' . $element['name'] . '</td>
+                                <td>
+                                    <div class="d-flex justify-content-end">
+                                        <div class="form-check form-check-reverse mb-0">
+                                            <label class="form-check-label" for="access' . $element['id'] . '">
+                                                Access
+                                            </label>
+                                            <input class="form-check-input menu-access" name="menuId[]" type="checkbox"
+                                                value="' . $element['id'] . '" id="access' . $element['id'] . '">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>' . $children;
+                } else {
+                    if ($element['parent'] == 0) {
+                        $html .= '<tr>
+                                    <td colspan="2" class="text-nowrap fw-medium text-heading">' . $element['name'] . '</td>
+                                    <td>
+                                        <div class="d-flex justify-content-end">
+                                            <div class="form-check form-check-reverse mb-0">
+                                                <label class="form-check-label" for="access' . $element['id'] . '">
+                                                    Access
+                                                </label>
+                                                <input class="form-check-input menu-access" name="menuId[]" type="checkbox"
+                                                    value="' . $element['id'] . '" id="access' . $element['id'] . '">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>';
+                    } else {
+                        $html .= '<tr>
+                                    <td style="width:20px;" class="text-nowrap fw-medium text-heading"><i class="bx bx-subdirectory-right"></i></td>
+                                    <td class="text-nowrap fw-medium text-heading">' . $element['name'] . '</td>
+                                    <td>
+                                        <div class="d-flex justify-content-end">
+                                            <div class="form-check form-check-reverse mb-0">
+                                                <label class="form-check-label" for="access' . $element['id'] . '">
+                                                    Access
+                                                </label>
+                                                <input class="form-check-input menu-access" data-parent="' . $element['parent'] . '" name="menuId[]" type="checkbox"
+                                                    value="' . $element['id'] . '" id="access' . $element['id'] . '">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>';
+                    }
+                }
+            }
+        }
+        // }
+
+        return $html;
+    }
+}
 if (! function_exists('limitOffsetToArray')) {
 
     function limitOffsetToArray($limit = 5, $offset = 1)
