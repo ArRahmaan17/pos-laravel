@@ -31,14 +31,14 @@ class CustomerCompanyController extends Controller
         if (getRole() === 'Developer') {
             $where = [['userId', '<>', null]];
         }
-        $totalData = CustomerCompany::with('address', 'type', 'user')
+        $totalData = CustomerCompany::with('address', 'type', 'manager')
             ->orderBy('customer_companies.id', 'asc')
             ->where($where)
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompany::with('address', 'type', 'user')
-                ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId');
+            $assets = CustomerCompany::with('address', 'type', 'manager')
+                ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId', 'customer_companies.userId');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -49,8 +49,8 @@ class CustomerCompanyController extends Controller
             }
             $assets = $assets->where($where)->get();
         } else {
-            $assets = CustomerCompany::with('address', 'type', 'user')
-                ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId')
+            $assets = CustomerCompany::with('address', 'type', 'manager')
+                ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId', 'customer_companies.userId')
                 ->where('customer_companies.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('customer_companies.phone_number', 'like', '%' . $request['search']['value'] . '%');
 
@@ -63,8 +63,8 @@ class CustomerCompanyController extends Controller
             }
             $assets = $assets->where($where)->get();
 
-            $totalFiltered = CustomerCompany::with('address', 'type', 'user')
-                ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId')
+            $totalFiltered = CustomerCompany::with('address', 'type', 'manager')
+                ->select('customer_companies.name', 'customer_companies.phone_number', 'customer_companies.id', 'customer_companies.businessId', 'customer_companies.userId')
                 ->where('customer_companies.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('customer_companies.phone_number', 'like', '%' . $request['search']['value'] . '%');
 
@@ -77,12 +77,11 @@ class CustomerCompanyController extends Controller
         foreach ($assets as $index => $item) {
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
-            $row['name'] = $item->name;
+            $row['name'] = '<div class="font-sm">' . $item->name . '</div><div class="font-xs">' . $item->manager->name . '</div>';
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['business'] = $item->type->name;
-            $row['address'] = $item->address->place . '<br>' . $item->address->address . ' ' . $item->address->city . ' ' . $item->address->province . ' ' . $item->address->zipCode;
+            $row['address'] = '<div class="font-xs">' . $item->address->place . '<br>' . $item->address->address . ' ' . $item->address->city . ' ' . $item->address->province . ' ' . $item->address->zipCode . '</div>';
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button class='btn btn-icon " . ($item->id != session('userLogged')['company']['id'] ? 'btn-info activate' : 'btn-danger logout') . "' data-customer-company='" . $item->id . "' >" . ($item->id != session('userLogged')['company']['id'] ? "<i class='bx bxs-log-in' ></i>" : "<i class='bx bxs-log-out' ></i>") . "</button>";
-            // <button data-customer-company='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>
             $dataFiltered[] = $row;
         }
         $response = [
@@ -199,6 +198,24 @@ class CustomerCompanyController extends Controller
         return response()->json($response, $code);
     }
 
+    public function loginCompany(Request $request)
+    {
+        $data = session('userLogged');
+        $where = [['id', '=', $request->id]];
+        if (in_array($data['role']['name'], ['Manager'])) {
+            $where = [['id', '=', $request->id], ['userId', '=', $data['userId']]];
+        }
+        if (!in_array($data['role']['name'], ['Manager', 'Developer'])) {
+            abort(401);
+        }
+        $data['company'] = CustomerCompany::with('address')->where($where)->first()->toArray();
+        session()->flush();
+        session(['userLogged' => $data]);
+        $code = 200;
+        $response = ['message' => 'login to company successfully'];
+        return response()->json($response, $code);
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -250,12 +267,16 @@ class CustomerCompanyController extends Controller
             }
             $data['userId'] = (getRole() === 'Developer' ? $request->userId : session('userLogged')['user']['id']);
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);
-            CustomerCompany::where('id', $id)->update($data);
+            CustomerCompany::find($id)->update($data);
             $address = $request->only('address')['address'];
             CompanyAddress::where('companyId', $id)->update($address);
             $code = 200;
             $response = ['message' => 'Updating resources successfully'];
             DB::commit();
+            $user = session('userLogged');
+            $user['company'] = CustomerCompany::with('address')->where(['id' => session('userLogged')['company']['id'], 'userId' => session('userLogged')['user']['id']])->first()->toArray();
+            session()->flush();
+            session(['userLogged' => collect($user)->toArray()]);
         } catch (\Throwable $th) {
             DB::rollBack();
             $code = 422;

@@ -161,7 +161,7 @@
                 let data = serializeFiles('#form-customer-company');
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-company.update') }}`,
+                    url: `{{ route('man.customer-company.update') }}/{{session('userLogged')['company']['id']}}`,
                     data: data,
                     processData: false,
                     contentType: false,

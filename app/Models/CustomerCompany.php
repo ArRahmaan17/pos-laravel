@@ -23,7 +23,7 @@ class CustomerCompany extends Model
         return $this->hasOne(BusinessType::class, 'id', 'businessId');
     }
 
-    public function user(): HasOne
+    public function manager(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'userId');
     }

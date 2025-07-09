@@ -275,7 +275,6 @@ if (! function_exists('buildTree')) {
     }
 }
 if (! function_exists('buildTreeMenu')) {
-
     function buildTreeMenu(array &$elements, $idParent = '0')
     {
         $branch = [];
