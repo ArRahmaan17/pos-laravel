@@ -47,18 +47,6 @@
                         @csrf
                         <div class="row">
                             <div class="col mb-3">
-                                @if (getRole() === 'Developer')
-                                    <label for="userId" class="form-label">Customer User</label>
-                                    <select class="form-control select2" name="userId" id="userId">
-                                        <option value="">Select User</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->username }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
-                                @endif
                             </div>
                         </div>
                         <div class="row">
@@ -66,6 +54,9 @@
                                 <label for="roleId" class="form-label">Customer Role</label>
                                 <select class="form-control select2" name="roleId" id="roleId">
                                     <option value="">Select Role</option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -76,7 +67,7 @@
                                     <table class="table table-flush-spacing mb-0">
                                         <tbody>
                                             <tr>
-                                                <td class="text-nowrap fw-medium text-heading">Manager Access <i class="bx bx-info-circle"
+                                                <td colspan="2" class="text-nowrap fw-medium text-heading">Manager Access <i class="bx bx-info-circle"
                                                         data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Allows a full access to the system"
                                                         data-bs-original-title="Allows a full access to the system"></i>
                                                 </td>
@@ -86,27 +77,12 @@
                                                             <label class="form-check-label" for="selectAll">
                                                                 All
                                                             </label>
-                                                            <input class="form-check-input" type="checkbox" id="selectAll">
+                                                            <input class="form-check-input menu-access selectAll" type="checkbox" id="selectAll">
                                                         </div>
                                                     </div>
                                                 </td>
                                             </tr>
-                                            @foreach ($menus as $menu)
-                                                <tr>
-                                                    <td class="text-nowrap fw-medium text-heading">{{ $menu['name'] }}</td>
-                                                    <td>
-                                                        <div class="d-flex justify-content-end">
-                                                            <div class="form-check form-check-reverse mb-0">
-                                                                <label class="form-check-label" for="access{{ $menu['id'] }}">
-                                                                    Access
-                                                                </label>
-                                                                <input class="form-check-input menu-access" name="menuId[]" type="checkbox"
-                                                                    value="{{ $menu['id'] }}" id="access{{ $menu['id'] }}">
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
+                                            {!! buildMenuRoleAccessibillity($menus) !!}
                                         </tbody>
                                     </table>
                                 </div>
@@ -157,15 +133,14 @@
                     dataType: "json",
                     success: function(response) {
                         if (response.data.role_menus.length == $('#modal-customer-role-accessibility')
-                            .find("form").find('input.menu-access').length) {
-                            $('#selectAll').click();
-                        } else {
-                            response.data.role_menus.map((menu) => {
-                                $('#modal-customer-role-accessibility')
-                                    .find("form").find(`input#access${menu.menuId}`)
-                                    .click()
-                            })
+                            .find("form").find('input.menu-access:not(#selectAll)').length) {
+                            $('#selectAll').prop('checked', true);
                         }
+                        response.data.role_menus.map((menu) => {
+                            $('#modal-customer-role-accessibility')
+                                .find("form").find(`input#access${menu.menuId}`)
+                                .prop('checked', true)
+                        })
                         $('#modal-customer-role-accessibility').find("form")
                             .find('select, input').map(function(index, element) {
                                 if (response.data[`${element.name}`] != undefined) {
@@ -310,21 +285,6 @@
             window.dataTableAppRole.on('draw.dt', function() {
                 actionData();
             });
-            $('#userId').change(function() {
-                $.ajax({
-                    type: "GET",
-                    url: `{{ route('man.customer-role.role') }}/${this.value}`,
-                    dataType: "json",
-                    success: function(response) {
-                        $('#roleId').html(response.data)
-                    }
-                });
-            });
-            $('#selectAll').click(function(e) {
-                $('#form-customer-role-accessibility').find('[type=checkbox]').map((index, element) => {
-                    $(element).attr('checked', this.checked);
-                })
-            });
             $('#save-customer-role-accessibility').click(function() {
                 let data = serializeObject($('#form-customer-role-accessibility'));
                 $.ajax({
@@ -422,6 +382,15 @@
                     });
                 }, 140);
             });
+            $('.menu-access').click(function() {
+                if ($(this).hasClass('selectAll')) {
+                    $('#form-customer-role-accessibility').find('[type=checkbox]').map((index, element) => {
+                        $(element).prop('checked', this.checked);
+                    })
+                } else {
+                    $(`.menu-access[data-parent=${this.value}]`).prop('checked', this.checked);
+                }
+            })
         });
     </script>
 @endpush

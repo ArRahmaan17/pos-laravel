@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
 use App\Models\CompanyAddress;
+use App\Models\CustomerCompany;
 use App\Models\CustomerRole;
 use App\Models\User;
 use App\Models\UserCustomerRole;
+use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -220,29 +222,20 @@ class UserCustomerController extends Controller
                 $data['profile_picture'] = $filename;
                 Storage::disk('customer-profile-picture')->putFileAs('/', $request->profile_picture, $filename);
             }
-            User::where('id', $id)->update($data);
-            session()->flush();
-            $role = UserCustomerRole::with('user', 'role')->where('userId', $id)->first();
-            $hasPrivileges = false;
-            if (! in_array($role->role->name, ['Developer', 'Manager'])) {
-                $role['company'] = UserCustomerRole::employeeCompany($role->userId);
-                $role['company']['address'] = CompanyAddress::where('companyId', $role['company']['id'])->first()->toArray();
-                if (UserCustomerRole::employeeMenu($role->userId) == 0) {
-                    $hasPrivileges = true;
-                }
+            $response = ['message' => 'Failed updating resource'];
+            $code = 422;
+            if (User::where('id', $id)->update($data)) {
+                $dataSession = session('userLogged');
+                $dataSession['user']['profile_picture'] = $filename;
+                session(['userLogged' => $dataSession]);
+                $response = ['message' => 'Updating resource successfully'];
+                $code = 200;
             }
-            session()->flush();
-            if (!$hasPrivileges) {
-                session(['userLogged' => collect($role)->toArray()]);
-            }
-            $response = ['message' => 'Updating resource successfully'];
-            $code = 200;
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
             $response = ['message' => 'Failed updating resource'];
             $code = 422;
-dd($th);
         }
 
         return response()->json($response, $code);

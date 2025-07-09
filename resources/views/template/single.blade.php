@@ -4,10 +4,9 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 
-   <title>{{ env('APP_NAME') }} - @yield('title')</title>
+    <title>{{ env('APP_NAME') }} - @yield('title')</title>
 
     <meta name="description" content="" />
 
@@ -17,8 +16,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
         rel="stylesheet" />
 
     <!-- Icons. Uncomment required icon fonts -->
@@ -26,8 +24,7 @@
 
     <!-- Core CSS -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}"
-        class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
 
     <!-- Vendors CSS -->
@@ -72,19 +69,31 @@
     <script>
         function formattedInput() {
             $('.phone_number').inputmask('(+62) 999-999-9999[9]')
+            $('.price').inputmask('currency', {
+                radixPoint: ',',
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false
+            });
+            $('.number').inputmask('integer', {
+                groupSeparator: ".",
+                rightAlign: false,
+                allowMinus: false
+            });
+            $('.single_number').inputmask({mask:"9{1}", placeholder: "",});
             $('.email').inputmask({
                 mask: "*{1,15}[.*{1,15}][.*{1,15}][.*{1,15}]@*{1,15}[.*{2,6}][.*{1,2}]",
                 greedy: false,
+                definitions: {
+                    '*': {
+                        casing: "lower",
+                        validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
+                    },
+                },
                 onBeforePaste: function(pastedValue, opts) {
                     pastedValue = pastedValue.toLowerCase();
                     return pastedValue.replace("mailto:", "");
                 },
-                definitions: {
-                    '*': {
-                        validator: "[0-9A-Za-z!#$%&'*+/=?^_`{|}~\-]",
-                        casing: "lower"
-                    }
-                }
             });
         }
     </script>

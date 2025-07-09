@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password')->nullable(false);
             $table->string('profile_picture')->nullable(true);
             $table->string('affiliate_code')->nullable(true);
+            $table->string('pin')->nullable(true);
             $table->timestamps();
         });
     }

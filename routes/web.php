@@ -52,14 +52,16 @@ Route::middleware([Authorization::class])->group(function () {
         return view('home');
     })->name('home')->middleware([checkPageAuthorization::class]);
     Route::name('auth.')->prefix('auth')->group(function () {
-        Route::post('/login-as/{id?}', [AuthController::class, 'loginAs'])->name('login-as');
+        Route::post('/login-as/{id?}', [AuthController::class, 'loginAs'])->name('login-as')->middleware([checkPageAuthorization::class]);
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
         Route::get('/request-change-password', [AuthController::class, 'requestChangePassword'])->name('request-change-password');
+        Route::get('/request-access-pin', [AuthController::class, 'requestActivateAccessPin'])->name('request-access-pin');
+        Route::post('/access-pin', [AuthController::class, 'activateAccessPin'])->name('access-pin');
         Route::get('/change-company', [AuthController::class, 'changeCompany'])->name('change-company')->middleware([checkPageAuthorization::class]);
     });
-    Route::name('dev')->as('dev.')->prefix('dev')->group(function () {
+    Route::name('dev')->as('dev.')->prefix('dev')->middleware([checkPageAuthorization::class])->group(function () {
         Route::name('app-role')->as('app-role.')->prefix('app-role')->group(function () {
-            Route::get('/', [AppRoleController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
+            Route::get('/', [AppRoleController::class, 'index'])->name('index');
             Route::post('/', [AppRoleController::class, 'store'])->name('store');
             Route::put('/{id?}', [AppRoleController::class, 'update'])->name('update');
             Route::get('/data-table', [AppRoleController::class, 'dataTable'])->name('data-table');
@@ -67,7 +69,7 @@ Route::middleware([Authorization::class])->group(function () {
             Route::delete('/{id?}', [AppRoleController::class, 'destroy'])->name('delete');
         });
         Route::name('app-menu')->as('app-menu.')->prefix('app-menu')->group(function () {
-            Route::get('/', [AppMenuController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
+            Route::get('/', [AppMenuController::class, 'index'])->name('index');
             Route::post('/', [AppMenuController::class, 'store'])->name('store');
             Route::put('/{id?}', [AppMenuController::class, 'update'])->name('update');
             Route::get('/data-table', [AppMenuController::class, 'dataTable'])->name('data-table');
@@ -75,7 +77,7 @@ Route::middleware([Authorization::class])->group(function () {
             Route::delete('/{id?}', [AppMenuController::class, 'destroy'])->name('delete');
         });
         Route::name('app-good-unit')->as('app-good-unit.')->prefix('app-good-unit')->group(function () {
-            Route::get('/', [AppGoodUnitController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
+            Route::get('/', [AppGoodUnitController::class, 'index'])->name('index');
             Route::post('/', [AppGoodUnitController::class, 'store'])->name('store');
             Route::put('/{id?}', [AppGoodUnitController::class, 'update'])->name('update');
             Route::get('/data-table', [AppGoodUnitController::class, 'dataTable'])->name('data-table');
@@ -83,7 +85,7 @@ Route::middleware([Authorization::class])->group(function () {
             Route::delete('/{id?}', [AppGoodUnitController::class, 'destroy'])->name('delete');
         });
         Route::name('app-subscription')->as('app-subscription.')->prefix('app-subscription')->group(function () {
-            Route::get('/', [AppSubscriptionController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
+            Route::get('/', [AppSubscriptionController::class, 'index'])->name('index');
             Route::post('/', [AppSubscriptionController::class, 'store'])->name('store');
             Route::put('/{id?}', [AppSubscriptionController::class, 'update'])->name('update');
             Route::get('/data-table', [AppSubscriptionController::class, 'dataTable'])->name('data-table');
@@ -99,6 +101,7 @@ Route::middleware([Authorization::class])->group(function () {
             Route::get('/', [CustomerCompanyController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
             Route::post('/', [CustomerCompanyController::class, 'store'])->name('store');
             Route::get('/company', [CustomerCompanyController::class, 'company'])->name('company');
+            Route::get('/profile', [CustomerCompanyController::class, 'profile'])->name('profile');
             Route::post('/{id?}', [CustomerCompanyController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerCompanyController::class, 'show'])->name('show');

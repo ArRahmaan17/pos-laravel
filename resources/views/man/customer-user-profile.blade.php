@@ -8,11 +8,15 @@
         <div class="col-md-12">
             <ul class="nav nav-pills flex-column flex-md-row mb-3">
                 <li class="nav-item">
-                    <a class="nav-link active" href="{{ route('man.customer-user.profile') }}"><i class="bx bx-user me-1"></i>
+                    <a class="nav-link @if (count(explode('user',url()->full())) > 1)
+                        active
+                    @endif" href="{{ route('man.customer-user.profile') }}"><i class="bx bx-user me-1"></i>
                         Profile</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('man.customer-company.index') }}"><i class="bx bx-building me-1"></i>
+                    <a class="nav-link @if (count(explode('company',url()->full())) > 1)
+                        active
+                    @endif" href="{{ route('man.customer-company.profile') }}"><i class="bx bx-building me-1"></i>
                         Company</a>
                 </li>
                 {{-- <li class="nav-item">
@@ -94,23 +98,37 @@
                 </div>
                 <!-- /Account -->
             </div>
-            @if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager']))
-                <div class="row m-0 p-0 gap-2">
-                    <div class="card col">
-                        <h5 class="card-header">Change Password</h5>
-                        <div class="card-body">
-                            <div class="mb-3 col-12 mb-0">
-                                <div class="alert alert-warning">
-                                    <h6 class="alert-heading fw-bold mb-1">Are you sure you want to change your password?
-                                    </h6>
-                                </div>
+            <div class="d-flex flex-row flex-wrap m-0 px-1 gap-1 rounded py-2 border border-2 border-danger">
+                <div class="col-12 text-danger">Danger Area</div>
+                <div class="card px-0 flex-grow-1">
+                    <h5 class="card-header">Change Password</h5>
+                    <div class="card-body">
+                        <div class="mb-3 col-12 mb-0">
+                            <div class="alert alert-warning">
+                                <h6 class="alert-heading fw-bold mb-1">Are you sure you want to change your password?
+                                </h6>
                             </div>
-                            <a href="{{ route('auth.request-change-password') }}" class="btn btn-warning"><i class='bx bxs-right-arrow-alt mb-1'></i><span
-                                    class="d-none d-sm-inline-block">Change
-                                    Password</span></a>
                         </div>
+                        <a href="{{ route('auth.request-change-password') }}" class="btn btn-warning"><i class='bx bxs-right-arrow-alt mb-1'></i><span
+                                class="d-none d-sm-inline-block">Change
+                                Password</span></a>
                     </div>
-                    <div class="card col">
+                </div>
+                <div class="card px-0 flex-grow-1">
+                    <h5 class="card-header">Change Access Pin</h5>
+                    <div class="card-body">
+                        <div class="mb-3 col-12 mb-0">
+                            <div class="alert alert-warning">
+                                <h6 class="alert-heading fw-bold mb-1">Are you sure you want to change your access pin?
+                                </h6>
+                            </div>
+                        </div>
+                        <a href="{{ route('auth.request-access-pin') }}" class="btn btn-warning"><i class='bx bxs-right-arrow-alt mb-1'></i><span
+                                class="d-none d-sm-inline-block">Change Access Pin</span></a>
+                    </div>
+                </div>
+                @if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager']))
+                    <div class="card px-0 flex-grow-1">
                         <h5 class="card-header">Delete Account</h5>
                         <div class="card-body">
                             <div class="mb-3 col-12 mb-0">
@@ -134,8 +152,8 @@
                             </form>
                         </div>
                     </div>
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
     </div>
 @endsection
@@ -195,7 +213,7 @@
                         iziToast.error({
                             id: 'alert-update-profile-action',
                             title: 'Error',
-                            message: `${response.responseJSON.message}`,
+                            message: `${error.responseJSON.message}`,
                             position: 'topRight',
                             layout: 1,
                             displayMode: 'replace'

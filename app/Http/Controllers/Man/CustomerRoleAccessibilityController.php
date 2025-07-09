@@ -18,12 +18,10 @@ class CustomerRoleAccessibilityController extends Controller
      */
     public function index()
     {
-        $users = User::user_manager(session('userLogged')['company']['userId']);
         $menus = AppMenu::customer_menu();
         $menus = buildTree($menus);
-        $roles = CustomerRole::with(['role_users'])->get();
-
-        return view('man.customer-role-accessibility', compact('users', 'menus', 'roles'));
+        $roles = CustomerRole::with(['role_users'])->where('userId', session('userLogged')['company']['userId'])->get();
+        return view('man.customer-role-accessibility', compact('menus', 'roles'));
     }
 
     public function dataTable(Request $request)
@@ -113,16 +111,14 @@ class CustomerRoleAccessibilityController extends Controller
     {
         $request->validate([
             'roleId' => 'required',
-            'userId' => 'required',
             'menuId' => 'required|array',
         ], [
             'roleId.required' => 'The role field is required',
-            'userId.required' => 'The manager field is required',
             'menuId.required' => 'The menu field is required',
         ]);
         DB::beginTransaction();
         try {
-            if (CustomerRole::where(['id' => $request->roleId, 'userId' => $request->userId])->count() != 0) {
+            if (CustomerRole::where(['id' => $request->roleId, 'userId' => session('userLogged')['company']['userId']])->count() != 0) {
                 $data_menu = [];
                 foreach ($request->menuId as $index => $menu) {
                     $data_menu[] = [
@@ -177,13 +173,12 @@ class CustomerRoleAccessibilityController extends Controller
         $request->validate(
             [
                 'roleId' => 'required',
-                'userId' => 'required',
                 'menuId' => 'required|array',
             ]
         );
         DB::beginTransaction();
         try {
-            if (CustomerRole::where(['id' => $request->roleId, 'userId' => $request->userId])->count() != 0) {
+            if (CustomerRole::where(['id' => $request->roleId, 'userId' => session('userLogged')['company']['userId']])->count() != 0) {
                 CustomerRoleAccessibility::where('roleId', $id)->delete();
                 $data_menu = [];
                 foreach ($request->menuId as $index => $menu) {
