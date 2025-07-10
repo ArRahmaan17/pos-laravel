@@ -123,7 +123,7 @@
                                 </h6>
                             </div>
                         </div>
-                        <a href="{{ route('auth.request-access-pin') }}" class="btn btn-warning"><i class='bx bxs-right-arrow-alt mb-1'></i><span
+                        <a href="{{ route('privacy.request-access-pin') }}" class="btn btn-warning"><i class='bx bxs-right-arrow-alt mb-1'></i><span
                                 class="d-none d-sm-inline-block">Change Access Pin</span></a>
                     </div>
                 </div>

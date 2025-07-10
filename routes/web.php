@@ -18,6 +18,7 @@ use App\Http\Controllers\Man\UserCustomerController;
 use App\Http\Controllers\ReportController;
 use App\Http\Middleware\Authorization;
 use App\Http\Middleware\checkPageAuthorization;
+use App\Http\Middleware\setupAccessPin;
 use App\Http\Middleware\UnAuthorization;
 use App\Http\Middleware\unSelectCustomerCompany;
 use Illuminate\Support\Facades\Route;
@@ -47,7 +48,12 @@ Route::middleware([unSelectCustomerCompany::class])->group(function () {
         ->name('select-customer-company');
     Route::get('/list-company', [AuthController::class, 'customerCompany'])->name('list-company');
 });
-Route::middleware([Authorization::class])->group(function () {
+
+Route::name('privacy.')->prefix('privacy')->group(function () {
+    Route::get('/request-access-pin', [AuthController::class, 'requestActivateAccessPin'])->name('request-access-pin');
+    Route::post('/access-pin', [AuthController::class, 'activateAccessPin'])->name('access-pin');
+});
+Route::middleware([Authorization::class, setupAccessPin::class])->group(function () {
     Route::get('/', function () {
         return view('home');
     })->name('home')->middleware([checkPageAuthorization::class]);
@@ -55,8 +61,6 @@ Route::middleware([Authorization::class])->group(function () {
         Route::post('/login-as/{id?}', [AuthController::class, 'loginAs'])->name('login-as')->middleware([checkPageAuthorization::class]);
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
         Route::get('/request-change-password', [AuthController::class, 'requestChangePassword'])->name('request-change-password');
-        Route::get('/request-access-pin', [AuthController::class, 'requestActivateAccessPin'])->name('request-access-pin');
-        Route::post('/access-pin', [AuthController::class, 'activateAccessPin'])->name('access-pin');
         Route::get('/change-company', [AuthController::class, 'changeCompany'])->name('change-company')->middleware([checkPageAuthorization::class]);
     });
     Route::name('dev')->as('dev.')->prefix('dev')->middleware([checkPageAuthorization::class])->group(function () {

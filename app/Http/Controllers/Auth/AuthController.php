@@ -309,20 +309,14 @@ class AuthController extends Controller
         if (empty($roleUser) || empty($roleUser->user) || empty($roleUser->role)) {
             $roleUser = UserCustomerRole::with('user', 'role')->where('userId', session('userLogged')['user']['id'])->first();
         }
-        $hasPrivileges = false;
         if (!in_array($roleUser->role->name, ['Developer', 'Manager'])) {
             $roleUser['company'] = UserCustomerRole::employeeCompany($roleUser->userId);
             $roleUser['company']['address'] = CompanyAddress::where('companyId', $roleUser['company']['id'])->first()->toArray();
-            if (UserCustomerRole::employeeMenu($roleUser->userId) == 0) {
-                $hasPrivileges = true;
-            }
         } else {
             $roleUser['company'] = CustomerCompany::with('address')->where(['id' => session('userLogged')['company']['id'], 'userId' => session('userLogged')['user']['id']])->first()->toArray();
         }
         session()->flush();
-        if (!$hasPrivileges) {
-            session(['userLogged' => collect($roleUser)->toArray()]);
-        }
+        session(['userLogged' => collect($roleUser)->toArray()]);
         return redirect()->route('home')->with($message);
     }
 
