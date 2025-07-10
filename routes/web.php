@@ -102,6 +102,7 @@ Route::middleware([Authorization::class])->group(function () {
             Route::post('/', [CustomerCompanyController::class, 'store'])->name('store');
             Route::get('/company', [CustomerCompanyController::class, 'company'])->name('company');
             Route::get('/profile', [CustomerCompanyController::class, 'profile'])->name('profile');
+            Route::post('/login-company', [CustomerCompanyController::class, 'loginCompany'])->name('login-company');
             Route::post('/{id?}', [CustomerCompanyController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerCompanyController::class, 'show'])->name('show');

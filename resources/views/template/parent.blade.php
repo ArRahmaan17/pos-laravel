@@ -31,6 +31,11 @@
             background-color: #555;
             /* Change the color as desired */
         }
+
+        .font-xs {
+            font-size: 0.75rem;
+            line-height: calc(1 / 0.75);
+        }
     </style>
 
     <meta name="description" content="" />
@@ -481,7 +486,11 @@
                 rightAlign: false,
                 allowMinus: false
             });
-            $('.single_number').inputmask({mask:"9{1}", placeholder: "",});
+
+            $('.single_number').inputmask({
+                mask: "9{1}",
+                placeholder: "",
+            });
             $('.email').inputmask({
                 mask: "*{1,15}[.*{1,15}][.*{1,15}][.*{1,15}]@*{1,15}[.*{2,6}][.*{1,2}]",
                 greedy: false,

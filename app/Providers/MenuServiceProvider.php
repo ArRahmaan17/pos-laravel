@@ -22,8 +22,8 @@ class MenuServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $sidebarAppMenu = AppMenu::where('place', 0)->get()->setHidden([])->toArray();
-        $profileAppMenu = AppMenu::where('place', 1)->get()->setHidden([])->toArray();
+        $sidebarAppMenu = AppMenu::where('place', 0)->orderBy('created_at')->get()->setHidden([])->toArray();
+        $profileAppMenu = AppMenu::where('place', 1)->orderBy('created_at')->get()->setHidden([])->toArray();
         $sidebarAppMenu = buildTree($sidebarAppMenu, 0);
         $profileAppMenu = buildTree($profileAppMenu, 0);
         $subscriptions = AppSubscription::all();
