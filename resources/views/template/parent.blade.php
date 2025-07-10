@@ -486,6 +486,7 @@
                 rightAlign: false,
                 allowMinus: false
             });
+
             $('.single_number').inputmask({
                 mask: "9{1}",
                 placeholder: "",
