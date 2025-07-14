@@ -42,7 +42,7 @@ class AuthController extends Controller
             }
             session()->flush();
             if (!$hasPrivileges) {
-                session(['userLogged' => collect($role)->toArray()]);
+                session(['userLogged' => collect($role)->toArray(), 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
             }
 
             return redirect()->route('select-customer-company');
@@ -63,7 +63,7 @@ class AuthController extends Controller
         }
         $data['company'] = CustomerCompany::with('address')->where($where)->first()->toArray();
         session()->flush();
-        session(['userLogged' => $data]);
+        session(['userLogged' => $data, 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home');
     }
@@ -84,7 +84,7 @@ class AuthController extends Controller
             }
             if ($hasPrivileges) {
                 session()->flush();
-                session(['userLogged' => collect($user)->toArray()]);
+                session(['userLogged' => collect($user)->toArray(), 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
                 $response = ['message' => 'successfully login as ' . $user['user']['username']];
                 $status = 200;
             } else {

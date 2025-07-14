@@ -51,6 +51,8 @@ Route::middleware([unSelectCustomerCompany::class])->group(function () {
 
 Route::name('privacy.')->prefix('privacy')->group(function () {
     Route::get('/request-access-pin', [AuthController::class, 'requestActivateAccessPin'])->name('request-access-pin');
+    Route::get('/confirm-access-pin', [AuthController::class, 'confirmAccessPin'])->name('confirm-access-pin');
+    Route::post('/validate-access-pin', [AuthController::class, 'validateAccessPin'])->name('validate-access-pin');
     Route::post('/access-pin', [AuthController::class, 'activateAccessPin'])->name('access-pin');
 });
 Route::middleware([Authorization::class, setupAccessPin::class])->group(function () {

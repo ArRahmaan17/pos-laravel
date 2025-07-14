@@ -1,8 +1,5 @@
 @extends('template.parent')
 @section('title', 'Temporary Product')
-@push('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
-@endpush
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -184,7 +181,7 @@
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
-    <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
+    
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
         window.dataTableCustomerTemporaryProduct = undefined;

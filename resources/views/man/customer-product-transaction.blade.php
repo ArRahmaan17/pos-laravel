@@ -1,8 +1,5 @@
 @extends('template.parent')
 @section('title', 'Product Transaction')
-@push('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
-@endpush
 @section('content')
     <div class="card">
         <div class="card-header d-flex align-middle">
@@ -161,7 +158,7 @@
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
+    
     <script>
         window.dataTableCustomerCompanyGood = null;
         window.dataTableCustomerCompanyDiscount = null;

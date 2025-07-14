@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use SessionHandler;
 
 class CustomerCompanyController extends Controller
 {
@@ -98,6 +99,7 @@ class CustomerCompanyController extends Controller
      */
     public function store(Request $request)
     {
+        // session()->activity()
         $request->validate([
             'picture' => ['file', 'extensions:jpg,png'],
             'name' => ['required', 'min:6', 'max:30'],
@@ -193,7 +195,6 @@ class CustomerCompanyController extends Controller
             $code = 404;
             $response = ['message' => 'Failed showing resource', 'data' => $data];
         }
-
         return response()->json($response, $code);
     }
 

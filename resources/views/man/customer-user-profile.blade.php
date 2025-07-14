@@ -1,8 +1,5 @@
 @extends('template.parent')
 @section('title', 'User Profile')
-@push('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
-@endpush
 @section('content')
     <div class="row">
         <div class="col-md-12">
@@ -159,7 +156,7 @@
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
-    <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
+    
     <script>
         $(function() {
             formattedInput();
