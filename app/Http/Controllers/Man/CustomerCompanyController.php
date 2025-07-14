@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppGoodUnit;
 use App\Models\BusinessType;
 use App\Models\CompanyAddress;
 use App\Models\CustomerCompany;
@@ -11,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use SessionHandler;
 
 class CustomerCompanyController extends Controller
 {
@@ -80,7 +80,7 @@ class CustomerCompanyController extends Controller
             $row['name'] = '<div class="font-sm">' . $item->name . '</div><div class="font-xs">' . $item->manager->name . '</div>';
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['business'] = $item->type->name;
-            $row['address'] = '<div class="font-xs">' . $item->address->place . '<br>' . $item->address->address . ' ' . $item->address->city . ' ' . $item->address->province . ' ' . $item->address->zipCode . '</div>';
+            $row['address'] = '<div class="font-sm">' . $item->address->place . '</div><div class="font-xs">' . $item->address->address . ' ' . $item->address->city . ' ' . $item->address->province . ' ' . $item->address->zipCode . '</div>';
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button class='btn btn-icon " . ($item->id != session('userLogged')['company']['id'] ? 'btn-info activate' : 'btn-danger logout') . "' data-customer-company='" . $item->id . "' >" . ($item->id != session('userLogged')['company']['id'] ? "<i class='bx bxs-log-in' ></i>" : "<i class='bx bxs-log-out' ></i>") . "</button>";
             $dataFiltered[] = $row;
         }
@@ -99,6 +99,7 @@ class CustomerCompanyController extends Controller
      */
     public function store(Request $request)
     {
+        // session()->activity()
         $request->validate([
             'picture' => ['file', 'extensions:jpg,png'],
             'name' => ['required', 'min:6', 'max:30'],
@@ -194,7 +195,6 @@ class CustomerCompanyController extends Controller
             $code = 404;
             $response = ['message' => 'Failed showing resource', 'data' => $data];
         }
-
         return response()->json($response, $code);
     }
 

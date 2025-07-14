@@ -36,12 +36,21 @@
             font-size: 0.75rem;
             line-height: calc(1 / 0.75);
         }
+
+        .h-100 {
+            height: 100vh;
+        }
+        }
     </style>
 
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('/assets/img/favicon/favicon.ico') }}" />
+    <link rel="icon" type="image/png" href="/assets/img/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/assets/img/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/assets/img/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/assets/img/favicon/site.webmanifest" />
     <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -58,10 +67,13 @@
 
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/iziModal.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/apex-charts/apex-charts.css') }}" />
     <!-- Page CSS -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-pricing.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}" />
 
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
@@ -93,12 +105,7 @@
                     {!! buildMenu($sidebarAppMenu) !!}
                 </div>
             </aside>
-            <!-- / Menu -->
-
-            <!-- Layout container -->
             <div class="layout-page">
-                <!-- Navbar -->
-
                 <nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
                     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
                         <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
@@ -115,10 +122,12 @@
                         </div>
 
                         <ul class="navbar-nav flex-row justify-content-between align-items-center ms-auto">
-                            <!-- User -->
+                            <li class="serverTime font-xs my-auto px-2">
+                                <div class="spinner-border spinner-border-sm"></div>
+                            </li>
                             @if (env('APP_SUBS') == 'ON' && in_array(getRole(), ['Developer', 'Manager']))
                                 <li class="nav-item me-4">
-                                    <div class="">
+                                    <div>
                                         <button data-bs-toggle="modal" data-bs-target="#AppSubscriptionModal"
                                             class="{{ isset(session('userLogged')['subscription']['name']) ? 'btn btn-success' : 'btn btn-warning' }} buy-now">
                                             {!! session('userLogged')['subscription']['name'] ??
@@ -162,6 +171,12 @@
                                         </li>
                                     @endif
                                     <li>
+                                        <a class="dropdown-item trigger-lockscreen">
+                                            <i class='bx bx-lock-alt me-2'></i>
+                                            <span class="align-middle">Lock Screen</span>
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a class="dropdown-item" href="{{ route('auth.logout') }}">
                                             <i class="bx bx-power-off me-2"></i>
                                             <span class="align-middle">Log Out System</span>
@@ -172,12 +187,7 @@
                         </ul>
                     </div>
                 </nav>
-
-                <!-- / Navbar -->
-
-                <!-- Content wrapper -->
                 <div class="content-wrapper">
-                    <!-- Content -->
                     <div class="container-fluid flex-grow-1 container-p-y">
                         @yield('content')
                         @if (env('APP_SUBS') == 'ON' && in_array(getRole(), ['Developer', 'Manager']))
@@ -351,12 +361,61 @@
                                 </div>
                             </div>
                         @endif
+                        <div class="modal" id="modalDisconect" aria-labelledby="modalDisconectLabel" aria-hidden="true">
+                        </div>
+                        <div class="offcanvas offcanvas-top h-100 lockscreen" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
+                            <div class="offcanvas-header">
+                                <h5 class="offcanvas-title" id="offcanvasTopLabel">Lockscreen</h5>
+                            </div>
+                            <div class="offcanvas-body">
+                                <div class="container">
+                                    <div class="authentication-wrapper authentication-basic" style="min-height:80vh">
+                                        <div class="authentication-inner py-4">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="app-brand justify-content-center">
+                                                        <a class="app-brand-link gap-2">
+                                                            <span class="app-brand-logo demo">
+                                                                <img src="{{ asset('assets/img/favicon/favicon.ico') }}" />
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                    <h4 class="mb-2 text-center">Enter Your Access Pin</h4>
+                                                    <p class="text-center">Pleasae enter your access pin.</p>
+                                                    <form id="formAuthentication" class="mb-2" action="{{ route('privacy.access-pin') }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        <div class="mb-3">
+                                                            <label for="access_pin" class="form-label">Access Pin</label>
+                                                            <div class="d-flex gap-3">
+                                                                <input type="password" class="form-control single_number" id="access_pin"
+                                                                    name="access_pin[0]" autofocus />
+                                                                <input type="password" class="form-control single_number" name="access_pin[1]" />
+                                                                <input type="password" class="form-control single_number" name="access_pin[2]" />
+                                                                <input type="password" class="form-control single_number" name="access_pin[3]" />
+                                                                <input type="password" class="form-control single_number" name="access_pin[4]" />
+                                                                <input type="password" class="form-control single_number" name="access_pin[5]" />
+                                                            </div>
+                                                        </div>
+                                                        @error('*')
+                                                            <div class="alert alert-danger">{{ preg_replace('/[_]|(\.\d)/i', ' ', $message) }}
+                                                            </div>
+                                                        @enderror
+                                                        <button class="btn btn-primary d-grid w-100 mb-2">Unlock</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!-- / Content -->
 
                     <!-- Footer -->
                     <footer class="content-footer footer bg-footer-theme">
-                        <div class="d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
+                        <div class="d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column align-items-end">
                             <div class="mb-2 ms-4">
                                 ©
                                 <script>
@@ -373,7 +432,6 @@
                 </div>
                 <!-- Content wrapper -->
             </div>
-            <!-- / Layout page -->
         </div>
 
         <!-- Overlay -->
@@ -393,6 +451,9 @@
 
     <!-- Vendors JS -->
     <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
+    <script src="{{ asset('assets/js/iziModal.min.js') }}"></script>
+    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
 
     <!-- Main JS -->
     <script src="{{ asset('assets/js/main.js') }}"></script>
@@ -413,6 +474,60 @@
     @endif
     <script>
         window.process_subscription = null;
+        window.serverTime = undefined;
+        window.intervalTime = undefined;
+        window.company = `{{ buatSingkatan(session('userLogged')['company']['name']) }}`;
+
+        function debounce(func, delay) {
+            let timeoutId;
+            return function(...args) {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                    // $(context).find('#block_loading').remove();
+                    // $(context).prepend(
+                    //     `<div id='block_loading' style='height:100vh;background:#00000038;position:relative;z-index: 2000;display:flex;justify-content:center;align-items: center;'><div class="spinner-border spinner-border-lg text-dark" role="status"><span class="visually-hidden">Loading...</span></div>`
+                    // );
+                }
+                timeoutId = setTimeout(() => {
+                    // $(context).find('#block_loading').remove();
+                    func.apply(this, args);
+                }, delay);
+            };
+        }
+
+        function dataToOption(allData, attr = false) {
+            let html = "<option value=''>Mohon Pilih</option>";
+
+            allData.forEach(data => {
+                if (attr) {
+                    html +=
+                        `<option data-attr="${data.attribute}" value="${data.id ? data.id : data.name}">${data.name} ( ${data.attribute} )</option>`;
+                } else {
+                    html += `<option value="${data.id ? data.id : data.name}">${data.name}</option>`;
+                }
+            });
+
+            return html;
+        }
+
+        function serializeFiles(node) {
+            let form = $(node),
+                formData = new FormData(),
+                formParams = form.serializeArray();
+
+            $.each(form.find('input[type="file"]'), function(i, tag) {
+                if ($(tag)[0].files.length > 0) {
+                    $.each($(tag)[0].files, function(i, file) {
+                        formData.append(tag.name, file);
+                    });
+                }
+            });
+
+            $.each(formParams, function(i, val) {
+                formData.append(val.name, val.value);
+            });
+            return formData;
+        };
 
         function copyToClipboard(element = 'registration-link-code', ) {
             const codeSnippet = (document.getElementById(element).innerText != '') ? document.getElementById(element).innerText : document.getElementById(
@@ -473,6 +588,17 @@
             return branch
         }
 
+        function server_time(date = `{{ $serverTime }}`) {
+            if (window.intervalTime) {
+                clearInterval(window.intervalTime)
+            }
+            window.serverTime = moment(date).format('YYYY-MM-DD HH:mm:ss')
+            window.intervalTime = setInterval(() => {
+                window.serverTime = moment(window.serverTime).add('1', 's').format('YYYY-MM-DD HH:mm:ss');
+                $('.serverTime').html(window.serverTime)
+            }, 1000)
+        }
+
         function formattedInput() {
             $('.phone_number').inputmask('(+62) 999-999-9999[9]')
             $('.price').inputmask('currency', {
@@ -506,60 +632,8 @@
             },
         });
     }
-    // context = 'body'
-    function debounce(func, delay) {
-        let timeoutId;
-        return function(...args) {
-            if (timeoutId) {
-                clearTimeout(timeoutId);
-                // $(context).find('#block_loading').remove();
-                // $(context).prepend(
-                //     `<div id='block_loading' style='height:100vh;background:#00000038;position:relative;z-index: 2000;display:flex;justify-content:center;align-items: center;'><div class="spinner-border spinner-border-lg text-dark" role="status"><span class="visually-hidden">Loading...</span></div>`
-                // );
-            }
-            timeoutId = setTimeout(() => {
-                // $(context).find('#block_loading').remove();
-                func.apply(this, args);
-            }, delay);
-        };
-    }
-
-    function dataToOption(allData, attr = false) {
-        let html = "<option value=''>Mohon Pilih</option>";
-
-        allData.forEach(data => {
-            if (attr) {
-                html +=
-                    `<option data-attr="${data.attribute}" value="${data.id ? data.id : data.name}">${data.name} ( ${data.attribute} )</option>`;
-            } else {
-                html += `<option value="${data.id ? data.id : data.name}">${data.name}</option>`;
-            }
-        });
-
-        return html;
-    }
-
-
-    function serializeFiles(node) {
-        let form = $(node),
-            formData = new FormData(),
-            formParams = form.serializeArray();
-
-        $.each(form.find('input[type="file"]'), function(i, tag) {
-            if ($(tag)[0].files.length > 0) {
-                $.each($(tag)[0].files, function(i, file) {
-                    formData.append(tag.name, file);
-                });
-            }
-        });
-
-        $.each(formParams, function(i, val) {
-            formData.append(val.name, val.value);
-        });
-        return formData;
-    };
     $(function() {
-        window.company = `{{ buatSingkatan(session('userLogged')['company']['name']) }}`;
+        server_time();
         $(".menu-sub").find('.menu-link.bg-primary').parents('.menu-item:not(:first)').map((index, element) => {
             $(element).addClass('open');
             $(element).children('.menu-link.menu-toggle').addClass('bg-primary text-white')
@@ -571,6 +645,11 @@
                 [5, 10, 25, 50, "All"]
             ],
             "responsive": true
+        });
+        $.ajaxSetup({
+            complete: function(e, status) {
+                server_time(e.getResponseHeader('Date'))
+            }
         });
         $('.process-subscription').click(function() {
             window.process_subscription = {
@@ -603,8 +682,62 @@
                 window.process_subscription == null;
             });
         });
+        $("#modalDisconect").iziModal({
+            title: 'Warning',
+            subtitle: 'You About To Disconected',
+            headerColor: '#ff3e1d',
+            radius: 3,
+            zindex: 9999,
+            width: 900,
+            navigateCaption: true,
+            restoreDefaultContent: false,
+            timeout: 120000,
+            timeoutProgressbar: true,
+            onClosed: function() {
+                $('.lockscreen').offcanvas('show');
+            }
+        });
+        $('.trigger-lockscreen').click(function() {
+            $('.lockscreen').offcanvas('show');
+        })
+        $('.offcanvas input').keydown(function(e) {
+            if (e.which == 9) {
+                e.preventDefault();
+            }
+        });
+        $('.single_number').keyup(function(e) {
+            if (e.currentTarget.value.split('').length == 1 && /\d{1}/y.exec(e.currentTarget.value) != null) {
+                if (e.currentTarget.nextElementSibling) {
+                    $(e.currentTarget.nextElementSibling).focus();
+                } else {
+                    $($(e.currentTarget).parents('.mb-3')[0].nextElementSibling).find('.single_number:first').focus()
+                }
+            }
+        });
     </script>
-
+    @if (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
+            [2, 1]))
+        <script>
+            $("#modalDisconect").iziModal('open');
+        </script>
+    @elseif (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
+            [5, 4, 3]))
+        <script>
+            iziToast.warning({
+                id: 'alert-session-expirated',
+                title: 'Alert',
+                message: `session expirate in {{ now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta')) }} minutes`,
+                position: 'bottomRight',
+                layout: 2,
+                balloon: true,
+                displayMode: 'replace'
+            });
+        </script>
+    @elseif (now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false) < 0)
+        <script>
+            $('.lockscreen').offcanvas('show');
+        </script>
+    @endif
     @stack('js')
 </body>
 

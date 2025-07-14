@@ -46,7 +46,7 @@ class AuthController extends Controller
             }
             session()->flush();
             if (!$hasPrivileges) {
-                session(['userLogged' => collect($roleUser)->toArray()]);
+                session(['userLogged' => collect($roleUser)->toArray(), 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
             }
 
             return redirect()->route('select-customer-company');
@@ -67,7 +67,7 @@ class AuthController extends Controller
         }
         $data['company'] = CustomerCompany::with('address')->where($where)->first()->toArray();
         session()->flush();
-        session(['userLogged' => $data]);
+        session(['userLogged' => $data, 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home');
     }
@@ -89,7 +89,7 @@ class AuthController extends Controller
             }
             if ($hasPrivileges) {
                 session()->flush();
-                session(['userLogged' => collect($user)->toArray()]);
+                session(['userLogged' => collect($user)->toArray(), 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
                 $response = ['message' => 'successfully login as ' . $user['user']['username']];
                 $status = 200;
             } else {
@@ -261,6 +261,10 @@ class AuthController extends Controller
     {
         return view('auth.activate-access-pin');
     }
+    public function confirmAccessPin()
+    {
+        return view('auth.confirm-access-pin');
+    }
 
     public function activateAccessPin(Request $request)
     {
@@ -309,20 +313,14 @@ class AuthController extends Controller
         if (empty($roleUser) || empty($roleUser->user) || empty($roleUser->role)) {
             $roleUser = UserCustomerRole::with('user', 'role')->where('userId', session('userLogged')['user']['id'])->first();
         }
-        $hasPrivileges = false;
         if (!in_array($roleUser->role->name, ['Developer', 'Manager'])) {
             $roleUser['company'] = UserCustomerRole::employeeCompany($roleUser->userId);
             $roleUser['company']['address'] = CompanyAddress::where('companyId', $roleUser['company']['id'])->first()->toArray();
-            if (UserCustomerRole::employeeMenu($roleUser->userId) == 0) {
-                $hasPrivileges = true;
-            }
         } else {
             $roleUser['company'] = CustomerCompany::with('address')->where(['id' => session('userLogged')['company']['id'], 'userId' => session('userLogged')['user']['id']])->first()->toArray();
         }
         session()->flush();
-        if (!$hasPrivileges) {
-            session(['userLogged' => collect($roleUser)->toArray()]);
-        }
+        session(['userLogged' => collect($roleUser)->toArray(), 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
         return redirect()->route('home')->with($message);
     }
 
@@ -330,7 +328,7 @@ class AuthController extends Controller
     {
         $data = session('userLogged');
         unset($data['company']);
-        session(['userLogged' => $data]);
+        session(['userLogged' => $data, 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home');
     }

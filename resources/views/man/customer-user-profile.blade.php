@@ -1,8 +1,5 @@
 @extends('template.parent')
 @section('title', 'User Profile')
-@push('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
-@endpush
 @section('content')
     <div class="row">
         <div class="col-md-12">
@@ -123,7 +120,7 @@
                                 </h6>
                             </div>
                         </div>
-                        <a href="{{ route('auth.request-access-pin') }}" class="btn btn-warning"><i class='bx bxs-right-arrow-alt mb-1'></i><span
+                        <a href="{{ route('privacy.request-access-pin') }}" class="btn btn-warning"><i class='bx bxs-right-arrow-alt mb-1'></i><span
                                 class="d-none d-sm-inline-block">Change Access Pin</span></a>
                     </div>
                 </div>
@@ -159,7 +156,7 @@
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
-    <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
+    
     <script>
         $(function() {
             formattedInput();

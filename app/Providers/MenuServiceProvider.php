@@ -37,6 +37,7 @@ class MenuServiceProvider extends ServiceProvider
                 'sidebarAppMenu' => $sidebarAppMenu,
                 'profileAppMenu' => $profileAppMenu,
                 'subscriptions' => $subscriptions,
+                'serverTime' => now()->format('Y-m-d H:i:s'),
             ]);
         });
     }
