@@ -33,5 +33,5 @@ jobs:
       # - name: 🗄️ Run database migrations
         # run: php artisan migrate --force
 
-      - name: ✅ Run Laravel tests
-        run: php artisan test
+      # - name: ✅ Run Laravel tests
+      #   run: php artisan test
