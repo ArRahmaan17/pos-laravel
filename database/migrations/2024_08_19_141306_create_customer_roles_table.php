@@ -21,6 +21,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('name')->nullable(false);
             $table->string('description')->nullable(false);
+            $table->enum('as_role', ['cashier', 'sales', 'admin', 'warehouse']);
             $table->timestamps();
         });
     }

@@ -15,9 +15,7 @@ class CustomerRoleController extends Controller
      */
     public function index()
     {
-        $users = User::user_manager();
-
-        return view('man.customer-role', compact('users'));
+        return view('man.customer-role');
     }
 
     public function role($id)
