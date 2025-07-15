@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
@@ -54,5 +55,10 @@ class User extends Authenticatable
             ->join('user_roles as ur', 'users.id', '=', 'ur.userId')
             ->join('app_roles as ap', 'ur.roleId', '=', 'ap.id')
             ->whereIn('ap.id', [1, 2])->where(($id == null) ? [['users.id', '<>', $id]] : [['users.id', '=', $id]])->get();
+    }
+
+    public function role(): HasOne
+    {
+        return ($this->hasOne(AppRole::class, 'userId', 'id')) ? $this->hasOne(AppRole::class, 'userId', 'id') : $this->hasOne(CustomerRole::class, 'userId', 'id');
     }
 }

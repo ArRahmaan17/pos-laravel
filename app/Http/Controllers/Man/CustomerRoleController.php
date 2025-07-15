@@ -99,6 +99,7 @@ class CustomerRoleController extends Controller
             'userId' => 'required|exists:users,id',
             'name' => 'required|min:2|max:30|unique:customer_roles,name',
             'description' => 'required|min:6|max:100',
+            'as_role' => 'required|in:cashier,sales,admin,warehouse',
         ], ['userId.required' => 'The customer user field is required']);
         DB::beginTransaction();
         try {
@@ -141,6 +142,7 @@ class CustomerRoleController extends Controller
             'userId' => 'required|exists:users,id',
             'name' => 'required|unique:app_roles,name,' . $id,
             'description' => 'required|min:6|max:100',
+            'as_role' => 'required|in:cashier,sales,admin,warehouse',
         ]);
         DB::beginTransaction();
         try {

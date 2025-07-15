@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'User Management')
+@section('title', 'Task Management')
 @push('css')
     <style>
         .code-container {
@@ -45,19 +45,18 @@
                     <div class="col-6 text-end">
                         <button class="btn btn-success" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
-                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-create-registration-link">Generate Registration Link <i
-                                class='bx bx-link-alt pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table-customer-user">
+                        <table class="table" id="table-customer-task-management">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Username</th>
-                                    <th scope="col">Phone Number</th>
                                     <th scope="col">Role</th>
+                                    <th scope="col">Username</th>
+                                    <th scope="col">Activity</th>
+                                    <th scope="col">Percentage</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -77,52 +76,40 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-info">The user account created here will use the default password: <b>{{ defaultPassword() }}</b> please note the
-                        username and password if you have more than 1 companies in our application</div>
                     <form action="#" id="form-customer-user">
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="name" class="form-label">Name</label>
-                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Name" />
+                                <label for="name" class="form-label">Task Name</label>
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Task Name" />
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" id="username" name="username" class="form-control" placeholder="Enter Username" />
+                                <label for="start_at" class="form-label">Start At</label>
+                                <input type="time" readonly value="{{ now()->createFromTimeString($serverTime)->format('H:i') }}" id="start_at"
+                                    name="start_at" class="form-control" />
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label for="email" class="form-label">email</label>
-                                <input type="text" id="email" name="email" class="form-control email" placeholder="Enter Email" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label for="phone_number" class="form-label">phone number</label>
-                                <input type="text" id="phone_number" name="phone_number" class="form-control phone_number"
-                                    placeholder="Enter Phone Number" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                @if (in_array(getRole(), ['Manager', 'Developer']))
-                                    <label for="roleId" class="form-label">Role User</label>
-                                    <select class="form-control select2" name="roleId" id="roleId">
-                                        <option value="">Select Role</option>
+                        @if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager']))
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <label for="role" class="form-label">Role</label>
+                                    <select class="form-select select2">
+                                        <option value="" disabled>Choose One</option>
                                         @foreach ($customer_roles as $role)
-                                            <option value="{{ $role->id }}">{{ $role->name }}
-                                            </option>
+                                            <option value="{{ $role->id }}">{{ $role->name }} ({{ $role->as_role }})</option>
                                         @endforeach
                                     </select>
-                                @else
-                                    <input type="hidden" name="roleId" value="{{ session('userLogged')['company']['userId'] }}">
-                                @endif
+                                </div>
                             </div>
+                        @endif
+                        <div class="d-flex justify-content-end gap-1">
+                            <button type="button" id="unfinish" class="btn btn-warning"><i class='bx bx-task-x'></i> Add Unfinish Task</button>
+                            <button type="button" id="new" class="btn btn-warning"><i class='bx bx-task'></i> Add New Task</button>
                         </div>
+                        <div class="row container-detail-task"></div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -137,7 +124,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-create-registration-link" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    {{-- <div class="modal fade" id="modal-create-registration-link" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -202,15 +189,14 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
-    
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
-        window.dataTableAppRole = null;
+        window.dataTableCustomerTaskManagement = null;
         window.state = 'add';
 
         function actionData() {
@@ -231,12 +217,12 @@
                 window.state = 'update';
                 let idCustomerUser = $(this).data("customer-user");
                 $("#edit-customer-user").data("customer-user", idCustomerUser);
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-customer-user tbody').find('tr').removeClass('selected');
+                if (window.dataTableCustomerTaskManagement.rows('.selected').data().length == 0) {
+                    $('#table-customer-task-management tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
-                var data = window.dataTableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableCustomerTaskManagement.rows('.selected').data()[0];
 
                 $('#modal-customer-user').modal('show');
                 $('#modal-customer-user').find('.modal-title').html(`Edit @yield('title')`);
@@ -282,12 +268,12 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-customer-user tbody').find('tr').removeClass('selected');
+                if (window.dataTableCustomerTaskManagement.rows('.selected').data().length == 0) {
+                    $('#table-customer-task-management tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
                 let idCustomerUser = $(this).data("customer-user");
-                var data = window.dataTableAppRole.rows('.selected').data()[0];
+                var data = window.dataTableCustomerTaskManagement.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
                     layout: 2,
@@ -323,7 +309,7 @@
                                         layout: 2,
                                         displayMode: 'replace'
                                     });
-                                    window.dataTableAppRole.ajax.reload()
+                                    window.dataTableCustomerTaskManagement.ajax.reload()
                                 },
                                 error: function(error) {
                                     iziToast.error({
@@ -348,8 +334,8 @@
         }
 
         $(function() {
-            window.dataTableAppRole = $("#table-customer-user").DataTable({
-                ajax: "{{ route('man.customer-user.data-table') }}",
+            window.dataTableCustomerTaskManagement = $("#table-customer-task-management").DataTable({
+                ajax: "{{ route('man.customer-task-management.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -366,8 +352,8 @@
                     }
                 }, {
                     target: 1,
-                    name: 'name',
-                    data: 'name',
+                    name: 'customer_roles.name',
+                    data: 'customer_roles.name',
                     orderable: true,
                     searchable: true,
                     render: (data, type, row, meta) => {
@@ -375,8 +361,8 @@
                     }
                 }, {
                     target: 2,
-                    name: 'phone_number',
-                    data: 'phone_number',
+                    name: 'users.username',
+                    data: 'users.username',
                     orderable: true,
                     searchable: true,
                     render: (data, type, row, meta) => {
@@ -384,8 +370,8 @@
                     }
                 }, {
                     target: 3,
-                    name: 'role',
-                    data: 'role',
+                    name: 'activity',
+                    data: 'activity',
                     orderable: true,
                     searchable: true,
                     render: (data, type, row, meta) => {
@@ -393,6 +379,15 @@
                     }
                 }, {
                     target: 4,
+                    name: 'customer_company_tasks.percentage',
+                    data: 'customer_company_tasks.percentage',
+                    orderable: true,
+                    searchable: true,
+                    render: (data, type, row, meta) => {
+                        return `<div class='d-flex gap-1'>${data}</div>`
+                    }
+                }, {
+                    target: 5,
                     name: 'action',
                     data: 'action',
                     orderable: false,
@@ -402,7 +397,7 @@
                     }
                 }]
             });
-            window.dataTableAppRole.on('draw.dt', function() {
+            window.dataTableCustomerTaskManagement.on('draw.dt', function() {
                 actionData();
             });
             $('#save-customer-user').click(function() {
@@ -422,7 +417,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.dataTableAppRole.ajax.reload();
+                        window.dataTableCustomerTaskManagement.ajax.reload();
 
                     },
                     error: function(error) {
@@ -443,11 +438,13 @@
                     }
                 });
             });
-            $('#create-registration-link').click(function() {
-                let data = serializeObject($('#form-create-registration-link'));
+            $('#new').click(function() {
+                let data = {
+                    roleId: $('#roleId').val()
+                };
                 $.ajax({
-                    type: "POST",
-                    url: `{{ route('man.customer-user.registration-link') }}`,
+                    type: "GET",
+                    url: `{{ route('man.customer-task-management.new-task') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
@@ -491,7 +488,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        window.dataTableAppRole.ajax.reload()
+                        window.dataTableCustomerTaskManagement.ajax.reload()
                     },
                     error: function(error) {
                         $('#modal-customer-user .is-invalid').removeClass('is-invalid')
@@ -517,7 +514,7 @@
                 $('#save-customer-user').removeClass('d-none');
                 $('#edit-customer-user').addClass('d-none');
                 $('#modal-customer-user .is-invalid').removeClass('is-invalid')
-                $('#table-customer-user tbody').find('tr').removeClass('selected');
+                $('#table-customer-task-management tbody').find('tr').removeClass('selected');
             });
             $('#modal-customer-user').on('shown.bs.modal', function() {
                 setTimeout(() => {
