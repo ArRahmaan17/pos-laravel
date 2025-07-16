@@ -43,8 +43,8 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">Add <i
-                                class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-success" id="add-customer-task-management" data-bs-toggle="modal"
+                            data-bs-target="#modal-customer-task-management">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -53,8 +53,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">Role</th>
-                                    <th scope="col">Username</th>
+                                    <th scope="col">Name</th>
                                     <th scope="col">Activity</th>
                                     <th scope="col">Percentage</th>
                                     <th scope="col">Action</th>
@@ -68,7 +67,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-user" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modal-customer-task-management" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -76,7 +75,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-customer-user">
+                    <form action="#" id="form-customer-task-management">
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
@@ -87,109 +86,64 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="start_at" class="form-label">Start At</label>
-                                <input type="time" readonly value="{{ now()->createFromTimeString($serverTime)->format('H:i') }}" id="start_at"
-                                    name="start_at" class="form-control" />
+                                <label for="date" class="form-label">Date</label>
+                                <input type="text" readonly value="{{ now()->createFromTimeString($serverTime)->format('Y-m-d') }}" id="date"
+                                    name="date" class="form-control" />
                             </div>
                         </div>
                         @if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager']))
                             <div class="row">
                                 <div class="col mb-3">
                                     <label for="role" class="form-label">Role</label>
-                                    <select class="form-select select2">
-                                        <option value="" disabled>Choose One</option>
+                                    <select id="role" name="role" class="form-select select2">
+                                        <option value="">Choose One</option>
                                         @foreach ($customer_roles as $role)
                                             <option value="{{ $role->id }}">{{ $role->name }} ({{ $role->as_role }})</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <label for="userId" class="form-label">User</label>
+                                    <select id="userId" name="userId" class="form-select select2">
+                                        <option value="" disabled>Choose One</option>
+                                        @foreach ($employees as $employee)
+                                            <option disabled data-role="{{ $employee->roleId }}" value="{{ $employee->roleId }}">{{ $employee->name }}
+                                                ({{ $employee->username }})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         @endif
+                        <div class="col-12 my-1 container-progress-task d-none">
+                            <h5>Task Progress</h5>
+                            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
                         <div class="d-flex justify-content-end gap-1">
                             <button type="button" id="unfinish" class="btn btn-warning"><i class='bx bx-task-x'></i> Add Unfinish Task</button>
                             <button type="button" id="new" class="btn btn-warning"><i class='bx bx-task'></i> Add New Task</button>
                         </div>
-                        <div class="row container-detail-task"></div>
+                        <div class="row my-2">
+                            <div class="accordion container-detail-task" id="accordionTaskDetail">
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-user" class="btn btn-success">Save
+                    <button type="button" id="save-customer-task-management" class="btn btn-success">Save
                         changes</button>
-                    <button type="button" id="edit-customer-user" class="btn btn-warning d-none">Update
+                    <button type="button" id="edit-customer-task-management" class="btn btn-warning d-none">Update
                         changes</button>
                 </div>
             </div>
         </div>
     </div>
-    {{-- <div class="modal fade" id="modal-create-registration-link" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-xl" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Create Registration Link</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="#" id="form-create-registration-link">
-                        @csrf
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label for="managerIdLink" class="form-label">Customer User</label>
-                                @if (getRole() === 'Developer')
-                                    <select class="form-control select2" name="managerIdLink" id="managerIdLink">
-                                        <option value="">Select User</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}
-                                                ({{ $user->username }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['company']['userId'] }}">
-                                @endif
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                @if (getRole() === 'Developer')
-                                    <label for="customerRoleIdLink" class="form-label">Customer User Role</label>
-                                    <select class="form-control select2" name="customerRoleIdLink" id="customerRoleIdLink">
-                                        <option value="">Select Role</option>
-                                        @foreach ($customer_roles as $role)
-                                            <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['role']['id'] }}">
-                                @endif
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label for="time_limit" class="form-label">LifeTime Link</label>
-                                <input type="text" id="time_limit" name="time_limit" placeholder="60 minutes / 1 hours / 1 days"
-                                    class="form-control" />
-                            </div>
-                        </div>
-                        <div id="container-link" class="row px-3 d-none">
-                            <p>Your Link</p>
-                            <div class="col-12 mb-3 code-container">
-                                <code id="registration-link-code">
-                                </code>
-                                <button class="copy-btn" type="button" onclick="copyToClipboard()">Copy</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" id="create-registration-link" class="btn btn-primary"><i class='bx bx-key'></i>Generate</button>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
@@ -203,7 +157,7 @@
             $('.login-as').click(function() {
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('auth.login-as') }}/${$(this).data('customer-user')}`,
+                    url: `{{ route('auth.login-as') }}/${$(this).data('customer-task-management')}`,
                     data: {
                         '_token': `{{ csrf_token() }}`
                     },
@@ -215,8 +169,8 @@
             });
             $('.edit').click(function() {
                 window.state = 'update';
-                let idCustomerUser = $(this).data("customer-user");
-                $("#edit-customer-user").data("customer-user", idCustomerUser);
+                let idCustomerUser = $(this).data("customer-task-management");
+                $("#edit-customer-task-management").data("customer-task-management", idCustomerUser);
                 if (window.dataTableCustomerTaskManagement.rows('.selected').data().length == 0) {
                     $('#table-customer-task-management tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
@@ -224,17 +178,17 @@
 
                 var data = window.dataTableCustomerTaskManagement.rows('.selected').data()[0];
 
-                $('#modal-customer-user').modal('show');
-                $('#modal-customer-user').find('.modal-title').html(`Edit @yield('title')`);
-                $('#save-customer-user').addClass('d-none');
-                $('#edit-customer-user').removeClass('d-none');
+                $('#modal-customer-task-management').modal('show');
+                $('#modal-customer-task-management').find('.modal-title').html(`Edit @yield('title')`);
+                $('#save-customer-task-management').addClass('d-none');
+                $('#edit-customer-task-management').removeClass('d-none');
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('man.customer-user.show') }}/" + idCustomerUser,
+                    url: "{{ route('man.customer-task-management.show') }}/" + idCustomerUser,
                     dataType: "json",
                     success: function(response) {
-                        let formElement = $('#modal-customer-user').find("form");
+                        let formElement = $('#modal-customer-task-management').find("form");
                         formElement.find('[name=id]')
                             .val(response.data[0].user.id)
                             .trigger('change');
@@ -256,7 +210,7 @@
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-customer-user-action',
+                            id: 'alert-customer-task-management-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -272,7 +226,7 @@
                     $('#table-customer-task-management tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idCustomerUser = $(this).data("customer-user");
+                let idCustomerUser = $(this).data("customer-task-management");
                 var data = window.dataTableCustomerTaskManagement.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
@@ -294,7 +248,7 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('man.customer-user.delete') }}/" +
+                                url: "{{ route('man.customer-task-management.delete') }}/" +
                                     idCustomerUser,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
@@ -302,7 +256,7 @@
                                 dataType: "json",
                                 success: function(response) {
                                     iziToast.success({
-                                        id: 'alert-customer-user-action',
+                                        id: 'alert-customer-task-management-action',
                                         title: 'Success',
                                         message: response.message,
                                         position: 'topRight',
@@ -313,7 +267,7 @@
                                 },
                                 error: function(error) {
                                     iziToast.error({
-                                        id: 'alert-customer-user-action',
+                                        id: 'alert-customer-task-management-action',
                                         title: 'Error',
                                         message: error.responseJSON.message,
                                         position: 'topRight',
@@ -333,6 +287,97 @@
             });
         }
 
+        function generateDetailTask(data, type = 'new') {
+            return (`<div class="accordion-item shadow-sm my-1 ${type !== 'new' ? 'border border-warning' : ''}">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${type}${kebabCase(data.name)}"
+                                aria-expanded="false" aria-controls="${type}${kebabCase(data.name)}">
+                                <span class="badge bg-label-primary mx-1">${data.priority}</span> ${type !== 'new' ? 'Unfinish Task' : 'New Task'} ${data.name} ${(type !== 'new') ? moment(data.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
+                            </button>
+                        </h2>
+                        <div id="${type}${kebabCase(data.name)}" class="accordion-collapse collapse" data-bs-parent="#accordionTaskDetail">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    ${type !== 'new' ? `<input type="hidden" name="details[${data.index}][id]" id="details[${data.index}][id]" value="${data.id}">`:`<input type="hidden" name="details[${data.index}][masterId]" id="details[${data.index}][masterId]" value="${data.id}">` }
+                                    <input type="hidden" name="details[${data.index}][type]" id="details[${data.index}][type]" value="${type}">
+                                    <div class="col">
+                                        ${data.description}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`);
+        }
+        const unfinishTask = () => {
+            $.ajax({
+                type: "GET",
+                url: `{{ route('man.customer-task-management.unfinish-task') }}`,
+                dataType: "json",
+                success: function(response) {
+                    iziToast.success({
+                        id: 'alert-create-registration-link-form',
+                        title: 'Success',
+                        message: response.message,
+                        position: 'topRight',
+                        layout: 1,
+                        displayMode: 'replace'
+                    });
+                    response.data.forEach(task => {
+                        $('.container-detail-task').append(generateDetailTask(task), 'unfinish');
+                    });
+                },
+                error: function(error) {
+                    iziToast.error({
+                        id: 'alert-create-registration-link-form',
+                        title: 'Error',
+                        message: error.responseJSON.message,
+                        position: 'topRight',
+                        layout: 2,
+                        displayMode: 'replace'
+                    });
+                }
+            });
+            $('#unfinish').addClass('disabled')
+            $('#unfinish').off('click');
+            $('.container-progress-task').removeClass('d-none')
+        }
+        const newTask = () => {
+            $.ajax({
+                type: "GET",
+                url: `{{ route('man.customer-task-management.new-task') }}`,
+                data: {
+                    roleId: $('#roleId').val()
+                },
+                dataType: "json",
+                success: function(response) {
+                    iziToast.success({
+                        id: 'alert-create-registration-link-form',
+                        title: 'Success',
+                        message: response.message,
+                        position: 'topRight',
+                        layout: 1,
+                        displayMode: 'replace'
+                    });
+                    response.data.forEach((task, index) => {
+                        task.index = index;
+                        $('.container-detail-task').append(generateDetailTask(task));
+                    });
+                    $('#new').addClass('disabled')
+                    $('#new').off('click');
+                    $('.container-progress-task').removeClass('d-none')
+                },
+                error: function(error) {
+                    iziToast.error({
+                        id: 'alert-create-registration-link-form',
+                        title: 'Error',
+                        message: error.responseJSON.message,
+                        position: 'topRight',
+                        layout: 2,
+                        displayMode: 'replace'
+                    });
+                }
+            });
+        }
         $(function() {
             window.dataTableCustomerTaskManagement = $("#table-customer-task-management").DataTable({
                 ajax: "{{ route('man.customer-task-management.data-table') }}",
@@ -352,8 +397,8 @@
                     }
                 }, {
                     target: 1,
-                    name: 'customer_roles.name',
-                    data: 'customer_roles.name',
+                    name: 'name',
+                    data: 'name',
                     orderable: true,
                     searchable: true,
                     render: (data, type, row, meta) => {
@@ -361,15 +406,6 @@
                     }
                 }, {
                     target: 2,
-                    name: 'users.username',
-                    data: 'users.username',
-                    orderable: true,
-                    searchable: true,
-                    render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'>${data}</div>`
-                    }
-                }, {
-                    target: 3,
                     name: 'activity',
                     data: 'activity',
                     orderable: true,
@@ -378,16 +414,16 @@
                         return `<div class='text-wrap'>${data}</div>`
                     }
                 }, {
-                    target: 4,
-                    name: 'customer_company_tasks.percentage',
-                    data: 'customer_company_tasks.percentage',
+                    target: 3,
+                    name: 'percentage',
+                    data: 'percentage',
                     orderable: true,
                     searchable: true,
                     render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
+                        return `<div class='text-wrap'>${data}</div>`
                     }
                 }, {
-                    target: 5,
+                    target: 4,
                     name: 'action',
                     data: 'action',
                     orderable: false,
@@ -400,17 +436,17 @@
             window.dataTableCustomerTaskManagement.on('draw.dt', function() {
                 actionData();
             });
-            $('#save-customer-user').click(function() {
-                let data = serializeObject($('#form-customer-user'));
+            $('#save-customer-task-management').click(function() {
+                let data = serializeObject($('#form-customer-task-management'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-user.store') }}`,
+                    url: `{{ route('man.customer-task-management.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-user').modal('hide')
+                        $('#modal-customer-task-management').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-user-form',
+                            id: 'alert-customer-task-management-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -421,14 +457,14 @@
 
                     },
                     error: function(error) {
-                        $('#modal-customer-user .is-invalid').removeClass('is-invalid')
+                        $('#modal-customer-task-management .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-user').find('[name=' + indexInArray +
+                            $('#modal-customer-task-management').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-user-form',
+                            id: 'alert-customer-task-management-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -438,50 +474,19 @@
                     }
                 });
             });
-            $('#new').click(function() {
-                let data = {
-                    roleId: $('#roleId').val()
-                };
-                $.ajax({
-                    type: "GET",
-                    url: `{{ route('man.customer-task-management.new-task') }}`,
-                    data: data,
-                    dataType: "json",
-                    success: function(response) {
-                        $('#container-link').removeClass('d-none');
-                        iziToast.success({
-                            id: 'alert-create-registration-link-form',
-                            title: 'Success',
-                            message: response.message,
-                            position: 'topRight',
-                            layout: 1,
-                            displayMode: 'replace'
-                        });
-                        $('#container-link').find('code').html(response.link)
-                    },
-                    error: function(error) {
-                        iziToast.error({
-                            id: 'alert-create-registration-link-form',
-                            title: 'Error',
-                            message: error.responseJSON.message,
-                            position: 'topRight',
-                            layout: 2,
-                            displayMode: 'replace'
-                        });
-                    }
-                });
-            });
-            $('#edit-customer-user').click(function() {
-                let data = serializeObject($('#form-customer-user'));
+            $('#new').on('click', () => newTask());
+            $('#unfinish').on('click', () => unfinishTask());
+            $('#edit-customer-task-management').click(function() {
+                let data = serializeObject($('#form-customer-task-management'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('man.customer-user.update') }}/${data.id}`,
+                    url: `{{ route('man.customer-task-management.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-user').modal('hide')
+                        $('#modal-customer-task-management').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-user-form',
+                            id: 'alert-customer-task-management-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -491,14 +496,14 @@
                         window.dataTableCustomerTaskManagement.ajax.reload()
                     },
                     error: function(error) {
-                        $('#modal-customer-user .is-invalid').removeClass('is-invalid')
+                        $('#modal-customer-task-management .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-user').find('[name=' + indexInArray +
+                            $('#modal-customer-task-management').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-user-form',
+                            id: 'alert-customer-task-management-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -508,42 +513,35 @@
                     }
                 });
             });
-            $('#modal-customer-user').on('hidden.bs.modal', function() {
+            $('#role').change(function() {
+                $('#userId').find(`option[data-role=${this.value}]`).removeAttr('disabled');
+                $('#userId').find(`option:not([data-role=${this.value}])`).attr('disabled', 'disabled');
+            })
+            $('#modal-customer-task-management').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
-                $('#save-customer-user').removeClass('d-none');
-                $('#edit-customer-user').addClass('d-none');
-                $('#modal-customer-user .is-invalid').removeClass('is-invalid')
+                $('#save-customer-task-management').removeClass('d-none');
+                $('#edit-customer-task-management').addClass('d-none');
+                $('#modal-customer-task-management .is-invalid').removeClass('is-invalid')
                 $('#table-customer-task-management tbody').find('tr').removeClass('selected');
+                $('.container-detail-task').html(``);
+                if ($('#unfinish').hasClass('disabled')) {
+                    $('#unfinish').removeClass('disabled')
+                    $('#unfinish').on('click', () => unfinishTask());
+                }
+                if ($('#new').hasClass('disabled')) {
+                    $('#new').removeClass('disabled')
+                    $('#new').on('click', () => newTask());
+                }
             });
-            $('#modal-customer-user').on('shown.bs.modal', function() {
+            $('#modal-customer-task-management').on('shown.bs.modal', function() {
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-customer-user'),
+                        dropdownParent: $('#modal-customer-task-management'),
 
                     });
                 }, 140);
             });
-            $('#modal-create-registration-link').on('shown.bs.modal', function() {
-                setTimeout(() => {
-                    $('.select2').select2({
-                        dropdownParent: $('#modal-create-registration-link'),
-
-                    });
-                }, 140);
-            });
-            $('#managerIdLink').change(function(e) {
-                let id = e.currentTarget.value;
-                $.ajax({
-                    type: "get",
-                    url: `{{ route('man.customer-role.role') }}/${(`{{ getRole() }}` === 'Developer' ) ? id : `{{ session('userLogged')['user']['id'] }}`}`,
-                    dataType: "json",
-                    success: function(response) {
-                        $('#customerRoleIdLink').html()
-                    }
-                });
-            });
-            $('#time_limit').inputmask('9[9][9] [minutes]|[hours]|[days]');
             formattedInput();
         });
     </script>

@@ -8,7 +8,7 @@
                     <div class="app-brand justify-content-center">
                         <a href="{{ route('home') }}" class="app-brand-link gap-2">
                             <span class="app-brand-logo demo">
-                                <img rel='preload' src="{{ asset('assets/img/favicon/favicon.ico') }}" />
+                                <img rel="preload" height="100px" src="{{ asset('assets/img/icons/lock.webp') }}" />
                             </span>
                         </a>
                     </div>

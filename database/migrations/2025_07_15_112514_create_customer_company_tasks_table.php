@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('customer_company_tasks', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('userId')->unsigned();
+            $table->bigInteger('companyId')->unsigned();
             $table->foreign('userId')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreign('companyId')->references('id')->on('customer_companies')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('name');
-            $table->timestamp('start_at');
+            $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
             $table->smallInteger('percentage')->default(0);
             $table->timestamps();

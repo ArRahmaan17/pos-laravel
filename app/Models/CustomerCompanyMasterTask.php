@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class CustomerCompanyMasterTask extends Model
 {
-    protected $fillable = ['companyId', 'name', 'description', 'roleId', 'priority'];
+    protected $fillable = ['companyId', 'name', 'description', 'roleId', 'priority', 'repeateable'];
     use HasFactory;
 
     public function role(): HasOne

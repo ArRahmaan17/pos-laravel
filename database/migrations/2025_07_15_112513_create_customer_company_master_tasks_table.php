@@ -20,6 +20,7 @@ return new class extends Migration
             $table->bigInteger('roleId')->unsigned();
             $table->foreign('roleId')->references('id')->on('customer_roles')->cascadeOnUpdate()->cascadeOnDelete();
             $table->enum('priority', ['P1', 'P2', 'P3', 'P4']);
+            $table->boolean('repeateable')->default(0);
             $table->unique(['companyId', 'name']);
             $table->timestamps();
         });

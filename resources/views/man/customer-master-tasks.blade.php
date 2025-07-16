@@ -57,6 +57,7 @@
                                     <th scope="col">Description</th>
                                     <th scope="col">Role</th>
                                     <th scope="col">Priority</th>
+                                    <th scope="col">Repeateable</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -95,7 +96,7 @@
                             <div class="col mb-3">
                                 <label for="roleId" class="form-label">Role</label>
                                 <select class="form-control select2" name="roleId" id="roleId">
-                                    <option value="">Select Role</option>
+                                    <option value="" disabled>Select Role</option>
                                     @foreach ($customer_roles as $role)
                                         <option value="{{ $role->id }}">{{ $role->name }} ({{ $role->as_role }})</option>
                                     @endforeach
@@ -106,11 +107,21 @@
                             <div class="col mb-3">
                                 <label for="priority" class="form-label">Priority</label>
                                 <select class="form-control select2" name="priority" id="priority">
-                                    <option value="">Select Priority</option>
+                                    <option value="" disabled>Select Priority</option>
                                     <option value="P1">P1 - Must Have (Urgent & Important)</option>
                                     <option value="P2">P2 - Should Have (Important, Not Urgent)</option>
                                     <option value="P3">P3 - Nice to Have (Not Important, Not Urgent)</option>
                                     <option value="P4">P4 - Optional/Low Impact</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="repeateable" class="form-label">Repeateable</label>
+                                <select class="form-control select2" name="repeateable" id="repeateable">
+                                    <option value="" disabled>Select Repeateable</option>
+                                    <option value="1">Repeateable</option>
+                                    <option value="0">Not Repeateable</option>
                                 </select>
                             </div>
                         </div>
@@ -299,13 +310,22 @@
                     target: 4,
                     name: 'priority',
                     data: 'priority',
-                    orderable: false,
-                    searchable: false,
+                    orderable: true,
+                    searchable: true,
                     render: (data, type, row, meta) => {
-                        return `<div class='d-flex gap-1'>${data}</div>`
+                        return `<div class='text-wrap'>${data}</div>`
                     }
                 }, {
                     target: 5,
+                    name: 'repeateable',
+                    data: 'repeateable',
+                    orderable: true,
+                    searchable: true,
+                    render: (data, type, row, meta) => {
+                        return `<div class='text-wrap'>${data}</div>`
+                    }
+                }, {
+                    target: 6,
                     name: 'action',
                     data: 'action',
                     orderable: false,

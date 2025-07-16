@@ -17,9 +17,10 @@ return new class extends Migration
             $table->bigInteger('masterId')->unsigned();
             $table->foreign('taskId')->references('id')->on('customer_company_tasks')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreign('masterId')->references('id')->on('customer_company_master_tasks')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->timestamp('start_at');
+            $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
             $table->boolean('status')->default(0);
+            $table->string('evidence')->nullable();
             $table->timestamps();
         });
     }

@@ -69,6 +69,7 @@ class CustomerCompanyMasterTaskController extends Controller
             $row['description'] = $item->description;
             $row['role'] = $item->role->name;
             $row['priority'] = $item->priority;
+            $row['repeateable'] = $item->repeateable == 0 ? 'No' : 'Yes';
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-master-tasks='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-master-tasks='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
@@ -91,6 +92,7 @@ class CustomerCompanyMasterTaskController extends Controller
             'description' => 'required|min:4',
             'roleId' => 'required|exists:customer_roles,id',
             'priority' => 'required|in:P1,P2,P3,P4',
+            'repeateable' => 'required|in:1,0',
         ]);
         DB::beginTransaction();
         try {
@@ -133,6 +135,7 @@ class CustomerCompanyMasterTaskController extends Controller
             'description' => 'required|min:4',
             'roleId' => 'required|exists:customer_roles,id',
             'priority' => 'required|in:P1,P2,P3,P4',
+            'repeateable' => 'required|in:1,0',
         ]);
         DB::beginTransaction();
         try {

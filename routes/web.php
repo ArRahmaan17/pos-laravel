@@ -200,12 +200,12 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
         Route::name('customer-task-management')->as('customer-task-management.')->prefix('customer-task-management')->group(function () {
             Route::get('/', [CustomerTaskController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
             Route::get('/new-task', [CustomerTaskController::class, 'newTask'])->name('new-task');
-            // Route::post('/', [CustomerSalesController::class, 'store'])->name('store');
-            // Route::post('/{id?}', [CustomerSalesController::class, 'update'])->name('update');
+            Route::get('/unfinish-task', [CustomerTaskController::class, 'unfinishTask'])->name('unfinish-task');
+            Route::post('/', [CustomerTaskController::class, 'store'])->name('store');
+            Route::post('/{id?}', [CustomerTaskController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerTaskController::class, 'dataTable'])->name('data-table');
-            // Route::get('/temp-product', [CustomerSalesController::class, 'tempProduct'])->name('temp-product');
-            // Route::get('/{id?}', [CustomerSalesController::class, 'show'])->name('show');
-            // Route::delete('/{id?}', [CustomerSalesController::class, 'destroy'])->name('delete');
+            Route::get('/{id?}', [CustomerTaskController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [CustomerTaskController::class, 'destroy'])->name('delete');
         });
         Route::name('customer-master-tasks')->as('customer-master-tasks.')->prefix('customer-master-tasks')->group(function () {
             Route::get('/', [CustomerCompanyMasterTaskController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);

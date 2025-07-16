@@ -376,7 +376,7 @@
                                                     <div class="app-brand justify-content-center">
                                                         <a class="app-brand-link gap-2">
                                                             <span class="app-brand-logo demo">
-                                                                <img src="{{ asset('assets/img/favicon/favicon.ico') }}" />
+                                                                <img rel="preload" height="100px" src="{{ asset('assets/img/icons/lock.webp') }}" />
                                                             </span>
                                                         </a>
                                                     </div>
@@ -483,13 +483,8 @@
             return function(...args) {
                 if (timeoutId) {
                     clearTimeout(timeoutId);
-                    // $(context).find('#block_loading').remove();
-                    // $(context).prepend(
-                    //     `<div id='block_loading' style='height:100vh;background:#00000038;position:relative;z-index: 2000;display:flex;justify-content:center;align-items: center;'><div class="spinner-border spinner-border-lg text-dark" role="status"><span class="visually-hidden">Loading...</span></div>`
-                    // );
                 }
                 timeoutId = setTimeout(() => {
-                    // $(context).find('#block_loading').remove();
                     func.apply(this, args);
                 }, delay);
             };
@@ -586,6 +581,10 @@
                 }
             });
             return branch
+        }
+
+        function kebabCase(string) {
+            return string.trim().toLowerCase().split(' ').join('-')
         }
 
         function server_time(date = `{{ $serverTime }}`) {
