@@ -54,8 +54,10 @@
                                 <tr>
                                     <th scope="col">#</th>
                                     <th scope="col">Name</th>
+                                    <th scope="col">User Name</th>
                                     <th scope="col">Activity</th>
                                     <th scope="col">Percentage</th>
+                                    <th scope="col">Dead Line</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -86,6 +88,12 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
+                                <label for="time_limit" class="form-label">Deadline</label>
+                                <input type="text" id="time_limit" name="time_limit" class="datepicker form-control" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-3">
                                 <label for="date" class="form-label">Date</label>
                                 <input type="text" readonly value="{{ now()->createFromTimeString($serverTime)->format('Y-m-d') }}" id="date"
                                     name="date" class="form-control" />
@@ -110,7 +118,8 @@
                                         <option value="" disabled>Choose One</option>
                                         @foreach ($employees as $employee)
                                             <option disabled data-role="{{ $employee->roleId }}" value="{{ $employee->roleId }}">{{ $employee->name }}
-                                                ({{ $employee->username }})</option>
+                                                ({{ $employee->username }})
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -144,28 +153,52 @@
             </div>
         </div>
     </div>
+    <div id="modal-customer-task-evidance" class="modal fade" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Add Evidance</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <input type="hidden" name='taskId' id="taskId" />
+                        <input type="file" class="filepond" name="filepond" multiple data-allow-reorder="true" data-max-file-size="3MB"
+                            data-max-files="3">
+                        </from>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
+                        Close
+                    </button>
+                    <button type="button" id="save-customer-task-management" class="btn btn-success">Save
+                        changes</button>
+                    <button type="button" id="edit-customer-task-management" class="btn btn-warning d-none">Update
+                        changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
+    <script src="{{ asset('assets/js/daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/js/image-preview-filepond.js') }}"></script>
+    <script src="{{ asset('assets/js/file-validation-filepond.js') }}"></script>
+    <script src="{{ asset('assets/js/filepond.min.js') }}"></script>
+    <link rel='stylesheet' type="text/css" href="{{ asset('assets/css/daterangepicker.css') }}">
+    <link rel='stylesheet' type="text/css" href="{{ asset('assets/css/image-preview-filepond.css') }}">
+    <link rel='stylesheet' type="text/css" href="{{ asset('assets/css/filepond.min.css') }}">
     <script>
         window.dataTableCustomerTaskManagement = null;
         window.state = 'add';
 
         function actionData() {
-            $('.login-as').click(function() {
-                $.ajax({
-                    type: "POST",
-                    url: `{{ route('auth.login-as') }}/${$(this).data('customer-task-management')}`,
-                    data: {
-                        '_token': `{{ csrf_token() }}`
-                    },
-                    dataType: "json",
-                    success: function(response) {
-                        location.reload();
-                    }
-                });
+            $('.start').click((e) => {
+                startTask(e)
             });
             $('.edit').click(function() {
                 window.state = 'update';
@@ -220,7 +253,6 @@
                     }
                 });
             })
-
             $('.delete').click(function() {
                 if (window.dataTableCustomerTaskManagement.rows('.selected').data().length == 0) {
                     $('#table-customer-task-management tbody').find('tr').removeClass('selected');
@@ -285,12 +317,34 @@
                     ],
                 });
             });
+            $('.end').click((e) => {
+                endTask(e)
+            })
+        }
+
+        function endTask(e) {
+            $('#modal-customer-task-evidance').modal('show')
+        }
+
+        function startTask(e) {
+            console.log(e)
+            $.ajax({
+                type: "PUT",
+                url: `{{ route('man.customer-task-management.start-task') }}/${$(e.currentTarget).data('customer-task-management')}/${$(e.currentTarget).data('customer-task-status')}`,
+                data: {
+                    '_token': `{{ csrf_token() }}`
+                },
+                dataType: "json",
+                success: function(response) {
+                    window.dataTableCustomerTaskManagement.ajax.reload()
+                }
+            });
         }
 
         function generateDetailTask(data, type = 'new') {
             return (`<div class="accordion-item shadow-sm my-1 ${type !== 'new' ? 'border border-warning' : ''}">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${type}${kebabCase(data.name)}"
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${detail.id}${kebabCase(data.name)}"
                                 aria-expanded="false" aria-controls="${type}${kebabCase(data.name)}">
                                 <span class="badge bg-label-primary mx-1">${data.priority}</span> ${type !== 'new' ? 'Unfinish Task' : 'New Task'} ${data.name} ${(type !== 'new') ? moment(data.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
                             </button>
@@ -378,6 +432,38 @@
                 }
             });
         }
+
+        function detailTableCustomerTemporaryProduct(d) {
+            let contentTableBody = ``;
+            d.details.forEach(detail => {
+                contentTableBody +=
+                    `<div class="accordion-item shadow-sm my-1 ${detail.end_at !== null ? 'border border-warning' : ''}">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${kebabCase(detail.master.name)}${detail.id}"
+                                aria-expanded="false" aria-controls="${kebabCase(detail.master.name)}${detail.id}">
+                                <span class="badge bg-label-primary mx-1">${detail.master.priority}</span> ${detail.end_at !== null ? 'Unfinish Task' : 'New Task'} ${detail.master.name} ${(detail.end_at !== null) ? moment(detail?.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
+                            </button>
+                        </h2>
+                        <div id="${kebabCase(detail.master.name)}${detail.id}" class="accordion-collapse collapse" data-bs-parent="#accordionDetailTable">
+                            <div class="accordion-body">
+                                <div class="d-flex justify-content-between">
+                                    <div class="flex-fill align-self-center">
+                                        ${detail.master.description}
+                                    </div>
+                                    <div class="flex-fill align-self-center text-end">
+                                        ${detail.start_at !== null ? `<button type="button" data-customer-task-management='${detail.taskId}' class="btn btn-icon btn-warning end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-success start" data-customer-task-status='unfinish' data-customer-task-management='${detail.taskId}'><i class='bx bx-play'></i></button>` }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+            });
+            return (`<div class="row my-2">
+                        <div class="accordion container-detail-task" id="accordionDetailTable">
+                            ${contentTableBody}
+                        </div>
+                    </div>`)
+        }
         $(function() {
             window.dataTableCustomerTaskManagement = $("#table-customer-task-management").DataTable({
                 ajax: "{{ route('man.customer-task-management.data-table') }}",
@@ -387,14 +473,10 @@
                     [1, 'desc']
                 ],
                 columns: [{
-                    target: 0,
-                    name: 'order_number',
-                    data: 'order_number',
+                    class: 'dt-control',
                     orderable: false,
-                    searchable: false,
-                    render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'>${data}</div>`
-                    }
+                    data: null,
+                    defaultContent: ''
                 }, {
                     target: 1,
                     name: 'name',
@@ -406,6 +488,15 @@
                     }
                 }, {
                     target: 2,
+                    name: 'users.name',
+                    data: 'user_name',
+                    orderable: true,
+                    searchable: true,
+                    render: (data, type, row, meta) => {
+                        return `<div class='text-wrap'>${data}</div>`
+                    }
+                }, {
+                    target: 3,
                     name: 'activity',
                     data: 'activity',
                     orderable: true,
@@ -414,7 +505,7 @@
                         return `<div class='text-wrap'>${data}</div>`
                     }
                 }, {
-                    target: 3,
+                    target: 4,
                     name: 'percentage',
                     data: 'percentage',
                     orderable: true,
@@ -423,7 +514,16 @@
                         return `<div class='text-wrap'>${data}</div>`
                     }
                 }, {
-                    target: 4,
+                    target: 5,
+                    name: 'time_limit',
+                    data: 'time_limit',
+                    orderable: false,
+                    searchable: false,
+                    render: (data, type, row, meta) => {
+                        return `<div class='text-wrap'>${data}</div>`
+                    }
+                }, {
+                    target: 6,
                     name: 'action',
                     data: 'action',
                     orderable: false,
@@ -435,6 +535,25 @@
             });
             window.dataTableCustomerTaskManagement.on('draw.dt', function() {
                 actionData();
+            });
+            window.dataTableCustomerTaskManagement.on('click', 'tbody td.dt-control', function() {
+                let tr = event.target.closest('tr');
+                let row = window.dataTableCustomerTaskManagement.row(tr);
+
+                if (row.child.isShown()) {
+                    tr.classList.remove('details');
+                    row.child.hide();
+                } else {
+                    $('.start').off('click');
+                    tr.classList.add('details');
+                    row.child(detailTableCustomerTemporaryProduct(row.data())).show();
+                    $('.start').on('click', (e) => {
+                        startTask(e)
+                    });
+                    $('.end').on('click', (e) => {
+                        endTask(e)
+                    });
+                }
             });
             $('#save-customer-task-management').click(function() {
                 let data = serializeObject($('#form-customer-task-management'));
@@ -533,6 +652,7 @@
                     $('#new').removeClass('disabled')
                     $('#new').on('click', () => newTask());
                 }
+                $('.container-progress-task').addClass('d-none');
             });
             $('#modal-customer-task-management').on('shown.bs.modal', function() {
                 setTimeout(() => {
@@ -542,7 +662,27 @@
                     });
                 }, 140);
             });
+            $('#time_limit').daterangepicker({
+                singleDatePicker: true,
+                showDropdowns: false,
+                opens: 'down',
+                locale: {
+                    format: 'YYYY-MM-DD'
+                },
+                minDate: moment(),
+                parentEl: '#modal-customer-task-management .modal-body'
+            });
             formattedInput();
+            FilePond.registerPlugin(
+                FilePondPluginImagePreview,
+                FilePondPluginFileValidateSize,
+            );
+
+            // Select the file input and use 
+            // create() to turn it into a pond
+            FilePond.create(
+                document.querySelector('.filepond')
+            );
         });
     </script>
 @endpush

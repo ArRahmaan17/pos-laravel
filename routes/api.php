@@ -20,6 +20,8 @@ Route::middleware('throttle:100,1')->group(function () {
         ->name('check-available-user');
     Route::get('/company-types', [AuthController::class, 'companyTypes'])
         ->name('company-types');
-    Route::get('/company-types', [AuthController::class, 'companyTypes'])
+    Route::get('/check-company-availability', [AuthController::class, 'checkAvailableCompany'])
         ->name('check-company-availability');
+    Route::post('/registration', [AuthController::class, 'registration'])
+        ->name('registration');
 });

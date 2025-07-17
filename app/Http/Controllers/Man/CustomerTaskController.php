@@ -37,12 +37,12 @@ class CustomerTaskController extends Controller
         if (!in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
             $where[] = ['customer_company_tasks.userId',  '=', session('userLogged')['user']['id']];
         }
-        $totalData = CustomerCompanyTask::with('user', 'details', 'master')
+        $totalData = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name')
             ->where($where)->orderBy('customer_company_tasks.id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompanyTask::with('user', 'details', 'master')->select('*');
+            $assets = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name');
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
                     ->offset($request['start']);
@@ -52,7 +52,7 @@ class CustomerTaskController extends Controller
             }
             $assets = $assets->where($where)->get();
         } else {
-            $assets = CustomerCompanyTask::with('user', 'details', 'master')->select('*')
+            $assets = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name')
                 ->where('name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
@@ -65,7 +65,7 @@ class CustomerTaskController extends Controller
             }
             $assets = $assets->where($where)->get();
 
-            $totalFiltered = CustomerCompanyTask::with('user', 'details', 'master')->select('*')
+            $totalFiltered = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name')
                 ->where('name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
@@ -76,12 +76,16 @@ class CustomerTaskController extends Controller
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
+            $item = collect($item)->toArray();
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
-            $row['name'] = $item->name;
-            $row['activity'] = ($item->start_at && $item->end_at) ? now()->createFromTimeString($item->start_at)->diffInHours(now()->createFromTimeString($item->end_at), true) : 'Not Started Yet';
-            $row['percentage'] = $item->percentage . ' %';
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-task-management='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-task-management='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['name'] = $item['name'];
+            $row['details'] = $item['details'];
+            $row['user_name'] = $item['user']['name'];
+            $row['activity'] = ($item['start_at'] && $item['end_at']) ? now()->createFromTimeString($item['start_at'])->diffInHours(now()->createFromTimeString($item['end_at']), true) : 'Not Started Yet';
+            $row['percentage'] = $item['percentage'] . ' %';
+            $row['time_limit'] = now()->createFromTimeString(now()->format('Y-m-d H:i:s'))->diffInDays($item['time_limit'], false) . ' days left';
+            $row['action'] = ((!$item['start_at']) ? "<button class='btn btn-success btn-icon start' data-customer-task-management='" . $item['id'] . "'><i class='bx bx-play'></i></button>" : "") . "<button class='btn btn-icon btn-warning edit' data-customer-task-management='" . $item['id'] . "' ><i class='bx bx-pencil' ></i></button><button data-customer-task-management='" . $item['id'] . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -103,6 +107,7 @@ class CustomerTaskController extends Controller
             'name' => 'required|min:4|max:30',
             'roleId' => 'exists:customer_roles,id',
             'userId' => 'exists:users,id',
+            'time_limit' => 'required|date',
             'details.*.type' => 'required|in:new,unfinish',
             'details.*.masterId' => [
                 'required_if:details.*.type,new',
@@ -116,6 +121,7 @@ class CustomerTaskController extends Controller
         $dataTask = [
             'userId' => $request->userId ?? session('userLogged')['user']['id'],
             'companyId' => session('userLogged')['company']['id'],
+            'time_limit' => $request->time_limit,
             'name' => $request->name,
         ];
         $dataTaskDetails = $request->details;
@@ -147,9 +153,57 @@ class CustomerTaskController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $where = [
+            'userId' => session('userLogged')['user']['id'],
+            'companyId' => session('userLogged')['company']['id'],
+            'id' => $id,
+            ['time_limit', '>=', now()->format('Y-m-d')]
+        ];
+        if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
+            unset($where['userId']);
+        }
+        $status = 404;
+        $message = ['message' => 'showing resources successfully', 'data' => null];
+        $builder = CustomerCompanyTask::with('details', 'details.master', 'user')->where($where);
+        if ($builder->exists()) {
+            $status = 200;
+            $message = ['message' => 'showing resources successfully', 'data' => $builder->first()];
+        }
+        return response()->json($message, $status);
     }
 
+    public function startTask(string $id, $type = 'new')
+    {
+        $where = [
+            'userId' => session('userLogged')['user']['id'],
+            'companyId' => session('userLogged')['company']['id'],
+            'id' => $id,
+            'start_at' => null,
+            'end_at' => null,
+            ['time_limit', '>=', now()->format('Y-m-d')]
+        ];
+        if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
+            unset($where['userId']);
+        }
+        DB::beginTransaction();
+        try {
+            if ($type == 'new') {
+                CustomerCompanyTask::where($where)->update(['start_at' => now()]);
+            } else {
+                $where['taskId'] = $id;
+            }
+            unset($where['userId'], $where['companyId'], $where[0], $where['id']);
+            CustomerCompanyTaskDetail::where($where)->update(['start_at' => now()]);
+            DB::commit();
+            $status = 200;
+            $message = ['message' => 'task started successfully'];
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $status = 422;
+            $message = ['message' => 'failed staring task'];
+        }
+        return response()->json($message, $status);
+    }
     public function unfinishTask()
     {
         $dataTask = CustomerCompanyTaskDetail::join('customer_company_master_tasks', 'customer_company_master_tasks.id', '=', 'customer_company_task_details.masterId')->whereNot('status', 1)->get()->toArray();

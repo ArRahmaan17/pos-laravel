@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('name');
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
+            $table->date('time_limit');
             $table->smallInteger('percentage')->default(0);
             $table->timestamps();
         });

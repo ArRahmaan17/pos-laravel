@@ -363,7 +363,7 @@
                         @endif
                         <div class="modal" id="modalDisconect" aria-labelledby="modalDisconectLabel" aria-hidden="true">
                         </div>
-                        <div class="offcanvas offcanvas-top h-100 lockscreen" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
+                        <div class="offcanvas offcanvas-top h-100 lockscreen" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
                             <div class="offcanvas-header">
                                 <h5 class="offcanvas-title" id="offcanvasTopLabel">Lockscreen</h5>
                             </div>
