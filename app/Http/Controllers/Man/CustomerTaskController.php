@@ -10,6 +10,8 @@ use App\Models\CustomerRole;
 use App\Models\UserCustomerRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class CustomerTaskController extends Controller
@@ -147,7 +149,12 @@ class CustomerTaskController extends Controller
         }
         return response()->json($message, $status);
     }
-
+    public function getEvidence($id)
+    {
+        $detail = CustomerCompanyTaskDetail::find($id);
+        $detail->evidence;
+        return Storage::disk('company-task-evidence')->get(md5($detail->taskId));
+    }
     /**
      * Display the specified resource.
      */
@@ -189,10 +196,8 @@ class CustomerTaskController extends Controller
         try {
             if ($type == 'new') {
                 CustomerCompanyTask::where($where)->update(['start_at' => now()]);
-            } else {
-                $where['taskId'] = $id;
             }
-            unset($where['userId'], $where['companyId'], $where[0], $where['id']);
+            unset($where['userId'], $where['companyId'], $where[0]);
             CustomerCompanyTaskDetail::where($where)->update(['start_at' => now()]);
             DB::commit();
             $status = 200;
@@ -227,6 +232,35 @@ class CustomerTaskController extends Controller
         if (empty($dataTask)) {
             $status = 404;
             $message = ['message' => "tasks not found, please contact manager to create new task for session('userLogged')['role']['name']", 'data' => $dataTask];
+        }
+        return response()->json($message, $status);
+    }
+
+    public function finishTask(Request $request, $id, $type)
+    {
+        $request->validate(['filepond' => 'required|image']);
+        $filename = 'task-' . $id . '-' . $type . '-' . date('Y-m-d-His') . rand(1, 100) . "." . $request->file('filepond')->getClientOriginalExtension();
+        Storage::disk('company-task-evidence')->putFileAs(md5(session('userLogged')['company']['id']) . '/' . md5($id), $request->file('filepond'), $filename);
+        DB::beginTransaction();
+        try {
+            $data = CustomerCompanyTaskDetail::find($id);
+            $evidence = json_decode($data->evidence ?? '[]');
+            $evidence = (!empty($evidence)) ? array_merge($evidence, [$filename]) : [$filename];
+            CustomerCompanyTaskDetail::where('id', $id)->update([
+                'evidence' => json_encode($evidence),
+                'status' => 1,
+                'end_at' => now()
+            ]);
+            $builder = CustomerCompanyTaskDetail::where(['taskId' => $data->taskId]);
+            [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
+            CustomerCompanyTask::find($data->taskId)->update(['percentage' => (($countFinish / $countDetail) * 100)]);
+            DB::commit();
+            $status = 200;
+            $message = ['message' => 'update resources successfully'];
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $status = 422;
+            $message = ['message' => 'failed updating resources'];
         }
         return response()->json($message, $status);
     }

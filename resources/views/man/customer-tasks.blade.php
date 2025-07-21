@@ -153,11 +153,11 @@
             </div>
         </div>
     </div>
-    <div id="modal-customer-task-evidance" class="modal fade" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div id="modal-customer-task-evidence" class="modal fade" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 class="modal-title">Add Evidance</h5>
+                    <h2 class="modal-title">Add Evidence</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -167,19 +167,9 @@
                             data-max-files="3">
                         </from>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                    <button type="button" id="save-customer-task-management" class="btn btn-success">Save
-                        changes</button>
-                    <button type="button" id="edit-customer-task-management" class="btn btn-warning d-none">Update
-                        changes</button>
-                </div>
             </div>
         </div>
     </div>
-
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
@@ -189,9 +179,12 @@
     <script src="{{ asset('assets/js/image-preview-filepond.js') }}"></script>
     <script src="{{ asset('assets/js/file-validation-filepond.js') }}"></script>
     <script src="{{ asset('assets/js/filepond.min.js') }}"></script>
+    <script src="{{ asset('assets/js/md5.js') }}"></script>
+    <script src="{{ asset('assets/js/fancybox.js') }}"></script>
     <link rel='stylesheet' type="text/css" href="{{ asset('assets/css/daterangepicker.css') }}">
     <link rel='stylesheet' type="text/css" href="{{ asset('assets/css/image-preview-filepond.css') }}">
     <link rel='stylesheet' type="text/css" href="{{ asset('assets/css/filepond.min.css') }}">
+    <link rel='stylesheet' type="text/css" href="{{ asset('assets/css/fancybox.css') }}">
     <script>
         window.dataTableCustomerTaskManagement = null;
         window.state = 'add';
@@ -319,18 +312,32 @@
             });
             $('.end').click((e) => {
                 endTask(e)
+            });
+            $('.evidence').click((e) => {
+                evidenceTask(e)
             })
         }
 
         function endTask(e) {
-            $('#modal-customer-task-evidance').modal('show')
+            $('#modal-customer-task-evidence').modal('show');
+            $('#taskId').val($(e.currentTarget).data('customer-task-detail'));
+        }
+
+        function evidenceTask(e) {
+            let files = [];
+            $.each($(e.currentTarget).data('task-evidence'), function(indexInArray, valueOfElement) {
+                files.push({
+                    src: `{{ asset('customer-task-evidence/' . md5(session('userLogged')['company']['id'])) }}/${md5(`${$(e.currentTarget).data('customer-task-detail')}`)}/${valueOfElement}`,
+                    caption: valueOfElement,
+                })
+            });
+            Fancybox.show(files);
         }
 
         function startTask(e) {
-            console.log(e)
             $.ajax({
                 type: "PUT",
-                url: `{{ route('man.customer-task-management.start-task') }}/${$(e.currentTarget).data('customer-task-management')}/${$(e.currentTarget).data('customer-task-status')}`,
+                url: `{{ route('man.customer-task-management.start-task') }}/${$(e.currentTarget).data('customer-task-detail')??$(e.currentTarget).data('customer-task-management')}/${$(e.currentTarget).data('customer-task-status')}`,
                 data: {
                     '_token': `{{ csrf_token() }}`
                 },
@@ -437,11 +444,11 @@
             let contentTableBody = ``;
             d.details.forEach(detail => {
                 contentTableBody +=
-                    `<div class="accordion-item shadow-sm my-1 ${detail.end_at !== null ? 'border border-warning' : ''}">
+                    `<div class="accordion-item shadow-sm my-1 ${detail.start_at !== null && detail.end_at !== null  ? 'border border-success' : (detail.start_at != null &&  detail.end_at == null)? 'border border-info': 'border border-warning'}">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${kebabCase(detail.master.name)}${detail.id}"
                                 aria-expanded="false" aria-controls="${kebabCase(detail.master.name)}${detail.id}">
-                                <span class="badge bg-label-primary mx-1">${detail.master.priority}</span> ${detail.end_at !== null ? 'Unfinish Task' : 'New Task'} ${detail.master.name} ${(detail.end_at !== null) ? moment(detail?.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
+                                <span class="badge bg-label-primary mx-1">${detail.master.priority}</span> ${detail.end_at !== null && detail.start_at != null ? 'Finish Task' : (detail.start_at !== null && detail.end_at === null)?'Unfinish Task' : 'New Task'} ${detail.master.name} ${(detail.end_at !== null) ? moment(detail?.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
                             </button>
                         </h2>
                         <div id="${kebabCase(detail.master.name)}${detail.id}" class="accordion-collapse collapse" data-bs-parent="#accordionDetailTable">
@@ -451,7 +458,7 @@
                                         ${detail.master.description}
                                     </div>
                                     <div class="flex-fill align-self-center text-end">
-                                        ${detail.start_at !== null ? `<button type="button" data-customer-task-management='${detail.taskId}' class="btn btn-icon btn-warning end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-success start" data-customer-task-status='unfinish' data-customer-task-management='${detail.taskId}'><i class='bx bx-play'></i></button>` }
+                                        ${detail.start_at !== null && detail.end_at !== null  ? `<button class="btn btn-icon btn-info evidence" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.taskId}' data-task-evidence='${detail.evidence}'><i class='bx bxs-file-find'></i></button>`: (detail.start_at != null && detail.end_at == null)?`<button type="button" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.taskId}' class="btn btn-icon btn-warning end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-success start" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.taskId}'><i class='bx bx-play'></i></button>` }
                                     </div>
                                 </div>
                             </div>
@@ -553,6 +560,9 @@
                     $('.end').on('click', (e) => {
                         endTask(e)
                     });
+                    $('.evidence').on('click', (e) => {
+                        evidenceTask(e)
+                    });
                 }
             });
             $('#save-customer-task-management').click(function() {
@@ -573,7 +583,6 @@
                             displayMode: 'replace'
                         });
                         window.dataTableCustomerTaskManagement.ajax.reload();
-
                     },
                     error: function(error) {
                         $('#modal-customer-task-management .is-invalid').removeClass('is-invalid')
@@ -658,8 +667,36 @@
                 setTimeout(() => {
                     $('.select2').select2({
                         dropdownParent: $('#modal-customer-task-management'),
-
                     });
+                }, 140);
+            });
+            $('#modal-customer-task-evidence').on('shown.bs.modal', function() {
+                setTimeout(() => {
+                    let id = $('#taskId').val();
+                    window.filePondEvidence = FilePond.create(
+                        document.querySelector('.filepond'), {
+                            maxParallelUploads: 3,
+                            acceptedFileTypes: ['image/*'],
+                            checkValidity: true,
+                            credits: ['https://github.com/users/ArRahmaan17', 'DOGLEX'],
+                            server: {
+                                timeout: 7000,
+                                process: {
+                                    url: `{{ route('man.customer-task-management.finish-task') }}/${id}/upload`,
+                                    method: 'POST',
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    },
+                                    onload: (response) => {
+                                        window.filePondEvidence.removeFiles();
+                                        $('#modal-customer-task-evidence').modal('hide');
+                                        window.dataTableCustomerTaskManagement.ajax.reload()
+                                    },
+                                    onerror: (response) => response.data,
+                                },
+                            }
+                        }
+                    );
                 }, 140);
             });
             $('#time_limit').daterangepicker({
@@ -676,12 +713,6 @@
             FilePond.registerPlugin(
                 FilePondPluginImagePreview,
                 FilePondPluginFileValidateSize,
-            );
-
-            // Select the file input and use 
-            // create() to turn it into a pond
-            FilePond.create(
-                document.querySelector('.filepond')
             );
         });
     </script>

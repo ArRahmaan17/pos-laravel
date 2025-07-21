@@ -49,6 +49,13 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+        'company-task-evidence' => [
+            'driver' => 'local',
+            'root' => public_path('/customer-task-evidence'),
+            'url' => env('APP_URL') . '',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
         'customer-profile-picture' => [
             'driver' => 'local',
             'root' => public_path('/customer-profile-picture'),
