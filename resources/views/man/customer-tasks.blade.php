@@ -195,8 +195,8 @@
             });
             $('.edit').click(function() {
                 window.state = 'update';
-                let idCustomerUser = $(this).data("customer-task-management");
-                $("#edit-customer-task-management").data("customer-task-management", idCustomerUser);
+                let idCustomerTask = $(this).data("customer-task-management");
+                $("#edit-customer-task-management").data("customer-task-management", idCustomerTask);
                 if (window.dataTableCustomerTaskManagement.rows('.selected').data().length == 0) {
                     $('#table-customer-task-management tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
@@ -211,28 +211,28 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('man.customer-task-management.show') }}/" + idCustomerUser,
+                    url: "{{ route('man.customer-task-management.show') }}/" + idCustomerTask,
                     dataType: "json",
                     success: function(response) {
+                        $('#userId').find('option').removeAttr('disabled');
+                        $('#role').attr('disabled', 'disabled');
+                        $('#role').parents('.mb-3').addClass('d-none');
+                        $('#new').addClass('d-none');
+                        $('#unfinish').addClass('d-none');
+                        $('.container-progress-task').removeClass('d-none');
+                        $('.container-progress-task .progress-bar').css({"width":`${response.data.percentage}%`});
                         let formElement = $('#modal-customer-task-management').find("form");
-                        formElement.find('[name=id]')
-                            .val(response.data[0].user.id)
-                            .trigger('change');
-                        formElement.find('[name=name]')
-                            .val(response.data[0].user.name)
-                            .trigger('change');
-                        formElement.find('[name=username]')
-                            .val(response.data[0].user.username)
-                            .trigger('change');
-                        formElement.find('[name=email]')
-                            .val(response.data[0].user.email)
-                            .trigger('change');
-                        formElement.find('[name=phone_number]')
-                            .val(response.data[0].user.phone_number)
-                            .trigger('change');
-                        formElement.find('[name=roleId]')
-                            .val(response.data[0].role.id)
-                            .trigger('change')
+                        $.each(response.data, function(indexInArray, valueOfElement) {
+                            if (indexInArray == 'time_limit') {
+                                formElement.find(`[name=${indexInArray}]`).data('daterangepicker').setStartDate(valueOfElement);
+                                formElement.find(`[name=${indexInArray}]`).data('daterangepicker').setEndDate(valueOfElement);
+                            } else {
+                                formElement.find(`[name=${indexInArray}]`).val(valueOfElement).trigger('change');
+                            }
+                        });
+                        response.data.details.forEach(element => {
+                            $('.container-detail-task').append(generateDetailTask(element, 'finish'));
+                        });
                     },
                     error: function(error) {
                         iziToast.error({
@@ -251,7 +251,7 @@
                     $('#table-customer-task-management tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idCustomerUser = $(this).data("customer-task-management");
+                let idCustomerTask = $(this).data("customer-task-management");
                 var data = window.dataTableCustomerTaskManagement.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
@@ -274,7 +274,7 @@
                             $.ajax({
                                 type: "DELETE",
                                 url: "{{ route('man.customer-task-management.delete') }}/" +
-                                    idCustomerUser,
+                                    idCustomerTask,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
                                 },
@@ -351,18 +351,18 @@
         function generateDetailTask(data, type = 'new') {
             return (`<div class="accordion-item shadow-sm my-1 ${type !== 'new' ? 'border border-warning' : ''}">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${detail.id}${kebabCase(data.name)}"
-                                aria-expanded="false" aria-controls="${type}${kebabCase(data.name)}">
-                                <span class="badge bg-label-primary mx-1">${data.priority}</span> ${type !== 'new' ? 'Unfinish Task' : 'New Task'} ${data.name} ${(type !== 'new') ? moment(data.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${type}${kebabCase(data.name??data.master.name)}"
+                                aria-expanded="false" aria-controls="${type}${kebabCase(data.name??data.master.name)}">
+                                <span class="badge bg-label-primary mx-1">${data.priority?? data.master.priority}</span> ${type !== 'new' ? 'Unfinish Task' : 'New Task'} ${data.name??data.master.name} ${(type !== 'new') ? moment(data.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
                             </button>
                         </h2>
-                        <div id="${type}${kebabCase(data.name)}" class="accordion-collapse collapse" data-bs-parent="#accordionTaskDetail">
+                        <div id="${type}${kebabCase(data.name??data.master.name)}" class="accordion-collapse collapse" data-bs-parent="#accordionTaskDetail">
                             <div class="accordion-body">
                                 <div class="row">
                                     ${type !== 'new' ? `<input type="hidden" name="details[${data.index}][id]" id="details[${data.index}][id]" value="${data.id}">`:`<input type="hidden" name="details[${data.index}][masterId]" id="details[${data.index}][masterId]" value="${data.id}">` }
                                     <input type="hidden" name="details[${data.index}][type]" id="details[${data.index}][type]" value="${type}">
                                     <div class="col">
-                                        ${data.description}
+                                        ${data.description?? data.master.description}
                                     </div>
                                 </div>
                             </div>
