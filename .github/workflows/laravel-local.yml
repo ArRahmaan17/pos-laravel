@@ -24,8 +24,8 @@ jobs:
       - name: 🧰 Install PHP dependencies
         run: composer install --no-interaction --prefer-dist
 
-      # - name: ⚙️ Copy .env
-        # run: cp .env.example .env
+      - name: ⚙️ Copy .env
+        run: cp .env.example .env
 
       - name: 🔐 Generate app key
         run: php artisan key:generate
