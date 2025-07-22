@@ -261,10 +261,6 @@ class AuthController extends Controller
     {
         return view('auth.activate-access-pin');
     }
-    public function confirmAccessPin()
-    {
-        return view('auth.confirm-access-pin');
-    }
 
     public function activateAccessPin(Request $request)
     {
@@ -331,5 +327,39 @@ class AuthController extends Controller
         session(['userLogged' => $data, 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home');
+    }
+
+    public function unlockScreen(Request $request)
+    {
+        $request->validate([
+            'access_pin' => ['array', function ($attribute, $value, $fail) {
+                if (count(array_filter($value, function ($val) {
+                    return $val == null;
+                })) == 6) {
+                    $fail("The {$attribute} must be 6 digits.");
+                }
+            }],
+            'access_pin.*' => 'required|numeric',
+        ]);
+        if (Hash::check(implode('', $request->access_pin), session('userLogged')['user']['pin'])) {
+            $dataSession = session()->all();
+            session()->flush();
+            $dataSession['lifetime'] = now()->addMinutes(env('SESSION_LIFETIME', 120));
+            session($dataSession);
+            $status = 200;
+            $message = ['message' => 'lifetime extended successfully'];
+        } else {
+            $status = 422;
+            $message = ['message' => 'failed extending lifetime'];
+        }
+        return response()->json($message, $status);
+    }
+
+    public function lockscreen(Request $request)
+    {
+        $dataSession = session()->all();
+        unset($dataSession['lifetime']);
+        session()->flush();
+        session($dataSession);
     }
 }

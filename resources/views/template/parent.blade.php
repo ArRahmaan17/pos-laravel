@@ -383,8 +383,7 @@
                                                     </div>
                                                     <h4 class="mb-2 text-center">Enter Your Access Pin</h4>
                                                     <p class="text-center">Pleasae enter your access pin.</p>
-                                                    <form id="formAuthentication" class="mb-2" action="{{ route('privacy.access-pin') }}"
-                                                        method="POST">
+                                                    <form id="form-lockscreen" class="mb-2" method="POST">
                                                         @csrf
                                                         <div class="mb-3">
                                                             <label for="access_pin" class="form-label">Access Pin</label>
@@ -402,7 +401,7 @@
                                                             <div class="alert alert-danger">{{ preg_replace('/[_]|(\.\d)/i', ' ', $message) }}
                                                             </div>
                                                         @enderror
-                                                        <button class="btn btn-primary d-grid w-100 mb-2">Unlock</button>
+                                                        <button type="submit" class="btn btn-primary d-grid w-100 mb-2">Unlock</button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -599,6 +598,34 @@
             }, 1000)
         }
 
+        function lockscreenTrigger() {
+            $('.lockscreen').offcanvas('show');
+            $.ajax({
+                type: "POST",
+                url: "{{ route('auth.lockscreen') }}",
+                data: {
+                    _token: `{{ csrf_token() }}`,
+                },
+                dataType: "json",
+                success: function(response) {
+
+                }
+            });
+            $('#form-lockscreen').submit(function(e) {
+                e.preventDefault();
+                let data = serializeObject($('#form-lockscreen'));
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('auth.unlock-screen') }}",
+                    data: data,
+                    dataType: "json",
+                    success: function(response) {
+                        $('.lockscreen').offcanvas('hide');
+                    }
+                });
+            });
+        }
+
         function formattedInput() {
             $('.phone_number').inputmask('(+62) 999-999-9999[9]')
             $('.price').inputmask('currency', {
@@ -631,25 +658,35 @@
                 return pastedValue.replace("mailto:", "");
             },
         });
+
     }
     $(function() {
-        @if (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
-                [2, 1]))
-            $("#modalDisconect").iziModal('open');
-        @elseif (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
-                [5, 4, 3]))
-            iziToast.warning({
-                id: 'alert-session-expirated',
-                title: 'Alert',
-                message: `session expirate in {{ now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta')) }} minutes`,
-                position: 'bottomRight',
-                layout: 2,
-                balloon: true,
-                displayMode: 'replace'
-            });
-        @elseif (now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false) < 0)
-            $('.lockscreen').offcanvas('show');
+        @if (session('lifetime') !== null)
+            @if (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
+                    [2, 1]))
+                $("#modalDisconect").iziModal('open');
+            @elseif (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
+                    [5, 4, 3]))
+                iziToast.warning({
+                    id: 'alert-session-expirated',
+                    title: 'Alert',
+                    message: `session expirate in {{ now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta')) }} minutes`,
+                    position: 'bottomRight',
+                    layout: 2,
+                    balloon: true,
+                    displayMode: 'replace'
+                });
+            @elseif (now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false) < 0 || session('lifetime') == null)
+                lockscreenTrigger();
+            @endif
+        @else
+            lockscreenTrigger();
         @endif
+        $('.trigger-lockscreen').click(function() {
+            lockscreenTrigger();
+        });
+    });
+    $(function() {
         server_time();
         $(".menu-sub").find('.menu-link.bg-primary').parents('.menu-item:not(:first)').map((index, element) => {
             $(element).addClass('open');
@@ -711,15 +748,7 @@
             timeout: 120000,
             timeoutProgressbar: true,
             onClosed: function() {
-                $('.lockscreen').offcanvas('show');
-            }
-        });
-        $('.trigger-lockscreen').click(function() {
-            $('.lockscreen').offcanvas('show');
-        })
-        $('.offcanvas input').keydown(function(e) {
-            if (e.which == 9) {
-                e.preventDefault();
+                lockscreenTrigger();
             }
         });
         $('.single_number').keyup(function(e) {
@@ -729,6 +758,11 @@
                 } else {
                     $($(e.currentTarget).parents('.mb-3')[0].nextElementSibling).find('.single_number:first').focus()
                 }
+            }
+        });
+        $('.offcanvas input').keydown(function(e) {
+            if (e.which == 9) {
+                e.preventDefault();
             }
         });
     </script>

@@ -64,6 +64,8 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
     Route::name('auth.')->prefix('auth')->group(function () {
         Route::post('/login-as/{id?}', [AuthController::class, 'loginAs'])->name('login-as')->middleware([checkPageAuthorization::class]);
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::post('/lockscreen', [AuthController::class, 'lockscreen'])->name('lockscreen');
+        Route::post('/unlock-screen', [AuthController::class, 'unlockScreen'])->name('unlock-screen');
         Route::get('/request-change-password', [AuthController::class, 'requestChangePassword'])->name('request-change-password');
         Route::get('/change-company', [AuthController::class, 'changeCompany'])->name('change-company')->middleware([checkPageAuthorization::class]);
     });
