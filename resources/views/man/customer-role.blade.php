@@ -9,8 +9,8 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-role" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-role">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-success" id="add-customer-role" data-bs-toggle="modal" data-bs-target="#modal-customer-role">Add <i
+                                class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -32,8 +32,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-role" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
-        data-bs-keyboard="false">
+    <div class="modal fade" id="modal-customer-role" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -46,32 +45,31 @@
                         <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="userId" class="form-label">Customer User</label>
-                                @if (getRole() === 'Developer')
-                                    <select class="form-control select2" name="userId" id="userId">
-                                        <option value="">Select User</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->username }})
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
-                                @endif
+                                <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="name" class="form-label">Role Name</label>
-                                <input type="text" id="name" name="name" class="form-control"
-                                    placeholder="Enter Role Name" />
+                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Role Name" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-3">
+                                <label for="description" class="form-label">Role Description</label>
+                                <textarea name="description" placeholder="Enter Description Role" class="form-control" style="resize:none" id="description" cols="10" rows="3"></textarea>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col mb-0">
-                                <label for="description" class="form-label">Role Description</label>
-                                <textarea name="description" placeholder="Enter Description Role" class="form-control" style="resize:none"
-                                    id="description" cols="10" rows="3"></textarea>
+                                <label for="as_role" class="form-label">As Role</label>
+                                <select class='form-select'>
+                                    <option disabled>Choose One</option>
+                                    <option value='cashier'>Cashier</option>
+                                    <option value='sales'>Sales</option>
+                                    <option value='admin'>Admin</option>
+                                    <option value='warehouse'>Warehouse</option>
+                                </select>
                             </div>
                         </div>
                     </form>
@@ -92,7 +90,7 @@
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
-    
+
     <script>
         window.dataTableAppRole = null;
         window.state = 'add';

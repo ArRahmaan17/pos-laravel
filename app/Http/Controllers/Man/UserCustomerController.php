@@ -23,7 +23,6 @@ class UserCustomerController extends Controller
         $users = User::user_manager();
         $where = [['userId', '=', session('userLogged')['company']['userId']]];
         $customer_roles = CustomerRole::where($where)->get();
-
         return view('man.customer-user', compact('users', 'customer_roles'));
     }
 

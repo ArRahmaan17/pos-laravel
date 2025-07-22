@@ -1,7 +1,6 @@
 @extends('template.parent')
 @section('title', 'User Management')
 @push('css')
-    <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
     <style>
         .code-container {
             position: relative;

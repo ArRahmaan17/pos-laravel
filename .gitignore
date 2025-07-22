@@ -5,6 +5,7 @@
 /public/customer-product
 /public/temp-customer-product
 /public/customer-profile-picture
+/public/customer-task-evidence/*/*
 /public/hot
 /public/storage
 /storage/*.key

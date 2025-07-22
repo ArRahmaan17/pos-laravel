@@ -255,4 +255,26 @@ class AuthController extends Controller
         }
         return response()->json($response, $code);
     }
+    public function checkAvailableCompany(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|unique:customer_companies,name',
+            'email' => 'required|string|unique:customer_companies,email|email',
+            'phone_number' => 'required|string|unique:customer_companies,phone_number|regex:/8\d{10,11}$/',
+            'businessId' => 'required|exists:business_types,id',
+        ]);
+        $checkCompany = CustomerCompany::where([
+            'name' => $request->username,
+        ])->orWhere(function (Builder $query) use ($request) {
+            $query->where('email', $request->email)->where('phone_number', $request->phone_number);
+        })->count();
+        if ($checkCompany >= 1) {
+            $response = ['message' => 'Company already exists'];
+            $code = 422;
+        } else {
+            $response = ['message' => 'Company still available'];
+            $code = 200;
+        }
+        return response()->json($response, $code);
+    }
 }

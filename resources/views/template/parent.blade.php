@@ -363,7 +363,8 @@
                         @endif
                         <div class="modal" id="modalDisconect" aria-labelledby="modalDisconectLabel" aria-hidden="true">
                         </div>
-                        <div class="offcanvas offcanvas-top h-100 lockscreen" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
+                        <div class="offcanvas offcanvas-top h-100 lockscreen" tabindex="-1" data-bs-backdrop="false" data-bs-keyboard="false"
+                            id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
                             <div class="offcanvas-header">
                                 <h5 class="offcanvas-title" id="offcanvasTopLabel">Lockscreen</h5>
                             </div>
@@ -376,7 +377,7 @@
                                                     <div class="app-brand justify-content-center">
                                                         <a class="app-brand-link gap-2">
                                                             <span class="app-brand-logo demo">
-                                                                <img src="{{ asset('assets/img/favicon/favicon.ico') }}" />
+                                                                <img rel="preload" height="100px" src="{{ asset('assets/img/icons/lock.webp') }}" />
                                                             </span>
                                                         </a>
                                                     </div>
@@ -483,13 +484,8 @@
             return function(...args) {
                 if (timeoutId) {
                     clearTimeout(timeoutId);
-                    // $(context).find('#block_loading').remove();
-                    // $(context).prepend(
-                    //     `<div id='block_loading' style='height:100vh;background:#00000038;position:relative;z-index: 2000;display:flex;justify-content:center;align-items: center;'><div class="spinner-border spinner-border-lg text-dark" role="status"><span class="visually-hidden">Loading...</span></div>`
-                    // );
                 }
                 timeoutId = setTimeout(() => {
-                    // $(context).find('#block_loading').remove();
                     func.apply(this, args);
                 }, delay);
             };
@@ -588,6 +584,10 @@
             return branch
         }
 
+        function kebabCase(string) {
+            return string.trim().toLowerCase().split(' ').join('-')
+        }
+
         function server_time(date = `{{ $serverTime }}`) {
             if (window.intervalTime) {
                 clearInterval(window.intervalTime)
@@ -633,6 +633,23 @@
         });
     }
     $(function() {
+        @if (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
+                [2, 1]))
+            $("#modalDisconect").iziModal('open');
+        @elseif (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
+                [5, 4, 3]))
+            iziToast.warning({
+                id: 'alert-session-expirated',
+                title: 'Alert',
+                message: `session expirate in {{ now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta')) }} minutes`,
+                position: 'bottomRight',
+                layout: 2,
+                balloon: true,
+                displayMode: 'replace'
+            });
+        @elseif (now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false) < 0)
+            $('.lockscreen').offcanvas('show');
+        @endif
         server_time();
         $(".menu-sub").find('.menu-link.bg-primary').parents('.menu-item:not(:first)').map((index, element) => {
             $(element).addClass('open');
@@ -715,29 +732,6 @@
             }
         });
     </script>
-    @if (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
-            [2, 1]))
-        <script>
-            $("#modalDisconect").iziModal('open');
-        </script>
-    @elseif (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
-            [5, 4, 3]))
-        <script>
-            iziToast.warning({
-                id: 'alert-session-expirated',
-                title: 'Alert',
-                message: `session expirate in {{ now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta')) }} minutes`,
-                position: 'bottomRight',
-                layout: 2,
-                balloon: true,
-                displayMode: 'replace'
-            });
-        </script>
-    @elseif (now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false) < 0)
-        <script>
-            $('.lockscreen').offcanvas('show');
-        </script>
-    @endif
     @stack('js')
 </body>
 
