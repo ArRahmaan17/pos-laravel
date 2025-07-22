@@ -217,10 +217,10 @@
                         $('#userId').find('option').removeAttr('disabled');
                         $('#role').attr('disabled', 'disabled');
                         $('#role').parents('.mb-3').addClass('d-none');
-                        $('#new').addClass('d-none');
-                        $('#unfinish').addClass('d-none');
                         $('.container-progress-task').removeClass('d-none');
-                        $('.container-progress-task .progress-bar').css({"width":`${response.data.percentage}%`});
+                        $('.container-progress-task .progress-bar').css({
+                            "width": `${response.data.percentage}%`
+                        });
                         let formElement = $('#modal-customer-task-management').find("form");
                         $.each(response.data, function(indexInArray, valueOfElement) {
                             if (indexInArray == 'time_limit') {
@@ -230,8 +230,9 @@
                                 formElement.find(`[name=${indexInArray}]`).val(valueOfElement).trigger('change');
                             }
                         });
-                        response.data.details.forEach(element => {
-                            $('.container-detail-task').append(generateDetailTask(element, 'finish'));
+                        response.data.details.forEach((task, index) => {
+                            task.index = $('.container-detail-task .accordion-item.shadow-sm').length;
+                            $('.container-detail-task').append(generateDetailTask(task, 'finish'));
                         });
                     },
                     error: function(error) {
@@ -349,11 +350,11 @@
         }
 
         function generateDetailTask(data, type = 'new') {
-            return (`<div class="accordion-item shadow-sm my-1 ${type !== 'new' ? 'border border-warning' : ''}">
+            return (`<div class="accordion-item shadow-sm my-1 ${data.status?'border border-success' :type !== 'new' ? 'border border-warning' : ''}">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${type}${kebabCase(data.name??data.master.name)}"
                                 aria-expanded="false" aria-controls="${type}${kebabCase(data.name??data.master.name)}">
-                                <span class="badge bg-label-primary mx-1">${data.priority?? data.master.priority}</span> ${type !== 'new' ? 'Unfinish Task' : 'New Task'} ${data.name??data.master.name} ${(type !== 'new') ? moment(data.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
+                                <span class="badge bg-label-primary mx-1">${data.priority?? data.master.priority}</span> ${data.status?'Finish':type !== 'new' ? 'Unfinish Task' : 'New Task'} ${data.name??data.master.name} ${(type !== 'new') ? moment(data.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
                             </button>
                         </h2>
                         <div id="${type}${kebabCase(data.name??data.master.name)}" class="accordion-collapse collapse" data-bs-parent="#accordionTaskDetail">
@@ -383,7 +384,8 @@
                         layout: 1,
                         displayMode: 'replace'
                     });
-                    response.data.forEach(task => {
+                    response.data.forEach((task, index) => {
+                        task.index = $('.container-detail-task .accordion-item.shadow-sm').length;
                         $('.container-detail-task').append(generateDetailTask(task), 'unfinish');
                     });
                 },
@@ -420,7 +422,7 @@
                         displayMode: 'replace'
                     });
                     response.data.forEach((task, index) => {
-                        task.index = index;
+                        task.index = $('.container-detail-task .accordion-item.shadow-sm').length;
                         $('.container-detail-task').append(generateDetailTask(task));
                     });
                     $('#new').addClass('disabled')
@@ -466,7 +468,7 @@
                     </div>`
             });
             return (`<div class="row my-2">
-                        <div class="accordion container-detail-task" id="accordionDetailTable">
+                        <div class="accordion container-detail-task px-1" id="accordionDetailTable">
                             ${contentTableBody}
                         </div>
                     </div>`)
@@ -650,6 +652,8 @@
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
                 $('#save-customer-task-management').removeClass('d-none');
                 $('#edit-customer-task-management').addClass('d-none');
+                $('#role').removeAttr('disabled');
+                $('#role').parents('.mb-3').removeClass('d-none');
                 $('#modal-customer-task-management .is-invalid').removeClass('is-invalid')
                 $('#table-customer-task-management tbody').find('tr').removeClass('selected');
                 $('.container-detail-task').html(``);

@@ -204,7 +204,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::post('/', [CustomerTaskController::class, 'store'])->name('store');
             Route::get('/get-evidence/{id?}', [CustomerTaskController::class, 'getEvidence'])->name('get-evidence');
             Route::post('/finish-task/{id?}/{type?}', [CustomerTaskController::class, 'finishTask'])->name('finish-task');
-            Route::post('/{id?}', [CustomerTaskController::class, 'update'])->name('update');
+            Route::put('/{id?}', [CustomerTaskController::class, 'update'])->name('update');
             Route::put('/start-task/{id?}/{type?}', [CustomerTaskController::class, 'startTask'])->name('start-task');
             Route::get('/data-table', [CustomerTaskController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerTaskController::class, 'show'])->name('show');

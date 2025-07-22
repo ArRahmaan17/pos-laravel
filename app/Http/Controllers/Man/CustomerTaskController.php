@@ -117,7 +117,7 @@ class CustomerTaskController extends Controller
             ],
             'details.*.id' => [
                 'required_if:details.*.type,unfinish',
-                Rule::exists('customer_company_task_details', 'id')->where('userId', $request->roleId),
+                Rule::exists('customer_company_task_details', 'id')->where('userId', $request->userId),
             ],
         ]);
         $dataTask = [
@@ -142,7 +142,6 @@ class CustomerTaskController extends Controller
             $message = ['message' => 'resources created successfully'];
             DB::commit();
         } catch (\Throwable $th) {
-            dd($th);
             DB::rollBack();
             $status = 422;
             $message = ['message' => 'failed created resources'];
@@ -211,7 +210,7 @@ class CustomerTaskController extends Controller
     }
     public function unfinishTask()
     {
-        $dataTask = CustomerCompanyTaskDetail::join('customer_company_master_tasks', 'customer_company_master_tasks.id', '=', 'customer_company_task_details.masterId')->whereNot('status', 1)->get()->toArray();
+        $dataTask = CustomerCompanyTaskDetail::join('customer_company_master_tasks', 'customer_company_master_tasks.id', '=', 'customer_company_task_details.masterId')->whereNot('status', 1)->where('customer_company_master_tasks.repeateable', 1)->get()->toArray();
         $status = 200;
         $message = ['message' => "unfinish tasks found", 'data' => $dataTask];
         if (empty($dataTask)) {
@@ -270,7 +269,54 @@ class CustomerTaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:4|max:30',
+            'userId' => 'exists:users,id',
+            'time_limit' => 'required|date',
+            'details.*.type' => 'required|in:new,unfinish,finish',
+            'details.*.masterId' => [
+                'required_if:details.*.type,new',
+                Rule::exists('customer_company_master_tasks', 'id')->where('companyId', session('userLogged')['company']['id']),
+            ],
+            'details.*.id' => [
+                'required_if:details.*.type,unfinish',
+                Rule::exists('customer_company_task_details', 'id'),
+            ],
+        ]);
+        $dataTask = [
+            'userId' => $request->userId ?? session('userLogged')['user']['id'],
+            'companyId' => session('userLogged')['company']['id'],
+            'time_limit' => $request->time_limit,
+            'name' => $request->name,
+        ];
+        $dataTaskDetails = $request->details;
+        DB::beginTransaction();
+        try {
+            CustomerCompanyTask::find($id)->update($dataTask);
+            $dataTaskDetails = array_map(function ($detail) use ($id) {
+                $detail['taskId'] = $id;
+                ($detail['type'] == 'new') ? $detail['masterId'] = $detail['masterId']  : $detail['id'] = $detail['id'];
+                $detail['created_at'] = now();
+                $detail['updated_at'] = now();
+                unset($detail['type']);
+                return $detail;
+            }, $dataTaskDetails);
+            $dataInsert = array_values(array_filter($dataTaskDetails, function ($task) {
+                return isset($task['masterId']);
+            }));
+            CustomerCompanyTaskDetail::insert($dataInsert);
+            $builder = CustomerCompanyTaskDetail::where(['taskId' => $id]);
+            [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
+            CustomerCompanyTask::find($id)->update(['percentage' => (($countFinish / $countDetail) * 100)]);
+            $status = 200;
+            $message = ['message' => 'resources created successfully'];
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $status = 422;
+            $message = ['message' => 'failed created resources'];
+        }
+        return response()->json($message, $status);
     }
 
     /**
