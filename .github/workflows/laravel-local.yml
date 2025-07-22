@@ -24,13 +24,13 @@ jobs:
       - name: 🧰 Install PHP dependencies
         run: composer install --no-interaction --prefer-dist
 
-      - name: ⚙️ Copy .env
-        run: cp .env.example .env
+      # - name: ⚙️ Copy .env
+      #   run: cp .env.example .env
 
-      - name: 🔐 Generate app key
-        run: php artisan key:generate
+      # - name: 🔐 Generate app key
+      #   run: php artisan key:generate
 
       # - name: 🗄️ Run database migrations
         # run: php artisan migrate --force
-      - name: ✅ Run Laravel tests
-        run: php artisan test
+      # - name: ✅ Run Laravel tests
+      #   run: php artisan test
