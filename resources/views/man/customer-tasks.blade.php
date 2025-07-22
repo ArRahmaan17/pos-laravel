@@ -264,7 +264,7 @@
                     id: 'question',
                     zindex: 9999,
                     title: 'Confirmation',
-                    message: "Are you sure you want to delete this user data?",
+                    message: "Are you sure you want to delete this task data?",
                     position: 'center',
                     icon: 'bx bx-question-mark',
                     buttons: [
@@ -316,12 +316,75 @@
             });
             $('.evidence').click((e) => {
                 evidenceTask(e)
+            });
+            $('.trash').click((e) => {
+                removeTaskDetail(e)
             })
         }
 
         function endTask(e) {
             $('#modal-customer-task-evidence').modal('show');
             $('#taskId').val($(e.currentTarget).data('customer-task-detail'));
+        }
+
+        function removeTaskDetail(e) {
+            let idDetailTask = $(e.currentTarget).data('customer-task-detail');
+            iziToast.question({
+                timeout: 5000,
+                layout: 2,
+                close: false,
+                overlay: true,
+                color: 'red',
+                displayMode: 'once',
+                id: 'question',
+                zindex: 9999,
+                title: 'Confirmation',
+                message: "Are you sure you want to delete this detail task data?",
+                position: 'center',
+                icon: 'bx bx-question-mark',
+                buttons: [
+                    ['<button><b>OK</b></button>', function(instance, toast) {
+                        instance.hide({
+                            transitionOut: 'fadeOut'
+                        }, toast, 'button');
+                        $.ajax({
+                            type: "DELETE",
+                            url: "{{ route('man.customer-task-management.delete-detail') }}/" +
+                                idDetailTask,
+                            data: {
+                                _token: `{{ csrf_token() }}`,
+                            },
+                            dataType: "json",
+                            success: function(response) {
+                                iziToast.success({
+                                    id: 'alert-customer-task-management-action',
+                                    title: 'Success',
+                                    message: response.message,
+                                    position: 'topRight',
+                                    layout: 2,
+                                    displayMode: 'replace'
+                                });
+                                window.dataTableCustomerTaskManagement.ajax.reload()
+                            },
+                            error: function(error) {
+                                iziToast.error({
+                                    id: 'alert-customer-task-management-action',
+                                    title: 'Error',
+                                    message: error.responseJSON.message,
+                                    position: 'topRight',
+                                    layout: 2,
+                                    displayMode: 'replace'
+                                });
+                            }
+                        });
+                    }, true],
+                    ['<button>CANCEL</button>', function(instance, toast) {
+                        instance.hide({
+                            transitionOut: 'fadeOut'
+                        }, toast, 'button');
+                    }],
+                ],
+            });
         }
 
         function evidenceTask(e) {
@@ -459,8 +522,8 @@
                                     <div class="flex-fill align-self-center">
                                         ${detail.master.description}
                                     </div>
-                                    <div class="flex-fill align-self-center text-end">
-                                        ${detail.start_at !== null && detail.end_at !== null  ? `<button class="btn btn-icon btn-info evidence" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.taskId}' data-task-evidence='${detail.evidence}'><i class='bx bxs-file-find'></i></button>`: (detail.start_at != null && detail.end_at == null)?`<button type="button" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.taskId}' class="btn btn-icon btn-warning end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-success start" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.taskId}'><i class='bx bx-play'></i></button>` }
+                                    <div class="flex-fill align-self-center d-flex gap-1 justify-content-end">
+                                        ${detail.start_at !== null && detail.end_at !== null  ? `<button class="btn btn-icon btn-success evidence" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.taskId}' data-task-evidence='${detail.evidence}'><i class='bx bxs-file-find'></i></button>`: (detail.start_at != null && detail.end_at == null)?`<button type="button" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.taskId}' class="btn btn-icon btn-info end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-warning start" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.taskId}'><i class='bx bx-play'></i></button><button type="button" class="btn btn-icon btn-danger trash" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.taskId}'><i class='bx bxs-trash-alt'></i></button>`}
                                     </div>
                                 </div>
                             </div>
@@ -468,7 +531,7 @@
                     </div>`
             });
             return (`<div class="row my-2">
-                        <div class="accordion container-detail-task px-1" id="accordionDetailTable">
+                        <div class="accordion container-detail-task" id="accordionDetailTable">
                             ${contentTableBody}
                         </div>
                     </div>`)
@@ -565,6 +628,9 @@
                     $('.evidence').on('click', (e) => {
                         evidenceTask(e)
                     });
+                    $('.trash').click((e) => {
+                        removeTaskDetail(e)
+                    })
                 }
             });
             $('#save-customer-task-management').click(function() {

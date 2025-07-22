@@ -8,6 +8,7 @@ use App\Models\CustomerCompanyTask;
 use App\Models\CustomerCompanyTaskDetail;
 use App\Models\CustomerRole;
 use App\Models\UserCustomerRole;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -84,7 +85,7 @@ class CustomerTaskController extends Controller
             $row['name'] = $item['name'];
             $row['details'] = $item['details'];
             $row['user_name'] = $item['user']['name'];
-            $row['activity'] = ($item['start_at'] && $item['end_at']) ? now()->createFromTimeString($item['start_at'])->diffInHours(now()->createFromTimeString($item['end_at']), true) : 'Not Started Yet';
+            $row['activity'] = (($item['start_at'] && $item['end_at']) ? now()->createFromTimeString($item['start_at'])->diffInHours(now()->createFromTimeString($item['end_at']), true) : (($item['start_at'] && $item['end_at'] == null) ? 'Started ' . now()->createFromTimeString($item['start_at'])->diffForHumans(now()) : 'Not Started Yet'));
             $row['percentage'] = $item['percentage'] . ' %';
             $row['time_limit'] = now()->createFromTimeString(now()->format('Y-m-d H:i:s'))->diffInDays($item['time_limit'], false) . ' days left';
             $row['action'] = ((!$item['start_at']) ? "<button class='btn btn-success btn-icon start' data-customer-task-management='" . $item['id'] . "'><i class='bx bx-play'></i></button>" : "") . "<button class='btn btn-icon btn-warning edit' data-customer-task-management='" . $item['id'] . "' ><i class='bx bx-pencil' ></i></button><button data-customer-task-management='" . $item['id'] . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
@@ -252,7 +253,7 @@ class CustomerTaskController extends Controller
             ]);
             $builder = CustomerCompanyTaskDetail::where(['taskId' => $data->taskId]);
             [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
-            CustomerCompanyTask::find($data->taskId)->update(['percentage' => (($countFinish / $countDetail) * 100)]);
+            CustomerCompanyTask::find($data->taskId)->update(['percentage' => (($countFinish / $countDetail) * 100), 'end_at' => ($countDetail == $countFinish) ? now() : null]);
             DB::commit();
             $status = 200;
             $message = ['message' => 'update resources successfully'];
@@ -309,12 +310,12 @@ class CustomerTaskController extends Controller
             [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
             CustomerCompanyTask::find($id)->update(['percentage' => (($countFinish / $countDetail) * 100)]);
             $status = 200;
-            $message = ['message' => 'resources created successfully'];
+            $message = ['message' => 'resources updated successfully'];
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
             $status = 422;
-            $message = ['message' => 'failed created resources'];
+            $message = ['message' => 'failed updated resources'];
         }
         return response()->json($message, $status);
     }
@@ -324,6 +325,40 @@ class CustomerTaskController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            if (!CustomerCompanyTask::where(['id' => $id, 'start_at' => null])->delete()) {
+                throw new Exception('failed destroy resources');
+            }
+            $status = 200;
+            $message = ['message' => 'resources destroy successfully'];
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $status = 422;
+            $message = ['message' => 'failed destroy resources'];
+        }
+        return response()->json($message, $status);
+    }
+
+    public function destroyDetail(string $id)
+    {
+        DB::beginTransaction();
+        try {
+            $taskDetailData = CustomerCompanyTaskDetail::where(['id' => $id])->first();
+            CustomerCompanyTaskDetail::where(['id' => $id, 'start_at' => null])->delete();
+            $builder = CustomerCompanyTaskDetail::where(['taskId' => $taskDetailData->taskId]);
+            [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
+            CustomerCompanyTask::find($taskDetailData->taskId)->update(['percentage' => (($countFinish / $countDetail) * 100)]);
+            Storage::disk('company-task-evidence')->deleteDirectory(md5(session('userLogged')['company']['id']) . '/' . md5($id));
+            $status = 200;
+            $message = ['message' => 'detail resources destroy successfully'];
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $status = 422;
+            $message = ['message' => 'failed destroy detail resources'];
+        }
+        return response()->json($message, $status);
     }
 }
