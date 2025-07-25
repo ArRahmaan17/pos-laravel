@@ -25,7 +25,7 @@ class CustomerProductTransactionController extends Controller
     public function dataTable(Request $request)
     {
         $totalData = CustomerProductTransaction::with('details')->where([
-            ['companyId', '=', session('userLogged')['company']['id']]
+            ['companyId', '=', session('userLogged')['company']['id']],
         ])->orderBy('id', 'asc')->join('users', 'users.id', '=', 'customer_product_transactions.userId')
             ->count();
         $totalFiltered = $totalData;
@@ -37,40 +37,40 @@ class CustomerProductTransactionController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where([
-                ['companyId', '=', session('userLogged')['company']['id']]
+                ['companyId', '=', session('userLogged')['company']['id']],
             ])->get();
         } else {
             $assets = CustomerProductTransaction::with('details')->select('*')->join('users', 'users.id', '=', 'customer_product_transactions.userId')
-                ->where('customer_product_transactions.orderCode', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_product_transactions.total', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_product_transactions.discount', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('users.name', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_product_transactions.orderCode', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_product_transactions.total', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_product_transactions.discount', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('users.name', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
             $assets = $assets->where([
-                ['companyId', '=', session('userLogged')['company']['id']]
+                ['companyId', '=', session('userLogged')['company']['id']],
             ])->get();
 
             $totalFiltered = CustomerProductTransaction::with('details')->select('*')->join('users', 'users.id', '=', 'customer_product_transactions.userId')
-                ->where('customer_product_transactions.orderCode', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_product_transactions.total', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_product_transactions.discount', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('users.name', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_product_transactions.orderCode', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_product_transactions.total', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_product_transactions.discount', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('users.name', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where([
-                ['companyId', '=', session('userLogged')['company']['id']]
+                ['companyId', '=', session('userLogged')['company']['id']],
             ])->count();
         }
         $dataFiltered = [];
@@ -82,7 +82,7 @@ class CustomerProductTransactionController extends Controller
             $row['discount'] = $item->discount;
             $row['name'] = $item->name;
             $row['details'] = $item->details;
-            $row['action'] = "<button class='btn btn-icon btn-success print-transaction' data-customer-product-transaction='" . $item->orderCode . "' ><i class='bx bxs-printer' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-success print-transaction' data-customer-product-transaction='".$item->orderCode."' ><i class='bx bxs-printer' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -94,11 +94,12 @@ class CustomerProductTransactionController extends Controller
 
         return Response()->json($response, 200);
     }
+
     public function productDataTable(Request $request)
     {
         $totalData = CustomerCompanyGood::where([
             ['status', '=', 'publish'],
-            ['companyId', '=', session('userLogged')['company']['id']]
+            ['companyId', '=', session('userLogged')['company']['id']],
         ])->orderBy('customer_company_goods.id', 'asc')
             ->count();
         $totalFiltered = $totalData;
@@ -110,19 +111,19 @@ class CustomerProductTransactionController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where([
                 ['status', '=', 'publish'],
-                ['companyId', '=', session('userLogged')['company']['id']]
+                ['companyId', '=', session('userLogged')['company']['id']],
             ])->get();
         } else {
             $assets = CustomerCompanyGood::with('unit')->select('*')
-                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_company_goods.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_company_goods.price', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -130,19 +131,19 @@ class CustomerProductTransactionController extends Controller
             }
             $assets = $assets->where([
                 ['status', '=', 'publish'],
-                ['companyId', '=', session('userLogged')['company']['id']]
+                ['companyId', '=', session('userLogged')['company']['id']],
             ])->get();
 
             $totalFiltered = CustomerCompanyGood::select('*')
-                ->where('customer_company_goods.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_company_goods.price', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_company_goods.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_company_goods.price', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where([
                 ['status', '=', 'publish'],
-                ['companyId', '=', session('userLogged')['company']['id']]
+                ['companyId', '=', session('userLogged')['company']['id']],
             ])->count();
         }
         $dataFiltered = [];
@@ -154,7 +155,7 @@ class CustomerProductTransactionController extends Controller
             $row['stock'] = $item->stock;
             $row['unit'] = $item->unit->name;
             $row['picture'] = $item->picture;
-            $row['action'] = "<button class='btn btn-icon btn-success add-cart' data-customer-product='" . $item->id . "' ><i class='bx bxs-cart-add' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-success add-cart' data-customer-product='".$item->id."' ><i class='bx bxs-cart-add' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -171,7 +172,7 @@ class CustomerProductTransactionController extends Controller
     {
         $totalData = CustomerCompanyDiscount::where([
             ['status', '=', 'publish'],
-            ['companyId', '=', session('userLogged')['company']['id']]
+            ['companyId', '=', session('userLogged')['company']['id']],
         ])->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
@@ -183,23 +184,23 @@ class CustomerProductTransactionController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where([
                 ['status', '=', 'publish'],
-                ['companyId', '=', session('userLogged')['company']['id']]
+                ['companyId', '=', session('userLogged')['company']['id']],
             ])->get();
         } else {
             $assets = CustomerCompanyDiscount::select('*')
-                ->where('code', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('maxTransactionDiscount', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('minTransactionPrice', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('status', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('percentage', 'like', '%' . $request['search']['value'] . '%');
+                ->where('code', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('maxTransactionDiscount', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('minTransactionPrice', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('status', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('percentage', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -207,23 +208,23 @@ class CustomerProductTransactionController extends Controller
             }
             $assets = $assets->where([
                 ['status', '=', 'publish'],
-                ['companyId', '=', session('userLogged')['company']['id']]
+                ['companyId', '=', session('userLogged')['company']['id']],
             ])->get();
 
             $totalFiltered = CustomerCompanyDiscount::select('*')
-                ->where('code', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('maxTransactionDiscount', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('minTransactionPrice', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('status', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('percentage', 'like', '%' . $request['search']['value'] . '%');
+                ->where('code', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('maxTransactionDiscount', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('minTransactionPrice', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('status', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('percentage', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where([
                 ['status', '=', 'publish'],
-                ['companyId', '=', session('userLogged')['company']['id']]
+                ['companyId', '=', session('userLogged')['company']['id']],
             ])->count();
         }
         $dataFiltered = [];
@@ -236,8 +237,8 @@ class CustomerProductTransactionController extends Controller
             $row['percentage'] = $item->percentage;
             $row['maxTransactionDiscount'] = $item->maxTransactionDiscount;
             $row['minTransactionPrice'] = $item->minTransactionPrice;
-            $row['applyLeft'] = (($item->maxApply == 0) ? "Unlimited" : ($appliedDiscount < $item->maxApply)) ? ($item->maxApply - $appliedDiscount) . ' x' : '0 x';
-            $row['action'] = (CustomerCompanyDiscount::appliedDiscounts($item->code) < $item->maxApply || $item->maxApply == 0) ? "<button class='btn btn-icon btn-success use-discount' data-customer-company-discount='" . $item->id . "' ><i class='bx bx-check-double' ></i></button>" : "<button class='btn btn-icon btn-danger disabled'><i class='bx bx-x' ></i></button>";
+            $row['applyLeft'] = (($item->maxApply == 0) ? 'Unlimited' : ($appliedDiscount < $item->maxApply)) ? ($item->maxApply - $appliedDiscount).' x' : '0 x';
+            $row['action'] = (CustomerCompanyDiscount::appliedDiscounts($item->code) < $item->maxApply || $item->maxApply == 0) ? "<button class='btn btn-icon btn-success use-discount' data-customer-company-discount='".$item->id."' ><i class='bx bx-check-double' ></i></button>" : "<button class='btn btn-icon btn-danger disabled'><i class='bx bx-x' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -273,7 +274,7 @@ class CustomerProductTransactionController extends Controller
                 $data_discount = CustomerCompanyDiscount::find($request->discount['id']);
                 $appliedDiscount = CustomerCompanyDiscount::appliedDiscounts($data_discount->code);
                 if ($data_discount->maxApply != 0 && $data_discount->maxApply == $appliedDiscount) {
-                    throw new Exception("Max applied discount already reached", 422);
+                    throw new Exception('Max applied discount already reached', 422);
                 }
                 if ($total >= $data_discount->minTransactionPrice && ($data_discount->max_apply == 0 || $data_discount->max_apply >= CustomerCompanyDiscount::appliedDiscounts($data_discount->code))) {
                     $discount = (
@@ -327,7 +328,7 @@ class CustomerProductTransactionController extends Controller
             $code = 200;
         } catch (\Throwable $th) {
             DB::rollBack();
-            $response = ['message' => ($th->getCode() == 422) ? "Failed creating transaction. " . $th->getMessage() : "Failed creating transaction. Unexpected error on processing your transaction"];
+            $response = ['message' => ($th->getCode() == 422) ? 'Failed creating transaction. '.$th->getMessage() : 'Failed creating transaction. Unexpected error on processing your transaction'];
             $code = 422;
         }
 
@@ -346,19 +347,23 @@ class CustomerProductTransactionController extends Controller
     private function checkDiscountCode($code)
     {
         $appliedDiscount = CustomerCompanyDiscount::appliedDiscounts($code);
+
         return CustomerCompanyDiscount::where([
             'companyId' => session('userLogged')['company']['id'],
-            'code' => $code
+            'code' => $code,
         ])->where('maxApply', '>', $appliedDiscount)->first();
     }
+
     private function checkProductStock($id, $quantities)
     {
         $goods = CustomerCompanyGood::whereIn('id', $id)->get()->toArray();
         $status_product = array_map(function ($good, $quantity) {
             return ['status' => $good['stock'] >= intval($quantity), 'id' => $good['id'], 'stock' => $good['stock']];
         }, $goods, $quantities);
+
         return $status_product;
     }
+
     public function validateTransactionItems(Request $request)
     {
         $status_product = $this->checkProductStock(collect($request->products)->pluck('id')->toArray(), collect($request->products)->pluck('quantity')->toArray());
@@ -391,6 +396,7 @@ class CustomerProductTransactionController extends Controller
 
         return response()->json($response, $code);
     }
+
     public function validateDiscountCode($discountCode)
     {
         $data = $this->checkDiscountCode($discountCode);
@@ -413,9 +419,10 @@ class CustomerProductTransactionController extends Controller
         if ($data) {
             $pdf = App::make('dompdf.wrapper');
             $pdf = $pdf->loadView('report.transaction-receipt', ($data) ? $data->toArray() : [])->setPaper([0, 0, 300, 280], 'portrait');
-            return $pdf->stream('Transaction-' . $orderCode . '.pdf');
+
+            return $pdf->stream('Transaction-'.$orderCode.'.pdf');
         } else {
-            return redirect()->route('home')->with('error', 'Transaction not found <b>' . $orderCode . '</b>');
+            return redirect()->route('home')->with('error', 'Transaction not found <b>'.$orderCode.'</b>');
         }
     }
 
@@ -426,7 +433,6 @@ class CustomerProductTransactionController extends Controller
     {
         //
     }
-
 
     /**
      * Update the specified resource in storage.

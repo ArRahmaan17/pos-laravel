@@ -19,11 +19,12 @@ class CustomerCompanyDiscount extends Model
     ];
 
     use HasFactory;
+
     public static function appliedDiscounts($discountCode): int
     {
         return self::join('customer_product_transactions as cpt', 'cpt.discountId', '=', 'customer_company_discounts.id')->where([
             'customer_company_discounts.status' => 'publish',
-            'customer_company_discounts.code' => $discountCode
+            'customer_company_discounts.code' => $discountCode,
         ])->count();
     }
 }

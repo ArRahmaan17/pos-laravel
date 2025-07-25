@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class CustomerCompanyTaskDetail extends Model
 {
     use HasFactory;
+
     protected $fillable = ['taskId', 'masterId', 'start_at', 'end_at', 'status', 'evidance'];
 
     public function master(): HasOne

@@ -10,7 +10,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use League\CommonMark\Extension\SmartPunct\EllipsesParser;
 
 class CustomerCompanyGoodController extends Controller
 {
@@ -77,6 +76,7 @@ class CustomerCompanyGoodController extends Controller
             $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">' . $item->status . '</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">' . $item->status . '</span>' : '<span class="badge bg-label-success">' . $item->status . '</span>');
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $row['action_temp'] = "<button class='btn btn-icon btn-warning edit-temp' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-danger delete-temp'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action_stocktaking'] = "<button type='button' class='btn btn-icon btn-warning edit-stock' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -137,11 +137,11 @@ class CustomerCompanyGoodController extends Controller
         return response()->json($response, $code);
     }
 
-    public function storeTempProduct(String $date)
+    public function storeTempProduct(string $date)
     {
         DB::beginTransaction();
         try {
-            if (!in_array(getRole(), ['Developer', 'Manager'])) {
+            if (! in_array(getRole(), ['Developer', 'Manager'])) {
                 throw new Exception('Not Authorize');
             }
             $data = CustomerTemporaryProduct::with('reference')->whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
@@ -174,13 +174,13 @@ class CustomerCompanyGoodController extends Controller
                     $dataInsert[] = $record;
                 }
             }
-            if (!empty($dataInsert)) {
+            if (! empty($dataInsert)) {
                 CustomerCompanyGood::insert($dataInsert);
                 foreach ($dataInsert as $index => $value) {
                     Storage::disk('public-asset')->move('temp-customer-product/' . $value['picture'], 'customer-product/' . $value['picture']);
                 }
             }
-            if (!empty($dataUpdate)) {
+            if (! empty($dataUpdate)) {
                 CustomerCompanyGood::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buyPrice', 'unitId']);
                 foreach ($dataUpdate as $index => $value) {
                     if (Storage::disk('public-asset')->exists('temp-customer-product/' . $value['picture'])) {
@@ -189,7 +189,7 @@ class CustomerCompanyGoodController extends Controller
                     }
                 }
             }
-            if (!empty($dataDelete)) {
+            if (! empty($dataDelete)) {
                 foreach ($dataDelete as $index => $value) {
                     if ($value['product']['picture'] != 'default-product.png') {
                         Storage::disk('customer-product')->delete($value['product']['picture']);

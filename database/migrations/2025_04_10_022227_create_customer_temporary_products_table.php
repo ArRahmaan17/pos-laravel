@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('orderCode');
             $table->date('transaction_created')->useCurrent();
-            $table->rawIndex("orderCode,companyId,transaction_created", 'index_orcitc_customer_temporary_product');
+            $table->rawIndex('orderCode,companyId,transaction_created', 'index_orcitc_customer_temporary_product');
             $table->bigInteger('companyId')->unsigned()->nullable(true);
             $table->bigInteger('userId')->unsigned();
             $table->bigInteger('customerCompanyGoodId')

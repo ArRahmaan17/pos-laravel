@@ -11,7 +11,6 @@ use App\Models\UserCustomerRole;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -23,21 +22,22 @@ class CustomerTaskController extends Controller
     public function index()
     {
         $customer_roles = CustomerRole::where('userId', session('userLogged')['user']['id'])->get();
-        $employees =  UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
+        $employees = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
             ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
             ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
             ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'cr.id as roleId', 'u.username', 'u.id')
             ->where('cc.id', session('userLogged')['company']['id'])
             ->orderBy('id', 'asc')->get();
+
         return view('man.customer-tasks', compact('customer_roles', 'employees'));
     }
 
     public function dataTable(Request $request)
     {
         $where = [
-            ['customer_company_tasks.companyId', '=', session('userLogged')['company']['id']]
+            ['customer_company_tasks.companyId', '=', session('userLogged')['company']['id']],
         ];
-        if (!in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
+        if (! in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
             $where[] = ['customer_company_tasks.userId',  '=', session('userLogged')['user']['id']];
         }
         $totalData = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name')
@@ -51,16 +51,16 @@ class CustomerTaskController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where($where)->get();
         } else {
             $assets = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -69,11 +69,11 @@ class CustomerTaskController extends Controller
             $assets = $assets->where($where)->get();
 
             $totalFiltered = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where($where)->count();
         }
@@ -85,10 +85,10 @@ class CustomerTaskController extends Controller
             $row['name'] = $item['name'];
             $row['details'] = $item['details'];
             $row['user_name'] = $item['user']['name'];
-            $row['activity'] = (($item['start_at'] && $item['end_at']) ? now()->createFromTimeString($item['start_at'])->diffInHours(now()->createFromTimeString($item['end_at']), true) : (($item['start_at'] && $item['end_at'] == null) ? 'Started ' . now()->createFromTimeString($item['start_at'])->diffForHumans(now()) : 'Not Started Yet'));
-            $row['percentage'] = $item['percentage'] . ' %';
-            $row['time_limit'] = now()->createFromTimeString(now()->format('Y-m-d H:i:s'))->diffInDays($item['time_limit'], false) . ' days left';
-            $row['action'] = ((!$item['start_at']) ? "<button class='btn btn-success btn-icon start' data-customer-task-management='" . $item['id'] . "'><i class='bx bx-play'></i></button>" : "") . "<button class='btn btn-icon btn-warning edit' data-customer-task-management='" . $item['id'] . "' ><i class='bx bx-pencil' ></i></button><button data-customer-task-management='" . $item['id'] . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['activity'] = (($item['start_at'] && $item['end_at']) ? now()->createFromTimeString($item['start_at'])->diffForHumans(now()->createFromTimeString($item['end_at']), true) : (($item['start_at'] && $item['end_at'] == null) ? 'Started '.now()->createFromTimeString($item['start_at'])->diffForHumans(now()) : 'Not Started Yet'));
+            $row['percentage'] = $item['percentage'].' %';
+            $row['time_limit'] = now()->createFromTimeString(now()->format('Y-m-d H:i:s'))->diffInDays($item['time_limit'], false).' days left';
+            $row['action'] = ((! $item['start_at']) ? "<button class='btn btn-success btn-icon start' data-customer-task-status='new' data-customer-task-management='".$item['id']."'><i class='bx bx-play'></i></button>" : '').((! $item['end_at']) ? "<button class='btn btn-icon btn-warning edit' data-customer-task-management='".$item['id']."' ><i class='bx bx-pencil' ></i></button><button data-customer-task-management='".$item['id']."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>" : '');
             $dataFiltered[] = $row;
         }
         $response = [
@@ -136,6 +136,7 @@ class CustomerTaskController extends Controller
                 $detail['created_at'] = now();
                 $detail['updated_at'] = now();
                 unset($detail['type']);
+
                 return $detail;
             }, $dataTaskDetails);
             CustomerCompanyTaskDetail::insert($dataTaskDetails);
@@ -147,14 +148,18 @@ class CustomerTaskController extends Controller
             $status = 422;
             $message = ['message' => 'failed created resources'];
         }
+
         return response()->json($message, $status);
     }
+
     public function getEvidence($id)
     {
         $detail = CustomerCompanyTaskDetail::find($id);
         $detail->evidence;
+
         return Storage::disk('company-task-evidence')->get(md5($detail->taskId));
     }
+
     /**
      * Display the specified resource.
      */
@@ -164,7 +169,7 @@ class CustomerTaskController extends Controller
             'userId' => session('userLogged')['user']['id'],
             'companyId' => session('userLogged')['company']['id'],
             'id' => $id,
-            ['time_limit', '>=', now()->format('Y-m-d')]
+            ['time_limit', '>=', now()->format('Y-m-d')],
         ];
         if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
             unset($where['userId']);
@@ -176,6 +181,7 @@ class CustomerTaskController extends Controller
             $status = 200;
             $message = ['message' => 'showing resources successfully', 'data' => $builder->first()];
         }
+
         return response()->json($message, $status);
     }
 
@@ -187,7 +193,7 @@ class CustomerTaskController extends Controller
             'id' => $id,
             'start_at' => null,
             'end_at' => null,
-            ['time_limit', '>=', now()->format('Y-m-d')]
+            ['time_limit', '>=', now()->format('Y-m-d')],
         ];
         if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
             unset($where['userId']);
@@ -207,17 +213,20 @@ class CustomerTaskController extends Controller
             $status = 422;
             $message = ['message' => 'failed staring task'];
         }
+
         return response()->json($message, $status);
     }
+
     public function unfinishTask()
     {
         $dataTask = CustomerCompanyTaskDetail::join('customer_company_master_tasks', 'customer_company_master_tasks.id', '=', 'customer_company_task_details.masterId')->whereNot('status', 1)->where('customer_company_master_tasks.repeateable', 1)->get()->toArray();
         $status = 200;
-        $message = ['message' => "unfinish tasks found", 'data' => $dataTask];
+        $message = ['message' => 'unfinish tasks found', 'data' => $dataTask];
         if (empty($dataTask)) {
             $status = 404;
-            $message = ['message' => "unfinish tasks not found", 'data' => $dataTask];
+            $message = ['message' => 'unfinish tasks not found', 'data' => $dataTask];
         }
+
         return response()->json($message, $status);
     }
 
@@ -228,28 +237,29 @@ class CustomerTaskController extends Controller
             'roleId' => $request->role ?? session('userLogged')['role']['id'],
         ])->orderBy('id')->get()->toArray();
         $status = 200;
-        $message = ['message' => "tasks found", 'data' => $dataTask];
+        $message = ['message' => 'tasks found', 'data' => $dataTask];
         if (empty($dataTask)) {
             $status = 404;
             $message = ['message' => "tasks not found, please contact manager to create new task for session('userLogged')['role']['name']", 'data' => $dataTask];
         }
+
         return response()->json($message, $status);
     }
 
     public function finishTask(Request $request, $id, $type)
     {
         $request->validate(['filepond' => 'required|image']);
-        $filename = 'task-' . $id . '-' . $type . '-' . date('Y-m-d-His') . rand(1, 100) . "." . $request->file('filepond')->getClientOriginalExtension();
-        Storage::disk('company-task-evidence')->putFileAs(md5(session('userLogged')['company']['id']) . '/' . md5($id), $request->file('filepond'), $filename);
+        $filename = 'task-'.$id.'-'.$type.'-'.date('Y-m-d-His').rand(1, 100).'.'.$request->file('filepond')->getClientOriginalExtension();
+        Storage::disk('company-task-evidence')->putFileAs(md5(session('userLogged')['company']['id']).'/'.md5($id), $request->file('filepond'), $filename);
         DB::beginTransaction();
         try {
             $data = CustomerCompanyTaskDetail::find($id);
             $evidence = json_decode($data->evidence ?? '[]');
-            $evidence = (!empty($evidence)) ? array_merge($evidence, [$filename]) : [$filename];
+            $evidence = (! empty($evidence)) ? array_merge($evidence, [$filename]) : [$filename];
             CustomerCompanyTaskDetail::where('id', $id)->update([
                 'evidence' => json_encode($evidence),
                 'status' => 1,
-                'end_at' => now()
+                'end_at' => now(),
             ]);
             $builder = CustomerCompanyTaskDetail::where(['taskId' => $data->taskId]);
             [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
@@ -262,6 +272,7 @@ class CustomerTaskController extends Controller
             $status = 422;
             $message = ['message' => 'failed updating resources'];
         }
+
         return response()->json($message, $status);
     }
 
@@ -296,10 +307,11 @@ class CustomerTaskController extends Controller
             CustomerCompanyTask::find($id)->update($dataTask);
             $dataTaskDetails = array_map(function ($detail) use ($id) {
                 $detail['taskId'] = $id;
-                ($detail['type'] == 'new') ? $detail['masterId'] = $detail['masterId']  : $detail['id'] = $detail['id'];
+                ($detail['type'] == 'new') ? $detail['masterId'] = $detail['masterId'] : $detail['id'] = $detail['id'];
                 $detail['created_at'] = now();
                 $detail['updated_at'] = now();
                 unset($detail['type']);
+
                 return $detail;
             }, $dataTaskDetails);
             $dataInsert = array_values(array_filter($dataTaskDetails, function ($task) {
@@ -317,6 +329,7 @@ class CustomerTaskController extends Controller
             $status = 422;
             $message = ['message' => 'failed updated resources'];
         }
+
         return response()->json($message, $status);
     }
 
@@ -327,7 +340,7 @@ class CustomerTaskController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (!CustomerCompanyTask::where(['id' => $id, 'start_at' => null])->delete()) {
+            if (! CustomerCompanyTask::where(['id' => $id, 'start_at' => null])->delete()) {
                 throw new Exception('failed destroy resources');
             }
             $status = 200;
@@ -338,6 +351,7 @@ class CustomerTaskController extends Controller
             $status = 422;
             $message = ['message' => 'failed destroy resources'];
         }
+
         return response()->json($message, $status);
     }
 
@@ -350,7 +364,7 @@ class CustomerTaskController extends Controller
             $builder = CustomerCompanyTaskDetail::where(['taskId' => $taskDetailData->taskId]);
             [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
             CustomerCompanyTask::find($taskDetailData->taskId)->update(['percentage' => (($countFinish / $countDetail) * 100)]);
-            Storage::disk('company-task-evidence')->deleteDirectory(md5(session('userLogged')['company']['id']) . '/' . md5($id));
+            Storage::disk('company-task-evidence')->deleteDirectory(md5(session('userLogged')['company']['id']).'/'.md5($id));
             $status = 200;
             $message = ['message' => 'detail resources destroy successfully'];
             DB::commit();
@@ -359,6 +373,7 @@ class CustomerTaskController extends Controller
             $status = 422;
             $message = ['message' => 'failed destroy detail resources'];
         }
+
         return response()->json($message, $status);
     }
 }

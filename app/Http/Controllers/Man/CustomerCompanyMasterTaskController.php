@@ -18,6 +18,7 @@ class CustomerCompanyMasterTaskController extends Controller
     public function index()
     {
         $customer_roles = CustomerRole::where('userId', session('userLogged')['user']['id'])->get();
+
         return view('man.customer-master-tasks', compact('customer_roles'));
     }
 
@@ -35,16 +36,16 @@ class CustomerCompanyMasterTaskController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where($where)->get();
         } else {
             $assets = CustomerCompanyMasterTask::with('role')->select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -53,11 +54,11 @@ class CustomerCompanyMasterTaskController extends Controller
             $assets = $assets->where($where)->get();
 
             $totalFiltered = CustomerCompanyMasterTask::with('role')->select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where($where)->count();
         }
@@ -70,7 +71,7 @@ class CustomerCompanyMasterTaskController extends Controller
             $row['role'] = $item->role->name;
             $row['priority'] = $item->priority;
             $row['repeateable'] = $item->repeateable == 0 ? 'No' : 'Yes';
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-master-tasks='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-master-tasks='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-master-tasks='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-master-tasks='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -82,6 +83,7 @@ class CustomerCompanyMasterTaskController extends Controller
 
         return Response()->json($response, 200);
     }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -107,6 +109,7 @@ class CustomerCompanyMasterTaskController extends Controller
             $status = 422;
             $message = ['message' => 'failed creating resources'];
         }
+
         return response()->json($message, $status);
     }
 
@@ -118,10 +121,11 @@ class CustomerCompanyMasterTaskController extends Controller
         $data = CustomerCompanyMasterTask::where('companyId', session('userLogged')['company']['id'])->find($id);
         $status = 200;
         $message = ['message' => 'showing resources successfully', 'data' => $data];
-        if (!$data) {
+        if (! $data) {
             $status = 404;
             $message = ['message' => 'failed showing resources', 'data' => $data];
         }
+
         return response()->json($message, $status);
     }
 
@@ -150,6 +154,7 @@ class CustomerCompanyMasterTaskController extends Controller
             $status = 422;
             $message = ['message' => 'failed updating resources'];
         }
+
         return response()->json($message, $status);
     }
 
@@ -160,7 +165,7 @@ class CustomerCompanyMasterTaskController extends Controller
     {
         $status = 422;
         $message = ['message' => 'failed deleting resources'];
-        if (!CustomerCompanyTaskDetail::where('masterId', $id)->exists()) {
+        if (! CustomerCompanyTaskDetail::where('masterId', $id)->exists()) {
             $status = 200;
             $message = ['message' => 'resources deleted successfully'];
             DB::beginTransaction();
@@ -171,6 +176,7 @@ class CustomerCompanyMasterTaskController extends Controller
                 DB::rollBack();
             }
         }
+
         return response()->json($message, $status);
     }
 }

@@ -30,21 +30,21 @@ class CustomerCompanyDiscountController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->get();
         } else {
             $assets = CustomerCompanyDiscount::select('*')
-                ->where('code', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('maxTransactionDiscount', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('minTransactionPrice', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('status', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('maxApply', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('percentage', 'like', '%' . $request['search']['value'] . '%');
+                ->where('code', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('maxTransactionDiscount', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('minTransactionPrice', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('status', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('maxApply', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('percentage', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -53,16 +53,16 @@ class CustomerCompanyDiscountController extends Controller
             $assets = $assets->get();
 
             $totalFiltered = CustomerCompanyDiscount::select('*')
-                ->where('code', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('maxTransactionDiscount', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('minTransactionPrice', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('status', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('maxApply', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('percentage', 'like', '%' . $request['search']['value'] . '%');
+                ->where('code', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('maxTransactionDiscount', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('minTransactionPrice', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('status', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('maxApply', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('percentage', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->count();
         }
@@ -75,9 +75,9 @@ class CustomerCompanyDiscountController extends Controller
             $row['percentage'] = $item->percentage;
             $row['max_discount'] = $item->maxTransactionDiscount;
             $row['min_transaction'] = $item->minTransactionPrice;
-            $row['max_apply'] = $item->maxApply == 0 ? 'Unlimited' : $item->maxApply . 'x';
-            $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">' . $item->status . '</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">' . $item->status . '</span>' : '<span class="badge bg-label-success">' . $item->status . '</span>');
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-discount='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-discount='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['max_apply'] = $item->maxApply == 0 ? 'Unlimited' : $item->maxApply.'x';
+            $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-discount='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-discount='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -147,7 +147,7 @@ class CustomerCompanyDiscountController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'code' => 'required|unique:customer_company_discounts,code,' . $id,
+            'code' => 'required|unique:customer_company_discounts,code,'.$id,
             'description' => 'required|min:5|max:150',
             'percentage' => 'required|min:2|max:4',
             'minTransactionPrice' => 'required',

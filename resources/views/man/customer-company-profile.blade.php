@@ -29,7 +29,7 @@
                             <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
-                            <img src="@if (session('userLogged')['company']['picture'] === 'default-company.png') {{ asset('/cp/default-company.png') }} @else {{ asset('cp/' . session('userLogged')['company']['picture']) }} @endif"
+                            <img src="@if (session('userLogged')['company']['picture'] === 'default-company.png') {{ asset('cp/default-company.png') }} @else {{ asset('cp/' . session('userLogged')['company']['picture']) }} @endif"
                                 alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
                             <div class="button-wrapper">
                                 <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">

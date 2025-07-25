@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Man\CustomerTemporaryProductController;
 use App\Http\Controllers\Dev\AppGoodUnitController;
 use App\Http\Controllers\Dev\AppMenuController;
 use App\Http\Controllers\Dev\AppRoleController;
@@ -10,11 +9,13 @@ use App\Http\Controllers\Man\CustomerCompanyController;
 use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Man\CustomerCompanyMasterTaskController;
+use App\Http\Controllers\Man\CustomerCompanyStocktakingController;
 use App\Http\Controllers\Man\CustomerCompanyWarehouseController;
 use App\Http\Controllers\Man\CustomerProductTransactionController;
 use App\Http\Controllers\Man\CustomerRoleAccessibilityController;
 use App\Http\Controllers\Man\CustomerRoleController;
 use App\Http\Controllers\Man\CustomerTaskController;
+use App\Http\Controllers\Man\CustomerTemporaryProductController;
 use App\Http\Controllers\Man\CustomerWareHouseRackGoodController;
 use App\Http\Controllers\Man\UserCustomerController;
 use App\Http\Controllers\ReportController;
@@ -53,7 +54,6 @@ Route::middleware([unSelectCustomerCompany::class])->group(function () {
 
 Route::name('privacy.')->prefix('privacy')->group(function () {
     Route::get('/request-access-pin', [AuthController::class, 'requestActivateAccessPin'])->name('request-access-pin');
-    Route::get('/confirm-access-pin', [AuthController::class, 'confirmAccessPin'])->name('confirm-access-pin');
     Route::post('/validate-access-pin', [AuthController::class, 'validateAccessPin'])->name('validate-access-pin');
     Route::post('/access-pin', [AuthController::class, 'activateAccessPin'])->name('access-pin');
 });
@@ -64,6 +64,8 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
     Route::name('auth.')->prefix('auth')->group(function () {
         Route::post('/login-as/{id?}', [AuthController::class, 'loginAs'])->name('login-as')->middleware([checkPageAuthorization::class]);
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::post('/lockscreen', [AuthController::class, 'lockscreen'])->name('lockscreen');
+        Route::post('/unlock-screen', [AuthController::class, 'unlockScreen'])->name('unlock-screen');
         Route::get('/request-change-password', [AuthController::class, 'requestChangePassword'])->name('request-change-password');
         Route::get('/change-company', [AuthController::class, 'changeCompany'])->name('change-company')->middleware([checkPageAuthorization::class]);
     });
@@ -218,6 +220,15 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::get('/data-table', [CustomerCompanyMasterTaskController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerCompanyMasterTaskController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerCompanyMasterTaskController::class, 'destroy'])->name('delete');
+        });
+        Route::name('customer-product-stocktaking')->as('customer-product-stocktaking.')->prefix('customer-product-stocktaking')->group(function () {
+            Route::get('/', [CustomerCompanyStocktakingController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
+            Route::post('/', [CustomerCompanyStocktakingController::class, 'store'])->name('store');
+            Route::put('/{id?}', [CustomerCompanyStocktakingController::class, 'update'])->name('update');
+            Route::get('/data-table', [CustomerCompanyStocktakingController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [CustomerCompanyStocktakingController::class, 'show'])->name('show');
+            Route::post('/{id?}', [CustomerCompanyStocktakingController::class, 'approveStocktaking'])->name('approve');
+            Route::delete('/{id?}', [CustomerCompanyStocktakingController::class, 'destroy'])->name('delete');
         });
     });
 });
