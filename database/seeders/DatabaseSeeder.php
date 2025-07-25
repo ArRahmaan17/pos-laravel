@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Models\AppGoodUnit;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -16,46 +15,46 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         \App\Models\AppMenu::insert([
-            //1
-            ["name" => "Home", "route" => "home", "icon" => "bx bxs-home", "parent" => 0, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //2
-            ["name" => "Dev", "route" => "#dev", "icon" => "bx bxs-data", "parent" => 0, "dev_only" => 1, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //3
-            ["name" => "App Menu", "route" => "dev.app-menu.index", "icon" => "bx bx-list-ol", "parent" => 2, "dev_only" => 1, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //4
-            ["name" => "App Role", "route" => "dev.app-role.index", "icon" => "bx bxs-user-check", "parent" => 2, "dev_only" => 1, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //5
-            ["name" => "Subscription", "route" => "dev.app-subscription.index", "icon" => "bx bx-layer-plus", "parent" => 2, "dev_only" => 1, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //6
-            ["name" => "List Company", "route" => "man.customer-company.index", "icon" => "bx bxs-building", "parent" => 2, "dev_only" => 1, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //7
-            ["name" => "Company", "route" => "man.customer-company.index", "icon" => "bx bxs-building-house", "parent" => 0, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //8
-            ["name" => "Role", "route" => "man.customer-role.index", "icon" => "bx bxs-user-check", "parent" => 7, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //9
-            ["name" => "Role Permission", "route" => "man.customer-role-accessibility.index", "icon" => "bx bxs-user-detail", "parent" => 7, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //10
-            ["name" => "Employee", "route" => "man.customer-user.index", "icon" => "bx bxs-user-detail", "parent" => 7, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //11
-            ["name" => "Library", "route" => "#library", "icon" => "bx bx-library", "parent" => 0, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //12
-            ["name" => "Temp Product", "route" => "man.customer-temp-product.index", "icon" => "bx bx-package", "parent" => 11, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //13
-            ["name" => "Product", "route" => "man.customer-company-good.index", "icon" => "bx bxs-book-content", "parent" => 11, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //14
-            ["name" => "Discount", "route" => "man.customer-company-discount.index", "icon" => "bx bxs-discount", "parent" => 11, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //15
-            ["name" => "Profile", "route" => "man.customer-user.profile", "icon" => "bx bxs-user-circle", "parent" => 0, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 1],
-            //16
-            ["name" => "Storage", "route" => "#store", "icon" => "bx bxs-data", "parent" => 0, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //17
-            ["name" => "Warehouse", "route" => "man.customer-company-warehouse.index", "icon" => "bx bxs-grid", "parent" => 16, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //18
-            ["name" => "Warehouse Shelf", "route" => "man.customer-warehouse-rack-good.index", "icon" => "bx bx-grid-vertical", "parent" => 16, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //19
-            ["name" => "Transaction", "route" => "man.customer-product-transaction.index", "icon" => "bx bx-cart", "parent" => 0, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
-            //20
-            ["name" => "Report", "route" => "man.report.index", "icon" => "bx bxs-report", "parent" => 0, "dev_only" => 0, "created_at" => now(), "updated_at" => now(), "place" => 0],
+            // 1
+            ['name' => 'Home', 'route' => 'home', 'icon' => 'bx bxs-home', 'parent' => 0, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 2
+            ['name' => 'Dev', 'route' => '#dev', 'icon' => 'bx bxs-data', 'parent' => 0, 'dev_only' => 1, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 3
+            ['name' => 'App Menu', 'route' => 'dev.app-menu.index', 'icon' => 'bx bx-list-ol', 'parent' => 2, 'dev_only' => 1, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 4
+            ['name' => 'App Role', 'route' => 'dev.app-role.index', 'icon' => 'bx bxs-user-check', 'parent' => 2, 'dev_only' => 1, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 5
+            ['name' => 'Subscription', 'route' => 'dev.app-subscription.index', 'icon' => 'bx bx-layer-plus', 'parent' => 2, 'dev_only' => 1, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 6
+            ['name' => 'List Company', 'route' => 'man.customer-company.index', 'icon' => 'bx bxs-building', 'parent' => 2, 'dev_only' => 1, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 7
+            ['name' => 'Company', 'route' => 'man.customer-company.index', 'icon' => 'bx bxs-building-house', 'parent' => 0, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 8
+            ['name' => 'Role', 'route' => 'man.customer-role.index', 'icon' => 'bx bxs-user-check', 'parent' => 7, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 9
+            ['name' => 'Role Permission', 'route' => 'man.customer-role-accessibility.index', 'icon' => 'bx bxs-user-detail', 'parent' => 7, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 10
+            ['name' => 'Employee', 'route' => 'man.customer-user.index', 'icon' => 'bx bxs-user-detail', 'parent' => 7, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 11
+            ['name' => 'Library', 'route' => '#library', 'icon' => 'bx bx-library', 'parent' => 0, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 12
+            ['name' => 'Temp Product', 'route' => 'man.customer-temp-product.index', 'icon' => 'bx bx-package', 'parent' => 11, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 13
+            ['name' => 'Product', 'route' => 'man.customer-company-good.index', 'icon' => 'bx bxs-book-content', 'parent' => 11, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 14
+            ['name' => 'Discount', 'route' => 'man.customer-company-discount.index', 'icon' => 'bx bxs-discount', 'parent' => 11, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 15
+            ['name' => 'Profile', 'route' => 'man.customer-user.profile', 'icon' => 'bx bxs-user-circle', 'parent' => 0, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 1],
+            // 16
+            ['name' => 'Storage', 'route' => '#store', 'icon' => 'bx bxs-data', 'parent' => 0, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 17
+            ['name' => 'Warehouse', 'route' => 'man.customer-company-warehouse.index', 'icon' => 'bx bxs-grid', 'parent' => 16, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 18
+            ['name' => 'Warehouse Shelf', 'route' => 'man.customer-warehouse-rack-good.index', 'icon' => 'bx bx-grid-vertical', 'parent' => 16, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 19
+            ['name' => 'Transaction', 'route' => 'man.customer-product-transaction.index', 'icon' => 'bx bx-cart', 'parent' => 0, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
+            // 20
+            ['name' => 'Report', 'route' => 'man.report.index', 'icon' => 'bx bxs-report', 'parent' => 0, 'dev_only' => 0, 'created_at' => now(), 'updated_at' => now(), 'place' => 0],
 
         ]);
         \App\Models\User::insert(

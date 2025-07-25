@@ -64,7 +64,7 @@
                             @endif
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
-                            <img src="{{ asset('/cp/default-company.png') }}" alt="user-avatar" class="d-block rounded" height="100" width="100"
+                            <img src="{{ asset('cp/default-company.png') }}" alt="user-avatar" class="d-block rounded" height="100" width="100"
                                 id="uploadedAvatar" />
                             <div class="button-wrapper">
                                 <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">

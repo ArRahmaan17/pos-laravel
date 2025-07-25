@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\CustomerCompanyWarehouse;
 use App\Models\CustomerGoodWarehouse;
 use App\Models\CustomerWarehouseRack;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -34,16 +33,16 @@ class CustomerCompanyWarehouseController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where($where)->get();
         } else {
             $assets = CustomerCompanyWarehouse::with(['racks'])->select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -52,11 +51,11 @@ class CustomerCompanyWarehouseController extends Controller
             $assets = $assets->where($where)->get();
 
             $totalFiltered = CustomerCompanyWarehouse::with(['racks'])->select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where($where)->count();
         }
@@ -67,7 +66,7 @@ class CustomerCompanyWarehouseController extends Controller
             $row['name'] = $item->name;
             $row['description'] = $item->description;
             $row['racks'] = $item->racks;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-warehouse='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-warehouse='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-warehouse='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-warehouse='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [

@@ -407,7 +407,8 @@
                 },
                 dataType: "json",
                 success: function(response) {
-                    window.dataTableCustomerTaskManagement.ajax.reload()
+                    window.dataTableCustomerTaskManagement.ajax.reload();
+                    window.filePondEvidence.destroy();
                 }
             });
         }

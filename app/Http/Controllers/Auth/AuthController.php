@@ -45,8 +45,8 @@ class AuthController extends Controller
                 }
             }
             session()->flush();
-            if (!$hasPrivileges) {
-                session(['userLogged' => collect($roleUser)->toArray(), 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+            if (! $hasPrivileges) {
+                session(['userLogged' => collect($roleUser)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
             }
 
             return redirect()->route('select-customer-company');
@@ -67,7 +67,7 @@ class AuthController extends Controller
         }
         $data['company'] = CustomerCompany::with('address')->where($where)->first()->toArray();
         session()->flush();
-        session(['userLogged' => $data, 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+        session(['userLogged' => $data, 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home');
     }
@@ -81,7 +81,7 @@ class AuthController extends Controller
         $user = UserCustomerRole::with('user', 'role')
             ->where($where)
             ->first()->toArray();
-        if (!empty($user)) {
+        if (! empty($user)) {
             $hasPrivileges = true;
             $user['company'] = UserCustomerRole::employeeCompany($user['userId']);
             if (UserCustomerRole::employeeMenu($user['userId']) == 0) {
@@ -89,17 +89,18 @@ class AuthController extends Controller
             }
             if ($hasPrivileges) {
                 session()->flush();
-                session(['userLogged' => collect($user)->toArray(), 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
-                $response = ['message' => 'successfully login as ' . $user['user']['username']];
+                session(['userLogged' => collect($user)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+                $response = ['message' => 'successfully login as '.$user['user']['username']];
                 $status = 200;
             } else {
-                $response = ['message' => 'failed login as ' . $user['user']['username'] . ', please set role for the user'];
+                $response = ['message' => 'failed login as '.$user['user']['username'].', please set role for the user'];
                 $status = 404;
             }
         } else {
-            $response = ['message' => 'failed login as ' . $user['user']['username'] . ', unexpected error on process login as'];
+            $response = ['message' => 'failed login as '.$user['user']['username'].', unexpected error on process login as'];
             $status = 404;
         }
+
         return response()->json($response, $status);
     }
 
@@ -261,10 +262,6 @@ class AuthController extends Controller
     {
         return view('auth.activate-access-pin');
     }
-    public function confirmAccessPin()
-    {
-        return view('auth.confirm-access-pin');
-    }
 
     public function activateAccessPin(Request $request)
     {
@@ -276,9 +273,9 @@ class AuthController extends Controller
         $request->validate([
             'current_access_pin' => ['array', function ($attribute, $value, $fail) use ($currentPin) {
                 $currentPin = implode($value);
-                if (!User::where(['id' => session('userLogged')['user']['id'], 'pin' => Hash::make($currentPin)])->exists()) {
+                if (! User::where(['id' => session('userLogged')['user']['id'], 'pin' => Hash::make($currentPin)])->exists()) {
                     $fail("The {$attribute} not match to our records");
-                };
+                }
             }],
             'current_access_pin.*' => 'nullable|numeric',
             'access_pin' => ['array', function ($attribute, $value, $fail) {
@@ -301,7 +298,7 @@ class AuthController extends Controller
         $message = ['success', 'Access Pin updated successfully'];
         DB::beginTransaction();
         try {
-            if (!User::where($where)->update(['pin' => Hash::make(implode('', $request->access_pin))])) {
+            if (! User::where($where)->update(['pin' => Hash::make(implode('', $request->access_pin))])) {
                 $message = ['error', 'Unexpected error in our record, try again later.'];
             }
             DB::commit();
@@ -313,14 +310,15 @@ class AuthController extends Controller
         if (empty($roleUser) || empty($roleUser->user) || empty($roleUser->role)) {
             $roleUser = UserCustomerRole::with('user', 'role')->where('userId', session('userLogged')['user']['id'])->first();
         }
-        if (!in_array($roleUser->role->name, ['Developer', 'Manager'])) {
+        if (! in_array($roleUser->role->name, ['Developer', 'Manager'])) {
             $roleUser['company'] = UserCustomerRole::employeeCompany($roleUser->userId);
             $roleUser['company']['address'] = CompanyAddress::where('companyId', $roleUser['company']['id'])->first()->toArray();
         } else {
             $roleUser['company'] = CustomerCompany::with('address')->where(['id' => session('userLogged')['company']['id'], 'userId' => session('userLogged')['user']['id']])->first()->toArray();
         }
         session()->flush();
-        session(['userLogged' => collect($roleUser)->toArray(), 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+        session(['userLogged' => collect($roleUser)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+
         return redirect()->route('home')->with($message);
     }
 
@@ -328,8 +326,43 @@ class AuthController extends Controller
     {
         $data = session('userLogged');
         unset($data['company']);
-        session(['userLogged' => $data, 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+        session(['userLogged' => $data, 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home');
+    }
+
+    public function unlockScreen(Request $request)
+    {
+        $request->validate([
+            'access_pin' => ['array', function ($attribute, $value, $fail) {
+                if (count(array_filter($value, function ($val) {
+                    return $val == null;
+                })) == 6) {
+                    $fail("The {$attribute} must be 6 digits.");
+                }
+            }],
+            'access_pin.*' => 'required|numeric',
+        ]);
+        if (Hash::check(implode('', $request->access_pin), session('userLogged')['user']['pin'])) {
+            $dataSession = session()->all();
+            session()->flush();
+            $dataSession['lifetime'] = now()->addMinutes(env('SESSION_LIFETIME', 120));
+            session($dataSession);
+            $status = 200;
+            $message = ['message' => 'lifetime extended successfully'];
+        } else {
+            $status = 422;
+            $message = ['message' => 'failed extending lifetime'];
+        }
+
+        return response()->json($message, $status);
+    }
+
+    public function lockscreen(Request $request)
+    {
+        $dataSession = session()->all();
+        unset($dataSession['lifetime']);
+        session()->flush();
+        session($dataSession);
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class AppSubscription extends Model
 {
     use HasFactory;
+
     protected $fillable = ['name', 'description', 'price'];
 
     public function planFeature(): HasMany

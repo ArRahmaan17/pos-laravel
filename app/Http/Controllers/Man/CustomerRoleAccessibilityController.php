@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\AppMenu;
 use App\Models\CustomerRole;
 use App\Models\CustomerRoleAccessibility;
-use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +20,7 @@ class CustomerRoleAccessibilityController extends Controller
         $menus = AppMenu::customer_menu();
         $menus = buildTree($menus);
         $roles = CustomerRole::with(['role_users'])->where('userId', session('userLogged')['company']['userId'])->get();
+
         return view('man.customer-role-accessibility', compact('menus', 'roles'));
     }
 
@@ -30,7 +30,7 @@ class CustomerRoleAccessibilityController extends Controller
         if (getRole() === 'Developer') {
             $where = [['customer_roles.userId', '<>', 0]];
         }
-        $totalData =  CustomerRole::with('role_menus')
+        $totalData = CustomerRole::with('role_menus')
             ->select('customer_roles.name', 'customer_roles.id')
             ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
             ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
@@ -52,7 +52,7 @@ class CustomerRoleAccessibilityController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where($where)->groupBy('customer_roles.name', 'customer_roles.id')->get();
         } else {
@@ -61,11 +61,11 @@ class CustomerRoleAccessibilityController extends Controller
                 ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
                 ->leftJoin('customer_companies as cc', 'ucr.companyId', '=', 'cc.id')
                 ->select('customer_roles.name', 'customer_roles.id')
-                ->where('customer_roles.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_roles.description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_roles.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_roles.description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -77,11 +77,11 @@ class CustomerRoleAccessibilityController extends Controller
                 ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
                 ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
                 ->leftJoin('customer_companies as cc', 'ucr.companyId', '=', 'cc.id')
-                ->where('customer_roles.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('customer_roles.description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('customer_roles.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('customer_roles.description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where($where)->groupBy('customer_roles.name', 'customer_roles.id')->count();
         }
@@ -91,7 +91,7 @@ class CustomerRoleAccessibilityController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['menu'] = $item->role_menus;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role-accessibility='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-role-accessibility='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role-accessibility='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-role-accessibility='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [

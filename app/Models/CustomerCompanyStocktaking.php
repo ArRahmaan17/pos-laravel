@@ -5,9 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AppGoodUnit extends Model
+class CustomerCompanyStocktaking extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['name', 'description', 'status'];
+    protected $fillable = ['goodId', 'expect_stock', 'real_stock', 'userId', 'companyId', 'status'];
 }

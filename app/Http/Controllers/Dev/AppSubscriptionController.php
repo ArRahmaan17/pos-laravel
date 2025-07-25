@@ -31,16 +31,16 @@ class AppSubscriptionController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->get();
         } else {
             $assets = AppSubscription::with('planFeature')->select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -49,11 +49,11 @@ class AppSubscriptionController extends Controller
             $assets = $assets->get();
 
             $totalFiltered = AppSubscription::with('planFeature')->select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->count();
         }
@@ -65,7 +65,7 @@ class AppSubscriptionController extends Controller
             $row['description'] = $item->description;
             $row['price'] = $item->price;
             $row['plans'] = $item->planFeature;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-app-subscription='" . $item->id . "' ><i class='bx bx-pencil' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-app-subscription='".$item->id."' ><i class='bx bx-pencil' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -81,7 +81,6 @@ class AppSubscriptionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-
     public function store(Request $request)
     {
         $request->validate([
@@ -106,8 +105,8 @@ class AppSubscriptionController extends Controller
                     'category' => $detail['category'],
                     'created_at' => now(),
                     'updated_at' => now(),
-                    'amount' => !empty($detail['amount']) ? intval(convertStringToNumber($detail['amount'])) : null,
-                    'status' => !empty($detail['status'])? intval($detail['status']) : null,
+                    'amount' => ! empty($detail['amount']) ? intval(convertStringToNumber($detail['amount'])) : null,
+                    'status' => ! empty($detail['status']) ? intval($detail['status']) : null,
                 ];
             }, $request->details);
             AppDetailSubscription::insert($subs_feature);
@@ -135,6 +134,7 @@ class AppSubscriptionController extends Controller
             $response = ['message' => 'failed showing resource', 'data' => $data];
             $code = 404;
         }
+
         return response()->json($response, $code);
     }
 

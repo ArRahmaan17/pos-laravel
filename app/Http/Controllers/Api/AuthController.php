@@ -41,8 +41,8 @@ class AuthController extends Controller
                 }
             }
             session()->flush();
-            if (!$hasPrivileges) {
-                session(['userLogged' => collect($role)->toArray(), 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+            if (! $hasPrivileges) {
+                session(['userLogged' => collect($role)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
             }
 
             return redirect()->route('select-customer-company');
@@ -63,10 +63,11 @@ class AuthController extends Controller
         }
         $data['company'] = CustomerCompany::with('address')->where($where)->first()->toArray();
         session()->flush();
-        session(['userLogged' => $data, 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+        session(['userLogged' => $data, 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home');
     }
+
     public function loginAs($id)
     {
         $where = [
@@ -84,19 +85,21 @@ class AuthController extends Controller
             }
             if ($hasPrivileges) {
                 session()->flush();
-                session(['userLogged' => collect($user)->toArray(), 'lifetime' =>  now()->addMinutes(env('SESSION_LIFETIME', 120))]);
-                $response = ['message' => 'successfully login as ' . $user['user']['username']];
+                session(['userLogged' => collect($user)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+                $response = ['message' => 'successfully login as '.$user['user']['username']];
                 $status = 200;
             } else {
-                $response = ['message' => 'failed login as ' . $user['user']['username'] . ', please set role for the user'];
+                $response = ['message' => 'failed login as '.$user['user']['username'].', please set role for the user'];
                 $status = 404;
             }
         } else {
-            $response = ['message' => 'failed login as ' . $user['user']['username'] . ', unexpected error on process login as'];
+            $response = ['message' => 'failed login as '.$user['user']['username'].', unexpected error on process login as'];
             $status = 404;
         }
+
         return response()->json($response, $status);
     }
+
     public function register(Request $request)
     {
         $types = BusinessType::all();
@@ -221,6 +224,7 @@ class AuthController extends Controller
             return redirect()->back();
         }
     }
+
     public function checkAvailableUser(Request $request)
     {
         $request->validate([
@@ -241,20 +245,24 @@ class AuthController extends Controller
             $response = ['message' => 'User still available'];
             $code = 200;
         }
+
         return response()->json($response, $code);
     }
+
     public function companyTypes()
     {
         $allCompanyTypes = BusinessType::all()->toArray();
         if ($allCompanyTypes) {
-            $response = ['message' => 'Successfully fetch company types', 'data'=> $allCompanyTypes];
+            $response = ['message' => 'Successfully fetch company types', 'data' => $allCompanyTypes];
             $code = 200;
         } else {
-            $response = ['message' => 'Failed fetch company types', 'data'=> $allCompanyTypes];
+            $response = ['message' => 'Failed fetch company types', 'data' => $allCompanyTypes];
             $code = 404;
         }
+
         return response()->json($response, $code);
     }
+
     public function checkAvailableCompany(Request $request)
     {
         $request->validate([
@@ -275,6 +283,7 @@ class AuthController extends Controller
             $response = ['message' => 'Company still available'];
             $code = 200;
         }
+
         return response()->json($response, $code);
     }
 }

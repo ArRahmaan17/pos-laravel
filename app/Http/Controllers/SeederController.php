@@ -6,39 +6,38 @@ use App\Models\CustomerCompanyDiscount;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerCompanyWarehouse;
 use App\Models\CustomerWarehouseRack;
-use Illuminate\Http\Request;
 
 class SeederController extends Controller
 {
     public function processSeeder()
     {
         $warehouseId = CustomerCompanyWarehouse::create([
-            'name' => 'Warehouse ' . fake()->word,
-            'description' => 'Warehouse ' . fake()->words,
-            'companyId' => session('userLogged')['company']['id']
+            'name' => 'Warehouse '.fake()->word,
+            'description' => 'Warehouse '.fake()->words,
+            'companyId' => session('userLogged')['company']['id'],
         ]);
         CustomerWarehouseRack::insert([
             [
                 'warehouseId' => $warehouseId,
-                'name' => 'Shelf ' . fake()->word,
-                'description' => 'Shelf ' . fake()->words,
+                'name' => 'Shelf '.fake()->word,
+                'description' => 'Shelf '.fake()->words,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'warehouseId' => $warehouseId,
-                'name' => 'Shelf ' . fake()->word,
-                'description' => 'Shelf ' . fake()->words,
+                'name' => 'Shelf '.fake()->word,
+                'description' => 'Shelf '.fake()->words,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'warehouseId' => $warehouseId,
-                'name' => 'Shelf ' . fake()->word,
-                'description' => 'Shelf ' . fake()->words,
+                'name' => 'Shelf '.fake()->word,
+                'description' => 'Shelf '.fake()->words,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
         ]);
         CustomerCompanyGood::insert([
             [
@@ -83,7 +82,7 @@ class SeederController extends Controller
                 'companyId' => session('userLogged')['company']['id'],
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]
+            ],
         ]);
     }
 }
