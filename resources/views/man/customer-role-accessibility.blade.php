@@ -103,7 +103,7 @@
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
-    
+
     <script>
         window.dataTableAppRole = null;
         window.state = 'add';
@@ -364,7 +364,9 @@
             $('#modal-customer-role-accessibility').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $('#form-customer-role-accessibility').find('[type=checkbox]').map((index, element) => {
-                    $(element).attr('checked', false);
+                    if (!$(element).hasClass('mandatory')) {
+                        $(element).prop('checked', false);
+                    }
                 })
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
                 $('#save-customer-role-accessibility').removeClass('d-none');
@@ -382,10 +384,15 @@
             $('.menu-access').click(function() {
                 if ($(this).hasClass('selectAll')) {
                     $('#form-customer-role-accessibility').find('[type=checkbox]').map((index, element) => {
-                        $(element).prop('checked', this.checked);
+                        if (!$(element).hasClass('mandatory')) {
+                            $(element).prop('checked', this.checked);
+                        }
                     })
                 } else {
                     $(`.menu-access[data-parent=${this.value}]`).prop('checked', this.checked);
+                    if ($(`.menu-access`).hasClass('mandatory')) {
+                        $(`.menu-access.mandatory`).prop('checked', true);
+                    }
                 }
             })
         });

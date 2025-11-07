@@ -49,7 +49,7 @@
                                 <select name="parent" id="parent" class="form-control select2">
                                     <option value="0">Kosong</option>
                                     @foreach ($menus as $menu)
-                                        <option value="{{ $menu->id }}">{{ $menu->name }}</option>
+                                        <option value="{{ $menu->id }}" data-place="{{ $menu->place }}">{{ $menu->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -76,7 +76,7 @@
                                 <label for="icon" class="form-label">Menu Icon</label>
                                 <input type="text" id="icon" name="icon" class="form-control" placeholder="Enter Menu Icon" />
                                 <div id="passwordHelpBlock" class="form-text">
-                                    compatible icon is on <a href="https://boxicons.com/">boxicons</a>
+                                    compatible icon is on <a href="https://v2.boxicons.com/">boxicons</a>
                                 </div>
                             </div>
                         </div>
@@ -132,7 +132,7 @@
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
-    
+
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script>
         window.dataTableAppMenu = null;
@@ -217,38 +217,30 @@
                     .find('form select')
                     .val(idAppMenu)
                     .trigger('change');
+                if (data.place) {
+                    $('#modal-app-menu')
+                        .find('form input#place-profile')
+                        .attr('checked', 'checked')
+                } else {
+                    $('#modal-app-menu')
+                        .find('form input#place-sidebar')
+                        .attr('checked', 'checked')
+                }
+                let childHtml = '';
+
+                if (data.child.length != 0) {
+                    data.child.map((element) => {
+                        childHtml += `<div class="col-12">${element.name}</div>`;
+                    })
+                } else {
+                    childHtml += `<div class="col-12">Not Found</div>`;
+                }
+                $('#child-menu-container').html(childHtml)
                 setTimeout(() => {
                     $('#modal-app-menu')
                         .find('form select')
                         .prop("disabled", true);
                 }, 200);
-                $.ajax({
-                    type: "GET",
-                    url: "{{ route('dev.app-menu.show') }}/" + idAppMenu,
-                    dataType: "json",
-                    success: function(response) {
-                        let childHtml = '';
-
-                        if (response.data.child.length != 0) {
-                            response.data.child.map((element) => {
-                                childHtml += `<div class="col-12">${element.name}</div>`;
-                            })
-                        } else {
-                            childHtml += `<div class="col-12">Not Found</div>`;
-                        }
-                        $('#child-menu-container').html(childHtml)
-                    },
-                    error: function(error) {
-                        iziToast.error({
-                            id: 'alert-app-menu-action',
-                            title: 'Error',
-                            message: error.responseJSON.message,
-                            position: 'topRight',
-                            layout: 2,
-                            displayMode: 'replace'
-                        });
-                    }
-                });
             })
 
             $('.delete').click(function() {
@@ -288,7 +280,7 @@
                                     iziToast.success({
                                         id: 'alert-app-menu-form',
                                         title: 'Success',
-                                        message: response.message,
+                                        message: message,
                                         position: 'topRight',
                                         layout: 2,
                                         displayMode: 'replace'
@@ -445,6 +437,17 @@
                     }
                 });
             });
+            $('#parent').change(function() {
+                if ($(this).find(`option[value=${this.value}]`).data('place')) {
+                    $('#modal-app-menu')
+                        .find('form input#place-profile')
+                        .attr('checked', 'checked')
+                } else {
+                    $('#modal-app-menu')
+                        .find('form input#place-sidebar')
+                        .attr('checked', 'checked')
+                }
+            });
             $('#modal-app-menu').on('hidden.bs.modal', function() {
                 window.state = 'add';
                 $(this).find('form')[0].reset();
@@ -454,6 +457,9 @@
                 $('#modal-app-menu .is-invalid').removeClass('is-invalid')
                 $('#modal-app-menu select[disabled]').prop("disabled", false);
                 $('#table-app-menu tbody').find('tr').removeClass('selected');
+                $('#modal-app-menu')
+                    .find('form input')
+                    .removeAttr('checked')
             });
             $('#modal-app-menu').on('shown.bs.modal', function() {
                 if (window.state == 'add') {

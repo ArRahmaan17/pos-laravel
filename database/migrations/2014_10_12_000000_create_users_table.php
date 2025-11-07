@@ -21,7 +21,9 @@ return new class extends Migration
             $table->string('profile_picture')->nullable(true);
             $table->string('affiliate_code')->nullable(true);
             $table->string('pin')->nullable(true);
+            $table->unique(['name', 'username'])->nullable(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

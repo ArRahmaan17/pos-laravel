@@ -32,7 +32,7 @@
             /* Change the color as desired */
         }
 
-        .font-xs {
+        .text-xs {
             font-size: 0.75rem;
             line-height: calc(1 / 0.75);
         }
@@ -126,7 +126,7 @@
                         </div>
 
                         <ul class="navbar-nav flex-row justify-content-between align-items-center ms-auto">
-                            <li class="serverTime font-xs my-auto px-2">
+                            <li class="serverTime text-xs my-auto px-2">
                                 <div class="spinner-border spinner-border-sm"></div>
                             </li>
                             @if (env('APP_SUBS') == 'ON' && in_array(getRole(), ['Developer', 'Manager']))
@@ -660,34 +660,6 @@
         });
     }
     $(function() {
-        $(function() {
-            @if (session('lifetime') !== null)
-                @if (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
-                        [2, 1]))
-                    $("#modalDisconect").iziModal('open');
-                @elseif (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
-                        [5, 4, 3]))
-                    iziToast.warning({
-                        id: 'alert-session-expirated',
-                        title: 'Alert',
-                        message: `session expirate in {{ now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta')) }} minutes`,
-                        position: 'bottomRight',
-                        layout: 2,
-                        balloon: true,
-                        displayMode: 'replace'
-                    });
-                @elseif (now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false) < 0 || session('lifetime') == null)
-                    lockscreenTrigger();
-                @endif
-            @else
-                lockscreenTrigger();
-            @endif
-            $('.trigger-lockscreen').click(function() {
-                lockscreenTrigger();
-            });
-        });
-    });
-    $(function() {
         server_time();
         $(".menu-sub").find('.menu-link.bg-primary').parents('.menu-item:not(:first)').map((index, element) => {
             $(element).addClass('open');
@@ -721,50 +693,74 @@
                 $.ajax({
                     type: "get",
                     url: `{{ route('dev.app-subscription.show') }}/${window.process_subscription.id}`,
-                        dataType: "json",
-                        success: function(response) {
-                            $('.subs-title').html(response.data.name);
-                            $('.subs-description').html(response.data.description);
-                            $('.subs-price').html(numberFormat(response.data.price - (window.process_subscription.year ? response
-                                .data.price * 5 / 100 : 0)));
-                            $('.subs-sub-total').html(numberFormat((response.data.price - (window.process_subscription.year ? (
-                                response.data.price * 5 / 100) : 0)) * (window.process_subscription.year ? 12 : 1)));
-                        }
-                    });
-                }
-            });
-            $('#SubscriptionProcessModal').on('hidden.bs.modal', function() {
-                window.process_subscription == null;
-            });
-        });
-        $("#modalDisconect").iziModal({
-            title: 'Warning',
-            subtitle: 'You About To Disconected',
-            headerColor: '#ff3e1d',
-            radius: 3,
-            zindex: 9999,
-            width: 900,
-            navigateCaption: true,
-            restoreDefaultContent: false,
-            timeout: 120000,
-            timeoutProgressbar: true,
-            onClosed: function() {
-                $('.lockscreen').offcanvas('show');
+                    dataType: "json",
+                    success: function(response) {
+                        $('.subs-title').html(response.data.name);
+                        $('.subs-description').html(response.data.description);
+                        $('.subs-price').html(numberFormat(response.data.price - (window.process_subscription.year ? response
+                            .data.price * 5 / 100 : 0)));
+                        $('.subs-sub-total').html(numberFormat((response.data.price - (window.process_subscription.year ? (
+                            response.data.price * 5 / 100) : 0)) * (window.process_subscription.year ? 12 : 1)));
+                    }
+                });
             }
         });
-        $('.offcanvas input').keydown(function(e) {
-            if (e.which == 9) {
-                e.preventDefault();
-            }
+        $('#SubscriptionProcessModal').on('hidden.bs.modal', function() {
+            window.process_subscription == null;
         });
-        $('.single_number').keyup(function(e) {
-            if (e.currentTarget.value.split('').length == 1 && /\d{1}/y.exec(e.currentTarget.value) != null) {
-                if (e.currentTarget.nextElementSibling) {
-                    $(e.currentTarget.nextElementSibling).focus();
-                } else {
-                    $($(e.currentTarget).parents('.mb-3')[0].nextElementSibling).find('.single_number:first').focus()
-                }
+    });
+    $("#modalDisconect").iziModal({
+        title: 'Warning',
+        subtitle: 'You About To Disconected',
+        headerColor: '#ff3e1d',
+        radius: 3,
+        zindex: 9999,
+        width: 900,
+        navigateCaption: true,
+        restoreDefaultContent: false,
+        timeout: 120000,
+        timeoutProgressbar: true,
+        onClosed: function() {
+            $('.lockscreen').offcanvas('show');
+        }
+    });
+    $('.offcanvas input').keydown(function(e) {
+        if (e.which == 9) {
+            e.preventDefault();
+        }
+    });
+    $('.single_number').keyup(function(e) {
+        if (e.currentTarget.value.split('').length == 1 && /\d{1}/y.exec(e.currentTarget.value) != null) {
+            if (e.currentTarget.nextElementSibling) {
+                $(e.currentTarget.nextElementSibling).focus();
+            } else {
+                $($(e.currentTarget).parents('.mb-3')[0].nextElementSibling).find('.single_number:first').focus()
             }
+        }
+    });
+    @if (session('lifetime') !== null)
+        @if (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
+                [2, 1]))
+            $("#modalDisconect").iziModal('open');
+        @elseif (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
+                [5, 4, 3]))
+            iziToast.warning({
+                id: 'alert-session-expirated',
+                title: 'Alert',
+                message: `session expirate in {{ now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta')) }} minutes`,
+                    position: 'bottomRight',
+                    layout: 2,
+                    balloon: true,
+                    displayMode: 'replace'
+                });
+            @elseif (now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false) < 0 || session('lifetime') == null)
+                lockscreenTrigger();
+            @endif
+        @else
+            lockscreenTrigger();
+        @endif
+        $('.trigger-lockscreen').click(function() {
+            lockscreenTrigger();
         });
     </script>
     @stack('js')

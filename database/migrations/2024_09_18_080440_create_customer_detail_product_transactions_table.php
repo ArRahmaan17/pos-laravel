@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('customer_detail_product_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('orderCode')->unique();
+            $table->string('orderCode');
             $table->bigInteger('goodId')->unsigned();
             $table->foreign('goodId')
                 ->references('id')
@@ -21,9 +21,11 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->integer('quantity');
+            $table->integer('stock_reference');
             $table->decimal('price', 16, 2)->nullable(true);
-            $table->decimal('total', 16, 2)->nullable(true);
+            $table->decimal('total', 16, 2)->nullable(true)->generatedAs('(quantity * price)');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

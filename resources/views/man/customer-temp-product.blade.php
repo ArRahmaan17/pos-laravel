@@ -154,6 +154,18 @@
                     </select>
                 </div>
             </div>
+            <div class="row">
+                <div class="col mb-3">
+                    <label for="typeId" class="form-label">Category</label>
+                    <select class="form-control select2" name="typeId" id="typeId">
+                        <option value="">Not selected</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->name }} ({{ $category->description }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
         </form>
     </template>
     <template id="template-table-detail-product-temporary">
@@ -181,7 +193,7 @@
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
-    
+
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
         window.dataTableCustomerTemporaryProduct = undefined;
@@ -634,7 +646,8 @@
                 const clone = template[0].content.cloneNode(true);
                 container.append(clone);
                 formattedInput();
-                container.find(`.select2`).attr('id', `unitId${window.lastProductAccordion}`)
+                container.find(`.select2:first`).attr('id', `unitId${window.lastProductAccordion}`)
+                container.find(`.select2:last`).attr('id', `typeId${window.lastProductAccordion}`)
                 setTimeout(() => {
                     if (container.find(`.select2`).hasClass("select2-hidden-accessible")) {
                         container.find(`.select2`).select2('destroy');

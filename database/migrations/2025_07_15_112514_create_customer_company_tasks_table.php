@@ -23,6 +23,7 @@ return new class extends Migration
             $table->date('time_limit');
             $table->smallInteger('percentage')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

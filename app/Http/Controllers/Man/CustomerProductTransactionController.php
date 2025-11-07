@@ -302,6 +302,7 @@ class CustomerProductTransactionController extends Controller
                     'orderCode' => $data['orderCode'],
                     'goodId' => $product['id'],
                     'quantity' => $product['quantity'],
+                    'stock_reference' => $goods[$product['id']]->stock,
                     'price' => $goods[$product['id']]->price,
                     'total' => $goods[$product['id']]->price * intval($product['quantity']),
                     'created_at' => now(),
@@ -328,7 +329,9 @@ class CustomerProductTransactionController extends Controller
             $code = 200;
         } catch (\Throwable $th) {
             DB::rollBack();
-            $response = ['message' => ($th->getCode() == 422) ? 'Failed creating transaction. '.$th->getMessage() : 'Failed creating transaction. Unexpected error on processing your transaction'];
+            $response = [
+                'message' => ($th->getCode() == 422) ? 'Failed creating transaction. '.$th->getMessage() : 'Failed creating transaction. Unexpected error on processing your transaction',
+            ];
             $code = 422;
         }
 
@@ -367,7 +370,10 @@ class CustomerProductTransactionController extends Controller
     public function validateTransactionItems(Request $request)
     {
         $status_product = $this->checkProductStock(collect($request->products)->pluck('id')->toArray(), collect($request->products)->pluck('quantity')->toArray());
-        $status_discount = $this->checkDiscountCode($request->discount);
+        $isAppliedDiscount = ($request->discount) ? true : false;
+        if ($isAppliedDiscount) {
+            $status_discount = $this->checkDiscountCode($request->discount);
+        }
         $data_success = [];
         $data_errors = [];
         if (in_array(false, array_map(function ($status) {
@@ -381,10 +387,13 @@ class CustomerProductTransactionController extends Controller
                 return $status['status'] == false;
             });
         }
-        if ($status_discount) {
-            $data_success['discount'] = ['status' => true, 'code' => $status_discount->code];
-        } else {
-            $data_errors['discount'] = ['status' => false, 'code' => []];
+        if ($isAppliedDiscount) {
+
+            if ($status_discount) {
+                $data_success['discount'] = ['status' => true, 'code' => $status_discount->code];
+            } else {
+                $data_errors['discount'] = ['status' => false, 'code' => []];
+            }
         }
         $response = ['data' => $data_success, 'errors' => $data_errors];
         $code = 200;
@@ -418,28 +427,12 @@ class CustomerProductTransactionController extends Controller
             ->first();
         if ($data) {
             $pdf = App::make('dompdf.wrapper');
-            $pdf = $pdf->loadView('report.transaction-receipt', ($data) ? $data->toArray() : [])->setPaper([0, 0, 300, 280], 'portrait');
+            $pdf = $pdf->loadView('report.sales.transaction-receipt', ($data) ? $data->toArray() : [])->setPaper([0, 0, 300, 280], 'portrait');
 
             return $pdf->stream('Transaction-'.$orderCode.'.pdf');
         } else {
             return redirect()->route('home')->with('error', 'Transaction not found <b>'.$orderCode.'</b>');
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
     }
 
     /**

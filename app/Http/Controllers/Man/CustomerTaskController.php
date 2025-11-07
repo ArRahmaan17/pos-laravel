@@ -21,7 +21,7 @@ class CustomerTaskController extends Controller
      */
     public function index()
     {
-        $customer_roles = CustomerRole::where('userId', session('userLogged')['user']['id'])->get();
+        $customer_roles = CustomerRole::where('userId', session('userLogged')['company']['userId'])->get();
         $employees = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
             ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
             ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
@@ -240,7 +240,7 @@ class CustomerTaskController extends Controller
         $message = ['message' => 'tasks found', 'data' => $dataTask];
         if (empty($dataTask)) {
             $status = 404;
-            $message = ['message' => "tasks not found, please contact manager to create new task for session('userLogged')['role']['name']", 'data' => $dataTask];
+            $message = ['message' => 'tasks not found, please contact manager to create new task for '.session('userLogged')['role']['name'], 'data' => $dataTask];
         }
 
         return response()->json($message, $status);

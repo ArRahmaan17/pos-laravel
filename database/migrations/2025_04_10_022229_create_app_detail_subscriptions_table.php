@@ -28,6 +28,7 @@ return new class extends Migration
             $table->integer('heap')->nullable();
             $table->boolean('condition')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

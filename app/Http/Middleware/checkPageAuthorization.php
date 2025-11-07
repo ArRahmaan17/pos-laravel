@@ -21,10 +21,7 @@ class checkPageAuthorization
         } elseif (getRole() == 'Manager') {
             if (AppMenu::where('route', $request->route()->action['as'])->where('dev_only', 0)->count() == 1) {
                 return $next($request);
-                dd('masuk');
             } else {
-                dd('masuk else');
-
                 return redirect()->route('home')->with('error', "You don't have permission to access ".implode(' > ', explode('.', implode('', explode('.index', $request->route()->action['as'])))));
             }
         } else {

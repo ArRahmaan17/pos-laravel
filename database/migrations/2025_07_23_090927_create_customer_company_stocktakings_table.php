@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreign('goodId')->references('id')->on('customer_company_goods')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('companyId')->references('id')->on('customer_companies')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

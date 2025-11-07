@@ -14,22 +14,31 @@ return new class extends Migration
         Schema::create('customer_temporary_products', function (Blueprint $table) {
             $table->id();
             $table->string('orderCode');
-            $table->date('transaction_created')->useCurrent();
+            $table->date('transaction_created');
             $table->rawIndex('orderCode,companyId,transaction_created', 'index_orcitc_customer_temporary_product');
             $table->bigInteger('companyId')->unsigned()->nullable(true);
             $table->bigInteger('userId')->unsigned();
             $table->bigInteger('customerCompanyGoodId')
                 ->unsigned()
                 ->nullable(true);
-            $table->string('name')->nullable(true)->unique();
+            $table->string('name')->nullable(true);
             $table->enum('status', ['draft', 'archive', 'publish'])->nullable(true);
             $table->string('picture')->nullable(true);
             $table->integer('stock')->nullable(true);
+            $table->integer('stock_reference')->nullable(true);
             $table->decimal('price', 12, 2)->nullable(true);
             $table->decimal('buyPrice', 12, 2)->nullable(true);
             $table->bigInteger('unitId')
                 ->unsigned()
                 ->nullable(true);
+            $table->bigInteger('typeId')
+                ->unsigned()
+                ->nullable(false);
+            $table->foreign('typeId')
+                ->on('app_product_types')
+                ->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->boolean('accepted')->default(false);
             $table->bigInteger('accepted_by')->unsigned()->nullable(true);
             $table->foreign('unitId')
@@ -57,7 +66,9 @@ return new class extends Migration
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->unique(['orderCode', 'name'], 'order_name');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

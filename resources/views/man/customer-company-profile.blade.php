@@ -14,10 +14,6 @@
                             class="bx bx-building me-1"></i>
                         Company</a>
                 </li>
-                {{-- <li class="nav-item">
-                    <a class="nav-link" href="pages-account-settings-connections.html"><i class="bx bx-link-alt me-1"></i>
-                        Connections</a>
-                </li> --}}
             </ul>
 
             <div class="card mb-4">
@@ -91,17 +87,20 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
+                                    <label for="address[city]" class="form-label">City *</label>
                                     <input type="text" id="address[city]" name="address[city]"
                                         value="{{ session('userLogged')['company']['address']['city'] }}" class="form-control" placeholder="City">
                                     <div class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-4">
+                                    <label for="address[province]" class="form-label">Province *</label>
                                     <input type="text" id="address[province]" name="address[province]"
                                         value="{{ session('userLogged')['company']['address']['province'] }}" class="form-control"
                                         placeholder="State / Province">
                                     <div class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-4">
+                                    <label for="address[zipCode]" class="form-label">Postal / Zip Code *</label>
                                     <input type="text" id="address[zipCode]" name="address[zipCode]"
                                         value="{{ session('userLogged')['company']['address']['zipCode'] }}" class="form-control"
                                         placeholder="Postal / Zip Code">
@@ -122,7 +121,7 @@
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
-    
+
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script>
         $(function() {
@@ -158,7 +157,7 @@
                 let data = serializeFiles('#form-customer-company');
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-company.update') }}/{{session('userLogged')['company']['id']}}`,
+                    url: `{{ route('man.customer-company.update') }}/{{ session('userLogged')['company']['id'] }}`,
                     data: data,
                     processData: false,
                     contentType: false,

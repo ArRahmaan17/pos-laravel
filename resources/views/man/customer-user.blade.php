@@ -207,7 +207,7 @@
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
-    
+
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
         window.dataTableAppRole = null;
@@ -224,6 +224,16 @@
                     dataType: "json",
                     success: function(response) {
                         location.reload();
+                    },
+                    error: function(error) {
+                        iziToast.error({
+                            id: 'alert-customer-user-action',
+                            title: 'Error',
+                            message: error.responseJSON.message,
+                            position: 'topRight',
+                            layout: 2,
+                            displayMode: 'replace'
+                        });
                     }
                 });
             });

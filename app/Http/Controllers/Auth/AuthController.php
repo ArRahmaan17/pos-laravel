@@ -93,7 +93,7 @@ class AuthController extends Controller
                 $response = ['message' => 'successfully login as '.$user['user']['username']];
                 $status = 200;
             } else {
-                $response = ['message' => 'failed login as '.$user['user']['username'].', please set role for the user'];
+                $response = ['message' => 'failed login as ' . $user['user']['username'] . ', please set menu for the role'];
                 $status = 404;
             }
         } else {
@@ -125,11 +125,11 @@ class AuthController extends Controller
             'user.name' => ['required', 'min:5', 'max:30'],
             'user.username' => ['required', 'min:8', 'max:15', 'unique:users,username'],
             'user.email' => ['required', 'email', 'unique:users,email'],
-            'user.phone_number' => ['required', 'min:10', 'max:19', 'unique:users,phone_number'],
+            'user.phone_number' => ['required', 'min:10', 'max:19', 'unique:users,phone_number', 'regex:/8\d{10,11}$/'],
             'user.password' => ['required', 'min:8', 'max:15', 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/'],
             'company.name' => ['required', 'min:5', 'max:30'],
             'company.email' => ['required', 'email', 'unique:customer_companies,email'],
-            'company.phone_number' => ['required', 'min:10', 'max:19', 'unique:customer_companies,phone_number'],
+            'company.phone_number' => ['required', 'min:10', 'max:19', 'unique:customer_companies,phone_number', 'regex:/8\d{10,11}$/'],
             'address.place' => ['required', 'min:4', 'max:30'],
             'address.address' => ['required', 'min:4', 'max:30'],
             'address.city' => ['required', 'min:4', 'max:30'],
@@ -273,7 +273,7 @@ class AuthController extends Controller
         $request->validate([
             'current_access_pin' => ['array', function ($attribute, $value, $fail) use ($currentPin) {
                 $currentPin = implode($value);
-                if (! User::where(['id' => session('userLogged')['user']['id'], 'pin' => Hash::make($currentPin)])->exists()) {
+                if (! User::where(['id' => session('userLogged')['user']['id'], 'pin' => Hash::make($currentPin)])->makeVisible(['pin'])->exists()) {
                     $fail("The {$attribute} not match to our records");
                 }
             }],
@@ -314,7 +314,11 @@ class AuthController extends Controller
             $roleUser['company'] = UserCustomerRole::employeeCompany($roleUser->userId);
             $roleUser['company']['address'] = CompanyAddress::where('companyId', $roleUser['company']['id'])->first()->toArray();
         } else {
-            $roleUser['company'] = CustomerCompany::with('address')->where(['id' => session('userLogged')['company']['id'], 'userId' => session('userLogged')['user']['id']])->first()->toArray();
+            if ($roleUser->role->name == 'Manager') {
+                $roleUser['company'] = CustomerCompany::with('address')->where(['id' => session('userLogged')['company']['id'], 'userId' => session('userLogged')['user']['id']])->first()->toArray();
+            } else {
+                $roleUser['company'] = CustomerCompany::with('address')->where('id', session('userLogged')['company']['id'])->first()->toArray();
+            }
         }
         session()->flush();
         session(['userLogged' => collect($roleUser)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);

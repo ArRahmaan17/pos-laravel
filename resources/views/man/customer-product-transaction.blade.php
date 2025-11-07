@@ -1,6 +1,11 @@
 @extends('template.parent')
 @section('title', 'Product Transaction')
 @section('content')
+    <div class="card mb-3">
+        <div class="card-body">
+            This is some text within a card body.
+        </div>
+    </div>
     <div class="card">
         <div class="card-header d-flex align-middle">
             <div class="col-6">
@@ -158,7 +163,7 @@
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
-    
+
     <script>
         window.dataTableCustomerCompanyGood = null;
         window.dataTableCustomerCompanyDiscount = null;
@@ -310,13 +315,10 @@
                 data.quantity = 1;
                 $('.cart-product').append(`<div id="${data.id}" data-product='${JSON.stringify(data)}' class="list-group-item cart-item d-flex flex-wrap justify-content-between">
                         <div class="row align-items-center">
-                            <div class="col-1">
-                                <input class="form-check-input me-2" type="checkbox">
-                            </div>
                             <div class="col-3">
                                 <img src="../customer-product/${data.picture}" width="45px" alt="${data.name}" class="rounded">
                             </div>
-                            <div class="col-7 align-self-center pt-2">
+                            <div class="col-8 align-self-center pt-2">
                                 <h5 class="mb-1">${data.name}</h5>
                                 <p class="mb-1">Unit: ${data.unit}</p>
                             </div>

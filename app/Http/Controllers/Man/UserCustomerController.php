@@ -124,7 +124,7 @@ class UserCustomerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:users,name',
+            'name' => 'required',
             'username' => 'required|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'phone_number' => 'required|unique:users,phone_number',
@@ -176,7 +176,7 @@ class UserCustomerController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'name' => 'required|unique:users,name,'.$id,
+            'name' => 'required',
             'username' => 'required|unique:users,username,'.$id,
             'email' => 'required|unique:users,email,'.$id,
             'phone_number' => 'required|unique:users,phone_number,'.$id,

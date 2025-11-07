@@ -1,0 +1,271 @@
+<?php
+
+namespace App\Http\Controllers\Api\Man;
+
+use App\Http\Controllers\Controller;
+use App\Models\AppGoodUnit;
+use App\Models\CustomerProductType;
+use App\Models\CustomerCompanyGood;
+use App\Models\CustomerTemporaryProduct;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class CustomerCompanyGoodController extends Controller
+{
+
+    public function dataTable(Request $request)
+    {
+        $company = $request->header('x-customer-company-id');
+        $searchable = [];
+        try {
+            $totalData = CustomerCompanyGood::orderBy('customer_company_goods.id', 'asc')->where('companyId', $company)
+                ->count();
+            if (empty($request['search'])) {
+                $assets = CustomerCompanyGood::with('unit')->select('*');
+
+                if ($request['length'] != '-1') {
+                    $assets->limit($request['length']);
+                    if ($request['start'] > 0) {
+                        $assets->where('id', '>', $request['start']);
+                    }
+                }
+                if (isset($request['order'][0]['column'])) {
+                    $assets->orderByRaw($request['order']['name'] . ' ' . $request['order']['dir']);
+                }
+                $assets = $assets->where('companyId', $company)->get();
+            } else {
+                $assets = CustomerCompanyGood::with('unit')->select('*')
+                    ->search($request['search']);
+
+                if (isset($request['order']['name'])) {
+                    $assets->orderByRaw($request['order']['name'] . ' ' . $request['order']['dir']);
+                }
+                if ($request['length'] != '-1') {
+                    $assets->limit($request['length']);
+                    if ($request['start'] > 0) {
+                        $assets->where('id', '>', $request['start']);
+                    }
+                }
+                $assets = $assets->where('companyId', $company)->get();
+
+                $totalFiltered = CustomerCompanyGood::select('*')
+                    ->search($request['search']);
+
+                if (isset($request['order'][0]['column'])) {
+                    $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                }
+                $totalFiltered = $totalFiltered->count();
+            }
+            $totalFiltered = $totalData;
+            $dataFiltered = [];
+            foreach ($assets as $_ => $item) {
+                $row = [];
+                $row['id'] = $item->id;
+                $row['name'] = $item->name;
+                $row['price'] = $item->price;
+                $row['buyPrice'] = $item->buyPrice;
+                $row['stock'] = $item->stock;
+                $row['status'] = $item->status;
+                $row['unit'] = $item->unit->name;
+                $row['unitId'] = $item->unit->id;
+                $row['type'] = $item->type->name;
+                $row['typeId'] = $item->type->id;
+                $row['picture'] = $item->picture;
+                $dataFiltered[] = $row;
+            }
+
+            if ($totalFiltered === 0 || count($dataFiltered) === 0) {
+                throw new Exception('No data found');
+            }
+            $response = [
+                'recordsFiltered' => $totalFiltered,
+                'recordsTotal' => count($dataFiltered),
+                'data' => $dataFiltered,
+                'searchable' => $searchable,
+                'message' => 'Data retrieved successfully',
+            ];
+            $code = 200;
+        } catch (\Throwable $th) {
+            $response = ['message' => 'failed retrieving data'];
+            $code = 404;
+        }
+
+        return response()->json($response, $code);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|min:6|max:40|unique:customer_temporary_products,name|unique:customer_company_goods,name',
+            'stock' => 'required|max:8',
+            'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'buyPrice' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'status' => 'required|in:archive,draft,publish',
+            'companyId' => 'required|exists:customer_companies,id',
+            'unitId' => 'required|exists:app_good_units,id',
+            'typeId' => 'required|exists:app_product_types,id',
+            'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
+        ], [
+            'unitId' => 'The unit field is required.',
+            'typeId' => 'The type field is required.',
+            'companyId' => 'The company field is required.',
+        ]);
+        DB::beginTransaction();
+        try {
+            $user = $request->user();
+            $company = $request->header('x-customer-company-id');
+
+            $data = $request->except('_token', 'id');
+            $data['picture'] = 'default-product.png';
+            $data['companyId'] = $company;
+            $data['userId'] = $user->id;
+            $data['price'] = str_replace(',', '.', str_replace('.', '', $request->price));
+            $data['buyPrice'] = str_replace(',', '.', str_replace('.', '', $request->buyPrice));
+            if ($request->picture) {
+                $filename = md5($request->name . now()->format('Y-m-d h:i:s')) . '.' . $request->file('picture')->clientExtension();
+                $data['picture'] = $filename;
+                if (Storage::disk('public-asset')->directories('temp-customer-product')) {
+                    Storage::disk('public-asset')->makeDirectory('temp-customer-product');
+                }
+                $request->picture->storeAs('', $filename, 'temp-customer-product');
+            }
+            $data['orderCode'] = lastCompanyOrderCode('IN');
+            CustomerTemporaryProduct::create($data);
+            $response = ['message' => 'creating resource successfully'];
+            $code = 200;
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $response = ['message' => 'failed creating resource'];
+            $code = 422;
+        }
+
+        return response()->json($response, $code);
+    }
+
+
+    public function tempProduct(Request $request)
+    {
+        $user = $request->user();
+        $company = $request->header('x-customer-company-id');
+
+        $data = CustomerTemporaryProduct::with('unit', 'reference')->whereDate('created_at', now()->format('Y-m-d'))->where(['companyId' => $company, 'accepted' => 0])->get();
+        $response = ['message' => 'showing resource successfully', 'data' => $data];
+        $code = 200;
+        if (empty($data)) {
+            $response = ['message' => 'failed showing resource', 'data' => $data];
+            $code = 404;
+        }
+
+        return response()->json($response, $code);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Request $request, string $id)
+    {
+        $company = $request->header('x-customer-company-id');
+
+        $data = CustomerCompanyGood::where([['id', $id], ['companyId', $company]])->first();
+        $response = ['message' => 'showing resource successfully', 'data' => $data];
+        $code = 200;
+        if (empty($data)) {
+            $response = ['message' => 'failed showing resource', 'data' => $data];
+            $code = 404;
+        }
+
+        return response()->json($response, $code);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'name' => 'required|min:6|max:40|unique:customer_company_goods,name,' . $id . '|unique:customer_temporary_products,name, ' . $id,
+            'id' => 'required|numeric',
+            'stock' => 'required|max:8',
+            'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'buyPrice' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'status' => 'required|in:archive,draft,publish',
+            'companyId' => 'required|exists:customer_companies,id',
+            'unitId' => 'required|exists:app_good_units,id',
+            'typeId' => 'required|exists:app_product_types,id',
+            'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
+        ], [
+            'unitId' => 'The unit field is required.',
+            'typeId' => 'The type field is required.',
+            'companyId' => 'The unit field is required.',
+        ]);
+        DB::beginTransaction();
+        try {
+            $user = $request->user();
+            $company = $request->header('x-customer-company-id');
+
+            $data = $request->except('_token', 'id');
+            $referenceProduct = CustomerCompanyGood::find($id);
+            $data['picture'] = $referenceProduct->picture;
+            if ($request->file('picture')) {
+                $filename = md5($request->name . now()->format('Y-m-d h:i:s')) . '.' . $request->file('picture')->clientExtension();
+                $data['picture'] = $filename;
+                $request->file('picture')->storeAs('', $filename, 'temp-customer-product');
+            }
+            $data['price'] = str_replace(',', '.', str_replace('.', '', $request->price));
+            $data['buyPrice'] = str_replace(',', '.', str_replace('.', '', $request->buyPrice));
+            $data['stock'] = str_replace(',', '.', str_replace('.', '', $request->stock));
+            $data['stock_reference'] = str_replace(',', '.', str_replace('.', '', $referenceProduct->stock));
+            $data['companyId'] = $company;
+            $data['userId'] = $user->id;
+            $data['customerCompanyGoodId'] = $id;
+            $data['transaction_created'] = now()->format('Y-m-d');
+            $data['orderCode'] = lastCompanyOrderCode('ADJ');
+            CustomerTemporaryProduct::create($data);
+            $response = ['message' => 'updating resource successfully'];
+            $code = 200;
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            dd($th);
+            $response = ['message' => 'failed updating resource'];
+            $code = 422;
+        }
+
+        return response()->json($response, $code);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Request $request, string $id)
+    {
+        DB::beginTransaction();
+        try {
+            $user = $request->user();
+            $company = $request->header('x-customer-company-id');
+
+            $data = [
+                'orderCode' => lastCompanyOrderCode('REMOVE'),
+                'customerCompanyGoodId' => $id,
+                'companyId' => $company,
+                'userId' => $user->id,
+            ];
+            CustomerTemporaryProduct::create($data);
+            $response = ['message' => 'deleting resource successfully'];
+            $code = 200;
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $response = ['message' => 'failed deleting resource'];
+            $code = 422;
+        }
+
+        return response()->json($response, $code);
+    }
+}

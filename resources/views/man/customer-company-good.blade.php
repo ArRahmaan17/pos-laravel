@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'Product Supply')
+@section('title', 'Product Supply Management')
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="modal fade" id="modal-customer-company-good" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-dialog modal-sm-xl modal-fullscreen" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title">Add New @yield('title')</h5>
@@ -104,6 +104,18 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
+                                <label for="typeId" class="form-label">Category</label>
+                                <select class="form-control select2" name="typeId" id="typeId">
+                                    <option value="">Not selected</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }} ({{ $category->description }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col mb-3">
                                 <div class="d-flex align-items-start align-items-sm-center gap-4">
                                     <img src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded" height="100"
                                         width="100" id="uploadedAvatar" />
@@ -140,7 +152,7 @@
     <div class="offcanvas offcanvas-end" tabindex="-1" id="off-canvas-temporary-cart" aria-labelledby="off-canvas-temporary-cart-label">
         <div class="offcanvas-header">
             <h5 id="off-canvas-temporary-cart-label" class="offcanvas-title">Temporary Changed Product ({{ lastCompanyOrderCode('IN') }},
-                {{ lastCompanyOrderCode('RESTOCK') }})</h5>
+                {{ lastCompanyOrderCode('ADJ') }})</h5>
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body my-auto mx-0 flex-grow-0">
@@ -160,7 +172,7 @@
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
-    
+
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
         window.dataTableCustomerCompanyGood = null;
@@ -203,6 +215,9 @@
                             .trigger('change');
                         formElement.find('[name=unitId]')
                             .val(response.data.unitId)
+                            .trigger('change');
+                        formElement.find('[name=typeId]')
+                            .val(response.data.typeId)
                             .trigger('change');
                         formElement.find('[name=companyId]')
                             .val(response.data.companyId)

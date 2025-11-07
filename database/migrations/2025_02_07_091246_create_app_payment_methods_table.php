@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('tax_coverage')->default(false);
             $table->integer('tax')->default(11);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

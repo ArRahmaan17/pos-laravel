@@ -76,10 +76,10 @@ class CustomerCompanyController extends Controller
         foreach ($assets as $index => $item) {
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
-            $row['name'] = '<div class="font-sm">'.$item->name.'</div><div class="font-xs">'.$item->manager->name.'</div>';
+            $row['name'] = '<div class="font-sm">'.$item->name.'</div><div class="text-xs">'.$item->manager->name.'</div>';
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['business'] = $item->type->name;
-            $row['address'] = '<div class="font-sm">'.$item->address->place.'</div><div class="font-xs">'.$item->address->address.' '.$item->address->city.' '.$item->address->province.' '.$item->address->zipCode.'</div>';
+            $row['address'] = '<div class="font-sm">'.$item->address->place.'</div><div class="text-xs">'.$item->address->address.' '.$item->address->city.' '.$item->address->province.' '.$item->address->zipCode.'</div>';
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company='".$item->id."' ><i class='bx bx-pencil' ></i></button><button class='btn btn-icon ".($item->id != session('userLogged')['company']['id'] ? 'btn-info activate' : 'btn-danger logout')."' data-customer-company='".$item->id."' >".($item->id != session('userLogged')['company']['id'] ? "<i class='bx bxs-log-in' ></i>" : "<i class='bx bxs-log-out' ></i>").'</button>';
             $dataFiltered[] = $row;
         }

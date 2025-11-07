@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('customer_product_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('orderCode')->unique();
+            $table->string('orderCode');
             $table->bigInteger('userId')->unsigned();
             $table->foreign('userId')
                 ->references('id')
@@ -33,8 +33,10 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->decimal('total', 16, 2);
-            $table->decimal('discount', 16, 2);
+            $table->decimal('discount', 16, 2)->nullable(true);
+            $table->unique(['orderCode', 'companyId']);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

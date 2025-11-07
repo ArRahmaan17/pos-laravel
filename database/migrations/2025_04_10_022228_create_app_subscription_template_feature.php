@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('description');
             $table->enum('needed', ['heap', 'condition']);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

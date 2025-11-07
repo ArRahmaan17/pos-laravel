@@ -1,4 +1,5 @@
 @extends('template.single')
+@section('title', 'Login')
 @section('content')
     <div class="authentication-wrapper authentication-basic container-p-y">
         <div class="authentication-inner">

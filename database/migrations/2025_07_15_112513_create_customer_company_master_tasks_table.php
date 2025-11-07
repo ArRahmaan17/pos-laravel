@@ -23,6 +23,7 @@ return new class extends Migration
             $table->boolean('repeateable')->default(0);
             $table->unique(['companyId', 'name']);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

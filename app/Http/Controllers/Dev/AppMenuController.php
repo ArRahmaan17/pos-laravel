@@ -65,6 +65,7 @@ class AppMenuController extends Controller
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
+            $row['place'] = $item->place;
             $row['child'] = AppMenu::getChildMenu($item->id);
             $row['action'] = "<button class='btn btn-icon btn-success parent' data-app-menu='".$item->id."' ><i class='bx bx-plus' ></i></button><button class='btn btn-icon btn-warning edit' data-app-menu='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-app-menu='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;

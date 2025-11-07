@@ -25,7 +25,9 @@ return new class extends Migration
             $table->decimal('maxTransactionDiscount', 16, 2)->nullable(true);
             $table->decimal('minTransactionPrice', 16, 2)->default(0);
             $table->enum('status', ['archive', 'draft', 'publish'])->default('draft');
+            $table->integer('maxApply')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

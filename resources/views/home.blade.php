@@ -470,7 +470,6 @@
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script>
         let cardColor, headingColor, axisColor, shadeColor, borderColor;
 

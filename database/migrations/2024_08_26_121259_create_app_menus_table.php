@@ -20,6 +20,7 @@ return new class extends Migration
             $table->smallInteger('dev_only')->default(0);
             $table->smallInteger('mandatory')->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

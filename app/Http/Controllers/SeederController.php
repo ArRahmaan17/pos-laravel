@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CustomerCompanyDiscount;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerCompanyWarehouse;
 use App\Models\CustomerWarehouseRack;
@@ -73,13 +72,6 @@ class SeederController extends Controller
                 'companyId' => session('userLogged')['company']['id'],
                 'status' => shuffle(['archive', 'draft', 'publish']),
                 'buyPrice' => rand(50000, 100000),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
-        CustomerCompanyDiscount::insert([
-            [
-                'companyId' => session('userLogged')['company']['id'],
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

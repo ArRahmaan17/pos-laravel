@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('zipCode');
             $table->foreign('companyId')->on('customer_companies')->references('id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

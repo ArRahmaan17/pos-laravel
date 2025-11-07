@@ -63,7 +63,7 @@
                         <div class="row">
                             <div class="col mb-0">
                                 <label for="as_role" class="form-label">As Role</label>
-                                <select class='form-select'>
+                                <select class='form-select' name="as_role">
                                     <option disabled>Choose One</option>
                                     <option value='cashier'>Cashier</option>
                                     <option value='sales'>Sales</option>
@@ -121,7 +121,7 @@
                             .find('select, input, textarea').map(function(index, element) {
                                 if (response.data[element.name]) {
                                     $(`[name=${element.name}]`).val(response.data[element
-                                        .name])
+                                        .name]).trigger('change');
                                 }
                             });
                     },

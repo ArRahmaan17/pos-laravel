@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerCompany extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = ['name', 'userId', 'picture', 'phone_number', 'email', 'businessId', 'affiliate_code'];
 

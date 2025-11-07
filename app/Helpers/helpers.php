@@ -109,11 +109,6 @@ function formatIndonesianPhoneNumber($phoneNumber)
     return $formatted;
 }
 
-function company_profile_asset($filename)
-{
-    return Storage::disk('company-profile')->get($filename);
-}
-
 if (! function_exists('dataToOption')) {
     function dataToOption($allData, $attr = false)
     {
@@ -394,14 +389,14 @@ if (! function_exists('buildMenuRoleAccessibillity')) {
                 if (isset($element['children'])) {
                     $children = buildMenuRoleAccessibillity($element['children']);
                     $html .= '<tr>
-                                <td colspan="2" class="text-nowrap fw-medium text-heading">'.$element['name'].'</td>
+                                <td colspan="2" class="text-nowrap fw-medium text-heading">'.$element['name']. '</td>
                                 <td>
                                     <div class="d-flex justify-content-end">
                                         <div class="form-check form-check-reverse mb-0">
-                                            <label class="form-check-label" for="access'.$element['id'].'">
+                                            <label class="form-check-label ' . ($element['mandatory'] ? 'text-warning' : '') . '" for="access' . $element['id'] . '">
                                                 Access
                                             </label>
-                                            <input class="form-check-input menu-access" name="menuId[]" type="checkbox"
+                                            <input class="form-check-input menu-access ' . ($element['mandatory'] ? 'mandatory' : '') . '" ' . ($element['mandatory'] ? 'checked=checked' : '') . ' name="menuId[]" type="checkbox"
                                                 value="'.$element['id'].'" id="access'.$element['id'].'">
                                         </div>
                                     </div>
@@ -410,14 +405,14 @@ if (! function_exists('buildMenuRoleAccessibillity')) {
                 } else {
                     if ($element['parent'] == 0) {
                         $html .= '<tr>
-                                    <td colspan="2" class="text-nowrap fw-medium text-heading">'.$element['name'].'</td>
+                                    <td colspan="2" class="text-nowrap fw-medium text-heading">'.$element['name']. '</td>
                                     <td>
                                         <div class="d-flex justify-content-end">
                                             <div class="form-check form-check-reverse mb-0">
-                                                <label class="form-check-label" for="access'.$element['id'].'">
+                                                <label class="form-check-label ' . ($element['mandatory'] ? 'text-warning' : '') . '" for="access' . $element['id'] . '">
                                                     Access
                                                 </label>
-                                                <input class="form-check-input menu-access" name="menuId[]" type="checkbox"
+                                                <input class="form-check-input menu-access ' . ($element['mandatory'] ? 'mandatory' : '') . '" ' . ($element['mandatory'] ? 'checked=checked' : '') . ' name="menuId[]" type="checkbox"
                                                     value="'.$element['id'].'" id="access'.$element['id'].'">
                                             </div>
                                         </div>
@@ -426,14 +421,14 @@ if (! function_exists('buildMenuRoleAccessibillity')) {
                     } else {
                         $html .= '<tr>
                                     <td style="width:20px;" class="text-nowrap fw-medium text-heading"><i class="bx bx-subdirectory-right"></i></td>
-                                    <td class="text-nowrap fw-medium text-heading">'.$element['name'].'</td>
+                                    <td class="text-nowrap fw-medium text-heading">'.$element['name']. '</td>
                                     <td>
                                         <div class="d-flex justify-content-end">
                                             <div class="form-check form-check-reverse mb-0">
-                                                <label class="form-check-label" for="access'.$element['id'].'">
+                                                <label class="form-check-label ' . ($element['mandatory'] ? 'text-warning' : '') . '" for="access' . $element['id'] . '">
                                                     Access
                                                 </label>
-                                                <input class="form-check-input menu-access" data-parent="'.$element['parent'].'" name="menuId[]" type="checkbox"
+                                                <input class="form-check-input menu-access ' . ($element['mandatory'] ? 'mandatory' : '') . '" ' . ($element['mandatory'] ? 'checked=checked' : '') . ' data-parent="' . $element['parent'] . '" name="menuId[]" type="checkbox"
                                                     value="'.$element['id'].'" id="access'.$element['id'].'">
                                             </div>
                                         </div>
@@ -443,7 +438,6 @@ if (! function_exists('buildMenuRoleAccessibillity')) {
                 }
             }
         }
-        // }
 
         return $html;
     }

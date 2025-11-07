@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('status')->default(0);
             $table->string('evidence')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

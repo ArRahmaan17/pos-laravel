@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('description')->nullable(false);
             $table->enum('as_role', ['cashier', 'sales', 'admin', 'warehouse']);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerTemporaryProduct extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['orderCode', 'transaction_created',  'userId', 'companyId', 'customerCompanyGoodId', 'name', 'picture', 'stock', 'price', 'buyPrice', 'unitId', 'accepted', 'accepted_by', 'status'];
+    use SoftDeletes;
+    protected $appends = ['status_transaction'];
+    protected $fillable = ['orderCode', 'transaction_created',  'userId', 'companyId', 'customerCompanyGoodId', 'name', 'picture', 'stock', 'stock_reference', 'price', 'buyPrice', 'unitId', 'typeId', 'accepted', 'accepted_by', 'status'];
 
     public function creater(): HasOne
     {
@@ -36,5 +38,9 @@ class CustomerTemporaryProduct extends Model
     public function changedProduct(): HasMany
     {
         return $this->hasMany(CustomerTemporaryProduct::class, 'transaction_created', 'transaction_created');
+    }
+    public function getStatusTransactionAttribute()
+    {
+        return statusTransaction($this->orderCode);
     }
 }
