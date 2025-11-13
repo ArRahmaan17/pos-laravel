@@ -11,7 +11,7 @@
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
         </testsuite>
-        <testsuite name="Feature">
+        <!-- <testsuite name="Feature">
             <directory>tests/Feature</directory>
         </testsuite>
         <testsuite name="API">
@@ -31,7 +31,7 @@
         </testsuite>
         <testsuite name="Management">
             <directory>tests/Feature/Man</directory>
-        </testsuite>
+        </testsuite> -->
         <testsuite name="All">
             <directory>tests</directory>
         </testsuite>
