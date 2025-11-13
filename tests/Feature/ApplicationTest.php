@@ -57,8 +57,8 @@ class ApplicationTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -88,8 +88,8 @@ class ApplicationTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -141,10 +141,10 @@ class ApplicationTest extends TestCase
     public function relationships_work_correctly(): void
     {
         $user = User::factory()->create();
-        $company = CustomerCompany::factory()->create(['userId' => $user->id]);
+        $company = CustomerCompany::factory()->create(['user_id' => $user->id]);
         $role = UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->assertCount(1, $user->companies);

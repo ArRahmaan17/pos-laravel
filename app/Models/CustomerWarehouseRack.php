@@ -12,7 +12,7 @@ class CustomerWarehouseRack extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['warehouseId', 'name', 'description'];
+    protected $fillable = ['warehouse_id', 'name', 'description'];
 
     public function products(): HasMany
     {

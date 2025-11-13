@@ -36,8 +36,8 @@ class AuthorizationTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -64,8 +64,8 @@ class AuthorizationTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -83,8 +83,8 @@ class AuthorizationTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -107,8 +107,8 @@ class AuthorizationTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -136,8 +136,8 @@ class AuthorizationTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->managerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->managerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -162,8 +162,8 @@ class AuthorizationTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->managerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->managerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -190,8 +190,8 @@ class AuthorizationTest extends TestCase
             'access_pin' => null,
         ]);
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -215,8 +215,8 @@ class AuthorizationTest extends TestCase
             'access_pin' => Hash::make('123456'),
         ]);
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -238,8 +238,8 @@ class AuthorizationTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -262,8 +262,8 @@ class AuthorizationTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);

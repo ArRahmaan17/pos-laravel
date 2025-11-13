@@ -11,23 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_warehouse_rack_goods', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('rackId')->unsigned();
-            $table->bigInteger('goodId')->unsigned();
-            $table->foreign('rackId')
-                ->references('id')
-                ->on('customer_warehouse_racks')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreign('goodId')
-                ->references('id')
-                ->on('customer_company_goods')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        // Schema::create('customer_warehouse_rack_goods', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->bigInteger('rackId')->unsigned();
+        //     $table->bigInteger('goodId')->unsigned();
+        //     $table->foreign('rackId')
+        //         ->references('id')
+        //         ->on('warehouse_inventories')
+        //         ->cascadeOnDelete()
+        //         ->cascadeOnUpdate();
+        //     $table->foreign('goodId')
+        //         ->references('id')
+        //         ->on('products')
+        //         ->cascadeOnDelete()
+        //         ->cascadeOnUpdate();
+        //     $table->timestamps();
+        //     $table->softDeletes();
+        // });
     }
 
     /**
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_warehouse_rack_goods');
+        // Schema::dropIfExists('customer_warehouse_rack_goods');
     }
 };

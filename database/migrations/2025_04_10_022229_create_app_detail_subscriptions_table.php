@@ -11,25 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('app_detail_subscriptions', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('subscriptionId')->unsigned();
-            $table->foreign('subscriptionId')
-                ->references('id')
-                ->on('app_subscriptions')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->bigInteger('featureId')->unsigned();
-            $table->foreign('featureId')
-                ->references('id')
-                ->on('app_subscription_template_feature')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->integer('heap')->nullable();
-            $table->boolean('condition')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        // Schema::create('app_detail_subscriptions', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->bigInteger('subscriptionId')->unsigned();
+        //     $table->foreign('subscriptionId')
+        //         ->references('id')
+        //         ->on('app_subscriptions')
+        //         ->onUpdate('cascade')
+        //         ->onDelete('cascade');
+        //     $table->bigInteger('featureId')->unsigned();
+        //     $table->foreign('featureId')
+        //         ->references('id')
+        //         ->on('app_subscription_template_feature')
+        //         ->onUpdate('cascade')
+        //         ->onDelete('cascade');
+        //     $table->integer('heap')->nullable();
+        //     $table->boolean('condition')->nullable();
+        //     $table->timestamps();
+        //     $table->softDeletes();
+        // });
     }
 
     /**
@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('app_detail_subscriptions');
+        // Schema::dropIfExists('app_detail_subscriptions');
     }
 };

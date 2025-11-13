@@ -2,38 +2,44 @@
 
 namespace App\Models;
 
+use App\Traits\HasDefaultSearch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
-use App\Traits\HasDefaultSearch;
 
 class CustomerCompanyGood extends Model
 {
-    use HasFactory;
     use HasDefaultSearch;
+    use HasFactory;
     use SoftDeletes;
-    protected $fillable = ['name', 'price', 'buyPrice', 'stock', 'picture', 'companyId', 'unitId', 'typeId', 'status'];
-    protected $defaultSearchColumns = ['name', 'price', 'buyPrice', 'stock', 'status'];
+
+    protected $fillable = ['name', 'price', 'buy_price', 'stock', 'picture', 'company_id', 'unit_id', 'type_id', 'status'];
+
+    protected $defaultSearchColumns = ['name', 'price', 'buy_price', 'stock', 'status'];
+
     protected $defaultSearchRelations = ['unit' => ['name', 'description'], 'type' => ['name', 'description']];
-    protected $defaultCategoryColumn = 'typeId';
+
+    protected $defaultCategoryColumn = 'type_id';
+
     protected $defaultCategoryId = 'all';
 
     public function unit(): HasOne
     {
-        return $this->hasOne(AppGoodUnit::class, 'id', 'unitId');
-    }
-    public function type(): HasOne
-    {
-        return $this->hasOne(CustomerProductType::class, 'id', 'typeId');
+        return $this->hasOne(AppGoodUnit::class, 'id', 'unit_id');
     }
 
-    public static function shelf_less($companyId)
+    public function type(): HasOne
+    {
+        return $this->hasOne(CustomerProductType::class, 'id', 'type_id');
+    }
+
+    public static function shelf_less($company_id)
     {
         return self::whereRaw(
             DB::raw('id not in (select goodId from customer_warehouse_rack_goods)')
-        )->where('customer_company_goods.companyId', $companyId)
+        )->where('products.company_id', $company_id)
             ->get();
     }
 }

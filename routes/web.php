@@ -1,10 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Dev\AppGoodUnitController;
-use App\Http\Controllers\Dev\AppMenuController;
-use App\Http\Controllers\Dev\AppRoleController;
-use App\Http\Controllers\Dev\AppSubscriptionController;
 use App\Http\Controllers\Man\CustomerCompanyController;
 use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
@@ -71,7 +67,6 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
         Route::get('/change-company', [AuthController::class, 'changeCompany'])->name('change-company')->middleware([checkPageAuthorization::class]);
     });
 
-
     Route::name('man')->as('man.')->prefix('man')->group(function () {
         Route::name('report')->as('report.')->prefix('report')->group(function () {
             Route::get('/', [ReportController::class, 'index'])->name('index');
@@ -110,7 +105,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::put('/{id?}', [CustomerRoleController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerRoleController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerRoleController::class, 'show'])->name('show');
-            Route::get('/role/{userId?}', [CustomerRoleController::class, 'role'])->name('role');
+            Route::get('/role/{user_id?}', [CustomerRoleController::class, 'role'])->name('role');
             Route::delete('/{id?}', [CustomerRoleController::class, 'destroy'])->name('delete');
         });
         Route::name('customer-user')->as('customer-user.')->prefix('customer-user')->group(function () {

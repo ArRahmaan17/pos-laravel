@@ -4,7 +4,6 @@ use App\Models\CustomerProductTransaction;
 use App\Models\CustomerTemporaryProduct;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 if (! function_exists('getRole')) {
@@ -44,12 +43,12 @@ if (! function_exists('lastCompanyOrderCode')) {
         }
         if ($transaction_status == 'OUT') {
             $data = CustomerProductTransaction::where('orderCode', 'like', '%'.$transaction_status.'%')
-                ->where('companyId', session('userLogged')['company']['id'])->whereRaw("DATE(created_at) = '".$date."'")
+                ->where('company_id', session('userLogged')['company']['id'])->whereRaw("DATE(created_at) = '".$date."'")
                 ->orderBy('id', 'DESC')
                 ->first();
         } else {
             $data = CustomerTemporaryProduct::where('orderCode', 'like', '%'.$transaction_status.'%')
-                ->where('companyId', session('userLogged')['company']['id'])->where('transaction_created', $date)
+                ->where('company_id', session('userLogged')['company']['id'])->where('transaction_created', $date)
                 ->orderBy('id', 'DESC')
                 ->first();
         }
@@ -334,7 +333,7 @@ function statusTransaction($orderCode)
 if (! function_exists('checkPermissionMenu')) {
     function checkPermissionMenu($id, $role)
     {
-        return DB::table('customer_role_accessibilities')->where(['menuId' => $id, 'roleId' => $role])->count() > 0 ? true : false;
+        return DB::table('customer_role_accessibilities')->where(['menuId' => $id, 'role_id' => $role])->count() > 0 ? true : false;
     }
 }
 if (! function_exists('buildMenu')) {
@@ -343,7 +342,7 @@ if (! function_exists('buildMenu')) {
     {
         $html = '';
         foreach ($elements as $element) {
-            if (getRole() == 'Developer' || (getRole() == 'Manager' && $element['dev_only'] == 0) || checkPermissionMenu($element['id'], session('userLogged')['roleId'])) {
+            if (getRole() == 'Developer' || (getRole() == 'Manager' && $element['dev_only'] == 0) || checkPermissionMenu($element['id'], session('userLogged')['role_id'])) {
                 if ($place == 0) {
                     if (isset($element['children'])) {
                         $children = buildMenu($element['children']);
@@ -389,14 +388,14 @@ if (! function_exists('buildMenuRoleAccessibillity')) {
                 if (isset($element['children'])) {
                     $children = buildMenuRoleAccessibillity($element['children']);
                     $html .= '<tr>
-                                <td colspan="2" class="text-nowrap fw-medium text-heading">'.$element['name']. '</td>
+                                <td colspan="2" class="text-nowrap fw-medium text-heading">'.$element['name'].'</td>
                                 <td>
                                     <div class="d-flex justify-content-end">
                                         <div class="form-check form-check-reverse mb-0">
-                                            <label class="form-check-label ' . ($element['mandatory'] ? 'text-warning' : '') . '" for="access' . $element['id'] . '">
+                                            <label class="form-check-label '.($element['mandatory'] ? 'text-warning' : '').'" for="access'.$element['id'].'">
                                                 Access
                                             </label>
-                                            <input class="form-check-input menu-access ' . ($element['mandatory'] ? 'mandatory' : '') . '" ' . ($element['mandatory'] ? 'checked=checked' : '') . ' name="menuId[]" type="checkbox"
+                                            <input class="form-check-input menu-access '.($element['mandatory'] ? 'mandatory' : '').'" '.($element['mandatory'] ? 'checked=checked' : '').' name="menuId[]" type="checkbox"
                                                 value="'.$element['id'].'" id="access'.$element['id'].'">
                                         </div>
                                     </div>
@@ -405,14 +404,14 @@ if (! function_exists('buildMenuRoleAccessibillity')) {
                 } else {
                     if ($element['parent'] == 0) {
                         $html .= '<tr>
-                                    <td colspan="2" class="text-nowrap fw-medium text-heading">'.$element['name']. '</td>
+                                    <td colspan="2" class="text-nowrap fw-medium text-heading">'.$element['name'].'</td>
                                     <td>
                                         <div class="d-flex justify-content-end">
                                             <div class="form-check form-check-reverse mb-0">
-                                                <label class="form-check-label ' . ($element['mandatory'] ? 'text-warning' : '') . '" for="access' . $element['id'] . '">
+                                                <label class="form-check-label '.($element['mandatory'] ? 'text-warning' : '').'" for="access'.$element['id'].'">
                                                     Access
                                                 </label>
-                                                <input class="form-check-input menu-access ' . ($element['mandatory'] ? 'mandatory' : '') . '" ' . ($element['mandatory'] ? 'checked=checked' : '') . ' name="menuId[]" type="checkbox"
+                                                <input class="form-check-input menu-access '.($element['mandatory'] ? 'mandatory' : '').'" '.($element['mandatory'] ? 'checked=checked' : '').' name="menuId[]" type="checkbox"
                                                     value="'.$element['id'].'" id="access'.$element['id'].'">
                                             </div>
                                         </div>
@@ -421,14 +420,14 @@ if (! function_exists('buildMenuRoleAccessibillity')) {
                     } else {
                         $html .= '<tr>
                                     <td style="width:20px;" class="text-nowrap fw-medium text-heading"><i class="bx bx-subdirectory-right"></i></td>
-                                    <td class="text-nowrap fw-medium text-heading">'.$element['name']. '</td>
+                                    <td class="text-nowrap fw-medium text-heading">'.$element['name'].'</td>
                                     <td>
                                         <div class="d-flex justify-content-end">
                                             <div class="form-check form-check-reverse mb-0">
-                                                <label class="form-check-label ' . ($element['mandatory'] ? 'text-warning' : '') . '" for="access' . $element['id'] . '">
+                                                <label class="form-check-label '.($element['mandatory'] ? 'text-warning' : '').'" for="access'.$element['id'].'">
                                                     Access
                                                 </label>
-                                                <input class="form-check-input menu-access ' . ($element['mandatory'] ? 'mandatory' : '') . '" ' . ($element['mandatory'] ? 'checked=checked' : '') . ' data-parent="' . $element['parent'] . '" name="menuId[]" type="checkbox"
+                                                <input class="form-check-input menu-access '.($element['mandatory'] ? 'mandatory' : '').'" '.($element['mandatory'] ? 'checked=checked' : '').' data-parent="'.$element['parent'].'" name="menuId[]" type="checkbox"
                                                     value="'.$element['id'].'" id="access'.$element['id'].'">
                                             </div>
                                         </div>

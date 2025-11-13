@@ -82,7 +82,7 @@ class AppRoleController extends Controller
     {
         DB::beginTransaction();
         $request->validate([
-            'name' => 'required|min:2|max:10|unique:app_roles,name',
+            'name' => 'required|min:2|max:10|unique:permissions,name',
             'description' => 'required|min:6|max:100',
         ]);
         try {
@@ -122,7 +122,7 @@ class AppRoleController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'name' => 'required|unique:app_roles,name,'.$id,
+            'name' => 'required|unique:permissions,name,'.$id,
             'description' => 'required|min:6|max:100',
         ]);
         DB::beginTransaction();

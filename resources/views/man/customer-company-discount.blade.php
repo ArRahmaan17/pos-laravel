@@ -79,14 +79,14 @@
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="maxTransactionDiscount" class="form-label">Max Transaction Discount *</label>
-                            <input type="text" id="maxTransactionDiscount" name="maxTransactionDiscount" class="form-control price-discount"
+                            <label for="max_transaction_discount" class="form-label">Max Transaction Discount *</label>
+                            <input type="text" id="max_transaction_discount" name="max_transaction_discount" class="form-control price-discount"
                                 placeholder="10.000,00">
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="minTransactionPrice" class="form-label">Min Transaction Price *</label>
-                            <input type="text" id="minTransactionPrice" name="minTransactionPrice" class="form-control price-discount"
+                            <label for="min_transaction_price" class="form-label">Min Transaction Price *</label>
+                            <input type="text" id="min_transaction_price" name="min_transaction_price" class="form-control price-discount"
                                 placeholder="50.000,00">
                             <div class="invalid-feedback"></div>
                         </div>

@@ -67,8 +67,8 @@ abstract class TestCase extends BaseTestCase
             });
         }
 
-        if (! $schema->hasTable('app_roles')) {
-            $schema->create('app_roles', function ($table) {
+        if (! $schema->hasTable('permissions')) {
+            $schema->create('permissions', function ($table) {
                 $table->id();
                 $table->string('name');
                 $table->text('description')->nullable();
@@ -87,13 +87,13 @@ abstract class TestCase extends BaseTestCase
             });
         }
 
-        if (! $schema->hasTable('customer_companies')) {
-            $schema->create('customer_companies', function ($table) {
+        if (! $schema->hasTable('companies')) {
+            $schema->create('companies', function ($table) {
                 $table->id();
                 $table->string('name');
                 $table->string('phone_number');
-                $table->unsignedBigInteger('businessId');
-                $table->unsignedBigInteger('userId');
+                $table->unsignedBigInteger('bussiness_id');
+                $table->unsignedBigInteger('user_id');
                 $table->timestamps();
                 $table->softDeletes();
             });
@@ -102,14 +102,14 @@ abstract class TestCase extends BaseTestCase
         if (! $schema->hasTable('user_roles')) {
             $schema->create('user_roles', function ($table) {
                 $table->id();
-                $table->unsignedBigInteger('userId');
-                $table->unsignedBigInteger('roleId');
+                $table->unsignedBigInteger('user_id');
+                $table->unsignedBigInteger('role_id');
                 $table->timestamps();
             });
         }
 
-        if (! $schema->hasTable('app_menus')) {
-            $schema->create('app_menus', function ($table) {
+        if (! $schema->hasTable('permissions')) {
+            $schema->create('permissions', function ($table) {
                 $table->id();
                 $table->string('name');
                 $table->string('icon')->nullable();
@@ -136,9 +136,9 @@ abstract class TestCase extends BaseTestCase
         if (! $schema->hasTable('customer_roles')) {
             $schema->create('customer_roles', function ($table) {
                 $table->id();
-                $table->bigInteger('userId')->comment('customer manager id')->nullable(false)->unsigned();
-                $table->string('name')->nullable(false);
-                $table->string('description')->nullable(false);
+                $table->bigInteger('user_id')->comment('customer manager id')->unsigned();
+                $table->string('name');
+                $table->string('description');
                 $table->enum('as_role', ['cashier', 'sales', 'admin', 'warehouse']);
                 $table->timestamps();
                 $table->softDeletes();

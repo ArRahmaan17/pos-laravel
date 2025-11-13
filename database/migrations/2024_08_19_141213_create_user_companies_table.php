@@ -11,17 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_product_types', function (Blueprint $table) {
+        Schema::create('user_companies', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('description');
-            $table->bigInteger('businessId')->unsigned();
-            $table->foreign('businessId')
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')
+                ->on('users')
                 ->references('id')
-                ->on('business_types')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->index(['name', 'businessId']);
+            $table->bigInteger('company_id')->unsigned();
+            $table->foreign('company_id')
+                ->on('companies')
+                ->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->unique(['user_id', 'company_id']);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_product_types');
+        Schema::dropIfExists('user_companies');
     }
 };

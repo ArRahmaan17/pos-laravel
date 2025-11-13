@@ -12,7 +12,7 @@ class CustomerCompanyTaskDetail extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['taskId', 'masterId', 'start_at', 'end_at', 'status', 'evidance'];
+    protected $fillable = ['task_id', 'masterId', 'start_at', 'end_at', 'status', 'evidance'];
 
     public function master(): HasOne
     {

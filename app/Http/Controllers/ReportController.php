@@ -15,7 +15,7 @@ class ReportController extends Controller
     {
         $cashiers = CustomerRole::with('userByRole', 'userByRole.user')->where([
             'as_role' => 'cashier',
-            'userId' => session('userLogged')['company']['userId'],
+            'user_id' => session('userLogged')['company']['user_id'],
         ])->first();
         $reportTemplates = [
             [
@@ -184,7 +184,7 @@ class ReportController extends Controller
 
     private function discountUsage($cashier, $startDate, $endDate)
     {
-        return DB::table('customer_product_transactions as cpt')->select(
+        return DB::table('transactions as cpt')->select(
             DB::raw('ROW_NUMBER() OVER (ORDER BY cpt.orderCode) as row_numbers'),
             DB::raw('DATE(cpt.created_at) as transaction_create'),
             'cpt.orderCode',
@@ -195,9 +195,9 @@ class ReportController extends Controller
             DB::raw('(cpt.total - cpt.discount) as total_after_discount'),
             'u.name'
         )
-            ->join('customer_company_discounts as ccd', 'cpt.discountId', '=', 'ccd.id')
-            ->join('users as u', 'cpt.userId', '=', 'u.id')
-            ->where('cpt.userId', $cashier)
+            ->join('discounts as ccd', 'cpt.discountId', '=', 'ccd.id')
+            ->join('users as u', 'cpt.user_id', '=', 'u.id')
+            ->where('cpt.user_id', $cashier)
             ->whereBetween('cpt.created_at', [$startDate, $endDate])
             ->groupBy('cpt.orderCode', 'cpt.created_at', 'ccd.code', 'ccd.description', 'cpt.discount', 'cpt.total', 'u.name')
             ->get();
@@ -205,10 +205,10 @@ class ReportController extends Controller
 
     private function productPerformance($startDate, $endDate)
     {
-        $fastMoving = DB::table('customer_product_transactions as cpt')
-            ->join('customer_detail_product_transactions as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
-            ->leftJoin('customer_company_goods as cpg', 'cdpt.goodId', '=', 'cpg.id')
-            ->join('app_product_types as apt', 'cpg.unitId', '=', 'apt.id')
+        $fastMoving = DB::table('transactions as cpt')
+            ->join('transaction_items as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
+            ->leftJoin('products as cpg', 'cdpt.goodId', '=', 'cpg.id')
+            ->join('product_categories as apt', 'cpg.unit_id', '=', 'apt.id')
             ->selectRaw('
         row_number() over ( ORDER BY sold) as row_numbers,
         cpg.name AS product_name,
@@ -217,16 +217,16 @@ class ReportController extends Controller
         SUM(cpg.price * cdpt.quantity) AS sales,
         CAST(AVG(cdpt.quantity) OVER (PARTITION BY DATE(cpt.created_at)) as integer) AS sales_per_day
     ')
-            ->where('cpt.companyId', session('userLogged')['company']['id'])
+            ->where('cpt.company_id', session('userLogged')['company']['id'])
             ->whereBetween('cpt.created_at', [$startDate, $endDate])
             ->groupByRaw('cpg.name, DATE(cpt.created_at), apt.name, cpg.created_at')
             ->orderByDesc('sold')
             ->limit(5)
             ->get();
 
-        $slowMoving = DB::table('customer_detail_product_transactions as cdpt')
-            ->rightJoin('customer_company_goods as cpg', 'cdpt.goodId', '=', 'cpg.id')
-            ->join('app_product_types as apt', 'cpg.unitId', '=', 'apt.id')
+        $slowMoving = DB::table('transaction_items as cdpt')
+            ->rightJoin('products as cpg', 'cdpt.goodId', '=', 'cpg.id')
+            ->join('product_categories as apt', 'cpg.unit_id', '=', 'apt.id')
             ->select(
                 DB::raw('row_number() over ( ORDER BY cpg.name) as row_numbers'),
                 'cpg.name as product_name',
@@ -240,7 +240,7 @@ class ReportController extends Controller
                 ELSE ABS(DAY(CURRENT_DATE) - MAX(DAY(cdpt.created_at)))
             END as sales_per_day
         ')
-            )->where('cpg.companyId', session('userLogged')['company']['id'])
+            )->where('cpg.company_id', session('userLogged')['company']['id'])
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('cdpt.created_at', [$startDate, $endDate])
                     ->orWhereBetween('cpg.created_at', [$startDate, $endDate]);
@@ -256,8 +256,8 @@ class ReportController extends Controller
 
     private function stockTaking($startDate, $endDate)
     {
-        return DB::table('customer_company_goods as cpg')
-            ->join('app_good_units as agu', 'cpg.unitId', '=', 'agu.id')
+        return DB::table('products as cpg')
+            ->join('product_weight_units as agu', 'cpg.unit_id', '=', 'agu.id')
             ->leftJoin('customer_company_stocktakings as cps', 'cpg.id', '=', 'cps.goodId')
             ->select([
                 'cpg.name',
@@ -268,7 +268,7 @@ class ReportController extends Controller
                 'cpg.price as cost',
                 DB::raw('(cpg.price * cps.expect_stock) - (cpg.price * cps.real_stock) AS value_diff'),
             ])
-            ->where('cpg.companyId', session('userLogged')['company']['id'])
+            ->where('cpg.company_id', session('userLogged')['company']['id'])
             ->where('cps.status', 1)
             ->whereBetween('cps.created_at', [$startDate, $endDate])
             ->orderBy('cps.created_at')
@@ -277,9 +277,9 @@ class ReportController extends Controller
 
     private function salesOverview($startDate, $endDate)
     {
-        return DB::table('customer_product_transactions as cpt')
+        return DB::table('transactions as cpt')
             ->selectRaw('COALESCE(SUM(total), 0) AS total_sales,COUNT(id) AS total_orders,COALESCE(AVG(total), 0) AS avg_order_value')
-            ->where('cpt.companyId', session('userLogged')['company']['id'])
+            ->where('cpt.company_id', session('userLogged')['company']['id'])
             ->where('cpt.orderCode', 'like', '%OUT%')
             ->whereBetween('cpt.created_at', [$startDate, $endDate])
             ->first();
@@ -287,17 +287,17 @@ class ReportController extends Controller
 
     private function salesByCategory($startDate, $endDate)
     {
-        return DB::table('app_product_types as apt')
-            ->join('customer_company_goods as cpg', 'cpg.typeId', '=', 'apt.id')
-            ->join('customer_detail_product_transactions as cdpt', 'cpg.id', '=', 'cdpt.goodId')
-            ->join('customer_product_transactions as cpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
+        return DB::table('product_categories as apt')
+            ->join('products as cpg', 'cpg.type_id', '=', 'apt.id')
+            ->join('transaction_items as cdpt', 'cpg.id', '=', 'cdpt.goodId')
+            ->join('transactions as cpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
             ->select(
                 'apt.name as category',
                 DB::raw('SUM(cdpt.quantity) as total_quantity'),
                 DB::raw('COUNT(cpt.orderCode) as total_orders'),
                 'cpg.name as top_product'
             )
-            ->where('cpt.companyId', session('userLogged')['company']['id'])
+            ->where('cpt.company_id', session('userLogged')['company']['id'])
             ->where('cpt.orderCode', 'like', '%OUT%')
             ->whereBetween('cdpt.created_at', [$startDate, $endDate])
             ->groupBy('apt.name', 'cpg.name')
@@ -308,16 +308,16 @@ class ReportController extends Controller
 
     private function salesTopProduct($startDate, $endDate)
     {
-        return DB::table('customer_product_transactions as cpt')
-            ->leftJoin('customer_detail_product_transactions as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
-            ->leftJoin('customer_company_goods as cpg', 'cdpt.goodId', '=', 'cpg.id')
+        return DB::table('transactions as cpt')
+            ->leftJoin('transaction_items as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
+            ->leftJoin('products as cpg', 'cdpt.goodId', '=', 'cpg.id')
             ->select(
                 'cpg.name',
                 DB::raw('SUM(cdpt.quantity) as total_quantity'),
                 DB::raw('SUM(cdpt.total) as total_amount'),
                 DB::raw('AVG(cdpt.total) as average_amount')
             )
-            ->where('cpt.companyId', session('userLogged')['company']['id'])
+            ->where('cpt.company_id', session('userLogged')['company']['id'])
             ->where('cpt.orderCode', 'like', '%OUT%')
             ->whereBetween('cpt.created_at', [$startDate, $endDate])
             ->groupBy('cpg.name', 'cpt.orderCode')
@@ -327,10 +327,10 @@ class ReportController extends Controller
 
     private function salesProduct($startDate, $endDate)
     {
-        return DB::table('customer_product_transactions as cpt')
-            ->join('customer_detail_product_transactions as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
-            ->join('customer_company_goods as cpg', 'cdpt.goodId', '=', 'cpg.id')
-            ->join('app_product_types as apt', 'apt.id', '=', 'cpg.typeId')
+        return DB::table('transactions as cpt')
+            ->join('transaction_items as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
+            ->join('products as cpg', 'cdpt.goodId', '=', 'cpg.id')
+            ->join('product_categories as apt', 'apt.id', '=', 'cpg.type_id')
             ->select(
                 'cpg.name as product_name',
                 'apt.name as category',
@@ -338,37 +338,37 @@ class ReportController extends Controller
                 'cpg.price',
                 DB::raw('SUM(cdpt.total) as total_revenue')
             )
-            ->where('cpt.companyId', session('userLogged')['company']['id'])
+            ->where('cpt.company_id', session('userLogged')['company']['id'])
             ->where('cpt.orderCode', 'like', '%OUT%')
             ->whereBetween('cpt.created_at', [$startDate, $endDate])
             ->groupBy('cpg.name', 'apt.name', 'cpg.price')
             ->get();
     }
 
-    private function salesByStaff($userId, $startDate, $endDate)
+    private function salesByStaff($user_id, $startDate, $endDate)
     {
-        return DB::table('customer_product_transactions as cpt')
-            ->join('users as u', 'cpt.userId', '=', 'u.id')
+        return DB::table('transactions as cpt')
+            ->join('users as u', 'cpt.user_id', '=', 'u.id')
             ->select(
                 'u.name as staff_name',
                 DB::raw('COUNT(cpt.orderCode) as total_orders'),
                 DB::raw('SUM(cpt.total) as total_sales'),
                 DB::raw('AVG(cpt.total) as avg_order_value')
             )
-            ->where('cpt.companyId', session('userLogged')['company']['id'])
-            ->where('cpt.userId', $userId)
+            ->where('cpt.company_id', session('userLogged')['company']['id'])
+            ->where('cpt.user_id', $user_id)
             ->where('cpt.orderCode', 'like', '%OUT%')
             ->whereBetween('cpt.created_at', [$startDate, $endDate])
             ->groupBy('u.name')
             ->get();
     }
 
-    private function transactionComplete($userId, $startDate, $endDate)
+    private function transactionComplete($user_id, $startDate, $endDate)
     {
-        return DB::table('customer_product_transactions as cpt')
-            ->join('customer_detail_product_transactions as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
-            ->join('users as u', 'cpt.userId', '=', 'u.id')
-            ->join('customer_company_goods as ccg', 'ccg.id', '=', 'cdpt.goodId')
+        return DB::table('transactions as cpt')
+            ->join('transaction_items as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
+            ->join('users as u', 'cpt.user_id', '=', 'u.id')
+            ->join('products as ccg', 'ccg.id', '=', 'cdpt.goodId')
             ->selectRaw('ROW_NUMBER() OVER (ORDER BY cpt.orderCode) as row_numbers,
                 DATE(cpt.created_at) as transaction_create,
                 cpt.orderCode,
@@ -377,16 +377,16 @@ class ReportController extends Controller
                 SUM(cdpt.quantity * ccg.price) as price,
                 u.name
     ')
-            ->where('cpt.userId', 1)
+            ->where('cpt.user_id', 1)
             ->groupBy('cpt.orderCode', 'cpt.created_at', 'u.name')
             ->get();
     }
 
     private function stockOnHand($startDate, $endDate)
     {
-        return DB::table('customer_company_goods as cpg')
-            ->join('app_product_types as apt', 'cpg.typeId', '=', 'apt.id')
-            ->join('app_good_units as agu', 'cpg.unitId', '=', 'agu.id')
+        return DB::table('products as cpg')
+            ->join('product_categories as apt', 'cpg.type_id', '=', 'apt.id')
+            ->join('product_weight_units as agu', 'cpg.unit_id', '=', 'agu.id')
             ->select(
                 'cpg.name',
                 'apt.name as category',
@@ -395,15 +395,15 @@ class ReportController extends Controller
                 'cpg.price',
                 DB::raw('(cpg.stock * cpg.price) as total_value')
             )
-            ->where('cpg.companyId', session('userLogged')['company']['id'])
+            ->where('cpg.company_id', session('userLogged')['company']['id'])
             ->get();
     }
 
     private function stockMovement($startDate, $endDate)
     {
-        $permanentQuery = DB::table('customer_product_transactions as cpt')
-            ->join('customer_detail_product_transactions as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
-            ->join('customer_company_goods as ccg', 'cdpt.goodId', '=', 'ccg.id')
+        $permanentQuery = DB::table('transactions as cpt')
+            ->join('transaction_items as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
+            ->join('products as ccg', 'cdpt.goodId', '=', 'ccg.id')
             ->select([
                 DB::raw('DATE(cdpt.created_at) as created_at'),
                 'cdpt.orderCode',
@@ -412,10 +412,10 @@ class ReportController extends Controller
                 'cdpt.quantity',
                 'cdpt.stock_reference',
                 DB::raw('(cdpt.stock_reference - cdpt.quantity) as balance'),
-            ])->where('cpt.companyId', session('userLogged')['company']['id'])
+            ])->where('cpt.company_id', session('userLogged')['company']['id'])
             ->whereBetween('cdpt.created_at', [$startDate, $endDate]);
 
-        $tempQuery = DB::table('customer_temporary_products as ctp')
+        $tempQuery = DB::table('adjustment_products as ctp')
             ->select([
                 DB::raw('DATE(ctp.created_at) as created_at'),
                 'ctp.orderCode',
@@ -437,11 +437,11 @@ class ReportController extends Controller
             END AS balance
         "),
             ])
-            ->where('ctp.companyId', session('userLogged')['company']['id'])
+            ->where('ctp.company_id', session('userLogged')['company']['id'])
             ->whereBetween('ctp.created_at', [$startDate, $endDate]);
 
         $stocktakingQuery = DB::table('customer_company_stocktakings as ccs')
-            ->join('customer_company_goods as ccg', 'ccs.goodId', '=', 'ccg.id')
+            ->join('products as ccg', 'ccs.goodId', '=', 'ccg.id')
             ->select([
                 DB::raw('DATE(ccs.created_at) as created_at'),
                 DB::raw('null as orderCode'),
@@ -450,7 +450,7 @@ class ReportController extends Controller
                 DB::raw('abs(ccs.expect_stock - ccs.real_stock) as quantity'),
                 'ccs.expect_stock as stock_reference',
                 'ccs.real_stock as balance',
-            ])->where('ccs.companyId', session('userLogged')['company']['id'])
+            ])->where('ccs.company_id', session('userLogged')['company']['id'])
             ->whereBetween('ccs.created_at', [$startDate, $endDate]);
 
         $unionQuery = $permanentQuery
@@ -468,23 +468,23 @@ class ReportController extends Controller
 
     private function cashFlow($startDate, $endDate)
     {
-        $permanentQuery = DB::table('customer_product_transactions as cpt')
-            ->join('customer_detail_product_transactions as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
-            ->join('customer_company_goods as ccg', 'cdpt.goodId', '=', 'ccg.id')
+        $permanentQuery = DB::table('transactions as cpt')
+            ->join('transaction_items as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
+            ->join('products as ccg', 'cdpt.goodId', '=', 'ccg.id')
             ->select([
                 DB::raw('DATE(cdpt.created_at) as created_at'),
                 'cdpt.orderCode',
                 DB::raw('(ccg.price * cdpt.quantity) as amount'),
-            ])->where('cpt.companyId', session('userLogged')['company']['id'])
+            ])->where('cpt.company_id', session('userLogged')['company']['id'])
             ->whereBetween('cdpt.created_at', [$startDate, $endDate]);
 
-        $tempQuery = DB::table('customer_temporary_products as ctp')
+        $tempQuery = DB::table('adjustment_products as ctp')
             ->select([
                 DB::raw('DATE(ctp.created_at) as created_at'),
                 'ctp.orderCode',
                 DB::raw('( ctp.price * ctp.stock) as amount'),
             ])
-            ->where('ctp.companyId', session('userLogged')['company']['id'])
+            ->where('ctp.company_id', session('userLogged')['company']['id'])
             ->whereBetween('ctp.created_at', [$startDate, $endDate]);
         $unionQuery = $permanentQuery
             ->unionAll($tempQuery);
@@ -500,23 +500,23 @@ class ReportController extends Controller
 
     private function incomeVsExpense($startDate, $endDate)
     {
-        $permanentQuery = DB::table('customer_product_transactions as cpt')
-            ->join('customer_detail_product_transactions as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
-            ->join('customer_company_goods as ccg', 'cdpt.goodId', '=', 'ccg.id')
+        $permanentQuery = DB::table('transactions as cpt')
+            ->join('transaction_items as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
+            ->join('products as ccg', 'cdpt.goodId', '=', 'ccg.id')
             ->select([
                 DB::raw('DATE(cdpt.created_at) as created_at'),
                 'cdpt.orderCode',
                 DB::raw('(ccg.price * cdpt.quantity) as amount'),
-            ])->where('cpt.companyId', session('userLogged')['company']['id'])
+            ])->where('cpt.company_id', session('userLogged')['company']['id'])
             ->whereBetween('cdpt.created_at', [$startDate, $endDate]);
 
-        $tempQuery = DB::table('customer_temporary_products as ctp')
+        $tempQuery = DB::table('adjustment_products as ctp')
             ->select([
                 DB::raw('DATE(ctp.created_at) as created_at'),
                 'ctp.orderCode',
                 DB::raw('( ctp.price * ctp.stock) as amount'),
             ])
-            ->where('ctp.companyId', session('userLogged')['company']['id'])
+            ->where('ctp.company_id', session('userLogged')['company']['id'])
             ->whereBetween('ctp.created_at', [$startDate, $endDate]);
         $unionQuery = $permanentQuery
             ->unionAll($tempQuery);

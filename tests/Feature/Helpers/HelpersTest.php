@@ -33,8 +33,8 @@ class HelpersTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -51,9 +51,9 @@ class HelpersTest extends TestCase
         $company = CustomerCompany::factory()->create();
 
         UserCustomerRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->customerRole->id,
-            'companyId' => $company->id,
+            'user_id' => $user->id,
+            'role_id' => $this->customerRole->id,
+            'company_id' => $company->id,
         ]);
 
         $this->actingAs($user);

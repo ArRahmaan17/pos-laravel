@@ -23,13 +23,13 @@ class AppMenuController extends Controller
                 'success' => true,
                 'data' => [
                     'menus' => $menus,
-                    'routes' => array_keys($routes)
-                ]
+                    'routes' => array_keys($routes),
+                ],
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve app menus'
+                'message' => 'Failed to retrieve app menus',
             ], 500);
         }
     }
@@ -50,16 +50,16 @@ class AppMenuController extends Controller
                     }
                 }
                 if (isset($request['order'][0]['column'])) {
-                    $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                    $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
                 }
                 $assets = $assets->get();
             } else {
                 $assets = AppMenu::select('*')
-                    ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                    ->orWhere('route', 'like', '%' . $request['search']['value'] . '%');
+                    ->where('name', 'like', '%'.$request['search']['value'].'%')
+                    ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
 
                 if (isset($request['order'][0]['column'])) {
-                    $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                    $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
                 }
                 if ($request['length'] != '-1') {
                     $assets->limit($request['length']);
@@ -70,11 +70,11 @@ class AppMenuController extends Controller
                 $assets = $assets->get();
 
                 $totalFiltered = AppMenu::select('*')
-                    ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                    ->orWhere('route', 'like', '%' . $request['search']['value'] . '%');
+                    ->where('name', 'like', '%'.$request['search']['value'].'%')
+                    ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
 
                 if (isset($request['order'][0]['column'])) {
-                    $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                    $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
                 }
                 $totalFiltered = $totalFiltered->count();
             }
@@ -104,7 +104,7 @@ class AppMenuController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve data table'
+                'message' => 'Failed to retrieve data table',
             ], 500);
         }
     }
@@ -117,7 +117,7 @@ class AppMenuController extends Controller
         DB::beginTransaction();
         try {
             $request->validate([
-                'name' => 'required|min:2|max:50|unique:app_menus,name',
+                'name' => 'required|min:2|max:50|unique:permissions,name',
                 'route' => 'required|min:2|max:100',
                 'parent' => 'nullable|integer',
                 'icon' => 'nullable|string|max:50',
@@ -129,20 +129,22 @@ class AppMenuController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'App Menu created successfully',
-                'data' => $appMenu
+                'data' => $appMenu,
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed creating App Menu'
+                'message' => 'Failed creating App Menu',
             ], 500);
         }
     }
@@ -154,19 +156,20 @@ class AppMenuController extends Controller
     {
         try {
             $appMenu = AppMenu::findOrFail($id);
+
             return response()->json([
                 'success' => true,
-                'data' => $appMenu
+                'data' => $appMenu,
             ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'App Menu not found'
+                'message' => 'App Menu not found',
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve App Menu'
+                'message' => 'Failed to retrieve App Menu',
             ], 500);
         }
     }
@@ -181,7 +184,7 @@ class AppMenuController extends Controller
             $appMenu = AppMenu::findOrFail($id);
 
             $request->validate([
-                'name' => 'required|min:2|max:50|unique:app_menus,name,' . $id,
+                'name' => 'required|min:2|max:50|unique:permissions,name,'.$id,
                 'route' => 'required|min:2|max:100',
                 'parent' => 'nullable|integer',
                 'icon' => 'nullable|string|max:50',
@@ -193,26 +196,29 @@ class AppMenuController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'App Menu updated successfully',
-                'data' => $appMenu
+                'data' => $appMenu,
             ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'App Menu not found'
+                'message' => 'App Menu not found',
             ], 404);
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed updating App Menu'
+                'message' => 'Failed updating App Menu',
             ], 500);
         }
     }
@@ -230,19 +236,21 @@ class AppMenuController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'App Menu deleted successfully'
+                'message' => 'App Menu deleted successfully',
             ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'App Menu not found'
+                'message' => 'App Menu not found',
             ], 404);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed deleting App Menu'
+                'message' => 'Failed deleting App Menu',
             ], 500);
         }
     }

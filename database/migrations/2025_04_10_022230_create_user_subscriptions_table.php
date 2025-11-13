@@ -11,26 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_subscriptions', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('userId')->unsigned()->nullable(false);
-            $table->bigInteger('subscriptionId')->unsigned()->nullable(false);
-            $table->date('startDate')->nullable(false);
-            $table->date('endDate')->nullable(false);
-            $table->enum('status', ['trail', 'active', 'canceled', 'expired'])->nullable(false);
-            $table->foreign('subscriptionId')
-                ->on('app_subscriptions')
-                ->references('id')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreign('userId')
-                ->on('users')
-                ->references('id')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        // Schema::create('user_subscriptions', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->bigInteger('user_id')->unsigned();
+        //     $table->bigInteger('subscriptionId')->unsigned();
+        //     $table->date('startDate');
+        //     $table->date('endDate');
+        //     $table->enum('status', ['trail', 'active', 'canceled', 'expired']);
+        //     $table->foreign('subscriptionId')
+        //         ->on('app_subscriptions')
+        //         ->references('id')
+        //         ->cascadeOnDelete()
+        //         ->cascadeOnUpdate();
+        //     $table->foreign('user_id')
+        //         ->on('users')
+        //         ->references('id')
+        //         ->cascadeOnDelete()
+        //         ->cascadeOnUpdate();
+        //     $table->timestamps();
+        //     $table->softDeletes();
+        // });
     }
 
     /**
@@ -38,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_subcriptions');
+        // Schema::dropIfExists('user_subcriptions');
     }
 };

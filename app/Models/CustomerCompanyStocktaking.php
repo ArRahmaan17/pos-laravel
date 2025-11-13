@@ -11,5 +11,5 @@ class CustomerCompanyStocktaking extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['goodId', 'expect_stock', 'real_stock', 'userId', 'companyId', 'status'];
+    protected $fillable = ['goodId', 'expect_stock', 'real_stock', 'user_id', 'company_id', 'status'];
 }

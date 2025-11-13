@@ -11,17 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_role_accessibilities', function (Blueprint $table) {
+        Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('roleId')->unsigned();
-            $table->foreign('roleId')
-                ->on('customer_roles')
+            $table->bigInteger('user_id')->unsigned();
+            $table->string('name');
+            $table->string('picture')->nullable();
+            $table->string('phone_number')->unique();
+            $table->string('email')->unique();
+            $table->bigInteger('business_id')->unsigned();
+            $table->foreign('user_id')
+                ->on('users')
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('menuId')->unsigned();
-            $table->foreign('menuId')
-                ->on('app_menus')
+            $table->foreign('business_id')
+                ->on('business_types')
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
@@ -35,6 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_role_accessibilities');
+        Schema::dropIfExists('companies');
     }
 };

@@ -11,30 +11,31 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_product_transactions', function (Blueprint $table) {
+        Schema::create('inventory_movement_types', function (Blueprint $table) {
             $table->id();
-            $table->string('orderCode');
-            $table->bigInteger('userId')->unsigned();
-            $table->foreign('userId')
+            $table->string('code');
+            $table->string('direction');
+            $table->string('name');
+            $table->string('description');
+            $table->smallInteger('is_system')->default(0);
+            $table->bigInteger('company_id')->unsigned();
+            $table->foreign('company_id')
+                ->references('id')
+                ->on('companies')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->bigInteger('created_by')->unsigned();
+            $table->foreign('created_by')
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('companyId')->unsigned();
-            $table->foreign('companyId')
+            $table->bigInteger('deleted_by')->unsigned()->nullable();
+            $table->foreign('deleted_by')
                 ->references('id')
-                ->on('customer_companies')
+                ->on('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('discountId')->unsigned()->nullable(true);
-            $table->foreign('discountId')
-                ->references('id')
-                ->on('customer_company_discounts')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->decimal('total', 16, 2);
-            $table->decimal('discount', 16, 2)->nullable(true);
-            $table->unique(['orderCode', 'companyId']);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -45,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_product_transactions');
+        Schema::dropIfExists('inventory_movement_types');
     }
 };

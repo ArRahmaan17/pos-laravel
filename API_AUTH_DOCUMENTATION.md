@@ -34,7 +34,7 @@ Response:
             "id": 1,
             "name": "Manager"
         },
-        "userId": 1,
+        "user_id": 1,
         "company": {
             "id": 1,
             "name": "Company Name",
@@ -43,7 +43,7 @@ Response:
                 "address": "Street Address",
                 "city": "City",
                 "province": "Province",
-                "zipCode": "12345"
+                "zip_code": "12345"
             }
         }
     },
@@ -160,7 +160,7 @@ Request body:
         "address": "Street Address",
         "city": "City",
         "province": "Province",
-        "zipCode": "12345"
+        "zip_code": "12345"
     }
 }
 ```
@@ -184,7 +184,7 @@ Query parameters:
 - `name`
 - `email`
 - `phone_number`
-- `businessId`
+- `bussiness_id`
 
 ## Error Responses
 

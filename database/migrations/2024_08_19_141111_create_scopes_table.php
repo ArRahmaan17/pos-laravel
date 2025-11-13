@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('app_roles', function (Blueprint $table) {
+        Schema::create('scopes', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable(false);
-            $table->string('description')->nullable(false);
+            $table->string('name');
+            $table->string('code');
+            $table->integer('level');
+            $table->bigInteger('created_by')->unsigned();
+            $table->foreign('created_by')->on('users')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('app_roles');
+        Schema::dropIfExists('scopes');
     }
 };

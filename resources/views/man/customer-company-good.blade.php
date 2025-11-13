@@ -51,7 +51,7 @@
                     <form action="#" id="form-customer-company-good">
                         @csrf
                         <input type="hidden" name="id">
-                        <input type="hidden" name="companyId" value="{{ session('userLogged')['company']['id'] }}">
+                        <input type="hidden" name="company_id" value="{{ session('userLogged')['company']['id'] }}">
                         <div class="row">
                             <label class="form-label" for="">Status</label>
                             <div class="col">
@@ -80,8 +80,8 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="buyPrice" class="form-label">Buy Price</label>
-                                <input type="text" id="buyPrice" name="buyPrice" class="form-control price" placeholder="Enter Price" />
+                                <label for="buy_price" class="form-label">Buy Price</label>
+                                <input type="text" id="buy_price" name="buy_price" class="form-control price" placeholder="Enter Price" />
                             </div>
                         </div>
                         <div class="row">
@@ -92,8 +92,8 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="unitId" class="form-label">Unit</label>
-                                <select class="form-control select2" name="unitId" id="unitId">
+                                <label for="unit_id" class="form-label">Unit</label>
+                                <select class="form-control select2" name="unit_id" id="unit_id">
                                     <option value="">Not selected</option>
                                     @foreach ($units as $unit)
                                         <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->description }})
@@ -104,8 +104,8 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="typeId" class="form-label">Category</label>
-                                <select class="form-control select2" name="typeId" id="typeId">
+                                <label for="type_id" class="form-label">Category</label>
+                                <select class="form-control select2" name="type_id" id="type_id">
                                     <option value="">Not selected</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }} ({{ $category->description }})
@@ -213,17 +213,17 @@
                         formElement.find('[name=price]')
                             .val(parseInt(response.data.price))
                             .trigger('change');
-                        formElement.find('[name=unitId]')
-                            .val(response.data.unitId)
+                        formElement.find('[name=unit_id]')
+                            .val(response.data.unit_id)
                             .trigger('change');
-                        formElement.find('[name=typeId]')
-                            .val(response.data.typeId)
+                        formElement.find('[name=type_id]')
+                            .val(response.data.type_id)
                             .trigger('change');
-                        formElement.find('[name=companyId]')
-                            .val(response.data.companyId)
+                        formElement.find('[name=company_id]')
+                            .val(response.data.company_id)
                             .trigger('change');
-                        formElement.find('[name=buyPrice]')
-                            .val(parseInt(response.data.buyPrice))
+                        formElement.find('[name=buy_price]')
+                            .val(parseInt(response.data.buy_price))
                             .trigger('change');
                         formElement.find('[name=status]').map((key, element) => {
                             if ($(element).val() == response.data.status) {
@@ -324,7 +324,7 @@
                     </h2>
                     <div id="accordion${data.id}" class="accordion-collapse collapse" aria-labelledby="heading${data.id}" data-bs-parent="#accordionTempProduct">
                         <div class="accordion-body">
-                            ${data.orderCode.split('IN').length > 1 ? `Buy price ${data.buyPrice}, sell price ${data.price}, and stock ${data.stock}` : data.orderCode.split('RESTOCK').length > 1 ?`Restock ${data.stock}, buying price ${data.buyPrice} and price ${data.price}` : `Product will be remove`}
+                            ${data.orderCode.split('IN').length > 1 ? `Buy price ${data.buy_price}, sell price ${data.price}, and stock ${data.stock}` : data.orderCode.split('RESTOCK').length > 1 ?`Restock ${data.stock}, buying price ${data.buy_price} and price ${data.price}` : `Product will be remove`}
                         </div>
                     </div>
                 </div>`;

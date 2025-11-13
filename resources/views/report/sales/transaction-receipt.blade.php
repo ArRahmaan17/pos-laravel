@@ -84,7 +84,7 @@
 <body>
     <h3>{{ session('userLogged')['company']['name'] }}</h3>
     <div class="address">
-        {{ session('userLogged')['company']['address']['place'] . ',' . session('userLogged')['company']['address']['address'] . ',' . session('userLogged')['company']['address']['city'] . ',' . session('userLogged')['company']['address']['province'] . ',' . session('userLogged')['company']['address']['zipCode'] }}
+        {{ session('userLogged')['company']['address']['place'] . ',' . session('userLogged')['company']['address']['address'] . ',' . session('userLogged')['company']['address']['city'] . ',' . session('userLogged')['company']['address']['province'] . ',' . session('userLogged')['company']['address']['zip_code'] }}
     </div>
     <div class="address">
         {{ session('userLogged')['company']['email'] }},{{ session('userLogged')['company']['phone_number'] }}

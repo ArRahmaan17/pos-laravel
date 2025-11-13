@@ -348,7 +348,7 @@
                     }
                 }, {
                     target: 1,
-                    name: 'customer_company_goods.name',
+                    name: 'products.name',
                     data: 'name',
                     orderable: true,
                     searchable: true,

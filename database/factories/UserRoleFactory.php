@@ -27,8 +27,8 @@ class UserRoleFactory extends Factory
     public function definition(): array
     {
         return [
-            'userId' => User::factory(),
-            'roleId' => AppRole::factory(),
+            'user_id' => User::factory(),
+            'role_id' => AppRole::factory(),
         ];
     }
 }

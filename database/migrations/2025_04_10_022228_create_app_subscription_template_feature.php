@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('app_subscription_template_feature', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('code');
-            $table->unique(['code', 'id']);
-            $table->string('description');
-            $table->enum('needed', ['heap', 'condition']);
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        // Schema::create('app_subscription_template_feature', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('name');
+        //     $table->string('code');
+        //     $table->unique(['code', 'id']);
+        //     $table->string('description');
+        //     $table->enum('needed', ['heap', 'condition']);
+        //     $table->timestamps();
+        //     $table->softDeletes();
+        // });
     }
 
     /**
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('app_subscription_template_feature');
+        // Schema::dropIfExists('app_subscription_template_feature');
     }
 };

@@ -56,8 +56,8 @@ class AuthControllerTest extends TestCase
         ]);
 
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $response = $this->post('/auth/login', [
@@ -107,7 +107,7 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
         ]);
 
-        $this->assertDatabaseHas('customer_companies', [
+        $this->assertDatabaseHas('companies', [
             'name' => 'Test Company',
         ]);
     }
@@ -137,8 +137,8 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -173,8 +173,8 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -192,9 +192,9 @@ class AuthControllerTest extends TestCase
         $company = CustomerCompany::factory()->create();
 
         UserCustomerRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->customerRole->id,
-            'companyId' => $company->id,
+            'user_id' => $user->id,
+            'role_id' => $this->customerRole->id,
+            'company_id' => $company->id,
         ]);
 
         $this->actingAs($user);
@@ -299,8 +299,8 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);

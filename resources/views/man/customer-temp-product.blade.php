@@ -97,7 +97,7 @@
             <input type="hidden" name="id">
             <input type="hidden" name="customerCompanyGoodId">
             <input type="hidden" name="status">
-            <input type="hidden" name="companyId" value="{{ session('userLogged')['company']['id'] }}">
+            <input type="hidden" name="company_id" value="{{ session('userLogged')['company']['id'] }}">
             <div class="row">
                 <div class="col mb-3">
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
@@ -132,8 +132,8 @@
             </div>
             <div class="row">
                 <div class="col mb-3">
-                    <label for="buyPrice" class="form-label">Buy Price</label>
-                    <input type="text" id="buyPrice" name="buyPrice" class="form-control price" placeholder="Enter Price" />
+                    <label for="buy_price" class="form-label">Buy Price</label>
+                    <input type="text" id="buy_price" name="buy_price" class="form-control price" placeholder="Enter Price" />
                 </div>
             </div>
             <div class="row">
@@ -144,8 +144,8 @@
             </div>
             <div class="row">
                 <div class="col mb-3">
-                    <label for="unitId" class="form-label">Unit</label>
-                    <select class="form-control select2" name="unitId" id="unitId">
+                    <label for="unit_id" class="form-label">Unit</label>
+                    <select class="form-control select2" name="unit_id" id="unit_id">
                         <option value="">Not selected</option>
                         @foreach ($units as $unit)
                             <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->description }})
@@ -156,8 +156,8 @@
             </div>
             <div class="row">
                 <div class="col mb-3">
-                    <label for="typeId" class="form-label">Category</label>
-                    <select class="form-control select2" name="typeId" id="typeId">
+                    <label for="type_id" class="form-label">Category</label>
+                    <select class="form-control select2" name="type_id" id="type_id">
                         <option value="">Not selected</option>
                         @foreach ($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }} ({{ $category->description }})
@@ -595,7 +595,7 @@
             let contentTableBody = ``;
             d.changedProduct.forEach(changed => {
                 contentTableBody +=
-                    `<tr><td>${changed.orderCode}</td><td>${changed.creater.name}</td><td>${changed?.reference?.name?? changed.name}</td><td>${changed?.reference?.stock??changed.stock}</td><td>${changed?.reference?.price??changed.price}</td><td>${changed?.reference?.buyPrice?? changed.buyPrice}</td><td>${changed?.reference?.unit.name??changed.unit.name}</td><td>${changed.accepted==0 ? '<span class="badge bg-label-danger"><i class="bx bx-x"></i></span>' : '<span class="badge bg-label-success"><i class="bx bx-check"></i></span>'}</td><td>${changed.accepter?.name??'-'}</td></tr>`
+                    `<tr><td>${changed.orderCode}</td><td>${changed.creater.name}</td><td>${changed?.reference?.name?? changed.name}</td><td>${changed?.reference?.stock??changed.stock}</td><td>${changed?.reference?.price??changed.price}</td><td>${changed?.reference?.buy_price?? changed.buy_price}</td><td>${changed?.reference?.unit.name??changed.unit.name}</td><td>${changed.accepted==0 ? '<span class="badge bg-label-danger"><i class="bx bx-x"></i></span>' : '<span class="badge bg-label-success"><i class="bx bx-check"></i></span>'}</td><td>${changed.accepter?.name??'-'}</td></tr>`
             });
             return contentTableBody
         }
@@ -646,8 +646,8 @@
                 const clone = template[0].content.cloneNode(true);
                 container.append(clone);
                 formattedInput();
-                container.find(`.select2:first`).attr('id', `unitId${window.lastProductAccordion}`)
-                container.find(`.select2:last`).attr('id', `typeId${window.lastProductAccordion}`)
+                container.find(`.select2:first`).attr('id', `unit_id${window.lastProductAccordion}`)
+                container.find(`.select2:last`).attr('id', `type_id${window.lastProductAccordion}`)
                 setTimeout(() => {
                     if (container.find(`.select2`).hasClass("select2-hidden-accessible")) {
                         container.find(`.select2`).select2('destroy');
@@ -665,7 +665,7 @@
                 changeProductPhoto(indexAccordion);
             } else {
                 container.append(
-                    `<form><div class="d-flex"><button type="button" class="btn btn-danger remove-temp ms-auto"><i class='bx bxs-trash-alt'></i> Remove Temporary Product</button></div><input type="hidden" name="id" value="${data?.id??''}"><input type="hidden" name="customerCompanyGoodId" value="${data.customerCompanyGoodId}"><input type="hidden" name="status" value="${status}"><input type="hidden" name="companyId" value="{{ session('userLogged')['company']['id'] }}"></form><div>Product will be remove</div>`
+                    `<form><div class="d-flex"><button type="button" class="btn btn-danger remove-temp ms-auto"><i class='bx bxs-trash-alt'></i> Remove Temporary Product</button></div><input type="hidden" name="id" value="${data?.id??''}"><input type="hidden" name="customerCompanyGoodId" value="${data.customerCompanyGoodId}"><input type="hidden" name="status" value="${status}"><input type="hidden" name="company_id" value="{{ session('userLogged')['company']['id'] }}"></form><div>Product will be remove</div>`
                 );
             }
             if (data != null && status != 'REMOVE') {

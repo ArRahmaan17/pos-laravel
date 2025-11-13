@@ -229,22 +229,22 @@
             }, 0);
             let discount = 0;
             if (Object.keys(window.discount).length != 0) {
-                if (subtotal >= parseFloat(window.discount.minTransactionPrice)) {
+                if (subtotal >= parseFloat(window.discount.min_transaction_price)) {
                     $('.discount-percentage').html(`${window.discount.percentage}%`);
-                    discount = (subtotal - (window.discount.hasOwnProperty('maxTransactionDiscount') ? (window.discount
-                            .maxTransactionDiscount * window.discount.percentage / 100) : 0)) * window.discount.percentage /
+                    discount = (subtotal - (window.discount.hasOwnProperty('max_transaction_discount') ? (window.discount
+                            .max_transaction_discount * window.discount.percentage / 100) : 0)) * window.discount.percentage /
                         100;
                     $('.total-after-discount').removeClass('d-none')
                     $('.total').addClass('text-decoration-line-through fst-italic text-muted');
-                    if ((window.discount.hasOwnProperty('maxTransactionDiscount')) ? discount <= window.discount
-                        .maxTransactionDiscount : true) {
+                    if ((window.discount.hasOwnProperty('max_transaction_discount')) ? discount <= window.discount
+                        .max_transaction_discount : true) {
                         $('.discount-price').html(`${numberFormat(discount,'')}`);
                         $('.total-after-discount').html(numberFormat(subtotal - discount, ''));
                         $('.total').html(numberFormat(subtotal, ''));
                     } else {
-                        $('.discount-price').html(`${numberFormat(window.discount.maxTransactionDiscount, '')}`);
+                        $('.discount-price').html(`${numberFormat(window.discount.max_transaction_discount, '')}`);
                         $('.total-after-discount').html(numberFormat(subtotal - window.discount
-                            .maxTransactionDiscount, ''));
+                            .max_transaction_discount, ''));
                         $('.total').html(numberFormat(subtotal, ''));
                     }
                 } else {
@@ -400,8 +400,8 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        if (response.data.maxTransactionDiscount == null) {
-                            delete response.data.maxTransactionDiscount;
+                        if (response.data.max_transaction_discount == null) {
+                            delete response.data.max_transaction_discount;
                         }
                         window.discount = response.data;
                         if ($('.cart-product').find('div.cart-item').length > 0) {
@@ -756,15 +756,15 @@
                             }
                         }, {
                             target: 2,
-                            name: 'minTransactionPrice',
-                            data: 'minTransactionPrice',
+                            name: 'min_transaction_price',
+                            data: 'min_transaction_price',
                             orderable: false,
                             searchable: false,
                             render: $.fn.dataTable.render.number('.', ',', 2, 'Rp.')
                         }, {
                             target: 3,
-                            name: 'maxTransactionDiscount',
-                            data: 'maxTransactionDiscount',
+                            name: 'max_transaction_discount',
+                            data: 'max_transaction_discount',
                             orderable: false,
                             searchable: false,
                             render: $.fn.dataTable.render.number('.', ',', 2, 'Rp.')

@@ -13,8 +13,13 @@ return new class extends Migration
     {
         Schema::create('business_types', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable(false)->unique();
-            $table->text('description')->nullable(false);
+            $table->string('name')->unique();
+            $table->string('description');
+            $table->bigInteger('requester_id')->unsigned()->nullable();
+            $table->foreign('requester_id')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('accepter_id')->unsigned()->nullable();
+            $table->foreign('accepter_id')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->smallInteger('accepted')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

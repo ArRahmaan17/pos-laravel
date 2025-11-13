@@ -17,16 +17,16 @@ class CustomerWareHouseRackGoodController extends Controller
      */
     public function index()
     {
-        $companies = CustomerCompany::where('userId', '=', session('userLogged')['company']['userId'])->get();
+        $companies = CustomerCompany::where('user_id', '=', session('userLogged')['company']['user_id'])->get();
 
         return view('man.customer-good-rack', compact('companies'));
     }
 
     public function racks($id)
     {
-        $where = [['companyId', '=', session('userLogged')['company']['id']]];
+        $where = [['company_id', '=', session('userLogged')['company']['id']]];
         if (getRole() == 'Developer') {
-            $where = [['companyId', '<>', 0]];
+            $where = [['company_id', '<>', 0]];
         }
         $data = CustomerCompanyWarehouse::with(['racks.products.product'])->where($where)->get();
         $warehouse_company = CustomerCompanyWarehouse::with('company')->first();

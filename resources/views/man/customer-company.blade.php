@@ -50,8 +50,8 @@
                         <p class="mb-4">Please provide all required details to register your business with us.</p>
                         <div class="mb-3">
                             @if (getRole() === 'Developer')
-                                <label for="userId" class="form-label">Customer *</label>
-                                <select id="userId" name="userId" class="form-control select2">
+                                <label for="user_id" class="form-label">Customer *</label>
+                                <select id="user_id" name="user_id" class="form-control select2">
                                     <option value="" disabled selected>Please Select</option>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->username }})
@@ -60,7 +60,7 @@
                                 </select>
                                 <div class="invalid-feedback">test</div>
                             @else
-                                <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
+                                <input type="hidden" name="user_id" value="{{ session('userLogged')['company']['user_id'] }}">
                             @endif
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
@@ -81,8 +81,8 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="businessId" class="form-label">Type of Business *</label>
-                            <select id="businessId" name="businessId" class="form-control select2">
+                            <label for="bussiness_id" class="form-label">Type of Business *</label>
+                            <select id="bussiness_id" name="bussiness_id" class="form-control select2">
                                 <option value="" disabled selected>Please Select</option>
                                 @foreach ($types as $type)
                                     <option value="{{ $type->id }}">{{ $type->name }}</option>
@@ -132,7 +132,7 @@
                                     <div class="invalid-feedback">test</div>
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="text" id="address[zipCode]" name="address[zipCode]" class="form-control"
+                                    <input type="text" id="address[zip_code]" name="address[zip_code]" class="form-control"
                                         placeholder="Postal / Zip Code">
                                     <div class="invalid-feedback">test</div>
                                 </div>
@@ -211,8 +211,8 @@
                         formElement.find("[name='address[province]']")
                             .val(response.data.address.province)
                             .trigger('change');
-                        formElement.find("[name='address[zipCode]']")
-                            .val(response.data.address.zipCode)
+                        formElement.find("[name='address[zip_code]']")
+                            .val(response.data.address.zip_code)
                             .trigger('change');
                     },
                     error: function(error) {

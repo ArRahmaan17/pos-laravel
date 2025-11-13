@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerProductTransaction extends Model
 {
-    protected $fillable = ['orderCode', 'userId', 'companyId', 'discountId', 'total', 'discount', 'status'];
+    protected $fillable = ['orderCode', 'user_id', 'company_id', 'discountId', 'total', 'discount', 'status'];
 
     use HasFactory;
     use SoftDeletes;

@@ -147,15 +147,15 @@
 ### Current Tables
 ```
 users                    # User accounts
-customer_companies       # Company information
+companies       # Company information
 customer_roles           # User roles
-customer_company_goods   # Products
+products   # Products
 customer_warehouses      # Warehouse locations
-customer_product_transactions  # Sales transactions
-customer_detail_product_transactions  # Transaction details
-customer_temporary_products    # Pending products
-app_menus               # Menu items
-app_roles               # System roles
+transactions  # Sales transactions
+transaction_items  # Transaction details
+adjustment_products    # Pending products
+permissions               # Menu items
+permissions               # System roles
 app_subscriptions       # Subscription plans
 ```
 

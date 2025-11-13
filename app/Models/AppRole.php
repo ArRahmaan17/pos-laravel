@@ -18,7 +18,7 @@ class AppRole extends Model
     {
         return $this->HasMany(
             UserRole::class,
-            'roleId',
+            'role_id',
             'id'
         );
     }

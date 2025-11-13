@@ -12,7 +12,7 @@ class CustomerRoleAccessibility extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['menuId', 'roleId'];
+    protected $fillable = ['menuId', 'role_id'];
 
     public function menu(): HasMany
     {

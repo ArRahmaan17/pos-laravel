@@ -67,8 +67,8 @@ class UserTest extends TestCase
     {
         $user = User::factory()->create();
         $role = UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->assertInstanceOf(UserRole::class, $user->appRole);
@@ -82,9 +82,9 @@ class UserTest extends TestCase
         $company = CustomerCompany::factory()->create();
 
         $role = UserCustomerRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->customerRole->id,
-            'companyId' => $company->id,
+            'user_id' => $user->id,
+            'role_id' => $this->customerRole->id,
+            'company_id' => $company->id,
         ]);
 
         $this->assertInstanceOf(UserCustomerRole::class, $user->customerRole);
@@ -99,15 +99,15 @@ class UserTest extends TestCase
         $company2 = CustomerCompany::factory()->create();
 
         $role1 = UserCustomerRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->customerRole->id,
-            'companyId' => $company1->id,
+            'user_id' => $user->id,
+            'role_id' => $this->customerRole->id,
+            'company_id' => $company1->id,
         ]);
 
         $role2 = UserCustomerRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->customerRole->id,
-            'companyId' => $company2->id,
+            'user_id' => $user->id,
+            'role_id' => $this->customerRole->id,
+            'company_id' => $company2->id,
         ]);
 
         $this->assertCount(2, $user->customerRoles);
@@ -117,8 +117,8 @@ class UserTest extends TestCase
     public function user_can_have_companies()
     {
         $user = User::factory()->create();
-        $company1 = CustomerCompany::factory()->create(['userId' => $user->id]);
-        $company2 = CustomerCompany::factory()->create(['userId' => $user->id]);
+        $company1 = CustomerCompany::factory()->create(['user_id' => $user->id]);
+        $company2 = CustomerCompany::factory()->create(['user_id' => $user->id]);
 
         $this->assertCount(2, $user->companies);
         $this->assertInstanceOf(CustomerCompany::class, $user->companies->first());
@@ -132,13 +132,13 @@ class UserTest extends TestCase
         $customer = User::factory()->create();
 
         UserRole::factory()->create([
-            'userId' => $manager->id,
-            'roleId' => $this->managerRole->id,
+            'user_id' => $manager->id,
+            'role_id' => $this->managerRole->id,
         ]);
 
         UserRole::factory()->create([
-            'userId' => $developer->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $developer->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $managerUsers = User::user_manager()->get();

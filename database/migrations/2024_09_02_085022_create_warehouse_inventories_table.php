@@ -11,26 +11,28 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_customer_roles', function (Blueprint $table) {
+        Schema::create('warehouse_inventories', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('userId')->unsigned();
-            $table->foreign('userId')
+            $table->bigInteger('warehouse_id')->unsigned();
+            $table->foreign('warehouse_id')
+                ->references('id')
+                ->on('warehouses')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->bigInteger('product_id')
+                ->unsigned();
+            $table->foreign('product_id')
+                ->references('id')
+                ->on('products')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->bigInteger('quantity');
+            $table->bigInteger('created_by')
+                ->unsigned();
+            $table->foreign('created_by')
                 ->references('id')
                 ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->bigInteger('roleId')->unsigned();
-            $table->foreign('roleId')
-                ->references('id')
-                ->on('customer_roles')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->bigInteger('companyId')->unsigned();
-            $table->foreign('companyId')
-                ->references('id')
-                ->on('customer_companies')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+                ->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -41,6 +43,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_customer_roles');
+        Schema::dropIfExists('warehouse_inventories');
     }
 };

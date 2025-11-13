@@ -94,8 +94,8 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="roleId" class="form-label">Role</label>
-                                <select class="form-control select2" name="roleId" id="roleId">
+                                <label for="role_id" class="form-label">Role</label>
+                                <select class="form-control select2" name="role_id" id="role_id">
                                     <option value="" disabled>Select Role</option>
                                     @foreach ($customer_roles as $role)
                                         <option value="{{ $role->id }}">{{ $role->name }} ({{ $role->as_role }})</option>

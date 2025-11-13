@@ -11,5 +11,5 @@ class CustomerGoodWarehouse extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['warehouseId', 'rackId', 'goodId'];
+    protected $fillable = ['warehouse_id', 'rackId', 'goodId'];
 }

@@ -28,9 +28,9 @@ class UserCustomerRoleFactory extends Factory
     public function definition(): array
     {
         return [
-            'userId' => User::factory(),
-            'roleId' => CustomerRole::factory(),
-            'companyId' => CustomerCompany::factory(),
+            'user_id' => User::factory(),
+            'role_id' => CustomerRole::factory(),
+            'company_id' => CustomerCompany::factory(),
         ];
     }
 }

@@ -14,6 +14,6 @@ class CustomerProductType extends Model
 
     public function category(): HasOne
     {
-        return $this->hasOne(BusinessType::class, 'id', 'businessId');
+        return $this->hasOne(BusinessType::class, 'id', 'bussiness_id');
     }
 }

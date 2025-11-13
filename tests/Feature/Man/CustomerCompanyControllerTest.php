@@ -33,8 +33,8 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -50,17 +50,17 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $company = CustomerCompany::factory()->create([
-            'userId' => $user->id,
-            'businessId' => $this->businessType->id,
+            'user_id' => $user->id,
+            'bussiness_id' => $this->businessType->id,
         ]);
 
         CompanyAddress::factory()->create([
-            'companyId' => $company->id,
+            'company_id' => $company->id,
         ]);
 
         $this->actingAs($user);
@@ -81,8 +81,8 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -90,19 +90,19 @@ class CustomerCompanyControllerTest extends TestCase
         $companyData = [
             'name' => 'Test Company',
             'phone_number' => '02112345678',
-            'businessId' => $this->businessType->id,
-            'userId' => $user->id,
+            'bussiness_id' => $this->businessType->id,
+            'user_id' => $user->id,
             'address' => 'Test Address',
             'city' => 'Test City',
             'province' => 'Test Province',
-            'zipCode' => '12345',
+            'zip_code' => '12345',
         ];
 
         $response = $this->post('/man/customer-company', $companyData);
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('customer_companies', [
+        $this->assertDatabaseHas('companies', [
             'name' => 'Test Company',
             'phone_number' => '02112345678',
         ]);
@@ -118,8 +118,8 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -137,13 +137,13 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $company = CustomerCompany::factory()->create([
-            'userId' => $user->id,
-            'businessId' => $this->businessType->id,
+            'user_id' => $user->id,
+            'bussiness_id' => $this->businessType->id,
         ]);
 
         $this->actingAs($user);
@@ -151,18 +151,18 @@ class CustomerCompanyControllerTest extends TestCase
         $updateData = [
             'name' => 'Updated Company',
             'phone_number' => '02187654321',
-            'businessId' => $this->businessType->id,
+            'bussiness_id' => $this->businessType->id,
             'address' => 'Updated Address',
             'city' => 'Updated City',
             'province' => 'Updated Province',
-            'zipCode' => '54321',
+            'zip_code' => '54321',
         ];
 
         $response = $this->put("/man/customer-company/{$company->id}", $updateData);
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('customer_companies', [
+        $this->assertDatabaseHas('companies', [
             'id' => $company->id,
             'name' => 'Updated Company',
             'phone_number' => '02187654321',
@@ -174,12 +174,12 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $company = CustomerCompany::factory()->create([
-            'userId' => $user->id,
+            'user_id' => $user->id,
         ]);
 
         $this->actingAs($user);
@@ -188,7 +188,7 @@ class CustomerCompanyControllerTest extends TestCase
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseMissing('customer_companies', [
+        $this->assertDatabaseMissing('companies', [
             'id' => $company->id,
         ]);
     }
@@ -198,13 +198,13 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $company = CustomerCompany::factory()->create([
-            'userId' => $user->id,
-            'businessId' => $this->businessType->id,
+            'user_id' => $user->id,
+            'bussiness_id' => $this->businessType->id,
         ]);
 
         $this->actingAs($user);
@@ -216,8 +216,8 @@ class CustomerCompanyControllerTest extends TestCase
                 'id',
                 'name',
                 'phone_number',
-                'businessId',
-                'userId',
+                'bussiness_id',
+                'user_id',
             ]);
     }
 
@@ -226,8 +226,8 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $this->actingAs($user);
@@ -242,12 +242,12 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $company = CustomerCompany::factory()->create([
-            'userId' => $user->id,
+            'user_id' => $user->id,
         ]);
 
         $this->actingAs($user);
@@ -264,23 +264,23 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $manager = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $manager->id,
-            'roleId' => $this->managerRole->id,
+            'user_id' => $manager->id,
+            'role_id' => $this->managerRole->id,
         ]);
 
         $otherUser = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $otherUser->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $otherUser->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         // Create companies for both users
         $managerCompany = CustomerCompany::factory()->create([
-            'userId' => $manager->id,
+            'user_id' => $manager->id,
         ]);
 
         $otherCompany = CustomerCompany::factory()->create([
-            'userId' => $otherUser->id,
+            'user_id' => $otherUser->id,
         ]);
 
         $this->actingAs($manager);
@@ -301,23 +301,23 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $developer = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $developer->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $developer->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $otherUser = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $otherUser->id,
-            'roleId' => $this->managerRole->id,
+            'user_id' => $otherUser->id,
+            'role_id' => $this->managerRole->id,
         ]);
 
         // Create companies for both users
         $developerCompany = CustomerCompany::factory()->create([
-            'userId' => $developer->id,
+            'user_id' => $developer->id,
         ]);
 
         $otherCompany = CustomerCompany::factory()->create([
-            'userId' => $otherUser->id,
+            'user_id' => $otherUser->id,
         ]);
 
         $this->actingAs($developer);
@@ -337,17 +337,17 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $company1 = CustomerCompany::factory()->create([
-            'userId' => $user->id,
+            'user_id' => $user->id,
             'name' => 'Test Company One',
         ]);
 
         $company2 = CustomerCompany::factory()->create([
-            'userId' => $user->id,
+            'user_id' => $user->id,
             'name' => 'Another Company',
         ]);
 
@@ -369,14 +369,14 @@ class CustomerCompanyControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         // Create multiple companies
         for ($i = 1; $i <= 15; $i++) {
             CustomerCompany::factory()->create([
-                'userId' => $user->id,
+                'user_id' => $user->id,
                 'name' => "Company {$i}",
             ]);
         }

@@ -39,8 +39,8 @@ class AuthControllerTest extends TestCase
         ]);
 
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $response = $this->postJson('/api/login', [
@@ -55,7 +55,7 @@ class AuthControllerTest extends TestCase
                 'user' => [
                     'user',
                     'role',
-                    'userId',
+                    'user_id',
                 ],
                 'token_type',
             ])
@@ -74,8 +74,8 @@ class AuthControllerTest extends TestCase
         ]);
 
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $response = $this->postJson('/api/login', [
@@ -95,8 +95,8 @@ class AuthControllerTest extends TestCase
         ]);
 
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         $response = $this->postJson('/api/login', [
@@ -177,8 +177,8 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create();
         UserRole::factory()->create([
-            'userId' => $user->id,
-            'roleId' => $this->developerRole->id,
+            'user_id' => $user->id,
+            'role_id' => $this->developerRole->id,
         ]);
 
         Sanctum::actingAs($user);
@@ -189,7 +189,7 @@ class AuthControllerTest extends TestCase
             ->assertJsonStructure([
                 'user',
                 'role',
-                'userId',
+                'user_id',
             ]);
     }
 
@@ -221,7 +221,7 @@ class AuthControllerTest extends TestCase
                 'user' => [
                     'user',
                     'role',
-                    'userId',
+                    'user_id',
                     'company',
                 ],
                 'token_type',
@@ -232,7 +232,7 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
         ]);
 
-        $this->assertDatabaseHas('customer_companies', [
+        $this->assertDatabaseHas('companies', [
             'name' => 'Test Company',
         ]);
     }

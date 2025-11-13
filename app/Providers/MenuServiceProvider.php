@@ -23,7 +23,7 @@ class MenuServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->environment('testing') || ! Schema::hasTable('app_menus') || ! Schema::hasTable('app_subscriptions')) {
+        if (app()->environment('testing') || ! Schema::hasTable('permissions') || ! Schema::hasTable('app_subscriptions')) {
             $sidebarAppMenu = [];
             $profileAppMenu = [];
             $subscriptions = [];

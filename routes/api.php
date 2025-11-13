@@ -66,9 +66,9 @@ Route::middleware(['auth:sanctum', 'throttle:100,1'])->group(function () {
         Route::prefix('customer-company-good')->name('customer-company-good.')->group(function () {
             Route::post('/', [CustomerCompanyGoodController::class, 'store'])->name('store');
             Route::post('/store-temp-product/{date?}', [CustomerTemporaryProductController::class, 'storeTempProduct'])->name('store-temp-product');
-            Route::post('/{id?}', [CustomerCompanyGoodController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyGoodController::class, 'dataTable'])->name('data-table');
             Route::get('/temp-product', [CustomerCompanyGoodController::class, 'tempProduct'])->name('temp-product');
+            Route::post('/{id?}', [CustomerCompanyGoodController::class, 'update'])->name('update');
             Route::get('/{id?}', [CustomerCompanyGoodController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerCompanyGoodController::class, 'destroy'])->name('delete');
         });

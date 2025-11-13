@@ -26,7 +26,7 @@ class CustomerRoleFactory extends Factory
     public function definition(): array
     {
         return [
-            'userId' => User::factory(),
+            'user_id' => User::factory(),
             'name' => $this->faker->unique()->randomElement(['Cashier', 'Warehouse', 'Administrator', 'Sales']),
             'description' => $this->faker->sentence(),
             'as_role' => $this->faker->randomElement(['cashier', 'sales', 'admin', 'warehouse']),

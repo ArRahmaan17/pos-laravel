@@ -31,9 +31,9 @@ class AuthController extends Controller
             ->first();
 
         if (! empty($user) && Hash::check($request->password, $user->password)) {
-            $role = UserRole::with('user', 'role')->where('userId', $user->id)->first();
+            $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
             if (empty($role) || empty($role->user) || empty($role->role)) {
-                $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
+                $role = UserCustomerRole::with('user', 'role')->where('user_id', $user->id)->first();
             }
 
             if (! $role) {
@@ -45,13 +45,13 @@ class AuthController extends Controller
             $userData = [
                 'user' => $role->user->toArray(),
                 'role' => $role->role->toArray(),
-                'userId' => $user->id,
+                'user_id' => $user->id,
             ];
 
             if (! in_array($role->role->name, ['Developer', 'Manager'])) {
-                $company = UserCustomerRole::employeeCompany($role->userId);
+                $company = UserCustomerRole::employeeCompany($role->user_id);
                 if ($company) {
-                    $company['address'] = CompanyAddress::where('companyId', $company['id'])->first()?->toArray();
+                    $company['address'] = CompanyAddress::where('company_id', $company['id'])->first()?->toArray();
                     $userData['company'] = $company;
                 }
             }
@@ -95,10 +95,10 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         $user = $request->user();
-        $role = UserRole::with('user', 'role')->where('userId', $user->id)->first();
+        $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
 
         if (empty($role) || empty($role->user) || empty($role->role)) {
-            $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
+            $role = UserCustomerRole::with('user', 'role')->where('user_id', $user->id)->first();
         }
 
         if (! $role) {
@@ -110,13 +110,13 @@ class AuthController extends Controller
         $userData = [
             'user' => $role->user->toArray(),
             'role' => $role->role->toArray(),
-            'userId' => $user->id,
+            'user_id' => $user->id,
         ];
 
         if (! in_array($role->role->name, ['Developer', 'Manager'])) {
-            $company = UserCustomerRole::employeeCompany($role->userId);
+            $company = UserCustomerRole::employeeCompany($role->user_id);
             if ($company) {
-                $company['address'] = CompanyAddress::where('companyId', $company['id'])->first()?->toArray();
+                $company['address'] = CompanyAddress::where('company_id', $company['id'])->first()?->toArray();
                 $userData['company'] = $company;
             }
         }
@@ -130,14 +130,14 @@ class AuthController extends Controller
     public function selectCompany(Request $request)
     {
         $request->validate([
-            'company_id' => 'required|exists:customer_companies,id',
+            'company_id' => 'required|exists:companies,id',
         ]);
 
         $user = $request->user();
-        $role = UserRole::with('user', 'role')->where('userId', $user->id)->first();
+        $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
 
         if (empty($role) || empty($role->user) || empty($role->role)) {
-            $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
+            $role = UserCustomerRole::with('user', 'role')->where('user_id', $user->id)->first();
         }
 
         if (! $role) {
@@ -148,7 +148,7 @@ class AuthController extends Controller
 
         $where = [['id', '=', $request->company_id]];
         if (in_array($role->role->name, ['Manager'])) {
-            $where = [['id', '=', $request->company_id], ['userId', '=', $user->id]];
+            $where = [['id', '=', $request->company_id], ['user_id', '=', $user->id]];
         }
 
         $company = CustomerCompany::with('address')->where($where)->first();
@@ -164,7 +164,7 @@ class AuthController extends Controller
             'data' => [
                 'user' => $role->user->toArray(),
                 'role' => $role->role->toArray(),
-                'userId' => $user->id,
+                'user_id' => $user->id,
                 'company' => $company->toArray(),
             ],
         ], 200);
@@ -173,13 +173,13 @@ class AuthController extends Controller
     public function loginAs(Request $request, $id)
     {
         $request->validate([
-            'company_id' => 'required|exists:customer_companies,id',
+            'company_id' => 'required|exists:companies,id',
         ]);
 
         $user = $request->user();
         $where = [
-            'userId' => $id,
-            'companyId' => $request->company_id,
+            'user_id' => $id,
+            'company_id' => $request->company_id,
         ];
 
         $targetUser = UserCustomerRole::with('user', 'role')
@@ -194,9 +194,9 @@ class AuthController extends Controller
 
         $hasPrivileges = true;
         $targetUserData = $targetUser->toArray();
-        $targetUserData['company'] = UserCustomerRole::employeeCompany($targetUser->userId);
+        $targetUserData['company'] = UserCustomerRole::employeeCompany($targetUser->user_id);
 
-        if (UserCustomerRole::employeeMenu($targetUser->userId) == 0) {
+        if (UserCustomerRole::employeeMenu($targetUser->user_id) == 0) {
             $hasPrivileges = false;
         }
 
@@ -206,14 +206,14 @@ class AuthController extends Controller
             $token = $targetUserModel->createToken('login-as-token')->plainTextToken;
 
             return response()->json([
-                'message' => 'Successfully logged in as ' . $targetUser->user->username,
+                'message' => 'Successfully logged in as '.$targetUser->user->username,
                 'token' => $token,
                 'user' => $targetUserData,
                 'token_type' => 'Bearer',
             ], 200);
         } else {
             return response()->json([
-                'message' => 'Failed to login as ' . $targetUser->user->username . ', please set role for the user',
+                'message' => 'Failed to login as '.$targetUser->user->username.', please set role for the user',
             ], 403);
         }
     }
@@ -228,13 +228,13 @@ class AuthController extends Controller
             'user.password' => ['required', 'min:8', 'max:15', 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,15}$/'],
             'user.confirm_password' => ['same:user.password', 'required', 'min:8', 'max:15', 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,15}$/'],
             'company.name' => ['required', 'min:5', 'max:30'],
-            'company.email' => ['required', 'email', 'unique:customer_companies,email'],
-            'company.phone_number' => ['required', 'min:10', 'max:19', 'unique:customer_companies,phone_number', 'regex:/8\d{10,11}$/'],
+            'company.email' => ['required', 'email', 'unique:companies,email'],
+            'company.phone_number' => ['required', 'min:10', 'max:19', 'unique:companies,phone_number', 'regex:/8\d{10,11}$/'],
             'address.place' => ['required', 'min:4', 'max:30'],
             'address.address' => ['required', 'min:4', 'max:30'],
             'address.city' => ['required', 'min:4', 'max:30'],
             'address.province' => ['required', 'min:4', 'max:30'],
-            'address.zipCode' => ['required', 'min:4', 'max:30'],
+            'address.zip_code' => ['required', 'min:4', 'max:30'],
         ]);
         DB::beginTransaction();
         try {
@@ -247,8 +247,8 @@ class AuthController extends Controller
             if ($request->has('managerId')) {
                 $dataUser = User::user_manager($request->managerId);
             }
-            if ($request->has('roleId')) {
-                $dataCustomerRole = CustomerRole::customer_roles($request->managerId, $request->roleId);
+            if ($request->has('role_id')) {
+                $dataCustomerRole = CustomerRole::customer_roles($request->managerId, $request->role_id);
             }
 
             if ($request->has('managerId')) {
@@ -261,22 +261,22 @@ class AuthController extends Controller
                     ], 401);
                 } else {
                     UserCustomerRole::create([
-                        'userId' => $user_register->id,
-                        'roleId' => $dataCustomerRole[0]->id,
+                        'user_id' => $user_register->id,
+                        'role_id' => $dataCustomerRole[0]->id,
                     ]);
                 }
             } else {
                 $user['hr'] = 1;
                 $user_register = User::create($user);
                 UserRole::create([
-                    'userId' => $user_register->id,
-                    'roleId' => 2,
+                    'user_id' => $user_register->id,
+                    'role_id' => 2,
                 ]);
                 $company['affiliate_code'] = generateAffiliateCode();
-                $company['userId'] = $user_register->id;
+                $company['user_id'] = $user_register->id;
                 $company['picture'] = 'default-picture.png';
                 $data_company = CustomerCompany::create($company);
-                $address['companyId'] = $data_company->id;
+                $address['company_id'] = $data_company->id;
                 CompanyAddress::create($address);
             }
 
@@ -367,15 +367,15 @@ class AuthController extends Controller
     public function customerCompany(Request $request)
     {
         $user = $request->user();
-        $where = [['userId', '=', $user->id]];
+        $where = [['user_id', '=', $user->id]];
 
-        $role = UserRole::with('user', 'role')->where('userId', $user->id)->first();
+        $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
         if (empty($role) || empty($role->user) || empty($role->role)) {
-            $role = UserCustomerRole::with('user', 'role')->where('userId', $user->id)->first();
+            $role = UserCustomerRole::with('user', 'role')->where('user_id', $user->id)->first();
         }
 
         if ($role && $role->role->name === 'Developer') {
-            $where = [['userId', '<>', null]];
+            $where = [['user_id', '<>', null]];
         }
 
         $data = CustomerCompany::with('address', 'type')->where($where)->get();
@@ -439,10 +439,10 @@ class AuthController extends Controller
     public function checkAvailableCompany(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|unique:customer_companies,name',
-            'email' => 'required|string|unique:customer_companies,email|email',
-            'phone_number' => 'required|string|unique:customer_companies,phone_number|regex:/8\d{10,11}$/',
-            'businessId' => 'required|exists:business_types,id',
+            'name' => 'required|string|unique:companies,name',
+            'email' => 'required|string|unique:companies,email|email',
+            'phone_number' => 'required|string|unique:companies,phone_number|regex:/8\d{10,11}$/',
+            'bussiness_id' => 'required|exists:business_types,id',
         ]);
 
         $checkCompany = CustomerCompany::where([

@@ -19,7 +19,7 @@ class CustomerRoleController extends Controller
 
     public function role($id)
     {
-        $data = CustomerRole::where('userId', $id)->get();
+        $data = CustomerRole::where('user_id', $id)->get();
         $response = ['message' => 'Showing resource successfully', 'data' => dataToOption($data)];
         $code = 200;
         if (empty($data)) {
@@ -32,7 +32,7 @@ class CustomerRoleController extends Controller
 
     public function dataTable(Request $request)
     {
-        $where = [['userId', '=', session('userLogged')['company']['userId']]];
+        $where = [['user_id', '=', session('userLogged')['company']['user_id']]];
         $totalData = CustomerRole::where($where)->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
@@ -95,11 +95,11 @@ class CustomerRoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'userId' => 'required|exists:users,id',
+            'user_id' => 'required|exists:users,id',
             'name' => 'required|min:2|max:30|unique:customer_roles,name',
             'description' => 'required|min:6|max:100',
             'as_role' => 'required|in:cashier,sales,admin,warehouse',
-        ], ['userId.required' => 'The customer user field is required']);
+        ], ['user_id.required' => 'The customer user field is required']);
         DB::beginTransaction();
         try {
             CustomerRole::create($request->except('_token'));
@@ -138,8 +138,8 @@ class CustomerRoleController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'userId' => 'required|exists:users,id',
-            'name' => 'required|unique:app_roles,name,'.$id,
+            'user_id' => 'required|exists:users,id',
+            'name' => 'required|unique:permissions,name,'.$id,
             'description' => 'required|min:6|max:100',
             'as_role' => 'required|in:cashier,sales,admin,warehouse',
         ]);

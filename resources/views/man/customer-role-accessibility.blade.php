@@ -48,8 +48,8 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="roleId" class="form-label">Customer Role</label>
-                                <select class="form-control select2" name="roleId" id="roleId">
+                                <label for="role_id" class="form-label">Customer Role</label>
+                                <select class="form-control select2" name="role_id" id="role_id">
                                     <option value="">Select Role</option>
                                     @foreach ($roles as $role)
                                         <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -141,7 +141,7 @@
                         $('#modal-customer-role-accessibility').find("form")
                             .find('select, input').map(function(index, element) {
                                 if (response.data[`${element.name}`] != undefined) {
-                                    if (element.name == 'roleId') {
+                                    if (element.name == 'role_id') {
                                         setTimeout(() => {
                                             $(`[name="${element.name}"]`).val(response.data[
                                                 `${element.name}`]).trigger('change');
@@ -326,7 +326,7 @@
                 let data = serializeObject($('#form-customer-role-accessibility'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('man.customer-role-accessibility.update') }}/${data.roleId}`,
+                    url: `{{ route('man.customer-role-accessibility.update') }}/${data.role_id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {

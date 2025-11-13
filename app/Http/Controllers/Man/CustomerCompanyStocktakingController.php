@@ -20,28 +20,28 @@ class CustomerCompanyStocktakingController extends Controller
 
     public function dataTable(Request $request)
     {
-        $where = [['customer_company_stocktakings.companyId', '=', session('userLogged')['company']['id']]];
-        $totalData = CustomerCompanyStocktaking::join('customer_company_goods', 'customer_company_goods.id', '=', 'customer_company_stocktakings.goodId')->where($where)->orderBy('id', 'asc')
+        $where = [['customer_company_stocktakings.company_id', '=', session('userLogged')['company']['id']]];
+        $totalData = CustomerCompanyStocktaking::join('products', 'products.id', '=', 'customer_company_stocktakings.goodId')->where($where)->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompanyStocktaking::join('customer_company_goods', 'customer_company_goods.id', '=', 'customer_company_stocktakings.goodId')->select('customer_company_stocktakings.*', 'customer_company_goods.name');
+            $assets = CustomerCompanyStocktaking::join('products', 'products.id', '=', 'customer_company_stocktakings.goodId')->select('customer_company_stocktakings.*', 'products.name');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where($where)->get();
         } else {
-            $assets = CustomerCompanyStocktaking::join('customer_company_goods', 'customer_company_goods.id', '=', 'customer_company_stocktakings.goodId')->select('customer_company_stocktakings.*', 'customer_company_goods.name')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+            $assets = CustomerCompanyStocktaking::join('products', 'products.id', '=', 'customer_company_stocktakings.goodId')->select('customer_company_stocktakings.*', 'products.name')
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -49,12 +49,12 @@ class CustomerCompanyStocktakingController extends Controller
             }
             $assets = $assets->where($where)->get();
 
-            $totalFiltered = CustomerCompanyStocktaking::join('customer_company_goods', 'customer_company_goods.id', '=', 'customer_company_stocktakings.goodId')->select('customer_company_stocktakings.*', 'customer_company_goods.name')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+            $totalFiltered = CustomerCompanyStocktaking::join('products', 'products.id', '=', 'customer_company_stocktakings.goodId')->select('customer_company_stocktakings.*', 'products.name')
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where($where)->count();
         }
@@ -65,8 +65,8 @@ class CustomerCompanyStocktakingController extends Controller
             $row['name'] = $item->name;
             $row['expect_stock'] = $item->expect_stock;
             $row['real_stock'] = $item->real_stock;
-            $row['status'] = (!$item->status) ? '<span class="badge rounded-pill bg-label-warning">Wait for approval</span>' : '<span class="badge rounded-pill bg-label-success">Approved</span>';
-            $row['action'] = ((!$item->status) ? "<button class='btn btn-icon btn-success approve' data-customer-product-stocktaking='" . $item->id . "' ><i class='bx bx-check'></i></button><button class='btn btn-icon btn-warning edit' data-customer-product-stocktaking='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-product-stocktaking='" . $item->id . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>" : "<button data-customer-product-stocktaking='" . $item->id . "' class='btn btn-icon btn-info show-stocktaking'><i class='bx bx-search'></i></button>");
+            $row['status'] = (! $item->status) ? '<span class="badge rounded-pill bg-label-warning">Wait for approval</span>' : '<span class="badge rounded-pill bg-label-success">Approved</span>';
+            $row['action'] = ((! $item->status) ? "<button class='btn btn-icon btn-success approve' data-customer-product-stocktaking='".$item->id."' ><i class='bx bx-check'></i></button><button class='btn btn-icon btn-warning edit' data-customer-product-stocktaking='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-product-stocktaking='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>" : "<button data-customer-product-stocktaking='".$item->id."' class='btn btn-icon btn-info show-stocktaking'><i class='bx bx-search'></i></button>");
             $dataFiltered[] = $row;
         }
         $response = [
@@ -85,9 +85,9 @@ class CustomerCompanyStocktakingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'product.*.goodId' => 'required|exists:customer_company_goods,id',
+            'product.*.goodId' => 'required|exists:products,id',
             'product.*.expect_stock' => 'required|regex:/(\d{1,3}(?:\.\d{3})*)/i',
-            'product.*.real_stock' => 'required|regex:/(\d{1,3}(?:\.\d{3})*)/i'
+            'product.*.real_stock' => 'required|regex:/(\d{1,3}(?:\.\d{3})*)/i',
         ]);
         DB::beginTransaction();
         try {
@@ -96,8 +96,8 @@ class CustomerCompanyStocktakingController extends Controller
                     'goodId' => $product['goodId'],
                     'expect_stock' => implode('', explode('.', $product['expect_stock'])),
                     'real_stock' => implode('', explode('.', $product['real_stock'])),
-                    'userId' => session('userLogged')['user']['id'],
-                    'companyId' => session('userLogged')['company']['id'],
+                    'user_id' => session('userLogged')['user']['id'],
+                    'company_id' => session('userLogged')['company']['id'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -111,8 +111,10 @@ class CustomerCompanyStocktakingController extends Controller
             $status = 422;
             $message = ['message' => 'Failed create resources'];
         }
+
         return response()->json($message, $status);
     }
+
     public function approveStocktaking($id)
     {
         DB::beginTransaction();
@@ -128,6 +130,7 @@ class CustomerCompanyStocktakingController extends Controller
             $status = 422;
             $message = ['message' => 'Failed approving resources'];
         }
+
         return response()->json($message, $status);
     }
 
@@ -136,13 +139,14 @@ class CustomerCompanyStocktakingController extends Controller
      */
     public function show(string $id)
     {
-        $data = CustomerCompanyStocktaking::join('customer_company_goods', 'customer_company_stocktakings.goodId', '=', 'customer_company_goods.id')->select('customer_company_stocktakings.*', 'customer_company_goods.name')->find($id);
+        $data = CustomerCompanyStocktaking::join('products', 'customer_company_stocktakings.goodId', '=', 'products.id')->select('customer_company_stocktakings.*', 'products.name')->find($id);
         $status = 200;
         $message = ['message' => 'Successfully showing resources', 'data' => $data];
-        if (!$data) {
+        if (! $data) {
             $status = 404;
             $message = ['message' => 'Failed showing resources', 'data' => $data];
         }
+
         return response()->json($message, $status);
     }
 
@@ -152,9 +156,9 @@ class CustomerCompanyStocktakingController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'product.*.goodId' => 'required|exists:customer_company_goods,id',
+            'product.*.goodId' => 'required|exists:products,id',
             'product.*.expect_stock' => 'required|regex:/(\d{1,3}(?:\.\d{3})*)/i',
-            'product.*.real_stock' => 'required|regex:/(\d{1,3}(?:\.\d{3})*)/i'
+            'product.*.real_stock' => 'required|regex:/(\d{1,3}(?:\.\d{3})*)/i',
         ]);
         $data = $request->product;
         DB::beginTransaction();
@@ -175,6 +179,7 @@ class CustomerCompanyStocktakingController extends Controller
             $status = 422;
             $message = ['message' => 'Failed updating resource'];
         }
+
         return response()->json($message, $status);
     }
 
@@ -189,6 +194,7 @@ class CustomerCompanyStocktakingController extends Controller
             $status = 200;
             $message = ['message' => 'Successfully delete resource'];
         }
+
         return response()->json($message, $status);
     }
 }

@@ -83,8 +83,8 @@
                         @isset($managerId)
                             <input type="hidden" name="managerId" value="{{ $managerId }}">
                         @endisset
-                        @isset($roleId)
-                            <input type="hidden" name="roleId" value="{{ $roleId }}">
+                        @isset($role_id)
+                            <input type="hidden" name="role_id" value="{{ $role_id }}">
                         @endisset
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3">
@@ -140,16 +140,16 @@
                             </div>
                             <div class="row">
                                 <div class="col-12 col-md-6 mb-3">
-                                    <label for="company[businessId]" class="form-label">Type of Business *</label>
-                                    <select id="company[businessId]" name="company[businessId]"
-                                        class="form-control select2 @error('company.businessId') is-invalid @enderror">
+                                    <label for="company[bussiness_id]" class="form-label">Type of Business *</label>
+                                    <select id="company[bussiness_id]" name="company[bussiness_id]"
+                                        class="form-control select2 @error('company.bussiness_id') is-invalid @enderror">
                                         <option value="">Please Business type</option>
                                         @foreach ($types as $type)
-                                            <option value="{{ $type->id }}" {{ old('company.businessId') == $type->id ? 'selected' : '' }}>
+                                            <option value="{{ $type->id }}" {{ old('company.bussiness_id') == $type->id ? 'selected' : '' }}>
                                                 {{ $type->name }}</option>
                                         @endforeach
                                     </select>
-                                    @error('company.businessId')
+                                    @error('company.bussiness_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -215,9 +215,9 @@
                                             @enderror
                                         </div>
                                         <div class="col-md-4">
-                                            <input type="text" id="address[zipCode]" name="address[zipCode]" value="{{ old('address.zipCode') }}"
-                                                class="form-control @error('address.zipCode') is-invalid @enderror" placeholder="Postal / Zip Code">
-                                            @error('address.zipCode')
+                                            <input type="text" id="address[zip_code]" name="address[zip_code]" value="{{ old('address.zip_code') }}"
+                                                class="form-control @error('address.zip_code') is-invalid @enderror" placeholder="Postal / Zip Code">
+                                            @error('address.zip_code')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>

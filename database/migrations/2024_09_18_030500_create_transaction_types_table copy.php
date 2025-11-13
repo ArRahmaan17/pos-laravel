@@ -11,17 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_roles', function (Blueprint $table) {
+        Schema::create('transaction_types', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('userId')->comment('customer manager id')->nullable(false)->unsigned();
-            $table->foreign('userId')
+            $table->string('code');
+            $table->string('description');
+            $table->bigInteger('created_by')
+                ->unsigned();
+            $table->foreign('created_by')
                 ->references('id')
                 ->on('users')
-                ->cascadeOnUpdate()
                 ->cascadeOnDelete();
-            $table->string('name')->nullable(false);
-            $table->string('description')->nullable(false);
-            $table->enum('as_role', ['cashier', 'sales', 'admin', 'warehouse']);
+            $table->bigInteger('deleted_at')
+                ->unsigned();
+            $table->foreign('deleted_at')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_roles');
+        Schema::dropIfExists('transaction_types');
     }
 };

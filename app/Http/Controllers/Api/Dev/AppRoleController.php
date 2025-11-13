@@ -16,14 +16,15 @@ class AppRoleController extends Controller
     {
         try {
             $appRoles = AppRole::orderBy('id', 'asc')->get();
+
             return response()->json([
                 'success' => true,
-                'data' => $appRoles
+                'data' => $appRoles,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve app roles'
+                'message' => 'Failed to retrieve app roles',
             ], 500);
         }
     }
@@ -44,16 +45,16 @@ class AppRoleController extends Controller
                     }
                 }
                 if (isset($request['order'][0]['column'])) {
-                    $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                    $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
                 }
                 $assets = $assets->get();
             } else {
                 $assets = AppRole::select('*')
-                    ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                    ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                    ->where('name', 'like', '%'.$request['search']['value'].'%')
+                    ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
                 if (isset($request['order'][0]['column'])) {
-                    $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                    $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
                 }
                 if ($request['length'] != '-1') {
                     $assets->limit($request['length']);
@@ -64,11 +65,11 @@ class AppRoleController extends Controller
                 $assets = $assets->get();
 
                 $totalFiltered = AppRole::select('*')
-                    ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                    ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                    ->where('name', 'like', '%'.$request['search']['value'].'%')
+                    ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
                 if (isset($request['order'][0]['column'])) {
-                    $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                    $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
                 }
                 $totalFiltered = $totalFiltered->count();
             }
@@ -96,7 +97,7 @@ class AppRoleController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve data table'
+                'message' => 'Failed to retrieve data table',
             ], 500);
         }
     }
@@ -109,7 +110,7 @@ class AppRoleController extends Controller
         DB::beginTransaction();
         try {
             $request->validate([
-                'name' => 'required|min:2|max:10|unique:app_roles,name',
+                'name' => 'required|min:2|max:10|unique:permissions,name',
                 'description' => 'required|min:6|max:100',
             ]);
 
@@ -119,20 +120,22 @@ class AppRoleController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'App Role created successfully',
-                'data' => $appRole
+                'data' => $appRole,
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed creating App Role'
+                'message' => 'Failed creating App Role',
             ], 500);
         }
     }
@@ -144,19 +147,20 @@ class AppRoleController extends Controller
     {
         try {
             $appRole = AppRole::findOrFail($id);
+
             return response()->json([
                 'success' => true,
-                'data' => $appRole
+                'data' => $appRole,
             ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'App Role not found'
+                'message' => 'App Role not found',
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve App Role'
+                'message' => 'Failed to retrieve App Role',
             ], 500);
         }
     }
@@ -171,7 +175,7 @@ class AppRoleController extends Controller
             $appRole = AppRole::findOrFail($id);
 
             $request->validate([
-                'name' => 'required|min:2|max:10|unique:app_roles,name,' . $id,
+                'name' => 'required|min:2|max:10|unique:permissions,name,'.$id,
                 'description' => 'required|min:6|max:100',
             ]);
 
@@ -181,26 +185,29 @@ class AppRoleController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'App Role updated successfully',
-                'data' => $appRole
+                'data' => $appRole,
             ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'App Role not found'
+                'message' => 'App Role not found',
             ], 404);
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed updating App Role'
+                'message' => 'Failed updating App Role',
             ], 500);
         }
     }
@@ -218,19 +225,21 @@ class AppRoleController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'App Role deleted successfully'
+                'message' => 'App Role deleted successfully',
             ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'App Role not found'
+                'message' => 'App Role not found',
             ], 404);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed deleting App Role'
+                'message' => 'Failed deleting App Role',
             ], 500);
         }
     }

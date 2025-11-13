@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppGoodUnit;
-use App\Models\CustomerProductType;
 use App\Models\CustomerCompanyGood;
+use App\Models\CustomerProductType;
 use App\Models\CustomerTemporaryProduct;
 use Exception;
 use Illuminate\Http\Request;
@@ -20,14 +20,14 @@ class CustomerTemporaryProductController extends Controller
     public function index()
     {
         $units = AppGoodUnit::get();
-        $categories = CustomerProductType::with('category')->where('businessId', session('userLogged')['company']['businessId'])->get();
+        $categories = CustomerProductType::with('category')->where('bussiness_id', session('userLogged')['company']['bussiness_id'])->get();
 
         return view('man.customer-temp-product', compact('units', 'categories'));
     }
 
     public function dataTable(Request $request)
     {
-        $totalData = CustomerTemporaryProduct::select(DB::raw('DATE(created_at) as created_at'))->orderBy('created_at', 'desc')->where('companyId', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->count();
+        $totalData = CustomerTemporaryProduct::select(DB::raw('DATE(created_at) as created_at'))->orderBy('created_at', 'desc')->where('company_id', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
             $assets = CustomerTemporaryProduct::with('changedProduct', 'changedProduct.unit', 'changedProduct.reference', 'changedProduct.creater', 'changedProduct.reference.unit', 'changedProduct.accepter')
@@ -46,7 +46,7 @@ class CustomerTemporaryProductController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
-            $assets = $assets->where('companyId', session('userLogged')['company']['id'])->groupByRaw('transaction_created, companyId')->get();
+            $assets = $assets->where('company_id', session('userLogged')['company']['id'])->groupByRaw('transaction_created, company_id')->get();
         } else {
             $assets = CustomerTemporaryProduct::with('changedProduct', 'changedProduct.unit', 'changedProduct.reference', 'changedProduct.creater', 'changedProduct.reference.unit', 'changedProduct.accepter')->select(
                 'transaction_created',
@@ -64,7 +64,7 @@ class CustomerTemporaryProductController extends Controller
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->where('companyId', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->get();
+            $assets = $assets->where('company_id', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->get();
 
             $totalFiltered = CustomerTemporaryProduct::select(
                 'transaction_created',
@@ -80,7 +80,7 @@ class CustomerTemporaryProductController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->where('companyId', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->count();
+            $totalFiltered = $totalFiltered->where('company_id', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
@@ -93,7 +93,7 @@ class CustomerTemporaryProductController extends Controller
             $row['sum_product_restock'] = $item->sum_product_restock;
             $row['sum_product_remove'] = $item->sum_product_remove;
             $row['changedProduct'] = $item->changedProduct;
-            $row['action'] = (intval($item->sum_accepted) !== (intval($item->sum_product_in) + intval($item->sum_product_restock) + intval($item->sum_product_remove)) && in_array(session('userLogged')['role']['name'], ['Manager', 'Developer']) ? "<button class='btn btn-icon btn-success accept' data-customer-temporary-product='" . $item->transaction_created . "' ><i class='bx bx-check' ></i></button>" : "<button class='btn btn-icon btn-warning edit' data-customer-temporary-product='" . $item->transaction_created . "' ><i class='bx bx-pencil' ></i></button><button data-customer-temporary-product='" . $item->transaction_created . "' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>");
+            $row['action'] = (intval($item->sum_accepted) !== (intval($item->sum_product_in) + intval($item->sum_product_restock) + intval($item->sum_product_remove)) && in_array(session('userLogged')['role']['name'], ['Manager', 'Developer']) ? "<button class='btn btn-icon btn-success accept' data-customer-temporary-product='".$item->transaction_created."' ><i class='bx bx-check' ></i></button>" : "<button class='btn btn-icon btn-warning edit' data-customer-temporary-product='".$item->transaction_created."' ><i class='bx bx-pencil' ></i></button><button data-customer-temporary-product='".$item->transaction_created."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>");
             $dataFiltered[] = $row;
         }
         $response = [
@@ -124,9 +124,9 @@ class CustomerTemporaryProductController extends Controller
                     if (! $product) {
                         return;
                     }
-                    $query = DB::table('customer_temporary_products')->where('name', $product['name']);
+                    $query = DB::table('adjustment_products')->where('name', $product['name']);
                     if (! empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
-                        $query->where('customerCompanyGoodId', '!=', $product['customerCompanyGoodId'])->where('companyId', session('userLogged')['company']['id']);
+                        $query->where('customerCompanyGoodId', '!=', $product['customerCompanyGoodId'])->where('company_id', session('userLogged')['company']['id']);
                     }
                     if ($query->exists()) {
                         $fail("The name '{$value}' has already been taken.");
@@ -139,9 +139,9 @@ class CustomerTemporaryProductController extends Controller
                     if (! $product) {
                         return;
                     }
-                    $query = DB::table('customer_company_goods')->where('name', $product['name']);
+                    $query = DB::table('products')->where('name', $product['name']);
                     if (! empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
-                        $query->where('id', '!=', $product['customerCompanyGoodId'])->where('companyId', session('userLogged')['company']['id']);
+                        $query->where('id', '!=', $product['customerCompanyGoodId'])->where('company_id', session('userLogged')['company']['id']);
                     }
                     if ($query->exists()) {
                         $fail("The name '{$value}' has already been taken.");
@@ -150,12 +150,12 @@ class CustomerTemporaryProductController extends Controller
             ],
             'products.*.stock' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:5|regex:/(\d{1,3}(?:\.\d{3})*)/i',
             'products.*.price' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
-            'products.*.buyPrice' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'products.*.buy_price' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'products.*.status' => 'required|in:IN,RESTOCK,REMOVE',
-            // 'products.*.companyId' => 'required|exists:customer_companies,id|in:' . session('userLogged')['company']['id'],
-            'products.*.unitId' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:app_good_units,id',
-            'products.*.typeId' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:app_product_types,id',
-            'products.*.customerCompanyGoodId' => 'required_if:products.*.status,REMOVE|required_if:products.*.status,RESTOCK|exists:customer_company_goods,id',
+            // 'products.*.company_id' => 'required|exists:companies,id|in:' . session('userLogged')['company']['id'],
+            'products.*.unit_id' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:product_weight_units,id',
+            'products.*.type_id' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:product_categories,id',
+            'products.*.customerCompanyGoodId' => 'required_if:products.*.status,REMOVE|required_if:products.*.status,RESTOCK|exists:products,id',
             'products.*.picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ]);
         DB::beginTransaction();
@@ -163,8 +163,8 @@ class CustomerTemporaryProductController extends Controller
             $orderCode = ['in' => lastCompanyOrderCode('IN'), 'restock' => lastCompanyOrderCode('ADJ'), 'remove' => lastCompanyOrderCode('REMOVE')];
             $default_data = [
                 'transaction_created' => now()->format('Y-m-d'),
-                'companyId' => session('userLogged')['company']['id'],
-                'userId' => session('userLogged')['user']['id'],
+                'company_id' => session('userLogged')['company']['id'],
+                'user_id' => session('userLogged')['user']['id'],
                 'customerCompanyGoodId' => null,
                 'name' => null,
                 'status' => null,
@@ -172,9 +172,9 @@ class CustomerTemporaryProductController extends Controller
                 'stock' => null,
                 'stock_reference' => null,
                 'price' => null,
-                'buyPrice' => null,
-                'unitId' => null,
-                'typeId' => null,
+                'buy_price' => null,
+                'unit_id' => null,
+                'type_id' => null,
                 'accepted' => 0,
                 'accepted_by' => null,
                 'created_at' => now(),
@@ -188,7 +188,7 @@ class CustomerTemporaryProductController extends Controller
             $resultTempProduct = [];
             foreach ($request->products as $key => $value) {
                 foreach ($default_data as $indexDefault => $valueDefault) {
-                    $resultTempProduct[$key][$indexDefault] = (! empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buyPrice']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
+                    $resultTempProduct[$key][$indexDefault] = (! empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buy_price']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
                     if ($indexDefault == 'picture') {
                         if (! empty($request->products[$key][$indexDefault])) {
                             $filename = md5($request->products[$key]['name'].now()->format('Y-m-d h:i:s')).'.'.$request->products[$key][$indexDefault]->extension();
@@ -239,7 +239,7 @@ class CustomerTemporaryProductController extends Controller
             if (! in_array(getRole(), ['Developer', 'Manager'])) {
                 throw new Exception('Not Authorize');
             }
-            $data = CustomerTemporaryProduct::with('reference')->whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
+            $data = CustomerTemporaryProduct::with('reference')->whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
             $dataUpdate = [];
             $dataDelete = [];
             $dataInsert = [];
@@ -249,10 +249,10 @@ class CustomerTemporaryProductController extends Controller
                     'name' => $value->name,
                     'picture' => $value->picture,
                     'price' => $value->price,
-                    'buyPrice' => $value->buyPrice,
-                    'unitId' => $value->unitId,
-                    'typeId' => $value->typeId,
-                    'companyId' => $value->companyId,
+                    'buy_price' => $value->buy_price,
+                    'unit_id' => $value->unit_id,
+                    'type_id' => $value->type_id,
+                    'company_id' => $value->company_id,
                     'status' => $value->status,
                     'picture' => $value->picture,
                     'created_at' => now(),
@@ -274,11 +274,11 @@ class CustomerTemporaryProductController extends Controller
                 CustomerCompanyGood::insert($dataInsert);
                 foreach ($dataInsert as $index => $value) {
                     Storage::disk('public-asset')->move('temp-customer-product/'.$value['picture'], 'customer-product/'.$value['picture']);
-                    Storage::disk('public-asset')->delete('temp-customer-product/' . $value['picture']);
+                    Storage::disk('public-asset')->delete('temp-customer-product/'.$value['picture']);
                 }
             }
             if (! empty($dataUpdate)) {
-                CustomerCompanyGood::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buyPrice', 'unitId', 'typeId']);
+                CustomerCompanyGood::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buy_price', 'unit_id', 'type_id']);
                 foreach ($dataUpdate as $index => $value) {
                     if (Storage::disk('public-asset')->exists('temp-customer-product/'.$value['picture'])) {
                         Storage::disk('public-asset')->move('temp-customer-product/'.$value['picture'], 'customer-product/'.$value['picture']);
@@ -299,7 +299,7 @@ class CustomerTemporaryProductController extends Controller
                     }, $dataDelete)
                 )->delete();
             }
-            CustomerTemporaryProduct::whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1, 'accepted_by' => session('userLogged')['user']['id']]);
+            CustomerTemporaryProduct::whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1, 'accepted_by' => session('userLogged')['user']['id']]);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -314,7 +314,7 @@ class CustomerTemporaryProductController extends Controller
 
     public function show(string $date)
     {
-        $data = CustomerTemporaryProduct::with('reference')->where('transaction_created', $date)->where(['companyId' => session('userLogged')['company']['id'], 'accepted' => 0])->get()->map(function ($temp) {
+        $data = CustomerTemporaryProduct::with('reference')->where('transaction_created', $date)->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get()->map(function ($temp) {
             $temp['status'] = statusTransaction($temp['orderCode']);
 
             return $temp;
@@ -334,7 +334,7 @@ class CustomerTemporaryProductController extends Controller
      */
     public function showTemp(string $id)
     {
-        $data = CustomerCompanyGood::where([['id', $id], ['companyId', session('userLogged')['company']['id']]])->first();
+        $data = CustomerCompanyGood::where([['id', $id], ['company_id', session('userLogged')['company']['id']]])->first();
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -357,9 +357,9 @@ class CustomerTemporaryProductController extends Controller
                 if (! $product) {
                     return;
                 }
-                $query = DB::table('customer_temporary_products')->where('name', $product['name']);
+                $query = DB::table('adjustment_products')->where('name', $product['name']);
                 if (! empty($product['id']) && $product['status'] != 'REMOVE') {
-                    $query->where('id', '!=', $product['id'])->where('companyId', session('userLogged')['company']['id']);
+                    $query->where('id', '!=', $product['id'])->where('company_id', session('userLogged')['company']['id']);
                 }
                 if ($query->exists()) {
                     $fail("The name '{$value}' has already been taken.");
@@ -371,9 +371,9 @@ class CustomerTemporaryProductController extends Controller
                 if (! $product) {
                     return;
                 }
-                $query = DB::table('customer_company_goods')->where('name', $product['name']);
+                $query = DB::table('products')->where('name', $product['name']);
                 if (! empty($product['customerCompanyGoodId']) && $product['status'] != 'REMOVE') {
-                    $query->where('id', '!=', $product['customerCompanyGoodId'])->where('companyId', session('userLogged')['company']['id']);
+                    $query->where('id', '!=', $product['customerCompanyGoodId'])->where('company_id', session('userLogged')['company']['id']);
                 }
                 if ($query->exists()) {
                     $fail("The name '{$value}' has already been taken.");
@@ -381,11 +381,11 @@ class CustomerTemporaryProductController extends Controller
             }],
             'products.*.stock' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:5|regex:/(\d{1,3}(?:\.\d{3})*)/i',
             'products.*.price' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
-            'products.*.buyPrice' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
+            'products.*.buy_price' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'products.*.status' => 'required|in:IN,RESTOCK,REMOVE',
-            'products.*.companyId' => 'required|exists:customer_companies,id|in:'.session('userLogged')['company']['id'],
-            'products.*.unitId' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:app_good_units,id',
-            'products.*.customerCompanyGoodId' => 'required_if:products.*.status,REMOVE|required_if:products.*.status,RESTOCK|exists:customer_company_goods,id',
+            'products.*.company_id' => 'required|exists:companies,id|in:'.session('userLogged')['company']['id'],
+            'products.*.unit_id' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:product_weight_units,id',
+            'products.*.customerCompanyGoodId' => 'required_if:products.*.status,REMOVE|required_if:products.*.status,RESTOCK|exists:products,id',
             'products.*.picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ]);
         DB::beginTransaction();
@@ -410,8 +410,8 @@ class CustomerTemporaryProductController extends Controller
             $default_data = [
                 'id' => null,
                 'transaction_created' => now()->format('Y-m-d'),
-                'companyId' => session('userLogged')['company']['id'],
-                'userId' => session('userLogged')['user']['id'],
+                'company_id' => session('userLogged')['company']['id'],
+                'user_id' => session('userLogged')['user']['id'],
                 'customerCompanyGoodId' => null,
                 'name' => null,
                 'status' => null,
@@ -419,8 +419,8 @@ class CustomerTemporaryProductController extends Controller
                 'stock' => null,
                 'stock_reference' => null,
                 'price' => null,
-                'buyPrice' => null,
-                'unitId' => null,
+                'buy_price' => null,
+                'unit_id' => null,
                 'accepted' => 0,
                 'accepted_by' => null,
                 'created_at' => now()->format('Y-m-d H:i:s'),
@@ -429,7 +429,7 @@ class CustomerTemporaryProductController extends Controller
             $resultTempProduct = [];
             foreach ($request->products as $key => $value) {
                 foreach ($default_data as $indexDefault => $valueDefault) {
-                    $resultTempProduct[$key][$indexDefault] = (! empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buyPrice']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
+                    $resultTempProduct[$key][$indexDefault] = (! empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buy_price']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
                     if ($indexDefault == 'picture') {
                         if (! empty($request->products[$key][$indexDefault])) {
                             $filename = md5($request->products[$key]['name'].now()->format('Y-m-d h:i:s')).'.'.$request->products[$key][$indexDefault]->extension();
@@ -462,7 +462,7 @@ class CustomerTemporaryProductController extends Controller
                 }
             }
             CustomerTemporaryProduct::whereNotIn('id', $updatedTempId)->where(['transaction_created' => $id, 'accepted' => 0])->delete();
-            CustomerTemporaryProduct::upsert($resultTempProduct, ['id'], ['orderCode', 'transaction_created',  'userId', 'companyId', 'customerCompanyGoodId', 'name', 'picture', 'stock', 'price', 'buyPrice', 'unitId', 'accepted', 'accepted_by', 'status']);
+            CustomerTemporaryProduct::upsert($resultTempProduct, ['id'], ['orderCode', 'transaction_created',  'user_id', 'company_id', 'customerCompanyGoodId', 'name', 'picture', 'stock', 'price', 'buy_price', 'unit_id', 'accepted', 'accepted_by', 'status']);
             $response = ['message' => 'updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -485,10 +485,10 @@ class CustomerTemporaryProductController extends Controller
             $where = [
                 'transaction_created' => $id,
                 'accepted' => 0,
-                'companyId' => session('userLogged')['company']['id'],
+                'company_id' => session('userLogged')['company']['id'],
             ];
             if (! in_array(session('userLogged')['role']['name'], ['Manager', 'Developer'])) {
-                $where[] = ['userId' => session('userLogged')['user']['id']];
+                $where[] = ['user_id' => session('userLogged')['user']['id']];
             }
             $builder = CustomerTemporaryProduct::where($where);
             $data = $builder->get();

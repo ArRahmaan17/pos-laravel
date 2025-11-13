@@ -45,7 +45,7 @@
                         <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
-                                <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
+                                <input type="hidden" name="user_id" value="{{ session('userLogged')['company']['user_id'] }}">
                             </div>
                         </div>
                         <div class="row">
