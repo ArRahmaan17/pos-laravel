@@ -16,12 +16,8 @@ jobs:
       - name: 🧾 Checkout code
         run: |
           cd /srv/http
-          if [ ! -d .git ]; then
-            git clone https://github.com/ArRahmaan17/DPOS.git .
-          else
-            git fetch --all
-            git reset --hard origin/main
-          fi
+          git fetch --all
+          git pull 
 
       - name: 🧰 Install PHP dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
