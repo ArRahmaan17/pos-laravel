@@ -1,8 +1,5 @@
-# DPOS - Point of Sale System
-
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
-A comprehensive, multi-company Point of Sale (POS) system built with Laravel framework. This system provides complete inventory management, transaction processing, user management, and reporting capabilities for businesses of all sizes.
+# DPOS - Point of Sale System 
+A comprehensive, multi-company Point of Sale (POS) system built with Laravel framework. This system provides complete inventory management, transaction processing, user management, and reporting capabilities for businesses of all sizes.`for those who come after`
 
 ## 🚀 Features
 
@@ -58,8 +55,8 @@ A comprehensive, multi-company Point of Sale (POS) system built with Laravel fra
 
 ### 1. Clone the Repository
 ```bash
-git clone <repository-url>
-cd pos-laravel
+git clone https://github.com/ArRahmaan17/DPOS
+cd DPOS
 ```
 
 ### 2. Install PHP Dependencies
@@ -67,21 +64,16 @@ cd pos-laravel
 composer install
 ```
 
-### 3. Install Node.js Dependencies
-```bash
-npm install
-```
-
-### 4. Environment Setup
+### 3. Environment Setup
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-### 5. Configure Database
+### 4. Configure Database
 Edit `.env` file with your database credentials:
 ```env
-DB_CONNECTION=mysql
+DB_CONNECTION=
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=your_database
@@ -89,35 +81,33 @@ DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
 
-### 6. Run Database Migrations
+### 5. Run Database Migrations
 ```bash
 php artisan migrate
 ```
 
-### 7. Seed Initial Data (Optional)
+### 6. Seed Initial Data (Optional)
 ```bash
 php artisan db:seed
 ```
 
-### 8. Build Frontend Assets
-```bash
-npm run build
-```
-
-### 9. Set Permissions
+### 7. Set Permissions
 ```bash
 chmod -R 775 storage bootstrap/cache
 ```
 
-### 10. Start Development Server
+### 8. Start Development Server
 ```bash
 php artisan serve
 ```
-
+or
+```bash
+frankenphp run --config CaddyFile
+```
 ## 🏗️ Project Structure
 
 ```
-pos-laravel/
+DPOS/
 ├── app/
 │   ├── Http/Controllers/
 │   │   ├── Auth/           # Authentication controllers
@@ -156,7 +146,7 @@ pos-laravel/
 
 ### Important Environment Variables
 ```env
-APP_NAME="POS Laravel"
+APP_NAME="DPOS"
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=http://localhost
@@ -164,13 +154,21 @@ APP_URL=http://localhost
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=pos_laravel
-DB_USERNAME=root
-DB_PASSWORD=
+DB_DATABASE=your_database
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
 
 CACHE_DRIVER=file
 SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
+
+REDIS_HOST=127.0.0.1
+REDIS_USERNAME=
+REDIS_PASSWORD=
+REDIS_PREFIX=
+REDIS_DB=
+REDIS_PORT=
+REDIS_TTL=
 ```
 
 ## 👥 User Management
@@ -308,7 +306,7 @@ API documentation is available at `/api/documentation` when running in developme
 2. Run `php artisan config:cache`
 3. Run `php artisan route:cache`
 4. Run `php artisan view:cache`
-5. Set up web server (Apache/Nginx)
+5. Set up web server (Apache/Nginx/etc.)
 6. Configure SSL certificate
 7. Set up database backups
 8. Configure queue workers for background jobs
@@ -451,9 +449,16 @@ tail -f storage/logs/laravel.log
 4. Include screenshots for UI changes
 5. Describe the changes in detail
 
-## 📄 License
+## ⚖️ Licensing
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This software is licensed under the **Academic-Commercial Dual License**.
+
+* **Free Use:** You may use, copy, and modify this software **free of charge** for **Educational, Research, or Personal Learning purposes only.**
+* **Commercial Use:** **Commercial use is strictly prohibited** unless a separate commercial license is purchased from the Copyright Owner.
+
+For the full terms and conditions, please see the [LICENSE](LICENSE) file in this repository.
+
+For Commercial Licensing inquiries, please contact: <a href="mailto:ardrah17@gmail.com">ardrah17@gmail.com</a>
 
 ## 🆘 Support
 
@@ -476,7 +481,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 php artisan backup:run
 
 # Update code
-git pull origin main
+git pull origin education
 
 # Update dependencies
 composer install --no-dev --optimize-autoloader
@@ -496,13 +501,12 @@ php artisan view:cache
 - **Laravel**: 10.x
 - **PHP**: 8.1+
 - **MySQL**: 8.0+ or PostgreSQL 12+
-- **Node.js**: 16+
+- **Redis**: 7.2+
 
 ## 📚 Additional Resources
 
 ### Documentation
 - [Laravel Documentation](https://laravel.com/docs)
-- [Vue.js Documentation](https://vuejs.org/guide/)
 - [Bootstrap Documentation](https://getbootstrap.com/docs/)
 - [DomPDF Documentation](https://github.com/barryvdh/laravel-dompdf)
 
@@ -516,19 +520,11 @@ php artisan view:cache
 - [Laravel Horizon](https://laravel.com/docs/horizon) - Queue monitoring
 - [Laravel Sanctum](https://laravel.com/docs/sanctum) - API authentication
 
----
-
-**Built with ❤️ using Laravel Framework**
-
----
-
 ## 📞 Contact
 
-- **Project Maintainer**: Ardhi Rahmaan
-- **Email**: ardhirahmaanmuhaiminsalam@gmail.com
+- **Project Maintainer**: Ardhi Rahmaan MS
+- **Email**: ardrah17@gmail.com
 - **Website**: https://www.rahmaanms.my.id
 - **GitHub**: https://github.com/ArRahmaan17
-
 ---
-
-*Last updated: August 2025*
+*Last updated: Nov 2025*

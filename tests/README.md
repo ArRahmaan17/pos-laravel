@@ -5,58 +5,6 @@
 This test suite provides comprehensive testing for the Laravel POS application. The tests cover API endpoints, web controllers, models, middleware, and helper functions.
 
 ## Test Structure
-
-### Feature Tests
-
-#### API Tests (`tests/Feature/Api/`)
-- **AuthControllerTest.php** - Tests for API authentication endpoints
-  - Login with username, email, and phone number
-  - Registration with company creation
-  - Logout functionality
-  - Password change
-  - Access PIN management
-  - User availability checks
-  - Company availability checks
-
-#### Web Tests (`tests/Feature/Web/`)
-- **AuthControllerTest.php** - Tests for web authentication
-  - Login/logout functionality
-  - Registration process
-  - Company selection
-  - Access PIN setup and validation
-  - Screen lock/unlock functionality
-
-#### Management Tests (`tests/Feature/Man/`)
-- **CustomerCompanyControllerTest.php** - Tests for customer company management
-  - CRUD operations for companies
-  - Data table functionality with search and pagination
-  - Role-based access control
-  - Company profile management
-
-#### Model Tests (`tests/Feature/Models/`)
-- **UserTest.php** - Tests for User model
-  - Model creation and relationships
-  - Role associations
-  - Soft delete functionality
-  - Hidden fields
-  - User scopes
-
-#### Middleware Tests (`tests/Feature/Middleware/`)
-- **AuthorizationTest.php** - Tests for authorization middleware
-  - Authentication checks
-  - Role-based access control
-  - Company selection requirements
-  - Access PIN validation
-  - Session handling
-
-#### Helper Tests (`tests/Feature/Helpers/`)
-- **HelpersTest.php** - Tests for helper functions
-  - Phone number formatting
-  - Currency formatting
-  - Date/time formatting
-  - Email validation
-  - String manipulation utilities
-
 ### Unit Tests
 
 #### Basic Application Tests
@@ -88,30 +36,11 @@ php artisan test --coverage
 php artisan test --parallel
 ```
 
-### Running Specific Test Suites
-
-```bash
-# Run only API tests
-php artisan test --filter=Api
-
-# Run only web tests
-php artisan test --filter=Web
-
-# Run only model tests
-php artisan test --filter=Models
-
-# Run only middleware tests
-php artisan test --filter=Middleware
-
-# Run only helper tests
-php artisan test --filter=Helpers
-```
-
 ### Running Individual Test Files
 
 ```bash
 # Run specific test file
-php artisan test tests/Feature/Api/AuthControllerTest.php
+php artisan test tests/Feature/BasicTest.php
 
 # Run specific test method
 php artisan test --filter=test_user_can_login_with_valid_credentials
@@ -139,16 +68,6 @@ CACHE_DRIVER=array
 SESSION_DRIVER=array
 QUEUE_DRIVER=sync
 ```
-
-## Test Data Factories
-
-The test suite uses Laravel factories to generate test data. Key factories include:
-
-- **UserFactory** - Creates test users
-- **CustomerCompanyFactory** - Creates test companies
-- **AppRoleFactory** - Creates application roles
-- **CustomerRoleFactory** - Creates customer roles
-- **BusinessTypeFactory** - Creates business types
 
 ## Test Coverage Areas
 
