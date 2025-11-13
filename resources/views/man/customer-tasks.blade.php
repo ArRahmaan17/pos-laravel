@@ -113,11 +113,11 @@
                             </div>
                             <div class="row">
                                 <div class="col mb-3">
-                                    <label for="userId" class="form-label">User</label>
-                                    <select id="userId" name="userId" class="form-select select2">
+                                    <label for="user_id" class="form-label">User</label>
+                                    <select id="user_id" name="user_id" class="form-select select2">
                                         <option value="" disabled>Choose One</option>
                                         @foreach ($employees as $employee)
-                                            <option disabled data-role="{{ $employee->roleId }}" value="{{ $employee->roleId }}">{{ $employee->name }}
+                                            <option disabled data-role="{{ $employee->role_id }}" value="{{ $employee->role_id }}">{{ $employee->name }}
                                                 ({{ $employee->username }})
                                             </option>
                                         @endforeach
@@ -162,7 +162,7 @@
                 </div>
                 <div class="modal-body">
                     <form>
-                        <input type="hidden" name='taskId' id="taskId" />
+                        <input type="hidden" name='task_id' id="task_id" />
                         <input type="file" class="filepond" name="filepond" multiple data-allow-reorder="true" data-max-file-size="3MB"
                             data-max-files="3">
                         </from>
@@ -214,7 +214,7 @@
                     url: "{{ route('man.customer-task-management.show') }}/" + idCustomerTask,
                     dataType: "json",
                     success: function(response) {
-                        $('#userId').find('option').removeAttr('disabled');
+                        $('#user_id').find('option').removeAttr('disabled');
                         $('#role').attr('disabled', 'disabled');
                         $('#role').parents('.mb-3').addClass('d-none');
                         $('.container-progress-task').removeClass('d-none');
@@ -324,7 +324,7 @@
 
         function endTask(e) {
             $('#modal-customer-task-evidence').modal('show');
-            $('#taskId').val($(e.currentTarget).data('customer-task-detail'));
+            $('#task_id').val($(e.currentTarget).data('customer-task-detail'));
         }
 
         function removeTaskDetail(e) {
@@ -473,7 +473,7 @@
                 type: "GET",
                 url: `{{ route('man.customer-task-management.new-task') }}`,
                 data: {
-                    roleId: $('#roleId').val()
+                    role_id: $('#role_id').val()
                 },
                 dataType: "json",
                 success: function(response) {
@@ -524,7 +524,7 @@
                                         ${detail.master.description}
                                     </div>
                                     <div class="flex-fill align-self-center d-flex gap-1 justify-content-end">
-                                        ${detail.start_at !== null && detail.end_at !== null  ? `<button class="btn btn-icon btn-success evidence" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.taskId}' data-task-evidence='${detail.evidence}'><i class='bx bxs-file-find'></i></button>`: (detail.start_at != null && detail.end_at == null)?`<button type="button" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.taskId}' class="btn btn-icon btn-info end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-warning start" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.taskId}'><i class='bx bx-play'></i></button><button type="button" class="btn btn-icon btn-danger trash" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.taskId}'><i class='bx bxs-trash-alt'></i></button>`}
+                                        ${detail.start_at !== null && detail.end_at !== null  ? `<button class="btn btn-icon btn-success evidence" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.task_id}' data-task-evidence='${detail.evidence}'><i class='bx bxs-file-find'></i></button>`: (detail.start_at != null && detail.end_at == null)?`<button type="button" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.task_id}' class="btn btn-icon btn-info end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-warning start" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.task_id}'><i class='bx bx-play'></i></button><button type="button" class="btn btn-icon btn-danger trash" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.task_id}'><i class='bx bxs-trash-alt'></i></button>`}
                                     </div>
                                 </div>
                             </div>
@@ -711,8 +711,8 @@
                 });
             });
             $('#role').change(function() {
-                $('#userId').find(`option[data-role=${this.value}]`).removeAttr('disabled');
-                $('#userId').find(`option:not([data-role=${this.value}])`).attr('disabled', 'disabled');
+                $('#user_id').find(`option[data-role=${this.value}]`).removeAttr('disabled');
+                $('#user_id').find(`option:not([data-role=${this.value}])`).attr('disabled', 'disabled');
             })
             $('#modal-customer-task-management').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
@@ -743,7 +743,7 @@
             });
             $('#modal-customer-task-evidence').on('shown.bs.modal', function() {
                 setTimeout(() => {
-                    let id = $('#taskId').val();
+                    let id = $('#task_id').val();
                     window.filePondEvidence = FilePond.create(
                         document.querySelector('.filepond'), {
                             maxParallelUploads: 3,

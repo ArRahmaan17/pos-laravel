@@ -21,11 +21,11 @@ class CustomerTaskController extends Controller
      */
     public function index()
     {
-        $customer_roles = CustomerRole::where('userId', session('userLogged')['user']['id'])->get();
-        $employees = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
-            ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
-            ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
-            ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'cr.id as roleId', 'u.username', 'u.id')
+        $customer_roles = CustomerRole::where('user_id', session('userLogged')['company']['user_id'])->get();
+        $employees = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
+            ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
+            ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')
+            ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'cr.id as role_id', 'u.username', 'u.id')
             ->where('cc.id', session('userLogged')['company']['id'])
             ->orderBy('id', 'asc')->get();
 
@@ -35,17 +35,17 @@ class CustomerTaskController extends Controller
     public function dataTable(Request $request)
     {
         $where = [
-            ['customer_company_tasks.companyId', '=', session('userLogged')['company']['id']],
+            ['tasks.company_id', '=', session('userLogged')['company']['id']],
         ];
         if (! in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
-            $where[] = ['customer_company_tasks.userId',  '=', session('userLogged')['user']['id']];
+            $where[] = ['tasks.user_id',  '=', session('userLogged')['user']['id']];
         }
-        $totalData = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name')
-            ->where($where)->orderBy('customer_company_tasks.id', 'asc')
+        $totalData = CustomerCompanyTask::join('users', 'users.id', '=', 'tasks.user_id')->with('user', 'details', 'details.master')->select('tasks.*', 'users.name as user_name')
+            ->where($where)->orderBy('tasks.id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name');
+            $assets = CustomerCompanyTask::join('users', 'users.id', '=', 'tasks.user_id')->with('user', 'details', 'details.master')->select('tasks.*', 'users.name as user_name');
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
                     ->offset($request['start']);
@@ -55,7 +55,7 @@ class CustomerTaskController extends Controller
             }
             $assets = $assets->where($where)->get();
         } else {
-            $assets = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name')
+            $assets = CustomerCompanyTask::join('users', 'users.id', '=', 'tasks.user_id')->with('user', 'details', 'details.master')->select('tasks.*', 'users.name as user_name')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -68,7 +68,7 @@ class CustomerTaskController extends Controller
             }
             $assets = $assets->where($where)->get();
 
-            $totalFiltered = CustomerCompanyTask::join('users', 'users.id', '=', 'customer_company_tasks.userId')->with('user', 'details', 'details.master')->select('customer_company_tasks.*', 'users.name as user_name')
+            $totalFiltered = CustomerCompanyTask::join('users', 'users.id', '=', 'tasks.user_id')->with('user', 'details', 'details.master')->select('tasks.*', 'users.name as user_name')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -108,22 +108,22 @@ class CustomerTaskController extends Controller
     {
         $request->validate([
             'name' => 'required|min:4|max:30',
-            'roleId' => 'exists:customer_roles,id',
-            'userId' => 'exists:users,id',
+            'role_id' => 'exists:customer_roles,id',
+            'user_id' => 'exists:users,id',
             'time_limit' => 'required|date',
             'details.*.type' => 'required|in:new,unfinish',
             'details.*.masterId' => [
                 'required_if:details.*.type,new',
-                Rule::exists('customer_company_master_tasks', 'id')->where('companyId', session('userLogged')['company']['id']),
+                Rule::exists('master_tasks', 'id')->where('company_id', session('userLogged')['company']['id']),
             ],
             'details.*.id' => [
                 'required_if:details.*.type,unfinish',
-                Rule::exists('customer_company_task_details', 'id')->where('userId', $request->userId),
+                Rule::exists('task_items', 'id')->where('user_id', $request->user_id),
             ],
         ]);
         $dataTask = [
-            'userId' => $request->userId ?? session('userLogged')['user']['id'],
-            'companyId' => session('userLogged')['company']['id'],
+            'user_id' => $request->user_id ?? session('userLogged')['user']['id'],
+            'company_id' => session('userLogged')['company']['id'],
             'time_limit' => $request->time_limit,
             'name' => $request->name,
         ];
@@ -132,7 +132,7 @@ class CustomerTaskController extends Controller
         try {
             $result = CustomerCompanyTask::create($dataTask);
             $dataTaskDetails = array_map(function ($detail) use ($result) {
-                $detail['taskId'] = $result->id;
+                $detail['task_id'] = $result->id;
                 $detail['created_at'] = now();
                 $detail['updated_at'] = now();
                 unset($detail['type']);
@@ -157,7 +157,7 @@ class CustomerTaskController extends Controller
         $detail = CustomerCompanyTaskDetail::find($id);
         $detail->evidence;
 
-        return Storage::disk('company-task-evidence')->get(md5($detail->taskId));
+        return Storage::disk('company-task-evidence')->get(md5($detail->task_id));
     }
 
     /**
@@ -166,13 +166,13 @@ class CustomerTaskController extends Controller
     public function show(string $id)
     {
         $where = [
-            'userId' => session('userLogged')['user']['id'],
-            'companyId' => session('userLogged')['company']['id'],
+            'user_id' => session('userLogged')['user']['id'],
+            'company_id' => session('userLogged')['company']['id'],
             'id' => $id,
             ['time_limit', '>=', now()->format('Y-m-d')],
         ];
         if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
-            unset($where['userId']);
+            unset($where['user_id']);
         }
         $status = 404;
         $message = ['message' => 'showing resources successfully', 'data' => null];
@@ -188,22 +188,22 @@ class CustomerTaskController extends Controller
     public function startTask(string $id, $type = 'new')
     {
         $where = [
-            'userId' => session('userLogged')['user']['id'],
-            'companyId' => session('userLogged')['company']['id'],
+            'user_id' => session('userLogged')['user']['id'],
+            'company_id' => session('userLogged')['company']['id'],
             'id' => $id,
             'start_at' => null,
             'end_at' => null,
             ['time_limit', '>=', now()->format('Y-m-d')],
         ];
         if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
-            unset($where['userId']);
+            unset($where['user_id']);
         }
         DB::beginTransaction();
         try {
             if ($type == 'new') {
                 CustomerCompanyTask::where($where)->update(['start_at' => now()]);
             }
-            unset($where['userId'], $where['companyId'], $where[0]);
+            unset($where['user_id'], $where['company_id'], $where[0]);
             CustomerCompanyTaskDetail::where($where)->update(['start_at' => now()]);
             DB::commit();
             $status = 200;
@@ -219,7 +219,7 @@ class CustomerTaskController extends Controller
 
     public function unfinishTask()
     {
-        $dataTask = CustomerCompanyTaskDetail::join('customer_company_master_tasks', 'customer_company_master_tasks.id', '=', 'customer_company_task_details.masterId')->whereNot('status', 1)->where('customer_company_master_tasks.repeateable', 1)->get()->toArray();
+        $dataTask = CustomerCompanyTaskDetail::join('master_tasks', 'master_tasks.id', '=', 'task_items.masterId')->whereNot('status', 1)->where('master_tasks.repeateable', 1)->get()->toArray();
         $status = 200;
         $message = ['message' => 'unfinish tasks found', 'data' => $dataTask];
         if (empty($dataTask)) {
@@ -233,14 +233,14 @@ class CustomerTaskController extends Controller
     public function newTask(Request $request)
     {
         $dataTask = CustomerCompanyMasterTask::where([
-            'companyId' => session('userLogged')['company']['id'],
-            'roleId' => $request->role ?? session('userLogged')['role']['id'],
+            'company_id' => session('userLogged')['company']['id'],
+            'role_id' => $request->role ?? session('userLogged')['role']['id'],
         ])->orderBy('id')->get()->toArray();
         $status = 200;
         $message = ['message' => 'tasks found', 'data' => $dataTask];
         if (empty($dataTask)) {
             $status = 404;
-            $message = ['message' => "tasks not found, please contact manager to create new task for session('userLogged')['role']['name']", 'data' => $dataTask];
+            $message = ['message' => 'tasks not found, please contact manager to create new task for '.session('userLogged')['role']['name'], 'data' => $dataTask];
         }
 
         return response()->json($message, $status);
@@ -261,9 +261,9 @@ class CustomerTaskController extends Controller
                 'status' => 1,
                 'end_at' => now(),
             ]);
-            $builder = CustomerCompanyTaskDetail::where(['taskId' => $data->taskId]);
+            $builder = CustomerCompanyTaskDetail::where(['task_id' => $data->task_id]);
             [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
-            CustomerCompanyTask::find($data->taskId)->update(['percentage' => (($countFinish / $countDetail) * 100), 'end_at' => ($countDetail == $countFinish) ? now() : null]);
+            CustomerCompanyTask::find($data->task_id)->update(['percentage' => (($countFinish / $countDetail) * 100), 'end_at' => ($countDetail == $countFinish) ? now() : null]);
             DB::commit();
             $status = 200;
             $message = ['message' => 'update resources successfully'];
@@ -283,21 +283,21 @@ class CustomerTaskController extends Controller
     {
         $request->validate([
             'name' => 'required|min:4|max:30',
-            'userId' => 'exists:users,id',
+            'user_id' => 'exists:users,id',
             'time_limit' => 'required|date',
             'details.*.type' => 'required|in:new,unfinish,finish',
             'details.*.masterId' => [
                 'required_if:details.*.type,new',
-                Rule::exists('customer_company_master_tasks', 'id')->where('companyId', session('userLogged')['company']['id']),
+                Rule::exists('master_tasks', 'id')->where('company_id', session('userLogged')['company']['id']),
             ],
             'details.*.id' => [
                 'required_if:details.*.type,unfinish',
-                Rule::exists('customer_company_task_details', 'id'),
+                Rule::exists('task_items', 'id'),
             ],
         ]);
         $dataTask = [
-            'userId' => $request->userId ?? session('userLogged')['user']['id'],
-            'companyId' => session('userLogged')['company']['id'],
+            'user_id' => $request->user_id ?? session('userLogged')['user']['id'],
+            'company_id' => session('userLogged')['company']['id'],
             'time_limit' => $request->time_limit,
             'name' => $request->name,
         ];
@@ -306,7 +306,7 @@ class CustomerTaskController extends Controller
         try {
             CustomerCompanyTask::find($id)->update($dataTask);
             $dataTaskDetails = array_map(function ($detail) use ($id) {
-                $detail['taskId'] = $id;
+                $detail['task_id'] = $id;
                 ($detail['type'] == 'new') ? $detail['masterId'] = $detail['masterId'] : $detail['id'] = $detail['id'];
                 $detail['created_at'] = now();
                 $detail['updated_at'] = now();
@@ -318,7 +318,7 @@ class CustomerTaskController extends Controller
                 return isset($task['masterId']);
             }));
             CustomerCompanyTaskDetail::insert($dataInsert);
-            $builder = CustomerCompanyTaskDetail::where(['taskId' => $id]);
+            $builder = CustomerCompanyTaskDetail::where(['task_id' => $id]);
             [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
             CustomerCompanyTask::find($id)->update(['percentage' => (($countFinish / $countDetail) * 100)]);
             $status = 200;
@@ -361,9 +361,9 @@ class CustomerTaskController extends Controller
         try {
             $taskDetailData = CustomerCompanyTaskDetail::where(['id' => $id])->first();
             CustomerCompanyTaskDetail::where(['id' => $id, 'start_at' => null])->delete();
-            $builder = CustomerCompanyTaskDetail::where(['taskId' => $taskDetailData->taskId]);
+            $builder = CustomerCompanyTaskDetail::where(['task_id' => $taskDetailData->task_id]);
             [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
-            CustomerCompanyTask::find($taskDetailData->taskId)->update(['percentage' => (($countFinish / $countDetail) * 100)]);
+            CustomerCompanyTask::find($taskDetailData->task_id)->update(['percentage' => (($countFinish / $countDetail) * 100)]);
             Storage::disk('company-task-evidence')->deleteDirectory(md5(session('userLogged')['company']['id']).'/'.md5($id));
             $status = 200;
             $message = ['message' => 'detail resources destroy successfully'];

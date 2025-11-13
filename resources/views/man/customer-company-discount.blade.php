@@ -49,7 +49,7 @@
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
-                            <label class="form-label" for="">Status</label>
+                            <label class="form-label" for="archive-btn">Status</label>
                             <div class="col">
                                 <div class="btn-group col-12" role="group" aria-label="Basic radio toggle button group">
                                     <input type="radio" class="btn-check" name="status" value="archive" id="archive-btn">
@@ -79,14 +79,14 @@
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="maxTransactionDiscount" class="form-label">Max Transaction Discount *</label>
-                            <input type="text" id="maxTransactionDiscount" name="maxTransactionDiscount" class="form-control price-discount"
+                            <label for="max_transaction_discount" class="form-label">Max Transaction Discount *</label>
+                            <input type="text" id="max_transaction_discount" name="max_transaction_discount" class="form-control price-discount"
                                 placeholder="10.000,00">
                             <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
-                            <label for="minTransactionPrice" class="form-label">Min Transaction Price *</label>
-                            <input type="text" id="minTransactionPrice" name="minTransactionPrice" class="form-control price-discount"
+                            <label for="min_transaction_price" class="form-label">Min Transaction Price *</label>
+                            <input type="text" id="min_transaction_price" name="min_transaction_price" class="form-control price-discount"
                                 placeholder="50.000,00">
                             <div class="invalid-feedback"></div>
                         </div>
@@ -113,7 +113,7 @@
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
-    
+
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
         window.dataTableCustomerCompanyDiscount = null;
@@ -441,14 +441,12 @@
             });
             $('#modal-customer-company-discount').on('shown.bs.modal', function() {
                 setTimeout(() => {
-                    $('.select2').select2({
-                        dropdownParent: $('#modal-customer-company-discount'),
+                    $('.discount-code').inputmask({
+                        regex: "{{ buatSingkatan(session('userLogged')['company']['name']) }}([A-Z]|[0-9]){1,20}$",
+                        casing: "upper"
                     });
-                    $('.select2-container').addClass('form-control')
                 }, 140);
             });
-            $('.discount-code')
-                .inputmask(`{{ buatSingkatan(session('userLogged')['company']['name']) }}{1,30}`);
             $('.discount-percentage').inputmask({
                 regex: '^([1-9]%|[1-9][0-9]%|100%)$'
             });

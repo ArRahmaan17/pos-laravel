@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerGoodWarehouse extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
-    protected $fillable = ['warehouseId', 'rackId', 'goodId'];
+    protected $fillable = ['warehouse_id', 'rackId', 'goodId'];
 }

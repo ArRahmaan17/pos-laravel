@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\AppMenu;
 use App\Models\AppSubscription;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,16 +23,25 @@ class MenuServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $sidebarAppMenu = AppMenu::where('place', 0)->orderBy('created_at')->get()->setHidden([])->toArray();
-        $profileAppMenu = AppMenu::where('place', 1)->orderBy('created_at')->get()->setHidden([])->toArray();
-        $sidebarAppMenu = buildTree($sidebarAppMenu, 0);
-        $profileAppMenu = buildTree($profileAppMenu, 0);
-        $subscriptions = AppSubscription::all();
-        // $sidebarAppMenu = [];
-        // $profileAppMenu = [];
-        // $subscriptions = [];
+        if (app()->environment('testing') || ! Schema::hasTable('permissions') || ! Schema::hasTable('app_subscriptions')) {
+            $sidebarAppMenu = [];
+            $profileAppMenu = [];
+            $subscriptions = [];
+        } else {
+            try {
+                $sidebarAppMenu = AppMenu::where('place', 0)->orderBy('created_at')->get()->setHidden([])->toArray();
+                $profileAppMenu = AppMenu::where('place', 1)->orderBy('created_at')->get()->setHidden([])->toArray();
+                $subscriptions = AppSubscription::all();
+            } catch (\Exception $e) {
+                $sidebarAppMenu = [];
+                $profileAppMenu = [];
+                $subscriptions = [];
+            }
+        }
+
         $sidebarAppMenu = buildTree($sidebarAppMenu);
         $profileAppMenu = buildTree($profileAppMenu);
+
         View::composer('*', function ($view) use ($sidebarAppMenu, $profileAppMenu, $subscriptions) {
             $view->with([
                 'sidebarAppMenu' => $sidebarAppMenu,

@@ -112,7 +112,7 @@
                         generateProductAccordion({
                             ...response.data,
                             customerCompanyGoodId: response.data.goodId
-                        });
+                        }, window.state);
                         $('#modal-customer-product-stocktaking').find(`form,  #collapse-${response.data.goodId}`)
                             .find('input').map(function(index, element) {
                                 let name = (element.name.split('product[' + response.data.goodId + '][' + element.id + ']').length >
@@ -140,7 +140,7 @@
                 });
             });
             $('.show-stocktaking').click(function() {
-                window.state = 'update';
+                window.state = 'show';
                 let idStocktaking = $(this).data("customer-product-stocktaking");
                 $("#edit-customer-product-stocktaking").data("customer-product-stocktaking", idStocktaking);
                 if (window.dataTableCustomerCompany.rows('.selected').data().length == 0) {
@@ -153,28 +153,18 @@
                 $('#modal-customer-product-stocktaking').modal('show');
                 $('#modal-customer-product-stocktaking').find('.modal-title').html(`Show @yield('title')`);
                 $('#save-customer-product-stocktaking').addClass('d-none');
-                $('#edit-customer-product-stocktaking').removeClass('d-none');
+                $('#edit-customer-product-stocktaking').addClass('d-none');
 
                 $.ajax({
                     type: "GET",
                     url: "{{ route('man.customer-product-stocktaking.show') }}/" + idStocktaking,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-product-stocktaking').find("form")
-                            .find('select, input').map(function(index, element) {
-                                let name = (element.name.split('[').length > 1) ? '.' + element.name
-                                    .split('[').join('.').split(']').join('') : element.name;
-                                if (response.data[name] !== undefined && $("[name='" + element
-                                        .name + "']").length != 0) {
-                                    if (name == 'picture') {
-                                        $("#uploadedAvatar").prop('src',
-                                            `{{ url('/') }}/cp/` + response.data[name])
-                                    } else {
-                                        $("[name='" + element.name + "']").val(response.data[name])
-                                            .trigger('change')
-                                    }
-                                }
-                            });
+                        let data = response.data;
+                        generateProductAccordion({
+                            ...data,
+                            customerCompanyGoodId: idStocktaking
+                        }, window.state);
                     },
                     error: function(error) {
                         iziToast.error({
@@ -203,7 +193,7 @@
                 generateProductAccordion({
                     ...data,
                     customerCompanyGoodId: goodId
-                });
+                }, window.state);
                 $('#table-customer-company-good tbody').find('tr').removeClass('selected');
             }, 500));
             $('.approve').click(function() {
@@ -306,7 +296,7 @@
             });
         }
 
-        function generateProductAccordion(data = null) {
+        function generateProductAccordion(data = null, state = 'new') {
             const accordionTemporaryProduct = $('#accordion-customer-product-stocktaking');
             if (accordionTemporaryProduct.find(`#collaps-${data.customerCompanyGoodId}`).length == 0) {
                 accordionTemporaryProduct.append(`<div class="accordion-item shadow-sm">
@@ -322,13 +312,13 @@
                             <input type="hidden" id="id" name="product[${data.customerCompanyGoodId}][id]" value="${data.id}"/>
                             <div class="col-12 mb-3">
                                 <label for="expect_stock">Expect Stock</label>
-                                <input type="text" class="form-control number" readonly id="expect_stock" name="product[${data.customerCompanyGoodId}][expect_stock]" value="${data.stock}"/>
+                                <input type="text" class="form-control number" readonly id="expect_stock" name="product[${data.customerCompanyGoodId}][expect_stock]" value="${data?.expect_stock??data.stock}"/>
                             </div>
                             <div class="col-12 mb-3">
                                 <label for="real_stock">Real Stock</label>
-                                <input type="text" class="form-control number" id="real_stock" name="product[${data.customerCompanyGoodId}][real_stock]" value="${data.stock}"/>
+                                <input type="text" class="form-control number" ${(state=='show')?'readonly':''} id="real_stock" name="product[${data.customerCompanyGoodId}][real_stock]" value="${data?.real_stock}"/>
                             </div>
-                            <div class="col-12 mb-3 d-flex justify-content-end"><button type="button" class="btn btn-danger btn-icon trash-stocktaking"><i class='bx bxs-trash-alt'></i></button></div>
+                            ${(state=='show')? '':`<div class="col-12 mb-3 d-flex justify-content-end"><button type="button" class="btn btn-danger btn-icon trash-stocktaking"><i class='bx bxs-trash-alt'></i></button></div>`}
                         </div>
                     </div>
                 </div>`);
@@ -358,7 +348,7 @@
                     }
                 }, {
                     target: 1,
-                    name: 'customer_company_goods.name',
+                    name: 'products.name',
                     data: 'name',
                     orderable: true,
                     searchable: true,
@@ -489,11 +479,10 @@
                 $.ajax({
                     type: "POST",
                     url: `{{ route('man.customer-product-stocktaking.store') }}`,
-                    data: data,
+                    data: {
+                        ...data
+                    },
                     dataType: "json",
-                    cache: false,
-                    contentType: false,
-                    processData: false,
                     success: function(response) {
                         $('#modal-customer-product-stocktaking').modal('hide')
                         iziToast.success({
@@ -584,6 +573,7 @@
                 $('#edit-customer-product-stocktaking').addClass('d-none');
                 $('#modal-customer-product-stocktaking .is-invalid').removeClass('is-invalid')
                 $('#table-customer-product-stocktaking tbody').find('tr').removeClass('selected');
+                $('#accordion-customer-product-stocktaking').html('');
                 if ($.fn.dataTable.isDataTable('#table-customer-company-good')) {
                     window.dataTableCustomerCompanyGood.off('draw');
                     window.dataTableCustomerCompanyGood.clear().destroy();
@@ -597,7 +587,9 @@
                     $('.select2').select2({
                         dropdownParent: $('#modal-customer-product-stocktaking'),
                     });
-                    initialTableCompanyGood();
+                    if (window.state != 'show') {
+                        initialTableCompanyGood();
+                    }
                     if ($.fn.dataTable.isDataTable('#table-customer-product-stocktaking')) {
                         window.dataTableCustomerCompany.off('draw');
                         window.dataTableCustomerCompany.clear().destroy();

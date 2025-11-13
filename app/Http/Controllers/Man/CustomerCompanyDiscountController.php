@@ -37,8 +37,8 @@ class CustomerCompanyDiscountController extends Controller
             $assets = CustomerCompanyDiscount::select('*')
                 ->where('code', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('maxTransactionDiscount', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('minTransactionPrice', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('max_transaction_discount', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('min_transaction_price', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('status', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('maxApply', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('percentage', 'like', '%'.$request['search']['value'].'%');
@@ -55,8 +55,8 @@ class CustomerCompanyDiscountController extends Controller
             $totalFiltered = CustomerCompanyDiscount::select('*')
                 ->where('code', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('maxTransactionDiscount', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('minTransactionPrice', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('max_transaction_discount', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('min_transaction_price', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('status', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('maxApply', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('percentage', 'like', '%'.$request['search']['value'].'%');
@@ -73,8 +73,8 @@ class CustomerCompanyDiscountController extends Controller
             $row['code'] = $item->code;
             $row['description'] = $item->description;
             $row['percentage'] = $item->percentage;
-            $row['max_discount'] = $item->maxTransactionDiscount;
-            $row['min_transaction'] = $item->minTransactionPrice;
+            $row['max_discount'] = $item->max_transaction_discount;
+            $row['min_transaction'] = $item->min_transaction_price;
             $row['max_apply'] = $item->maxApply == 0 ? 'Unlimited' : $item->maxApply.'x';
             $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-discount='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-discount='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
@@ -96,11 +96,11 @@ class CustomerCompanyDiscountController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'code' => 'required|unique:customer_company_discounts,code',
+            'code' => 'required|unique:discounts,code',
             'description' => 'required|min:5|max:150',
             'percentage' => 'required|min:2|max:4',
-            'maxTransactionDiscount' => 'required',
-            'minTransactionPrice' => 'required',
+            'max_transaction_discount' => 'required',
+            'min_transaction_price' => 'required',
             'status' => 'required|in:archive,draft,publish',
             'maxApply' => 'required|min:0',
         ]);
@@ -108,9 +108,9 @@ class CustomerCompanyDiscountController extends Controller
         try {
             $data = $request->except('_token');
             $data['percentage'] = intval(implode('', explode('%', $data['percentage'])));
-            $data['maxTransactionDiscount'] = intval(convertStringToNumber($data['maxTransactionDiscount']));
-            $data['minTransactionPrice'] = intval(convertStringToNumber($data['minTransactionPrice']));
-            $data['companyId'] = session('userLogged')['company']['id'];
+            $data['max_transaction_discount'] = intval(convertStringToNumber($data['max_transaction_discount']));
+            $data['min_transaction_price'] = intval(convertStringToNumber($data['min_transaction_price']));
+            $data['company_id'] = session('userLogged')['company']['id'];
             $data['maxApply'] = convertStringToNumber($data['maxApply']);
             CustomerCompanyDiscount::create($data);
             DB::commit();
@@ -130,7 +130,7 @@ class CustomerCompanyDiscountController extends Controller
      */
     public function show(string $id)
     {
-        $discount = CustomerCompanyDiscount::where('id', $id)->where('companyId', session('userLogged')['company']['id'])->first();
+        $discount = CustomerCompanyDiscount::where('id', $id)->where('company_id', session('userLogged')['company']['id'])->first();
         $response = ['message' => 'failed showing resources', 'data' => $discount];
         $code = 404;
         if ($discount) {
@@ -147,10 +147,10 @@ class CustomerCompanyDiscountController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'code' => 'required|unique:customer_company_discounts,code,'.$id,
+            'code' => 'required|unique:discounts,code,'.$id,
             'description' => 'required|min:5|max:150',
             'percentage' => 'required|min:2|max:4',
-            'minTransactionPrice' => 'required',
+            'min_transaction_price' => 'required',
             'status' => 'required|in:archive,draft,publish',
             'maxApply' => 'required|min:0',
         ]);
@@ -158,11 +158,11 @@ class CustomerCompanyDiscountController extends Controller
         try {
             $data = $request->except('_token');
             $data['percentage'] = intval(implode('', explode('%', $data['percentage'])));
-            $data['maxTransactionDiscount'] = $request->has('maxTransactionDiscount') ? intval(convertStringToNumber($data['maxTransactionDiscount'])) : null;
-            $data['minTransactionPrice'] = intval(convertStringToNumber($data['minTransactionPrice']));
-            $data['companyId'] = session('userLogged')['company']['id'];
+            $data['max_transaction_discount'] = $request->has('max_transaction_discount') ? intval(convertStringToNumber($data['max_transaction_discount'])) : null;
+            $data['min_transaction_price'] = intval(convertStringToNumber($data['min_transaction_price']));
+            $data['company_id'] = session('userLogged')['company']['id'];
             $data['maxApply'] = convertStringToNumber($data['maxApply']);
-            CustomerCompanyDiscount::where(['id' => $id, 'companyId' => session('userLogged')['company']['id']])->update($data);
+            CustomerCompanyDiscount::where(['id' => $id, 'company_id' => session('userLogged')['company']['id']])->update($data);
             DB::commit();
             $response = ['message' => 'resources updated successfully'];
             $code = 200;
@@ -182,7 +182,7 @@ class CustomerCompanyDiscountController extends Controller
     {
         DB::beginTransaction();
         try {
-            CustomerCompanyDiscount::where(['id' => $id, 'companyId' => session('userLogged')['company']['id']])->delete();
+            CustomerCompanyDiscount::where(['id' => $id, 'company_id' => session('userLogged')['company']['id']])->delete();
             DB::commit();
             $response = ['message' => 'resources deleted successfully'];
             $code = 200;

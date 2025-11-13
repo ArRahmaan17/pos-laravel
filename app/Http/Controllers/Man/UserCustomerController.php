@@ -18,7 +18,7 @@ class UserCustomerController extends Controller
     public function index()
     {
         $users = User::user_manager();
-        $where = [['userId', '=', session('userLogged')['company']['userId']]];
+        $where = [['user_id', '=', session('userLogged')['company']['user_id']]];
         $customer_roles = CustomerRole::where($where)->get();
 
         return view('man.customer-user', compact('users', 'customer_roles'));
@@ -28,17 +28,17 @@ class UserCustomerController extends Controller
     {
         $request->validate([
             'managerId' => 'required',
-            'roleId' => 'required',
+            'role_id' => 'required',
         ], [
             'managerId.required' => 'The customer user field is required',
-            'roleId.required' => 'The customer user role field is required',
+            'role_id.required' => 'The customer user role field is required',
         ]);
         if (getRole() === 'Developer') {
             $id = $request->managerId;
         } else {
             $id = session('userLogged')['user']['id'];
         }
-        $role = $request->roleId;
+        $role = $request->role_id;
         $link = route('auth.registration').'?action='.base64_encode($id.'|'.now()->add($request->time_limit).'|'.$role.'|'.env('APP_SECRET'));
 
         return response()->json(['message' => 'registration link created successfully', 'link' => $link]);
@@ -46,17 +46,17 @@ class UserCustomerController extends Controller
 
     public function dataTable(Request $request)
     {
-        $totalData = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
-            ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
-            ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
+        $totalData = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
+            ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
+            ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')
             ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id'])
             ->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
-                ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
-                ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
+            $assets = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
+                ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
+                ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')
                 ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id']);
 
             if ($request['length'] != '-1') {
@@ -68,9 +68,9 @@ class UserCustomerController extends Controller
             }
             $assets = $assets->get();
         } else {
-            $assets = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
-                ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
-                ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
+            $assets = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
+                ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
+                ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')
                 ->where('cc.name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('cr.name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('cc.phone_number', 'like', '%'.$request['search']['value'].'%')
@@ -85,9 +85,9 @@ class UserCustomerController extends Controller
             }
             $assets = $assets->get();
 
-            $totalFiltered = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.roleId')
-                ->join('customer_companies as cc', 'user_customer_roles.companyId', '=', 'cc.id')
-                ->join('users as u', 'user_customer_roles.userId', '=', 'u.id')
+            $totalFiltered = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
+                ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
+                ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')
                 ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id'])
                 ->where('cc.name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('cr.name', 'like', '%'.$request['search']['value'].'%')
@@ -124,18 +124,18 @@ class UserCustomerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:users,name',
+            'name' => 'required',
             'username' => 'required|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'phone_number' => 'required|unique:users,phone_number',
-            'roleId' => 'required|exists:customer_roles,id',
+            'role_id' => 'required|exists:customer_roles,id',
         ]);
         DB::beginTransaction();
         try {
-            $dataUser = $request->except('_token', 'id', 'managerId', 'roleId');
+            $dataUser = $request->except('_token', 'id', 'managerId', 'role_id');
             $dataUser['password'] = defaultPassword();
             $user = User::create($dataUser);
-            UserCustomerRole::create(['userId' => $user->id, 'roleId' => $request->roleId, 'companyId' => session('userLogged')['company']['id']]);
+            UserCustomerRole::create(['user_id' => $user->id, 'role_id' => $request->role_id, 'company_id' => session('userLogged')['company']['id']]);
             $response = ['message' => 'Creating resources successfully'];
             $code = 200;
             DB::commit();
@@ -158,7 +158,7 @@ class UserCustomerController extends Controller
      */
     public function show(string $id)
     {
-        $data = UserCustomerRole::with('user', 'role')->where('userId', $id)->get();
+        $data = UserCustomerRole::with('user', 'role')->where('user_id', $id)->get();
         $response = ['message' => 'Showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -176,16 +176,16 @@ class UserCustomerController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'name' => 'required|unique:users,name,'.$id,
+            'name' => 'required',
             'username' => 'required|unique:users,username,'.$id,
             'email' => 'required|unique:users,email,'.$id,
             'phone_number' => 'required|unique:users,phone_number,'.$id,
-            'roleId' => 'required|exists:user_customer_roles,id',
+            'role_id' => 'required|exists:user_customer_roles,id',
         ]);
         DB::beginTransaction();
         try {
-            User::where('id', $id)->update($request->except('_token', 'id', 'managerId', 'roleId'));
-            UserCustomerRole::where('userId', $id)->update($request->only('roleId'));
+            User::where('id', $id)->update($request->except('_token', 'id', 'managerId', 'role_id'));
+            UserCustomerRole::where('user_id', $id)->update($request->only('role_id'));
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -200,7 +200,7 @@ class UserCustomerController extends Controller
 
     public function updateProfile(Request $request)
     {
-        $id = session('userLogged')['userId'];
+        $id = session('userLogged')['user_id'];
         $request->validate([
             'name' => 'required|unique:users,name,'.$id,
             'phone_number' => 'required|unique:users,phone_number,'.$id,
@@ -245,7 +245,7 @@ class UserCustomerController extends Controller
         DB::beginTransaction();
         try {
             $affiliate_code = generateAffiliateCode();
-            $update_affiliate = User::where('id', session('userLogged')['userId'])->where('affiliate_code', null)->update(['affiliate_code' => $affiliate_code]);
+            $update_affiliate = User::where('id', session('userLogged')['user_id'])->where('affiliate_code', null)->update(['affiliate_code' => $affiliate_code]);
             if ($update_affiliate) {
                 $dataSession = session('userLogged');
                 $dataSession['user']['affiliate_code'] = $affiliate_code;
@@ -268,7 +268,7 @@ class UserCustomerController extends Controller
     {
         DB::beginTransaction();
         try {
-            UserCustomerRole::where('userId', $id)->delete();
+            UserCustomerRole::where('user_id', $id)->delete();
             User::find($id)->delete();
             DB::commit();
             $response = ['message' => 'deleting resource successfully'];

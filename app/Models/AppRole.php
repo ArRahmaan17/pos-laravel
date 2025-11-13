@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AppRole extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = ['name', 'description'];
 
@@ -16,7 +18,7 @@ class AppRole extends Model
     {
         return $this->HasMany(
             UserRole::class,
-            'roleId',
+            'role_id',
             'id'
         );
     }

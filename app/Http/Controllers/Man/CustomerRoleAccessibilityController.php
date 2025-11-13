@@ -19,22 +19,26 @@ class CustomerRoleAccessibilityController extends Controller
     {
         $menus = AppMenu::customer_menu();
         $menus = buildTree($menus);
-        $roles = CustomerRole::with(['role_users'])->where('userId', session('userLogged')['company']['userId'])->get();
+        $roles = CustomerRole::with(['role_users'])->where('user_id', session('userLogged')['company']['user_id'])->get();
 
         return view('man.customer-role-accessibility', compact('menus', 'roles'));
     }
 
     public function dataTable(Request $request)
     {
-        $where = [['customer_roles.userId', '=', session('userLogged')['user']['id']]];
+        $where = [
+            ['customer_roles.user_id', '=', session('userLogged')['user']['id']],
+        ];
         if (getRole() === 'Developer') {
-            $where = [['customer_roles.userId', '<>', 0]];
+            $where = [
+                ['customer_roles.user_id', '=', session('userLogged')['company']['user_id']],
+            ];
         }
         $totalData = CustomerRole::with('role_menus')
             ->select('customer_roles.name', 'customer_roles.id')
-            ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
-            ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
-            ->leftJoin('customer_companies as cc', 'ucr.companyId', '=', 'cc.id')
+            ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.role_id')
+            ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
+            ->leftJoin('companies as cc', 'ucr.company_id', '=', 'cc.id')
             ->where($where)
             ->orderBy('customer_roles.id', 'asc')
             ->groupBy('customer_roles.name', 'customer_roles.id')
@@ -42,9 +46,9 @@ class CustomerRoleAccessibilityController extends Controller
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
             $assets = CustomerRole::with('role_menus')
-                ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
-                ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
-                ->leftJoin('customer_companies as cc', 'ucr.companyId', '=', 'cc.id')
+                ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.role_id')
+                ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
+                ->leftJoin('companies as cc', 'ucr.company_id', '=', 'cc.id')
                 ->select('customer_roles.name', 'customer_roles.id');
 
             if ($request['length'] != '-1') {
@@ -57,9 +61,9 @@ class CustomerRoleAccessibilityController extends Controller
             $assets = $assets->where($where)->groupBy('customer_roles.name', 'customer_roles.id')->get();
         } else {
             $assets = CustomerRole::with('role_menus')
-                ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
-                ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
-                ->leftJoin('customer_companies as cc', 'ucr.companyId', '=', 'cc.id')
+                ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.role_id')
+                ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
+                ->leftJoin('companies as cc', 'ucr.company_id', '=', 'cc.id')
                 ->select('customer_roles.name', 'customer_roles.id')
                 ->where('customer_roles.name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('customer_roles.description', 'like', '%'.$request['search']['value'].'%');
@@ -74,9 +78,9 @@ class CustomerRoleAccessibilityController extends Controller
             $assets = $assets->where($where)->groupBy('customer_roles.name', 'customer_roles.id')->get();
 
             $totalFiltered = CustomerRole::select('customer_roles.name', 'customer_roles.id')
-                ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.roleId')
-                ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.roleId')
-                ->leftJoin('customer_companies as cc', 'ucr.companyId', '=', 'cc.id')
+                ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.role_id')
+                ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
+                ->leftJoin('companies as cc', 'ucr.company_id', '=', 'cc.id')
                 ->where('customer_roles.name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('customer_roles.description', 'like', '%'.$request['search']['value'].'%');
 
@@ -110,19 +114,19 @@ class CustomerRoleAccessibilityController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'roleId' => 'required',
+            'role_id' => 'required',
             'menuId' => 'required|array',
         ], [
-            'roleId.required' => 'The role field is required',
+            'role_id.required' => 'The role field is required',
             'menuId.required' => 'The menu field is required',
         ]);
         DB::beginTransaction();
         try {
-            if (CustomerRole::where(['id' => $request->roleId, 'userId' => session('userLogged')['company']['userId']])->count() != 0) {
+            if (CustomerRole::where(['id' => $request->role_id, 'user_id' => session('userLogged')['company']['user_id']])->count() != 0) {
                 $data_menu = [];
                 foreach ($request->menuId as $index => $menu) {
                     $data_menu[] = [
-                        'roleId' => $request->roleId,
+                        'role_id' => $request->role_id,
                         'menuId' => $menu,
                         'created_at' => now('Asia/jakarta'),
                         'updated_at' => now('Asia/jakarta'),
@@ -152,7 +156,7 @@ class CustomerRoleAccessibilityController extends Controller
      */
     public function show(string $id)
     {
-        $role_menu = CustomerRole::select('*', 'id as roleId')->with(['role_menus' => function ($query) {
+        $role_menu = CustomerRole::select('*', 'id as role_id')->with(['role_menus' => function ($query) {
             $query->select(['*']);
         }])->where('id', $id)->first();
         $response = ['message' => 'Show resources successfully', 'data' => $role_menu];
@@ -172,18 +176,18 @@ class CustomerRoleAccessibilityController extends Controller
     {
         $request->validate(
             [
-                'roleId' => 'required',
+                'role_id' => 'required',
                 'menuId' => 'required|array',
             ]
         );
         DB::beginTransaction();
         try {
-            if (CustomerRole::where(['id' => $request->roleId, 'userId' => session('userLogged')['company']['userId']])->count() != 0) {
-                CustomerRoleAccessibility::where('roleId', $id)->delete();
+            if (CustomerRole::where(['id' => $request->role_id, 'user_id' => session('userLogged')['company']['user_id']])->count() != 0) {
+                CustomerRoleAccessibility::where('role_id', $id)->delete();
                 $data_menu = [];
                 foreach ($request->menuId as $index => $menu) {
                     $data_menu[] = [
-                        'roleId' => $request->roleId,
+                        'role_id' => $request->role_id,
                         'menuId' => $menu,
                         'created_at' => now('Asia/jakarta'),
                         'updated_at' => now('Asia/jakarta'),
@@ -215,7 +219,7 @@ class CustomerRoleAccessibilityController extends Controller
     {
         DB::beginTransaction();
         try {
-            CustomerRoleAccessibility::where('roleId', $id)->delete();
+            CustomerRoleAccessibility::where('role_id', $id)->delete();
             DB::commit();
             $response = ['message' => 'Successfully destroy resource'];
             $code = 200;

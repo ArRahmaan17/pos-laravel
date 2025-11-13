@@ -13,16 +13,17 @@ return new class extends Migration
     {
         Schema::create('customer_company_stocktakings', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('userId')->unsigned();
+            $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('goodId')->unsigned();
-            $table->bigInteger('companyId')->unsigned();
+            $table->bigInteger('company_id')->unsigned();
             $table->integer('expect_stock');
             $table->integer('real_stock');
             $table->smallInteger('status')->default(0);
-            $table->foreign('userId')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreign('goodId')->references('id')->on('customer_company_goods')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreign('companyId')->references('id')->on('customer_companies')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('goodId')->references('id')->on('products')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('company_id')->references('id')->on('companies')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

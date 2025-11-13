@@ -6,20 +6,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerRole extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
-    protected $fillable = ['userId', 'name', 'description'];
+    protected $fillable = ['user_id', 'name', 'description'];
 
     public static function customer_roles($customerId = null, $id = null)
     {
         $where = [];
         if ($customerId == null) {
-            $where[] = ['customer_roles.userId', '<>', $customerId];
+            $where[] = ['customer_roles.user_id', '<>', $customerId];
         } else {
-            $where[] = ['customer_roles.userId', '=', $customerId];
+            $where[] = ['customer_roles.user_id', '=', $customerId];
         }
         if ($id == null) {
             $where[] = ['customer_roles.id', '<>', $id];
@@ -28,7 +30,7 @@ class CustomerRole extends Model
         }
 
         return self::select('customer_roles.*')
-            ->join('users as u', 'customer_roles.userId', '=', 'u.id')
+            ->join('users as u', 'customer_roles.user_id', '=', 'u.id')
             ->where($where)->get();
     }
 
@@ -36,7 +38,7 @@ class CustomerRole extends Model
     {
         return $this->HasMany(
             UserRole::class,
-            'roleId',
+            'role_id',
             'id'
         );
     }
@@ -46,10 +48,15 @@ class CustomerRole extends Model
         return $this->hasManyThrough(
             AppMenu::class,
             CustomerRoleAccessibility::class,
-            'roleId',
+            'role_id',
             'id',
             'id',
             'menuId'
         );
+    }
+
+    public function userByRole(): HasMany
+    {
+        return $this->hasMany(UserCustomerRole::class, 'role_id', 'id')->where('company_id', session('userLogged')['company']['id']);
     }
 }

@@ -4,27 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerCompanyDiscount extends Model
 {
     protected $fillable = [
-        'companyId',
+        'company_id',
         'code',
         'description',
         'percentage',
-        'maxTransactionDiscount',
-        'minTransactionPrice',
+        'max_transaction_discount',
+        'min_transaction_price',
         'status',
         'maxApply',
     ];
 
     use HasFactory;
+    use SoftDeletes;
 
     public static function appliedDiscounts($discountCode): int
     {
-        return self::join('customer_product_transactions as cpt', 'cpt.discountId', '=', 'customer_company_discounts.id')->where([
-            'customer_company_discounts.status' => 'publish',
-            'customer_company_discounts.code' => $discountCode,
+        return self::join('transactions as cpt', 'cpt.discountId', '=', 'discounts.id')->where([
+            'discounts.status' => 'publish',
+            'discounts.code' => $discountCode,
         ])->count();
     }
 }

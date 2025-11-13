@@ -11,7 +11,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        if (config('database.default') === 'sqlite') {
+            config()->set('database-triggers.enabled', false);
+        }
     }
 
     /**

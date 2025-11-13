@@ -48,8 +48,8 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="roleId" class="form-label">Customer Role</label>
-                                <select class="form-control select2" name="roleId" id="roleId">
+                                <label for="role_id" class="form-label">Customer Role</label>
+                                <select class="form-control select2" name="role_id" id="role_id">
                                     <option value="">Select Role</option>
                                     @foreach ($roles as $role)
                                         <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -103,7 +103,7 @@
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
-    
+
     <script>
         window.dataTableAppRole = null;
         window.state = 'add';
@@ -141,7 +141,7 @@
                         $('#modal-customer-role-accessibility').find("form")
                             .find('select, input').map(function(index, element) {
                                 if (response.data[`${element.name}`] != undefined) {
-                                    if (element.name == 'roleId') {
+                                    if (element.name == 'role_id') {
                                         setTimeout(() => {
                                             $(`[name="${element.name}"]`).val(response.data[
                                                 `${element.name}`]).trigger('change');
@@ -326,7 +326,7 @@
                 let data = serializeObject($('#form-customer-role-accessibility'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('man.customer-role-accessibility.update') }}/${data.roleId}`,
+                    url: `{{ route('man.customer-role-accessibility.update') }}/${data.role_id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
@@ -364,7 +364,9 @@
             $('#modal-customer-role-accessibility').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $('#form-customer-role-accessibility').find('[type=checkbox]').map((index, element) => {
-                    $(element).attr('checked', false);
+                    if (!$(element).hasClass('mandatory')) {
+                        $(element).prop('checked', false);
+                    }
                 })
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
                 $('#save-customer-role-accessibility').removeClass('d-none');
@@ -382,10 +384,15 @@
             $('.menu-access').click(function() {
                 if ($(this).hasClass('selectAll')) {
                     $('#form-customer-role-accessibility').find('[type=checkbox]').map((index, element) => {
-                        $(element).prop('checked', this.checked);
+                        if (!$(element).hasClass('mandatory')) {
+                            $(element).prop('checked', this.checked);
+                        }
                     })
                 } else {
                     $(`.menu-access[data-parent=${this.value}]`).prop('checked', this.checked);
+                    if ($(`.menu-access`).hasClass('mandatory')) {
+                        $(`.menu-access.mandatory`).prop('checked', true);
+                    }
                 }
             })
         });

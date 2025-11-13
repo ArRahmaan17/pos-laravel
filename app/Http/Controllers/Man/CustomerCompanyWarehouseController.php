@@ -21,7 +21,7 @@ class CustomerCompanyWarehouseController extends Controller
 
     public function dataTable(Request $request)
     {
-        $where = [['companyId', '=', session('userLogged')['company']['id']]];
+        $where = [['company_id', '=', session('userLogged')['company']['id']]];
         $totalData = CustomerCompanyWarehouse::with(['racks'])->where($where)->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
@@ -100,14 +100,14 @@ class CustomerCompanyWarehouseController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            $data = $request->except('_token', 'userId', 'racks');
-            $data['companyId'] = session('userLogged')['company']['id'];
-            $data['userId'] = session('userLogged')['user']['id'];
+            $data = $request->except('_token', 'user_id', 'racks');
+            $data['company_id'] = session('userLogged')['company']['id'];
+            $data['user_id'] = session('userLogged')['user']['id'];
             $warehouse = CustomerCompanyWarehouse::create($data);
             $racks = [];
             foreach ($request->only('racks')['racks'] as $index => $rack) {
                 $racks[] = array_merge($rack, [
-                    'warehouseId' => $warehouse['id'],
+                    'warehouse_id' => $warehouse['id'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
@@ -132,7 +132,7 @@ class CustomerCompanyWarehouseController extends Controller
     {
         $where = [
             ['id', $id],
-            ['companyId', '=', session('userLogged')['company']['id']],
+            ['company_id', '=', session('userLogged')['company']['id']],
         ];
         $warehouse = CustomerCompanyWarehouse::with(['racks', 'company'])->where($where)->first();
         $response = ['message' => 'Showing resources successfully', 'data' => $warehouse];
@@ -166,21 +166,21 @@ class CustomerCompanyWarehouseController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            CustomerCompanyWarehouse::where([['id', $id], ['companyId', session('userLogged')['company']['id']]])
-                ->update($request->except('racks', '_token', 'userId', 'companyId'));
+            CustomerCompanyWarehouse::where([['id', $id], ['company_id', session('userLogged')['company']['id']]])
+                ->update($request->except('racks', '_token', 'user_id', 'company_id'));
             CustomerGoodWarehouse::whereNotIn('rackId', collect($request->racks)
                 ->map(function ($rack_request) {
                     return intval($rack_request['id']);
-                })->all())->where('warehouseId', $id)->delete();
+                })->all())->where('warehouse_id', $id)->delete();
             CustomerWarehouseRack::whereNotIn('id', collect($request->racks)
                 ->map(function ($rack_request) {
                     return intval($rack_request['id']);
-                })->all())->where('warehouseId', $id)->delete();
+                })->all())->where('warehouse_id', $id)->delete();
             foreach ($request->racks as $index => $rack) {
                 if (! empty($rack['id'])) {
-                    CustomerWarehouseRack::where([['id', $rack['id']], ['warehouseId', $id]])->update($rack);
+                    CustomerWarehouseRack::where([['id', $rack['id']], ['warehouse_id', $id]])->update($rack);
                 } else {
-                    $rack['warehouseId'] = $id;
+                    $rack['warehouse_id'] = $id;
                     CustomerWarehouseRack::create($rack);
                 }
             }
@@ -203,9 +203,9 @@ class CustomerCompanyWarehouseController extends Controller
     {
         DB::beginTransaction();
         try {
-            CustomerCompanyWarehouse::where([['id', $id], ['companyId', session('userLogged')['company']['id']]])->delete();
-            CustomerGoodWarehouse::where('warehouseId', $id)->delete();
-            CustomerWarehouseRack::where('warehouseId', $id)->delete();
+            CustomerCompanyWarehouse::where([['id', $id], ['company_id', session('userLogged')['company']['id']]])->delete();
+            CustomerGoodWarehouse::where('warehouse_id', $id)->delete();
+            CustomerWarehouseRack::where('warehouse_id', $id)->delete();
             DB::commit();
             $response = ['message' => 'deleting resources successfully'];
             $code = 200;

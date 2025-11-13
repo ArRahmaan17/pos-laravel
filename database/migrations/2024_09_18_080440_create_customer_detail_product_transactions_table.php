@@ -11,20 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_detail_product_transactions', function (Blueprint $table) {
-            $table->id();
-            $table->string('orderCode')->unique();
-            $table->bigInteger('goodId')->unsigned();
-            $table->foreign('goodId')
-                ->references('id')
-                ->on('customer_company_goods')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->integer('quantity');
-            $table->decimal('price', 16, 2)->nullable(true);
-            $table->decimal('total', 16, 2)->nullable(true);
-            $table->timestamps();
-        });
+        // Schema::create('transaction_items', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->string('orderCode');
+        //     $table->bigInteger('goodId')->unsigned();
+        //     $table->foreign('goodId')
+        //         ->references('id')
+        //         ->on('products')
+        //         ->cascadeOnDelete()
+        //         ->cascadeOnUpdate();
+        //     $table->integer('quantity');
+        //     $table->integer('stock_reference');
+        //     $table->decimal('price', 16, 2)->nullable();
+        //     $table->decimal('total', 16, 2)->nullable()->generatedAs('(quantity * price)');
+        //     $table->timestamps();
+        //     $table->softDeletes();
+        // });
     }
 
     /**
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_detail_product_transactions');
+        // Schema::dropIfExists('transaction_items');
     }
 };

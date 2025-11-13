@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerCompanyStocktaking extends Model
 {
     use HasFactory;
-    protected $fillable = ['goodId', 'expect_stock', 'real_stock', 'userId', 'companyId', 'status'];
+    use SoftDeletes;
+
+    protected $fillable = ['goodId', 'expect_stock', 'real_stock', 'user_id', 'company_id', 'status'];
 }

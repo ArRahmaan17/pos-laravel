@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CustomerCompanyDiscount;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerCompanyWarehouse;
 use App\Models\CustomerWarehouseRack;
@@ -11,28 +10,28 @@ class SeederController extends Controller
 {
     public function processSeeder()
     {
-        $warehouseId = CustomerCompanyWarehouse::create([
+        $warehouse_id = CustomerCompanyWarehouse::create([
             'name' => 'Warehouse '.fake()->word,
             'description' => 'Warehouse '.fake()->words,
-            'companyId' => session('userLogged')['company']['id'],
+            'company_id' => session('userLogged')['company']['id'],
         ]);
         CustomerWarehouseRack::insert([
             [
-                'warehouseId' => $warehouseId,
+                'warehouse_id' => $warehouse_id,
                 'name' => 'Shelf '.fake()->word,
                 'description' => 'Shelf '.fake()->words,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'warehouseId' => $warehouseId,
+                'warehouse_id' => $warehouse_id,
                 'name' => 'Shelf '.fake()->word,
                 'description' => 'Shelf '.fake()->words,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'warehouseId' => $warehouseId,
+                'warehouse_id' => $warehouse_id,
                 'name' => 'Shelf '.fake()->word,
                 'description' => 'Shelf '.fake()->words,
                 'created_at' => now(),
@@ -45,10 +44,10 @@ class SeederController extends Controller
                 'picture' => 'default-product.png',
                 'stock' => rand(100, 1000),
                 'price' => rand(5000, 100000),
-                'unitId' => rand(1, 20),
-                'companyId' => session('userLogged')['company']['id'],
+                'unit_id' => rand(1, 20),
+                'company_id' => session('userLogged')['company']['id'],
                 'status' => shuffle(['archive', 'draft', 'publish']),
-                'buyPrice' => rand(50000, 100000),
+                'buy_price' => rand(50000, 100000),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -57,10 +56,10 @@ class SeederController extends Controller
                 'picture' => 'default-product.png',
                 'stock' => rand(100, 1000),
                 'price' => rand(5000, 100000),
-                'unitId' => rand(1, 20),
-                'companyId' => session('userLogged')['company']['id'],
+                'unit_id' => rand(1, 20),
+                'company_id' => session('userLogged')['company']['id'],
                 'status' => shuffle(['archive', 'draft', 'publish']),
-                'buyPrice' => rand(50000, 100000),
+                'buy_price' => rand(50000, 100000),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -69,17 +68,10 @@ class SeederController extends Controller
                 'picture' => 'default-product.png',
                 'stock' => rand(100, 1000),
                 'price' => rand(5000, 100000),
-                'unitId' => rand(1, 20),
-                'companyId' => session('userLogged')['company']['id'],
+                'unit_id' => rand(1, 20),
+                'company_id' => session('userLogged')['company']['id'],
                 'status' => shuffle(['archive', 'draft', 'publish']),
-                'buyPrice' => rand(50000, 100000),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
-        CustomerCompanyDiscount::insert([
-            [
-                'companyId' => session('userLogged')['company']['id'],
+                'buy_price' => rand(50000, 100000),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

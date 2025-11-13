@@ -110,8 +110,8 @@
                         <div class="row">
                             <div class="col mb-3">
                                 @if (in_array(getRole(), ['Manager', 'Developer']))
-                                    <label for="roleId" class="form-label">Role User</label>
-                                    <select class="form-control select2" name="roleId" id="roleId">
+                                    <label for="role_id" class="form-label">Role User</label>
+                                    <select class="form-control select2" name="role_id" id="role_id">
                                         <option value="">Select Role</option>
                                         @foreach ($customer_roles as $role)
                                             <option value="{{ $role->id }}">{{ $role->name }}
@@ -119,7 +119,7 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="roleId" value="{{ session('userLogged')['company']['userId'] }}">
+                                    <input type="hidden" name="role_id" value="{{ session('userLogged')['company']['user_id'] }}">
                                 @endif
                             </div>
                         </div>
@@ -160,7 +160,7 @@
                                         @endforeach
                                     </select>
                                 @else
-                                    <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['company']['userId'] }}">
+                                    <input type="hidden" name="managerIdLink" value="{{ session('userLogged')['company']['user_id'] }}">
                                 @endif
                             </div>
                         </div>
@@ -207,7 +207,7 @@
 @push('js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
-    
+
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
     <script>
         window.dataTableAppRole = null;
@@ -224,6 +224,16 @@
                     dataType: "json",
                     success: function(response) {
                         location.reload();
+                    },
+                    error: function(error) {
+                        iziToast.error({
+                            id: 'alert-customer-user-action',
+                            title: 'Error',
+                            message: error.responseJSON.message,
+                            position: 'topRight',
+                            layout: 2,
+                            displayMode: 'replace'
+                        });
                     }
                 });
             });
@@ -264,7 +274,7 @@
                         formElement.find('[name=phone_number]')
                             .val(response.data[0].user.phone_number)
                             .trigger('change');
-                        formElement.find('[name=roleId]')
+                        formElement.find('[name=role_id]')
                             .val(response.data[0].role.id)
                             .trigger('change')
                     },

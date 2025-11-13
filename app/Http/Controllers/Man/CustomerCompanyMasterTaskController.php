@@ -17,14 +17,14 @@ class CustomerCompanyMasterTaskController extends Controller
      */
     public function index()
     {
-        $customer_roles = CustomerRole::where('userId', session('userLogged')['user']['id'])->get();
+        $customer_roles = CustomerRole::where('user_id', session('userLogged')['user']['id'])->get();
 
         return view('man.customer-master-tasks', compact('customer_roles'));
     }
 
     public function dataTable(Request $request)
     {
-        $where = [['companyId', '=', session('userLogged')['company']['id']]];
+        $where = [['company_id', '=', session('userLogged')['company']['id']]];
         $totalData = CustomerCompanyMasterTask::with('role')->where($where)->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
@@ -90,16 +90,16 @@ class CustomerCompanyMasterTaskController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'min:4', 'max:30', Rule::unique('customer_company_master_tasks', 'name')->where('companyId', session('userLogged')['company']['id'])],
+            'name' => ['required', 'min:4', 'max:30', Rule::unique('master_tasks', 'name')->where('company_id', session('userLogged')['company']['id'])],
             'description' => 'required|min:4',
-            'roleId' => 'required|exists:customer_roles,id',
+            'role_id' => 'required|exists:customer_roles,id',
             'priority' => 'required|in:P1,P2,P3,P4',
             'repeateable' => 'required|in:1,0',
         ]);
         DB::beginTransaction();
         try {
             $data = $request->except('_token');
-            $data['companyId'] = session('userLogged')['company']['id'];
+            $data['company_id'] = session('userLogged')['company']['id'];
             CustomerCompanyMasterTask::create($data);
             DB::commit();
             $status = 200;
@@ -118,7 +118,7 @@ class CustomerCompanyMasterTaskController extends Controller
      */
     public function show(string $id)
     {
-        $data = CustomerCompanyMasterTask::where('companyId', session('userLogged')['company']['id'])->find($id);
+        $data = CustomerCompanyMasterTask::where('company_id', session('userLogged')['company']['id'])->find($id);
         $status = 200;
         $message = ['message' => 'showing resources successfully', 'data' => $data];
         if (! $data) {
@@ -135,16 +135,16 @@ class CustomerCompanyMasterTaskController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => ['required', 'min:4', 'max:30', Rule::unique('customer_company_master_tasks', 'name')->where('companyId', session('userLogged')['company']['id'])->whereNot('id', $id)],
+            'name' => ['required', 'min:4', 'max:30', Rule::unique('master_tasks', 'name')->where('company_id', session('userLogged')['company']['id'])->whereNot('id', $id)],
             'description' => 'required|min:4',
-            'roleId' => 'required|exists:customer_roles,id',
+            'role_id' => 'required|exists:customer_roles,id',
             'priority' => 'required|in:P1,P2,P3,P4',
             'repeateable' => 'required|in:1,0',
         ]);
         DB::beginTransaction();
         try {
             $data = $request->except('_token');
-            $data['companyId'] = session('userLogged')['company']['id'];
+            $data['company_id'] = session('userLogged')['company']['id'];
             CustomerCompanyMasterTask::find($id)->update($data);
             DB::commit();
             $status = 200;

@@ -14,10 +14,6 @@
                             class="bx bx-building me-1"></i>
                         Company</a>
                 </li>
-                {{-- <li class="nav-item">
-                    <a class="nav-link" href="pages-account-settings-connections.html"><i class="bx bx-link-alt me-1"></i>
-                        Connections</a>
-                </li> --}}
             </ul>
 
             <div class="card mb-4">
@@ -26,7 +22,7 @@
                     <form action="#" id="form-customer-company" method="POST" class="mt-2" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-3">
-                            <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
+                            <input type="hidden" name="user_id" value="{{ session('userLogged')['company']['user_id'] }}">
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
                             <img src="@if (session('userLogged')['company']['picture'] === 'default-company.png') {{ asset('cp/default-company.png') }} @else {{ asset('cp/' . session('userLogged')['company']['picture']) }} @endif"
@@ -45,11 +41,11 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="businessId" class="form-label">Type of Business *</label>
-                            <select id="businessId" name="businessId" class="form-control select2">
+                            <label for="bussiness_id" class="form-label">Type of Business *</label>
+                            <select id="bussiness_id" name="bussiness_id" class="form-control select2">
                                 <option value="" disabled selected>Please Select</option>
                                 @foreach ($types as $type)
-                                    <option @if (session('userLogged')['company']['businessId']) selected @endif value="{{ $type->id }}">{{ $type->name }}</option>
+                                    <option @if (session('userLogged')['company']['bussiness_id']) selected @endif value="{{ $type->id }}">{{ $type->name }}</option>
                                 @endforeach
                             </select>
                             <div class="invalid-feedback"></div>
@@ -91,19 +87,22 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
+                                    <label for="address[city]" class="form-label">City *</label>
                                     <input type="text" id="address[city]" name="address[city]"
                                         value="{{ session('userLogged')['company']['address']['city'] }}" class="form-control" placeholder="City">
                                     <div class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-4">
+                                    <label for="address[province]" class="form-label">Province *</label>
                                     <input type="text" id="address[province]" name="address[province]"
                                         value="{{ session('userLogged')['company']['address']['province'] }}" class="form-control"
                                         placeholder="State / Province">
                                     <div class="invalid-feedback"></div>
                                 </div>
                                 <div class="col-md-4">
-                                    <input type="text" id="address[zipCode]" name="address[zipCode]"
-                                        value="{{ session('userLogged')['company']['address']['zipCode'] }}" class="form-control"
+                                    <label for="address[zip_code]" class="form-label">Postal / Zip Code *</label>
+                                    <input type="text" id="address[zip_code]" name="address[zip_code]"
+                                        value="{{ session('userLogged')['company']['address']['zip_code'] }}" class="form-control"
                                         placeholder="Postal / Zip Code">
                                     <div class="invalid-feedback"></div>
                                 </div>
@@ -122,7 +121,7 @@
 @endsection
 @push('js')
     <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
-    
+
     <script src="{{ asset('assets/js/select2.min.js') }}"></script>
     <script>
         $(function() {
@@ -158,7 +157,7 @@
                 let data = serializeFiles('#form-customer-company');
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-company.update') }}/{{session('userLogged')['company']['id']}}`,
+                    url: `{{ route('man.customer-company.update') }}/{{ session('userLogged')['company']['id'] }}`,
                     data: data,
                     processData: false,
                     contentType: false,

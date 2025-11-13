@@ -13,14 +13,21 @@ return new class extends Migration
     {
         Schema::create('company_addresses', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('companyId')->unsigned();
+            $table->bigInteger('company_id')->unsigned();
             $table->string('place');
             $table->string('address');
             $table->string('city');
             $table->string('province');
-            $table->string('zipCode');
-            $table->foreign('companyId')->on('customer_companies')->references('id');
+            $table->string('zip_code');
+            $table->foreign('company_id')->on('companies')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('created_by')->unsigned();
+            $table->foreign('created_by')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

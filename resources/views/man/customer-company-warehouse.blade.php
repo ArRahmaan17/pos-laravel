@@ -47,7 +47,7 @@
                         </div>
                         @csrf
                         <input type="hidden" name="id">
-                        <input type="hidden" name="userId" value="{{ session('userLogged')['company']['userId'] }}">
+                        <input type="hidden" name="user_id" value="{{ session('userLogged')['company']['user_id'] }}">
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="name" class="form-label">Warehouse Name</label>
@@ -129,9 +129,9 @@
                     url: "{{ route('man.customer-company-warehouse.show') }}/" + idAppRole,
                     dataType: "json",
                     success: function(response) {
-                        $('#userId').val(response.data.company.userId).trigger('change')
+                        $('#user_id').val(response.data.company.user_id).trigger('change')
                         setTimeout(() => {
-                            $('#companyId').val(response.data.company.id).trigger('change')
+                            $('#company_id').val(response.data.company.id).trigger('change')
                         }, 750);
                         $('#name').val(response.data.name).trigger('change')
                         $('[name=id]').val(response.data.id).trigger('change')
@@ -282,13 +282,13 @@
             window.dataTableAppRole.on('draw.dt', function() {
                 actionData();
             });
-            $('#userId').change(function() {
+            $('#user_id').change(function() {
                 $.ajax({
                     type: "GET",
                     url: `{{ route('man.customer-company.company') }}`,
                     dataType: "json",
                     success: function(response) {
-                        $('#companyId').html(dataToOption(response.data, true))
+                        $('#company_id').html(dataToOption(response.data, true))
                     }
                 });
             });

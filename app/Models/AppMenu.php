@@ -5,10 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AppMenu extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = ['name', 'route', 'icon', 'parent', 'dev_only', 'place'];
 
@@ -21,7 +23,7 @@ class AppMenu extends Model
 
     public static function customer_menu()
     {
-        return self::where('dev_only', 0)->orderBy('created_at')->get()->toArray();
+        return self::where('dev_only', 0)->orderBy('created_at')->get()->makeVisible(['dev_only', 'place'])->toArray();
     }
 
     public function child(): HasMany

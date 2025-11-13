@@ -14,14 +14,16 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('username')->nullable(false)->unique();
-            $table->string('email')->nullable(true)->unique();
-            $table->string('phone_number')->nullable(true)->unique();
-            $table->string('password')->nullable(false);
-            $table->string('profile_picture')->nullable(true);
-            $table->string('affiliate_code')->nullable(true);
-            $table->string('pin')->nullable(true);
+            $table->string('username')->unique();
+            $table->string('email')->nullable()->unique();
+            $table->string('phone_number')->nullable()->unique();
+            $table->string('password');
+            $table->string('profile_picture')->nullable();
+            $table->string('affiliate_code')->nullable();
+            $table->string('pin')->nullable();
+            $table->index(['username', 'email', 'phone_number'], 'unique_users');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

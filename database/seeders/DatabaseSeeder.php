@@ -164,22 +164,22 @@ class DatabaseSeeder extends Seeder
         \App\Models\CustomerCompany::insert([
             [
                 'name' => 'Doglex Code',
-                'userId' => 1,
+                'user_id' => 1,
                 'picture' => 'default-company.png',
                 'phone_number' => fake('ID')->phoneNumber(),
                 'email' => fake('ID')->email(),
-                'businessId' => 1,
+                'bussiness_id' => 1,
                 'affiliate_code' => generateAffiliateCode(),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'Doglex Cafe',
-                'userId' => 2,
+                'user_id' => 2,
                 'picture' => 'default-company.png',
                 'phone_number' => fake('ID')->phoneNumber(),
                 'email' => fake('ID')->email(),
-                'businessId' => 2,
+                'bussiness_id' => 2,
                 'affiliate_code' => generateAffiliateCode(),
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -187,33 +187,33 @@ class DatabaseSeeder extends Seeder
         ]);
         \App\Models\CompanyAddress::insert([
             [
-                'companyId' => 1,
+                'company_id' => 1,
                 'place' => 'test',
                 'address' => 'test',
                 'city' => 'test',
                 'province' => 'test',
-                'zipCode' => 'test',
+                'zip_code' => 'test',
             ],
             [
-                'companyId' => 2,
+                'company_id' => 2,
                 'place' => 'test',
                 'address' => 'test',
                 'city' => 'test',
                 'province' => 'test',
-                'zipCode' => 'test',
+                'zip_code' => 'test',
             ],
         ]);
         \App\Models\UserRole::insert(
             [
                 [
-                    'userId' => 1,
-                    'roleId' => 1,
+                    'user_id' => 1,
+                    'role_id' => 1,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ],
                 [
-                    'userId' => 2,
-                    'roleId' => 2,
+                    'user_id' => 2,
+                    'role_id' => 2,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ],
@@ -222,28 +222,28 @@ class DatabaseSeeder extends Seeder
         \App\Models\CustomerRole::insert(
             [
                 [
-                    'userId' => 1,
+                    'user_id' => 1,
                     'name' => 'Administrator',
                     'description' => 'Customer Administrator',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ],
                 [
-                    'userId' => 1,
+                    'user_id' => 1,
                     'name' => 'Cashier',
                     'description' => 'Customer Cashier',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ],
                 [
-                    'userId' => 2,
+                    'user_id' => 2,
                     'name' => 'Administrator',
                     'description' => 'Customer Administrator',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ],
                 [
-                    'userId' => 2,
+                    'user_id' => 2,
                     'name' => 'Cashier',
                     'description' => 'Customer Cashier',
                     'created_at' => now(),
@@ -254,16 +254,16 @@ class DatabaseSeeder extends Seeder
         \App\Models\UserCustomerRole::insert(
             [
                 [
-                    'userId' => 3,
-                    'roleId' => 2,
-                    'companyId' => 1,
+                    'user_id' => 3,
+                    'role_id' => 2,
+                    'company_id' => 1,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ],
                 [
-                    'userId' => 4,
-                    'roleId' => 2,
-                    'companyId' => 2,
+                    'user_id' => 4,
+                    'role_id' => 2,
+                    'company_id' => 2,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ],
@@ -291,6 +291,212 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Roll', 'description' => 'Used for items that come in a rolled form, like paper or fabric.'],
             ['name' => 'Sheet', 'description' => 'Used for products sold as individual sheets, like paper or towels.'],
             ['name' => 'Bottle', 'description' => 'Used for liquid products like water, soda, or wine, typically measured in milliliters or liters.'],
+        ]);
+        \App\Models\CustomerProductType::insert([
+            // Physical Retail Stores
+            [
+                'name' => 'Groceries',
+                'description' => 'Food, beverages, and daily household items.',
+                'bussiness_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Personal Care',
+                'description' => 'Shampoo, soap, toothpaste, and hygiene products.',
+                'bussiness_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Household Supplies',
+                'description' => 'Cleaning products and home essentials.',
+                'bussiness_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Snacks & Drinks',
+                'description' => 'Packaged snacks, bottled drinks, and ready-to-eat items.',
+                'bussiness_id' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // Restaurants and Cafes
+            [
+                'name' => 'Food Menu',
+                'description' => 'Main dishes, side dishes, and desserts.',
+                'bussiness_id' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Beverages',
+                'description' => 'Coffee, tea, juice, and soft drinks.',
+                'bussiness_id' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Merchandise',
+                'description' => 'Branded mugs, tumblers, and souvenirs.',
+                'bussiness_id' => 2,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // Beauty Salons and Spas
+            [
+                'name' => 'Hair Care',
+                'description' => 'Shampoo, conditioner, and hair treatments.',
+                'bussiness_id' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Skin Care',
+                'description' => 'Facial products, scrubs, and creams.',
+                'bussiness_id' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Spa Essentials',
+                'description' => 'Massage oils and wellness products.',
+                'bussiness_id' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Beauty Tools',
+                'description' => 'Hair dryers, brushes, and styling tools.',
+                'bussiness_id' => 3,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // Cinemas
+            [
+                'name' => 'Tickets',
+                'description' => 'Movie tickets and special screenings.',
+                'bussiness_id' => 4,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Concessions',
+                'description' => 'Popcorn, soda, candy, and snacks.',
+                'bussiness_id' => 4,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Merchandise',
+                'description' => 'Movie-themed t-shirts, posters, and collectibles.',
+                'bussiness_id' => 4,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // Bookstores
+            [
+                'name' => 'Books',
+                'description' => 'Fiction, non-fiction, comics, and textbooks.',
+                'bussiness_id' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Stationery',
+                'description' => 'Pens, notebooks, and paper supplies.',
+                'bussiness_id' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Art Supplies',
+                'description' => 'Sketchbooks, paints, and tools for artists.',
+                'bussiness_id' => 5,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // Gyms and Fitness Centers
+            [
+                'name' => 'Supplements',
+                'description' => 'Protein powder, vitamins, and fitness supplements.',
+                'bussiness_id' => 6,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Fitness Equipment',
+                'description' => 'Yoga mats, resistance bands, and workout gear.',
+                'bussiness_id' => 6,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Gym Apparel',
+                'description' => 'Clothing and accessories for fitness training.',
+                'bussiness_id' => 6,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // Gas Stations
+            [
+                'name' => 'Fuel',
+                'description' => 'Pertalite, Pertamax, Diesel, and other fuels.',
+                'bussiness_id' => 7,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Car Accessories',
+                'description' => 'Air fresheners, wipers, motor oils.',
+                'bussiness_id' => 7,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Convenience Items',
+                'description' => 'Snacks, drinks, cigarettes, and phone credit.',
+                'bussiness_id' => 7,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            // Home Goods Stores
+            [
+                'name' => 'Furniture',
+                'description' => 'Tables, chairs, shelves, and cabinets.',
+                'bussiness_id' => 8,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Kitchenware',
+                'description' => 'Plates, pans, utensils, and cooking tools.',
+                'bussiness_id' => 8,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Home Decor',
+                'description' => 'Lamps, wall art, and decorative items.',
+                'bussiness_id' => 8,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Storage Solutions',
+                'description' => 'Organizers, containers, and space-saving items.',
+                'bussiness_id' => 8,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

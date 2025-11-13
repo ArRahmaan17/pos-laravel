@@ -13,19 +13,27 @@ return new class extends Migration
     {
         Schema::create('user_roles', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('userId')->unsigned();
-            $table->foreign('userId')
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('roleId')->unsigned();
-            $table->foreign('roleId')
+            $table->bigInteger('role_id')->unsigned();
+            $table->foreign('role_id')
                 ->references('id')
-                ->on('app_roles')
+                ->on('roles')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->bigInteger('created_by')->unsigned();
+            $table->foreign('created_by')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->unique(['user_id', 'role_id', 'company_id']);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
