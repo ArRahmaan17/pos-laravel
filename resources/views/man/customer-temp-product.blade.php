@@ -156,8 +156,8 @@
             </div>
             <div class="row">
                 <div class="col mb-3">
-                    <label for="type_id" class="form-label">Category</label>
-                    <select class="form-control select2" name="type_id" id="type_id">
+                    <label for="category_id" class="form-label">Category</label>
+                    <select class="form-control select2" name="category_id" id="category_id">
                         <option value="">Not selected</option>
                         @foreach ($categories as $category)
                             <option value="{{ $category->id }}">{{ $category->name }} ({{ $category->description }})
@@ -647,7 +647,7 @@
                 container.append(clone);
                 formattedInput();
                 container.find(`.select2:first`).attr('id', `unit_id${window.lastProductAccordion}`)
-                container.find(`.select2:last`).attr('id', `type_id${window.lastProductAccordion}`)
+                container.find(`.select2:last`).attr('id', `category_id${window.lastProductAccordion}`)
                 setTimeout(() => {
                     if (container.find(`.select2`).hasClass("select2-hidden-accessible")) {
                         container.find(`.select2`).select2('destroy');

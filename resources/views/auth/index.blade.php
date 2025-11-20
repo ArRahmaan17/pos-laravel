@@ -3,14 +3,12 @@
 @section('content')
     <div class="authentication-wrapper authentication-basic container-p-y">
         <div class="authentication-inner">
-            <!-- Register -->
             <div class="card">
                 <div class="card-body">
-                    <!-- Logo -->
                     <div class="app-brand justify-content-center">
                         <a class="app-brand-link gap-2">
                             <span class="app-brand-logo demo">
-                                <img rel='preload' src="{{ asset('assets/img/favicon/favicon.ico') }}" />
+                                <img rel='preload' style="width: 100px;height: 100px;" src="{{ asset('assets/img/icons/icon.png') }}" />
                             </span>
                         </a>
                     </div>
@@ -19,8 +17,7 @@
                             <div class="alert alert-danger">{!! session('error') !!}</div>
                         @endif
                     </div>
-                    <!-- /Logo -->
-                    <form id="formAuthentication" class="mb-3" action="{{ route('auth.login.process') }}" method="POST">
+                    <form id="formAuthentication" class="mb-3" action="{{ route('auth.login.process') }}" method="POST" autocomplete="off">
                         @csrf
                         <div class="mb-3">
                             <label for="username" class="form-label">Email/Username/Phone number</label>

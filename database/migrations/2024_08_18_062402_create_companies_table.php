@@ -13,22 +13,28 @@ return new class extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id')->unsigned();
             $table->string('name');
             $table->string('picture')->nullable();
             $table->string('phone_number')->unique();
             $table->string('email')->unique();
-            $table->bigInteger('business_id')->unsigned();
+            $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')
                 ->on('users')
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->bigInteger('business_id')->unsigned()->nullable();
             $table->foreign('business_id')
                 ->on('business_types')
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->bigInteger('created_by')->unsigned();
+            $table->foreign('created_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->foreign('updated_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('deleted_by')->unsigned()->nullable();
+            $table->foreign('deleted_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -3,12 +3,12 @@
 namespace Database\Factories;
 
 use App\Models\BusinessType;
-use App\Models\CustomerCompany;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CustomerCompany>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Company>
  */
 class CustomerCompanyFactory extends Factory
 {
@@ -17,7 +17,7 @@ class CustomerCompanyFactory extends Factory
      *
      * @var string
      */
-    protected $model = CustomerCompany::class;
+    protected $model = Company::class;
 
     /**
      * Define the model's default state.

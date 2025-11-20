@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\AppRole;
+use App\Models\Role;
 use App\Models\BusinessType;
-use App\Models\CustomerCompany;
+use App\Models\Company;
 use App\Models\CustomerRole;
 use App\Models\User;
 use App\Models\UserRole;
@@ -22,8 +22,8 @@ class ApplicationTest extends TestCase
     //     parent::setUp();
 
     //     // Create necessary roles and business types
-    //     $this->developerRole = AppRole::factory()->create(['name' => 'Developer']);
-    //     $this->managerRole = AppRole::factory()->create(['name' => 'Manager']);
+    //     $this->developerRole = Role::factory()->create(['name' => 'Developer']);
+    //     $this->managerRole = Role::factory()->create(['name' => 'Manager']);
     //     $this->customerRole = CustomerRole::factory()->create(['name' => 'Customer']);
     //     $this->businessType = BusinessType::factory()->create();
     // }
@@ -129,19 +129,19 @@ class ApplicationTest extends TestCase
     // public function models_can_be_created(): void
     // {
     //     $user = User::factory()->create();
-    //     $company = CustomerCompany::factory()->create();
-    //     $role = AppRole::factory()->create();
+    //     $company = Company::factory()->create();
+    //     $role = Role::factory()->create();
 
     //     $this->assertInstanceOf(User::class, $user);
-    //     $this->assertInstanceOf(CustomerCompany::class, $company);
-    //     $this->assertInstanceOf(AppRole::class, $role);
+    //     $this->assertInstanceOf(Company::class, $company);
+    //     $this->assertInstanceOf(Role::class, $role);
     // }
 
     // /** @test */
     // public function relationships_work_correctly(): void
     // {
     //     $user = User::factory()->create();
-    //     $company = CustomerCompany::factory()->create(['user_id' => $user->id]);
+    //     $company = Company::factory()->create(['user_id' => $user->id]);
     //     $role = UserRole::factory()->create([
     //         'user_id' => $user->id,
     //         'role_id' => $this->developerRole->id,

@@ -42,10 +42,10 @@ Route::middleware([unAuthorization::class])->name('auth.')->prefix('auth')->grou
 });
 Route::middleware([unSelectCustomerCompany::class])->group(function () {
     Route::get('/select-company', function () {
-        return view('select-customer-company');
-    })->name('select-customer-company');
+        return view('select-company');
+    })->name('select-company');
     Route::post('/select-company', [AuthController::class, 'selectCompany'])
-        ->name('select-customer-company');
+        ->name('select-company');
     Route::get('/list-company', [AuthController::class, 'customerCompany'])->name('list-company');
 });
 

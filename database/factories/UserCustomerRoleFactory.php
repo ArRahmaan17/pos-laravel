@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\CustomerCompany;
+use App\Models\Company;
 use App\Models\CustomerRole;
 use App\Models\User;
 use App\Models\UserCustomerRole;
@@ -30,7 +30,7 @@ class UserCustomerRoleFactory extends Factory
         return [
             'user_id' => User::factory(),
             'role_id' => CustomerRole::factory(),
-            'company_id' => CustomerCompany::factory(),
+            'company_id' => Company::factory(),
         ];
     }
 }

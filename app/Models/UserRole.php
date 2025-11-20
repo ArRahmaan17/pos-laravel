@@ -21,6 +21,6 @@ class UserRole extends Model
 
     public function role(): HasOne
     {
-        return $this->hasOne(AppRole::class, 'id', 'role_id');
+        return $this->hasOne(Role::class, 'id', 'role_id');
     }
 }

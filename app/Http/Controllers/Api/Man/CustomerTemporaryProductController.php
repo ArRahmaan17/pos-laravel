@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Man;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppGoodUnit;
-use App\Models\CustomerCompany;
+use App\Models\Company;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerProductType;
 use App\Models\CustomerTemporaryProduct;
@@ -38,7 +38,7 @@ class CustomerTemporaryProductController extends Controller
     public function dataTable(Request $request)
     {
         $company = $request->header('x-customer-company-id');
-        $company = CustomerCompany::find($company);
+        $company = Company::find($company);
         try {
             $totalData = CustomerTemporaryProduct::select(DB::raw('DATE(created_at) as created_at'))
                 ->orderBy('created_at', 'desc')
@@ -157,7 +157,7 @@ class CustomerTemporaryProductController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-        $company = CustomerCompany::find($request->header('x-customer-company-id'));
+        $company = Company::find($request->header('x-customer-company-id'));
 
         $request->validate([
             'products.*.name' => [
@@ -201,7 +201,7 @@ class CustomerTemporaryProductController extends Controller
             'products.*.buy_price' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'products.*.status' => 'required|in:IN,RESTOCK,REMOVE',
             'products.*.unit_id' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:product_weight_units,id',
-            'products.*.type_id' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:product_categories,id',
+            'products.*.category_id' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:product_categories,id',
             'products.*.customerCompanyGoodId' => 'required_if:products.*.status,REMOVE|required_if:products.*.status,RESTOCK|exists:products,id',
             'products.*.picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ]);
@@ -222,7 +222,7 @@ class CustomerTemporaryProductController extends Controller
                 'price' => null,
                 'buy_price' => null,
                 'unit_id' => null,
-                'type_id' => null,
+                'category_id' => null,
                 'accepted' => 0,
                 'accepted_by' => null,
                 'created_at' => now(),
@@ -313,7 +313,7 @@ class CustomerTemporaryProductController extends Controller
                     'price' => $value->price,
                     'buy_price' => $value->buy_price,
                     'unit_id' => $value->unit_id,
-                    'type_id' => $value->type_id,
+                    'category_id' => $value->category_id,
                     'company_id' => $value->company_id,
                     'status' => $value->status,
                     'picture' => $value->picture,
@@ -343,7 +343,7 @@ class CustomerTemporaryProductController extends Controller
             }
 
             if (! empty($dataUpdate)) {
-                CustomerCompanyGood::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buy_price', 'unit_id', 'type_id']);
+                CustomerCompanyGood::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buy_price', 'unit_id', 'category_id']);
                 foreach ($dataUpdate as $index => $value) {
                     if (Storage::disk('public-asset')->exists('temp-customer-product/'.$value['picture'])) {
                         Storage::disk('public-asset')->move('temp-customer-product/'.$value['picture'], 'customer-product/'.$value['picture']);

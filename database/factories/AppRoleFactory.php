@@ -2,11 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\AppRole;
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AppRole>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Role>
  */
 class AppRoleFactory extends Factory
 {
@@ -15,7 +15,7 @@ class AppRoleFactory extends Factory
      *
      * @var string
      */
-    protected $model = AppRole::class;
+    protected $model = Role::class;
 
     /**
      * Define the model's default state.

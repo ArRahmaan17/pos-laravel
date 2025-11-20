@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessType;
 use App\Models\CompanyAddress;
-use App\Models\CustomerCompany;
+use App\Models\Company;
 use App\Models\CustomerRole;
 use App\Models\User;
 use App\Models\UserCustomerRole;
@@ -33,23 +33,15 @@ class AuthController extends Controller
             ->first();
         if (! empty($user) && Hash::check($request->password, $user->password)) {
             $roleUser = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
-            if (empty($roleUser) || empty($roleUser->user) || empty($roleUser->role)) {
-                $roleUser = UserCustomerRole::with('user', 'role')->where('user_id', $user->id)->first();
-            }
-            $hasPrivileges = false;
-            if (! in_array($roleUser->role->name, ['Developer', 'Manager'])) {
+            if (! $roleUser->role->is_system) {
                 $roleUser['company'] = UserCustomerRole::employeeCompany($roleUser->user_id);
                 $roleUser['company']['address'] = CompanyAddress::where('company_id', $roleUser['company']['id'])->first()->toArray();
-                if (UserCustomerRole::employeeMenu($roleUser->user_id) == 0) {
-                    $hasPrivileges = true;
-                }
             }
+            $access = collect($roleUser)->toArray();
             session()->flush();
-            if (! $hasPrivileges) {
-                session(['userLogged' => collect($roleUser)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
-            }
-
-            return redirect()->route('select-customer-company');
+            session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
+            User::find($user->id)->update(['personal_access_token' => base64_encode(json_encode($access) . '.' . base64_encode(env('APP_SECRET')))]);
+            return redirect()->route('select-company');
         }
 
         return redirect()
@@ -65,9 +57,9 @@ class AuthController extends Controller
         if (in_array($data['role']['name'], ['Manager'])) {
             $where = [['id', '=', $request->id], ['user_id', '=', $data['user_id']]];
         }
-        $data['company'] = CustomerCompany::with('address')->where($where)->first()->toArray();
+        $data['company'] = Company::with('address')->where($where)->first()->toArray();
         session()->flush();
-        session(['userLogged' => $data, 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+        session(['userLogged' => $data, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home');
     }
@@ -90,14 +82,14 @@ class AuthController extends Controller
             if ($hasPrivileges) {
                 session()->flush();
                 session(['userLogged' => collect($user)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
-                $response = ['message' => 'successfully login as '.$user['user']['username']];
+                $response = ['message' => 'successfully login as ' . $user['user']['username']];
                 $status = 200;
             } else {
-                $response = ['message' => 'failed login as '.$user['user']['username'].', please set menu for the role'];
+                $response = ['message' => 'failed login as ' . $user['user']['username'] . ', please set menu for the role'];
                 $status = 404;
             }
         } else {
-            $response = ['message' => 'failed login as '.$user['user']['username'].', unexpected error on process login as'];
+            $response = ['message' => 'failed login as ' . $user['user']['username'] . ', unexpected error on process login as'];
             $status = 404;
         }
 
@@ -215,7 +207,7 @@ class AuthController extends Controller
                 $company['affiliate_code'] = generateAffiliateCode();
                 $company['user_id'] = $user_register->id;
                 $company['picture'] = 'default-picture.png';
-                $data_company = CustomerCompany::create($company);
+                $data_company = Company::create($company);
                 $address['company_id'] = $data_company->id;
                 CompanyAddress::create($address);
             }
@@ -242,7 +234,7 @@ class AuthController extends Controller
         if (getRole() === 'Developer') {
             $where = [['user_id', '<>', null]];
         }
-        $data = CustomerCompany::with('address', 'type')->where($where)->get();
+        $data = Company::with('address', 'type')->where($where)->get();
         $code = 200;
         $response = ['message' => 'Showing resource successfully', 'data' => $data];
         if (empty($data)) {
@@ -315,13 +307,14 @@ class AuthController extends Controller
             $roleUser['company']['address'] = CompanyAddress::where('company_id', $roleUser['company']['id'])->first()->toArray();
         } else {
             if ($roleUser->role->name == 'Manager') {
-                $roleUser['company'] = CustomerCompany::with('address')->where(['id' => session('userLogged')['company']['id'], 'user_id' => session('userLogged')['user']['id']])->first()->toArray();
+                $roleUser['company'] = Company::with('address')->where(['id' => session('userLogged')['company']['id'], 'user_id' => session('userLogged')['user']['id']])->first()->toArray();
             } else {
-                $roleUser['company'] = CustomerCompany::with('address')->where('id', session('userLogged')['company']['id'])->first()->toArray();
+                $roleUser['company'] = Company::with('address')->where('id', session('userLogged')['company']['id'])->first()->toArray();
             }
         }
+        $access = collect($roleUser)->toArray();
         session()->flush();
-        session(['userLogged' => collect($roleUser)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+        session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home')->with($message);
     }
@@ -330,7 +323,7 @@ class AuthController extends Controller
     {
         $data = session('userLogged');
         unset($data['company']);
-        session(['userLogged' => $data, 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
+        session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home');
     }

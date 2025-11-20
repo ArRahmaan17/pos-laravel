@@ -16,12 +16,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->bigInteger('created_by')->unsigned();
-            $table->foreign('created_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->bigInteger('company_id')->unsigned();
+            $table->foreign('created_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->foreign('updated_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('deleted_by')->unsigned()->nullable();
+            $table->foreign('deleted_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('company_id')->unsigned()->nullable();
             $table->foreign('company_id')
                 ->references('id')
                 ->on('companies')

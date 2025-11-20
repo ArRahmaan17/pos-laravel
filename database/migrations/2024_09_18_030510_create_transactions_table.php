@@ -37,18 +37,12 @@ return new class extends Migration
             $table->text('notes');
             $table->string('status')->default('pending');
             $table->bigInteger('created_by')->unsigned();
-            $table->foreign('created_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+            $table->foreign('created_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->foreign('updated_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('deleted_by')->unsigned()->nullable();
-            $table->foreign('deleted_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->unique(['orderCode', 'company_id']);
+            $table->foreign('deleted_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->index(['transaction_type_id', 'warehouse_id', 'company_id', 'related_transaction_id'], 'transaction_index');
             $table->timestamps();
             $table->softDeletes();
         });

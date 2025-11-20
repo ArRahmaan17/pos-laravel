@@ -25,13 +25,13 @@ return new class extends Migration
                 ->on('roles')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('created_by')->unsigned();
-            $table->foreign('created_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->unique(['user_id', 'role_id', 'company_id']);
+            $table->bigInteger('created_by')->unsigned()->nullable();
+            $table->foreign('created_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->foreign('updated_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('deleted_by')->unsigned()->nullable();
+            $table->foreign('deleted_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->unique(['user_id', 'role_id']);
             $table->timestamps();
             $table->softDeletes();
         });

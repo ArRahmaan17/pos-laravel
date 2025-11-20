@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Man;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessType;
 use App\Models\CompanyAddress;
-use App\Models\CustomerCompany;
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,13 +30,13 @@ class CustomerCompanyController extends Controller
         if (getRole() === 'Developer') {
             $where = [['user_id', '<>', null]];
         }
-        $totalData = CustomerCompany::with('address', 'type', 'manager')
+        $totalData = Company::with('address', 'type', 'manager')
             ->orderBy('companies.id', 'asc')
             ->where($where)
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompany::with('address', 'type', 'manager')
+            $assets = Company::with('address', 'type', 'manager')
                 ->select('companies.name', 'companies.phone_number', 'companies.id', 'companies.bussiness_id', 'companies.user_id');
 
             if ($request['length'] != '-1') {
@@ -48,7 +48,7 @@ class CustomerCompanyController extends Controller
             }
             $assets = $assets->where($where)->get();
         } else {
-            $assets = CustomerCompany::with('address', 'type', 'manager')
+            $assets = Company::with('address', 'type', 'manager')
                 ->select('companies.name', 'companies.phone_number', 'companies.id', 'companies.bussiness_id', 'companies.user_id')
                 ->where('companies.name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('companies.phone_number', 'like', '%'.$request['search']['value'].'%');
@@ -62,7 +62,7 @@ class CustomerCompanyController extends Controller
             }
             $assets = $assets->where($where)->get();
 
-            $totalFiltered = CustomerCompany::with('address', 'type', 'manager')
+            $totalFiltered = Company::with('address', 'type', 'manager')
                 ->select('companies.name', 'companies.phone_number', 'companies.id', 'companies.bussiness_id', 'companies.user_id')
                 ->where('companies.name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('companies.phone_number', 'like', '%'.$request['search']['value'].'%');
@@ -141,7 +141,7 @@ class CustomerCompanyController extends Controller
             }
             $data['user_id'] = (getRole() === 'Developer' ? $request->user_id : session('userLogged')['user']['id']);
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);
-            $company = CustomerCompany::create($data);
+            $company = Company::create($data);
             $address = $request->only('address')['address'];
             $address['company_id'] = $company->id;
             CompanyAddress::create($address);
@@ -162,7 +162,7 @@ class CustomerCompanyController extends Controller
      */
     public function show(string $id)
     {
-        $data = CustomerCompany::with('address', 'type')->find($id);
+        $data = Company::with('address', 'type')->find($id);
         $code = 200;
         $response = ['message' => 'Showing resource successfully', 'data' => $data];
         if (empty($data)) {
@@ -186,7 +186,7 @@ class CustomerCompanyController extends Controller
         if (getRole() === 'Developer') {
             $where = [['user_id', '<>', null]];
         }
-        $data = CustomerCompany::with('address', 'type')->where($where)->get()->map(function ($company) {
+        $data = Company::with('address', 'type')->where($where)->get()->map(function ($company) {
             $company->attribute = buatSingkatan($company->name);
 
             return $company;
@@ -211,7 +211,7 @@ class CustomerCompanyController extends Controller
         if (! in_array($data['role']['name'], ['Manager', 'Developer'])) {
             abort(401);
         }
-        $data['company'] = CustomerCompany::with('address')->where($where)->first()->toArray();
+        $data['company'] = Company::with('address')->where($where)->first()->toArray();
         session()->flush();
         session(['userLogged' => $data]);
         $code = 200;
@@ -258,7 +258,7 @@ class CustomerCompanyController extends Controller
         try {
             $data = $request->except('address', '_token');
             if ($request->has('picture')) {
-                $company = CustomerCompany::find($id);
+                $company = Company::find($id);
                 $profile_picture = md5(now()->format('Y-m-d H:i:s')).'.'.$request->file('picture')
                     ->getClientOriginalExtension();
                 if ($company->picture != 'default-picture.png') {
@@ -271,14 +271,14 @@ class CustomerCompanyController extends Controller
             }
             $data['user_id'] = (getRole() === 'Developer' ? $request->user_id : session('userLogged')['user']['id']);
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);
-            CustomerCompany::find($id)->update($data);
+            Company::find($id)->update($data);
             $address = $request->only('address')['address'];
             CompanyAddress::where('company_id', $id)->update($address);
             $code = 200;
             $response = ['message' => 'Updating resources successfully'];
             DB::commit();
             $user = session('userLogged');
-            $user['company'] = CustomerCompany::with('address')->where(['id' => session('userLogged')['company']['id'], 'user_id' => session('userLogged')['user']['id']])->first()->toArray();
+            $user['company'] = Company::with('address')->where(['id' => session('userLogged')['company']['id'], 'user_id' => session('userLogged')['user']['id']])->first()->toArray();
             session()->flush();
             session(['userLogged' => collect($user)->toArray()]);
         } catch (\Throwable $th) {
@@ -298,7 +298,7 @@ class CustomerCompanyController extends Controller
         DB::beginTransaction();
         try {
             CompanyAddress::where('company_id', $id)->delete();
-            CustomerCompany::where('id', $id)->delete();
+            Company::where('id', $id)->delete();
             $code = 200;
             $response = ['message' => 'Deleting resources successfully'];
             DB::commit();

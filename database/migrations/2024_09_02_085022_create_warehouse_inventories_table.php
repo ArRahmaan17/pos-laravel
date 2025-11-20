@@ -26,7 +26,7 @@ return new class extends Migration
                 ->on('products')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('quantity');
+            $table->bigInteger('quantity_on_hand');
             $table->bigInteger('created_by')
                 ->unsigned();
             $table->foreign('created_by')

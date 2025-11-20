@@ -288,7 +288,7 @@ class ReportController extends Controller
     private function salesByCategory($startDate, $endDate)
     {
         return DB::table('product_categories as apt')
-            ->join('products as cpg', 'cpg.type_id', '=', 'apt.id')
+            ->join('products as cpg', 'cpg.category_id', '=', 'apt.id')
             ->join('transaction_items as cdpt', 'cpg.id', '=', 'cdpt.goodId')
             ->join('transactions as cpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
             ->select(
@@ -330,7 +330,7 @@ class ReportController extends Controller
         return DB::table('transactions as cpt')
             ->join('transaction_items as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
             ->join('products as cpg', 'cdpt.goodId', '=', 'cpg.id')
-            ->join('product_categories as apt', 'apt.id', '=', 'cpg.type_id')
+            ->join('product_categories as apt', 'apt.id', '=', 'cpg.category_id')
             ->select(
                 'cpg.name as product_name',
                 'apt.name as category',
@@ -385,7 +385,7 @@ class ReportController extends Controller
     private function stockOnHand($startDate, $endDate)
     {
         return DB::table('products as cpg')
-            ->join('product_categories as apt', 'cpg.type_id', '=', 'apt.id')
+            ->join('product_categories as apt', 'cpg.category_id', '=', 'apt.id')
             ->join('product_weight_units as agu', 'cpg.unit_id', '=', 'agu.id')
             ->select(
                 'cpg.name',

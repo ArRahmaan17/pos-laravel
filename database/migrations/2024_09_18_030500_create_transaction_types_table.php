@@ -21,9 +21,15 @@ return new class extends Migration
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete();
-            $table->bigInteger('deleted_at')
-                ->unsigned();
-            $table->foreign('deleted_at')
+            $table->bigInteger('updated_by')
+                ->unsigned()->nullable();
+            $table->foreign('updated_by')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete();
+            $table->bigInteger('deleted_by')
+                ->unsigned()->nullable();
+            $table->foreign('deleted_by')
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete();

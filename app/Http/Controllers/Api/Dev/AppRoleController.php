@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Dev;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppRole;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -15,7 +15,7 @@ class AppRoleController extends Controller
     public function index()
     {
         try {
-            $appRoles = AppRole::orderBy('id', 'asc')->get();
+            $appRoles = Role::orderBy('id', 'asc')->get();
 
             return response()->json([
                 'success' => true,
@@ -32,11 +32,11 @@ class AppRoleController extends Controller
     public function dataTable(Request $request)
     {
         try {
-            $totalData = AppRole::orderBy('id', 'asc')->count();
+            $totalData = Role::orderBy('id', 'asc')->count();
             $totalFiltered = $totalData;
 
             if (empty($request['search']['value'])) {
-                $assets = AppRole::select('*');
+                $assets = Role::select('*');
 
                 if ($request['length'] != '-1') {
                     $assets->limit($request['length']);
@@ -49,7 +49,7 @@ class AppRoleController extends Controller
                 }
                 $assets = $assets->get();
             } else {
-                $assets = AppRole::select('*')
+                $assets = Role::select('*')
                     ->where('name', 'like', '%'.$request['search']['value'].'%')
                     ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -64,7 +64,7 @@ class AppRoleController extends Controller
                 }
                 $assets = $assets->get();
 
-                $totalFiltered = AppRole::select('*')
+                $totalFiltered = Role::select('*')
                     ->where('name', 'like', '%'.$request['search']['value'].'%')
                     ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -114,7 +114,7 @@ class AppRoleController extends Controller
                 'description' => 'required|min:6|max:100',
             ]);
 
-            $appRole = AppRole::create($request->only(['name', 'description']));
+            $appRole = Role::create($request->only(['name', 'description']));
             DB::commit();
 
             return response()->json([
@@ -146,7 +146,7 @@ class AppRoleController extends Controller
     public function show($id)
     {
         try {
-            $appRole = AppRole::findOrFail($id);
+            $appRole = Role::findOrFail($id);
 
             return response()->json([
                 'success' => true,
@@ -172,7 +172,7 @@ class AppRoleController extends Controller
     {
         DB::beginTransaction();
         try {
-            $appRole = AppRole::findOrFail($id);
+            $appRole = Role::findOrFail($id);
 
             $request->validate([
                 'name' => 'required|min:2|max:10|unique:permissions,name,'.$id,
@@ -219,7 +219,7 @@ class AppRoleController extends Controller
     {
         DB::beginTransaction();
         try {
-            $appRole = AppRole::findOrFail($id);
+            $appRole = Role::findOrFail($id);
             $appRole->delete();
             DB::commit();
 

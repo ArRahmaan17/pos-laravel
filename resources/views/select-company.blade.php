@@ -54,7 +54,7 @@
                         </div>
                         <div class="d-flex row company-container justify-content-center gap-2 gap-md-5 mt-5">
                             <div class="card col-12 col-sm-5 col-md-4 col-lg-3" aria-hidden="true">
-                                <img src="..." class="card-img-top placeholder-glow" alt="...">
+                                <img class="card-img-top placeholder-glow">
                                 <div class="card-body">
                                     <h5 class="card-title placeholder-glow">
                                         <span class="placeholder col-6"></span>
@@ -70,7 +70,7 @@
                                 </div>
                             </div>
                             <div class="card col-12 col-sm-5 col-md-4 col-lg-3" aria-hidden="true">
-                                <img src="..." class="card-img-top placeholder-glow" alt="...">
+                                <img class="card-img-top placeholder-glow">
                                 <div class="card-body">
                                     <h5 class="card-title placeholder-glow">
                                         <span class="placeholder col-6"></span>
@@ -86,7 +86,7 @@
                                 </div>
                             </div>
                             <div class="card col-12 col-sm-5 col-md-4 col-lg-3" aria-hidden="true">
-                                <img src="..." class="card-img-top placeholder-glow" alt="...">
+                                <img class="card-img-top placeholder-glow">
                                 <div class="card-body">
                                     <h5 class="card-title placeholder-glow">
                                         <span class="placeholder col-6"></span>
@@ -134,7 +134,7 @@
                         const card = `
                                <div class="card mb-4 col-12 col-sm-5 col-md-4 col-lg-3">
                                     <img
-                                        src="../cp/${item.picture}"
+                                        src="{{ url('/') }}/${item.picture}"
                                         class="card-img-top w-full"
                                         style="max-height:150px; object-fit: cover;"
                                         alt="${item.name}"
@@ -147,7 +147,7 @@
                                         </p>
                                     </div>
                                     <div class="card-footer">
-                                        <form action="{{ route('select-customer-company') }}" method="post">
+                                        <form action="{{ route('select-company') }}" method="post">
                                             @csrf
                                             <input type="hidden" name="id" value="${item.id}">
                                             <button class="btn btn-success d-block d-sm-inline-block">Apply <i class='mb-1 bx bx-log-in' ></i></button>

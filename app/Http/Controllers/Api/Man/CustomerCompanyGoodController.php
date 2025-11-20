@@ -68,7 +68,7 @@ class CustomerCompanyGoodController extends Controller
                 $row['unit'] = $item->unit->name;
                 $row['unit_id'] = $item->unit->id;
                 $row['type'] = $item->type->name;
-                $row['type_id'] = $item->type->id;
+                $row['category_id'] = $item->type->id;
                 $row['picture'] = $item->picture;
                 $dataFiltered[] = $row;
             }
@@ -105,11 +105,11 @@ class CustomerCompanyGoodController extends Controller
             'status' => 'required|in:archive,draft,publish',
             'company_id' => 'required|exists:companies,id',
             'unit_id' => 'required|exists:product_weight_units,id',
-            'type_id' => 'required|exists:product_categories,id',
+            'category_id' => 'required|exists:product_categories,id',
             'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ], [
             'unit_id' => 'The unit field is required.',
-            'type_id' => 'The type field is required.',
+            'category_id' => 'The type field is required.',
             'company_id' => 'The company field is required.',
         ]);
         DB::beginTransaction();
@@ -193,11 +193,11 @@ class CustomerCompanyGoodController extends Controller
             'status' => 'required|in:archive,draft,publish',
             'company_id' => 'required|exists:companies,id',
             'unit_id' => 'required|exists:product_weight_units,id',
-            'type_id' => 'required|exists:product_categories,id',
+            'category_id' => 'required|exists:product_categories,id',
             'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ], [
             'unit_id' => 'The unit field is required.',
-            'type_id' => 'The type field is required.',
+            'category_id' => 'The type field is required.',
             'company_id' => 'The unit field is required.',
         ]);
         DB::beginTransaction();

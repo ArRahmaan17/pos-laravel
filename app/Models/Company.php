@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CustomerCompany extends Model
+class Company extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -22,7 +22,7 @@ class CustomerCompany extends Model
 
     public function type(): HasOne
     {
-        return $this->hasOne(BusinessType::class, 'id', 'bussiness_id');
+        return $this->hasOne(BusinessType::class, 'id', 'business_id');
     }
 
     public function manager(): HasOne

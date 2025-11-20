@@ -16,8 +16,12 @@ return new class extends Migration
             $table->string('name');
             $table->string('code');
             $table->integer('level');
-            $table->bigInteger('created_by')->unsigned();
-            $table->foreign('created_by')->on('users')->references('id')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->bigInteger('created_by')->unsigned()->nullable();
+            $table->foreign('created_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->foreign('updated_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('deleted_by')->unsigned()->nullable();
+            $table->foreign('deleted_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
             $table->softDeletes();
         });

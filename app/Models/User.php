@@ -58,6 +58,6 @@ class User extends Authenticatable
 
     public function role(): HasOne
     {
-        return ($this->hasOne(AppRole::class, 'user_id', 'id')) ? $this->hasOne(AppRole::class, 'user_id', 'id') : $this->hasOne(CustomerRole::class, 'user_id', 'id');
+        return ($this->hasOne(Role::class, 'user_id', 'id')) ? $this->hasOne(Role::class, 'user_id', 'id') : $this->hasOne(CustomerRole::class, 'user_id', 'id');
     }
 }

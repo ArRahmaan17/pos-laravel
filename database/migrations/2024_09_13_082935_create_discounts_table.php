@@ -39,8 +39,9 @@ return new class extends Migration
                 ->cascadeOnUpdate();
             $table->decimal('discount_value', 16, 2)->nullable();
             $table->integer('percentage')->nullable();
-            $table->decimal('max_transaction_discount', 16, 2)->nullable();
-            $table->decimal('min_transaction_price', 16, 2)->default(0);
+            $table->integer('max_usage')->nullable();
+            $table->decimal('max_amount_discount', 16, 2)->nullable();
+            $table->decimal('min_amount_price', 16, 2)->default(0);
             $table->timestampTz('expirated_at');
             $table->enum('status', ['archive', 'draft', 'publish'])->default('draft');
             $table->bigInteger('company_id')->unsigned();

@@ -15,13 +15,13 @@ class CustomerCompanyGood extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name', 'price', 'buy_price', 'stock', 'picture', 'company_id', 'unit_id', 'type_id', 'status'];
+    protected $fillable = ['name', 'price', 'buy_price', 'stock', 'picture', 'company_id', 'unit_id', 'category_id', 'status'];
 
     protected $defaultSearchColumns = ['name', 'price', 'buy_price', 'stock', 'status'];
 
     protected $defaultSearchRelations = ['unit' => ['name', 'description'], 'type' => ['name', 'description']];
 
-    protected $defaultCategoryColumn = 'type_id';
+    protected $defaultCategoryColumn = 'category_id';
 
     protected $defaultCategoryId = 'all';
 
@@ -32,7 +32,7 @@ class CustomerCompanyGood extends Model
 
     public function type(): HasOne
     {
-        return $this->hasOne(CustomerProductType::class, 'id', 'type_id');
+        return $this->hasOne(CustomerProductType::class, 'id', 'category_id');
     }
 
     public static function shelf_less($company_id)

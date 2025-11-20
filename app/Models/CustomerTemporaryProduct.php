@@ -15,7 +15,7 @@ class CustomerTemporaryProduct extends Model
 
     protected $appends = ['status_transaction'];
 
-    protected $fillable = ['orderCode', 'transaction_created',  'user_id', 'company_id', 'customerCompanyGoodId', 'name', 'picture', 'stock', 'stock_reference', 'price', 'buy_price', 'unit_id', 'type_id', 'accepted', 'accepted_by', 'status'];
+    protected $fillable = ['orderCode', 'transaction_created',  'user_id', 'company_id', 'customerCompanyGoodId', 'name', 'picture', 'stock', 'stock_reference', 'price', 'buy_price', 'unit_id', 'category_id', 'accepted', 'accepted_by', 'status'];
 
     public function creater(): HasOne
     {

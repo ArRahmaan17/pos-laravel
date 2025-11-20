@@ -25,9 +25,9 @@ return new class extends Migration
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->int('previous_quantity');
-            $table->int('adjusted_quantity');
-            $table->int('difference');
+            $table->integer('previous_quantity');
+            $table->integer('adjusted_quantity');
+            $table->integer('difference');
             $table->string('reason');
             $table->bigInteger('movement_id')->unsigned();
             $table->foreign('movement_id')
@@ -41,6 +41,7 @@ return new class extends Migration
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->timestampTz('approved_at');
             $table->bigInteger('company_id')->unsigned();
             $table->foreign('company_id')
                 ->references('id')
@@ -48,18 +49,11 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->bigInteger('created_by')->unsigned();
-            $table->foreign('created_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+            $table->foreign('created_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->foreign('updated_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('deleted_by')->unsigned()->nullable();
-            $table->foreign('deleted_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->timestamps('approved_at');
+            $table->foreign('deleted_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
             $table->softDeletes();
         });

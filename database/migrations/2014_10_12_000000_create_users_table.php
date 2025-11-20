@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('profile_picture')->nullable();
             $table->string('affiliate_code')->nullable();
             $table->string('pin')->nullable();
+            $table->string('personal_access_token')->nullable();
+            $table->timestampTz('last_authenticated_at')->nullable();
             $table->index(['username', 'email', 'phone_number'], 'unique_users');
             $table->timestamps();
             $table->softDeletes();

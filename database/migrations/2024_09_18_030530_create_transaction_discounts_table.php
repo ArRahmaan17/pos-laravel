@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaction_items', function (Blueprint $table) {
+        Schema::create('transaction_discounts', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('transaction_item_id')->unsigned();
             $table->foreign('transaction_item_id')
@@ -32,18 +32,12 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->decimal('discount_value', 16, 2);
-            $table->bigInteger('created_by')->unsigned();
-            $table->foreign('created_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+             $table->bigInteger('created_by')->unsigned();
+            $table->foreign('created_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->foreign('updated_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('deleted_by')->unsigned()->nullable();
-            $table->foreign('deleted_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+            $table->foreign('deleted_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -54,6 +48,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaction_items');
+        Schema::dropIfExists('transaction_discounts');
     }
 };

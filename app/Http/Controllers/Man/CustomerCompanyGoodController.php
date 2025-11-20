@@ -105,11 +105,11 @@ class CustomerCompanyGoodController extends Controller
             'status' => 'required|in:archive,draft,publish',
             'company_id' => 'required|exists:companies,id',
             'unit_id' => 'required|exists:product_weight_units,id',
-            'type_id' => 'required|exists:product_categories,id',
+            'category_id' => 'required|exists:product_categories,id',
             'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ], [
             'unit_id' => 'The unit field is required.',
-            'type_id' => 'The type field is required.',
+            'category_id' => 'The type field is required.',
             'company_id' => 'The company field is required.',
         ]);
         DB::beginTransaction();
@@ -161,7 +161,7 @@ class CustomerCompanyGoodController extends Controller
                     'price' => $value->price,
                     'buy_price' => $value->buy_price,
                     'unit_id' => $value->unit_id,
-                    'type_id' => $value->type_id,
+                    'category_id' => $value->category_id,
                     'company_id' => $value->company_id,
                     'status' => $value->status,
                     'picture' => $value->picture,
@@ -264,11 +264,11 @@ class CustomerCompanyGoodController extends Controller
             'status' => 'required|in:archive,draft,publish',
             'company_id' => 'required|exists:companies,id',
             'unit_id' => 'required|exists:product_weight_units,id',
-            'type_id' => 'required|exists:product_categories,id',
+            'category_id' => 'required|exists:product_categories,id',
             'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ], [
             'unit_id' => 'The unit field is required.',
-            'type_id' => 'The type field is required.',
+            'category_id' => 'The type field is required.',
             'company_id' => 'The unit field is required.',
         ]);
         DB::beginTransaction();

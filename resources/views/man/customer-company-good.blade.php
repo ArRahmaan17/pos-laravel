@@ -104,8 +104,8 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="type_id" class="form-label">Category</label>
-                                <select class="form-control select2" name="type_id" id="type_id">
+                                <label for="category_id" class="form-label">Category</label>
+                                <select class="form-control select2" name="category_id" id="category_id">
                                     <option value="">Not selected</option>
                                     @foreach ($categories as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }} ({{ $category->description }})
@@ -216,8 +216,8 @@
                         formElement.find('[name=unit_id]')
                             .val(response.data.unit_id)
                             .trigger('change');
-                        formElement.find('[name=type_id]')
-                            .val(response.data.type_id)
+                        formElement.find('[name=category_id]')
+                            .val(response.data.category_id)
                             .trigger('change');
                         formElement.find('[name=company_id]')
                             .val(response.data.company_id)

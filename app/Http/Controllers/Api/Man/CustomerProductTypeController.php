@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Man;
 
 use App\Helpers\RedisHelper;
 use App\Http\Controllers\Controller;
-use App\Models\CustomerCompany;
+use App\Models\Company;
 use App\Models\CustomerProductType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,7 +26,7 @@ class CustomerProductTypeController extends Controller
         if (RedisHelper::exists("cutomer_product_categories:{$this->company_id}")) {
             $data = json_decode(RedisHelper::get("cutomer_product_categories:{$this->company_id}"));
         } else {
-            $company = CustomerCompany::find($request->header('x-customer-company-id'));
+            $company = Company::find($request->header('x-customer-company-id'));
             $data = CustomerProductType::orderBy('id', 'asc')->where('bussiness_id', $company->bussiness_id)->get();
             RedisHelper::set("cutomer_product_categories:{$this->company_id}", json_encode($data));
         }
@@ -38,7 +38,7 @@ class CustomerProductTypeController extends Controller
 
     public function dataTable(Request $request)
     {
-        $company = CustomerCompany::find($request->header('x-customer-company-id'));
+        $company = Company::find($request->header('x-customer-company-id'));
         try {
             $totalData = CustomerProductType::orderBy('id', 'asc')->where('bussiness_id', $company->bussiness_id)
                 ->count();
@@ -114,7 +114,7 @@ class CustomerProductTypeController extends Controller
             'description' => 'required|min:6|max:100',
         ]);
         try {
-            $company = CustomerCompany::find($this->company_id);
+            $company = Company::find($this->company_id);
             $request->merge(['bussiness_id' => $this->company_id]);
             CustomerProductType::create($request->except('_token', 'id'));
             DB::commit();

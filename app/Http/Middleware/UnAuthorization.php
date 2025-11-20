@@ -18,7 +18,7 @@ class UnAuthorization
         if (empty(session('userLogged')) && empty(session('userLogged')['company']) && empty(session('userLogged')['role'])) {
             return $next($request);
         } elseif (! empty(session('userLogged')) && empty(session('userLogged')['company']) && ! empty(session('userLogged')['role'])) {
-            return redirect()->route('select-customer-company');
+            return redirect()->route('select-company');
         } else {
             return redirect()->route('home');
         }

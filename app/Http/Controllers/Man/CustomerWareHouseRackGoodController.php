@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerCompany;
+use App\Models\Company;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerCompanyWarehouse;
 use App\Models\CustomerWarehouseRackGood;
@@ -17,7 +17,7 @@ class CustomerWareHouseRackGoodController extends Controller
      */
     public function index()
     {
-        $companies = CustomerCompany::where('user_id', '=', session('userLogged')['company']['user_id'])->get();
+        $companies = Company::where('user_id', '=', session('userLogged')['company']['user_id'])->get();
 
         return view('man.customer-good-rack', compact('companies'));
     }

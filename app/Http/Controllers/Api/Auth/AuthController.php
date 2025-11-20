@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessType;
 use App\Models\CompanyAddress;
-use App\Models\CustomerCompany;
+use App\Models\Company;
 use App\Models\CustomerRole;
 use App\Models\User;
 use App\Models\UserCustomerRole;
@@ -151,7 +151,7 @@ class AuthController extends Controller
             $where = [['id', '=', $request->company_id], ['user_id', '=', $user->id]];
         }
 
-        $company = CustomerCompany::with('address')->where($where)->first();
+        $company = Company::with('address')->where($where)->first();
 
         if (! $company) {
             return response()->json([
@@ -275,7 +275,7 @@ class AuthController extends Controller
                 $company['affiliate_code'] = generateAffiliateCode();
                 $company['user_id'] = $user_register->id;
                 $company['picture'] = 'default-picture.png';
-                $data_company = CustomerCompany::create($company);
+                $data_company = Company::create($company);
                 $address['company_id'] = $data_company->id;
                 CompanyAddress::create($address);
             }
@@ -378,7 +378,7 @@ class AuthController extends Controller
             $where = [['user_id', '<>', null]];
         }
 
-        $data = CustomerCompany::with('address', 'type')->where($where)->get();
+        $data = Company::with('address', 'type')->where($where)->get();
 
         if ($data->isEmpty()) {
             return response()->json([
@@ -445,7 +445,7 @@ class AuthController extends Controller
             'bussiness_id' => 'required|exists:business_types,id',
         ]);
 
-        $checkCompany = CustomerCompany::where([
+        $checkCompany = Company::where([
             'name' => $request->name,
         ])->orWhere(function (Builder $query) use ($request) {
             $query->where('email', $request->email)->where('phone_number', $request->phone_number);

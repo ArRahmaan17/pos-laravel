@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Dev;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppRole;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -19,11 +19,11 @@ class AppRoleController extends Controller
 
     public function dataTable(Request $request)
     {
-        $totalData = AppRole::orderBy('id', 'asc')
+        $totalData = Role::orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = AppRole::select('*');
+            $assets = Role::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -34,7 +34,7 @@ class AppRoleController extends Controller
             }
             $assets = $assets->get();
         } else {
-            $assets = AppRole::select('*')
+            $assets = Role::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -47,7 +47,7 @@ class AppRoleController extends Controller
             }
             $assets = $assets->get();
 
-            $totalFiltered = AppRole::select('*')
+            $totalFiltered = Role::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -86,7 +86,7 @@ class AppRoleController extends Controller
             'description' => 'required|min:6|max:100',
         ]);
         try {
-            AppRole::create($request->except('_token', 'id'));
+            Role::create($request->except('_token', 'id'));
             DB::commit();
             $response = ['message' => 'App Role create successfully'];
             $code = 200;
@@ -104,7 +104,7 @@ class AppRoleController extends Controller
      */
     public function show(string $id)
     {
-        $data = AppRole::find($id);
+        $data = Role::find($id);
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -127,7 +127,7 @@ class AppRoleController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            AppRole::find($id)->update($request->except('_token', 'id'));
+            Role::find($id)->update($request->except('_token', 'id'));
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -147,8 +147,8 @@ class AppRoleController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (empty(collect(AppRole::with('role_users')->find($id)->role_users)->toArray())) {
-                AppRole::destroy($id);
+            if (empty(collect(Role::with('role_users')->find($id)->role_users)->toArray())) {
+                Role::destroy($id);
                 DB::commit();
                 $response = ['message' => 'deleting resource successfully'];
                 $code = 200;

@@ -13,34 +13,28 @@ return new class extends Migration
     {
         Schema::create('inventory_movements', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('transaction_item_id');
+            $table->bigInteger('transaction_item_id')->unsigned();
             $table->foreign('transaction_item_id')
                 ->references('id')
                 ->on('transaction_items')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('warehouse_id');
+            $table->bigInteger('warehouse_id')->unsigned();
             $table->foreign('warehouse_id')
                 ->references('id')
                 ->on('warehouses')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('product_id');
+            $table->bigInteger('product_id')->unsigned();
             $table->foreign('product_id')
                 ->references('id')
                 ->on('products')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('inventory_movement_type_id');
+            $table->bigInteger('inventory_movement_type_id')->unsigned();
             $table->foreign('inventory_movement_type_id')
                 ->references('id')
                 ->on('inventory_movement_types')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->bigInteger('company_id')->unsigned();
-            $table->foreign('company_id')
-                ->references('id')
-                ->on('companies')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->integer('quantity_change');
@@ -51,18 +45,12 @@ return new class extends Migration
                 ->on('companies')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('created_by')->unsigned();
-            $table->foreign('created_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+             $table->bigInteger('created_by')->unsigned();
+            $table->foreign('created_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->foreign('updated_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('deleted_by')->unsigned()->nullable();
-            $table->foreign('deleted_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+            $table->foreign('deleted_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
             $table->softDeletes();
         });

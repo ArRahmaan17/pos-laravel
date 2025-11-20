@@ -10,6 +10,7 @@
 /public/storage
 /storage/*.key
 /vendor
+CaddyFile
 .env
 .env.backup
 .env.production
@@ -25,3 +26,4 @@ yarn-error.log
 /.vscode
 pint.json
 composer.lock
+public/resources/companies/*/

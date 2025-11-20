@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('code');
-            $table->string('picture');
+            $table->string('picture')->nullable();
             $table->decimal('price', 12, 2);
             $table->decimal('buy_price', 12, 2);
             $table->bigInteger('unit_id')
@@ -25,9 +25,9 @@ return new class extends Migration
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->bigInteger('type_id')
+            $table->bigInteger('category_id')
                 ->unsigned();
-            $table->foreign('type_id')
+            $table->foreign('category_id')
                 ->on('product_categories')
                 ->references('id')
                 ->cascadeOnDelete()
@@ -39,13 +39,13 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->bigInteger('created_by')->unsigned();
-            $table->foreign('created_by')
-                ->references('id')
-                ->on('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+            $table->foreign('created_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('updated_by')->unsigned()->nullable();
+            $table->foreign('updated_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->bigInteger('deleted_by')->unsigned()->nullable();
+            $table->foreign('deleted_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->enum('status', ['draft', 'archive', 'publish']);
-            $table->index(['name', 'code',  'type_id', 'unit_id', 'company_id']);
+            $table->index(['name', 'code',  'category_id', 'unit_id', 'company_id']);
             $table->timestamps();
             $table->softDeletes();
         });

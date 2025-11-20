@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('discount_codes', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->integer('max_usage');
-            $table->integer('current_usage');
+            $table->string('description');
             $table->bigInteger('company_id')->unsigned();
             $table->foreign('company_id')
                 ->on('companies')
@@ -28,7 +27,6 @@ return new class extends Migration
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete();
-            $table->timestampTz('expirated_at');
             $table->enum('status', ['archive', 'draft', 'publish'])->default('draft');
             $table->timestamps();
             $table->softDeletes();
@@ -37,7 +35,6 @@ return new class extends Migration
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete();
-            $table->unique(['code', 'company_id']);
         });
     }
 

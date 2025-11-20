@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\AppRole;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -28,7 +28,7 @@ class UserRoleFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'role_id' => AppRole::factory(),
+            'role_id' => Role::factory(),
         ];
     }
 }

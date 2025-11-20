@@ -33,6 +33,7 @@ return new class extends Migration
                 ->cascadeOnUpdate();
             $table->integer('total_items');
             $table->string('status');
+            $table->timestampTz('approved_at');
             $table->bigInteger('approved_by')->unsigned()->nullable();
             $table->foreign('approved_by')
                 ->on('users')
@@ -51,7 +52,6 @@ return new class extends Migration
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->timestamps('approved_at');
             $table->timestamps();
             $table->softDeletes();
         });

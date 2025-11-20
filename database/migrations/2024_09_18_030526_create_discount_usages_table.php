@@ -49,7 +49,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete();
-            $table->timestamps('applied_at');
+            $table->timestampTz('applied_at');
             $table->timestamps();
             $table->softDeletes();
         });
