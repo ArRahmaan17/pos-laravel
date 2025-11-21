@@ -16,6 +16,6 @@ class CustomerRoleAccessibility extends Model
 
     public function menu(): HasMany
     {
-        return $this->hasMany(AppMenu::class, 'id', 'menuId');
+        return $this->hasMany(Permission::class, 'id', 'menuId');
     }
 }

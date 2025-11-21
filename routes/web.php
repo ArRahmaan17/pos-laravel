@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Dev\AppGoodUnitController;
+use App\Http\Controllers\Dev\AppMenuController;
+use App\Http\Controllers\Dev\AppRoleController;
+use App\Http\Controllers\Dev\AppSubscriptionController;
 use App\Http\Controllers\Man\CustomerCompanyController;
 use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
@@ -202,6 +206,40 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::get('/data-table', [CustomerProductTypeController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerProductTypeController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerProductTypeController::class, 'destroy'])->name('delete');
+        });
+    });
+    Route::prefix('dev')->name('dev.')->group(function () {
+        Route::prefix('app-role')->name('app-role.')->group(function () {
+            Route::get('/', [AppRoleController::class, 'index'])->name('index');
+            Route::post('/', [AppRoleController::class, 'store'])->name('store');
+            Route::put('/{id?}', [AppRoleController::class, 'update'])->name('update');
+            Route::get('/data-table', [AppRoleController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [AppRoleController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [AppRoleController::class, 'destroy'])->name('delete');
+        });
+        Route::prefix('permission')->name('permission.')->group(function () {
+            Route::get('/', [AppMenuController::class, 'index'])->name('index');
+            Route::post('/', [AppMenuController::class, 'store'])->name('store');
+            Route::put('/{id?}', [AppMenuController::class, 'update'])->name('update');
+            Route::get('/data-table', [AppMenuController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [AppMenuController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [AppMenuController::class, 'destroy'])->name('delete');
+        });
+        Route::prefix('app-good-unit')->name('app-good-unit.')->group(function () {
+            Route::get('/', [AppGoodUnitController::class, 'index'])->name('index');
+            Route::post('/', [AppGoodUnitController::class, 'store'])->name('store');
+            Route::put('/{id?}', [AppGoodUnitController::class, 'update'])->name('update');
+            Route::get('/data-table', [AppGoodUnitController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [AppGoodUnitController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [AppGoodUnitController::class, 'destroy'])->name('delete');
+        });
+        Route::prefix('app-subscription')->name('app-subscription.')->group(function () {
+            Route::get('/', [AppSubscriptionController::class, 'index'])->name('index');
+            Route::post('/', [AppSubscriptionController::class, 'store'])->name('store');
+            Route::put('/{id?}', [AppSubscriptionController::class, 'update'])->name('update');
+            Route::get('/data-table', [AppSubscriptionController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [AppSubscriptionController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [AppSubscriptionController::class, 'destroy'])->name('delete');
         });
     });
 });

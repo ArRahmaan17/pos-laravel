@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppMenu;
+use App\Models\UserManagement\Permission;
 use App\Models\CustomerRole;
 use App\Models\CustomerRoleAccessibility;
 use Exception;
@@ -17,7 +17,7 @@ class CustomerRoleAccessibilityController extends Controller
      */
     public function index()
     {
-        $menus = AppMenu::customer_menu();
+        $menus = Permission::customer_menu();
         $menus = buildTree($menus);
         $roles = CustomerRole::with(['role_users'])->where('user_id', session('userLogged')['company']['user_id'])->get();
 

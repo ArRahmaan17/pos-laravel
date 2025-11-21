@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\AppMenu;
+use App\Models\UserManagement\Permission;
 use App\Models\AppSubscription;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -29,8 +29,8 @@ class MenuServiceProvider extends ServiceProvider
             $subscriptions = [];
         } else {
             try {
-                $sidebarAppMenu = AppMenu::where('place', 0)->orderBy('created_at')->get()->setHidden([])->toArray();
-                $profileAppMenu = AppMenu::where('place', 1)->orderBy('created_at')->get()->setHidden([])->toArray();
+                $sidebarAppMenu = Permission::where('place', 0)->orderBy('created_at')->get()->setHidden([])->toArray();
+                $profileAppMenu = Permission::where('place', 1)->orderBy('created_at')->get()->setHidden([])->toArray();
                 $subscriptions = AppSubscription::all();
             } catch (\Exception $e) {
                 $sidebarAppMenu = [];

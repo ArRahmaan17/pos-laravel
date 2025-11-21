@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Dev;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppMenu;
+use App\Models\UserManagement\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +17,7 @@ class AppMenuController extends Controller
     {
         try {
             $routes = Route::getRoutes()->getRoutesByMethod()['GET'];
-            $menus = AppMenu::orderBy('parent', 'asc')->get();
+            $menus = Permission::orderBy('parent', 'asc')->get();
 
             return response()->json([
                 'success' => true,
@@ -37,11 +37,11 @@ class AppMenuController extends Controller
     public function dataTable(Request $request)
     {
         try {
-            $totalData = AppMenu::orderBy('id', 'asc')->count();
+            $totalData = Permission::orderBy('id', 'asc')->count();
             $totalFiltered = $totalData;
 
             if (empty($request['search']['value'])) {
-                $assets = AppMenu::select('*');
+                $assets = Permission::select('*');
 
                 if ($request['length'] != '-1') {
                     $assets->limit($request['length']);
@@ -54,7 +54,7 @@ class AppMenuController extends Controller
                 }
                 $assets = $assets->get();
             } else {
-                $assets = AppMenu::select('*')
+                $assets = Permission::select('*')
                     ->where('name', 'like', '%'.$request['search']['value'].'%')
                     ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
 
@@ -69,7 +69,7 @@ class AppMenuController extends Controller
                 }
                 $assets = $assets->get();
 
-                $totalFiltered = AppMenu::select('*')
+                $totalFiltered = Permission::select('*')
                     ->where('name', 'like', '%'.$request['search']['value'].'%')
                     ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
 
@@ -123,12 +123,12 @@ class AppMenuController extends Controller
                 'icon' => 'nullable|string|max:50',
             ]);
 
-            $appMenu = AppMenu::create($request->only(['name', 'route', 'parent', 'icon']));
+            $appMenu = Permission::create($request->only(['name', 'route', 'parent', 'icon']));
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'App Menu created successfully',
+                'message' => 'Permission created successfully',
                 'data' => $appMenu,
             ], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -144,7 +144,7 @@ class AppMenuController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed creating App Menu',
+                'message' => 'Failed creating Permission',
             ], 500);
         }
     }
@@ -155,7 +155,7 @@ class AppMenuController extends Controller
     public function show($id)
     {
         try {
-            $appMenu = AppMenu::findOrFail($id);
+            $appMenu = Permission::findOrFail($id);
 
             return response()->json([
                 'success' => true,
@@ -164,12 +164,12 @@ class AppMenuController extends Controller
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'App Menu not found',
+                'message' => 'Permission not found',
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve App Menu',
+                'message' => 'Failed to retrieve Permission',
             ], 500);
         }
     }
@@ -181,7 +181,7 @@ class AppMenuController extends Controller
     {
         DB::beginTransaction();
         try {
-            $appMenu = AppMenu::findOrFail($id);
+            $appMenu = Permission::findOrFail($id);
 
             $request->validate([
                 'name' => 'required|min:2|max:50|unique:permissions,name,'.$id,
@@ -195,7 +195,7 @@ class AppMenuController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'App Menu updated successfully',
+                'message' => 'Permission updated successfully',
                 'data' => $appMenu,
             ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -203,7 +203,7 @@ class AppMenuController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'App Menu not found',
+                'message' => 'Permission not found',
             ], 404);
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
@@ -218,7 +218,7 @@ class AppMenuController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed updating App Menu',
+                'message' => 'Failed updating Permission',
             ], 500);
         }
     }
@@ -230,27 +230,27 @@ class AppMenuController extends Controller
     {
         DB::beginTransaction();
         try {
-            $appMenu = AppMenu::findOrFail($id);
+            $appMenu = Permission::findOrFail($id);
             $appMenu->delete();
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'App Menu deleted successfully',
+                'message' => 'Permission deleted successfully',
             ], 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             DB::rollBack();
 
             return response()->json([
                 'success' => false,
-                'message' => 'App Menu not found',
+                'message' => 'Permission not found',
             ], 404);
         } catch (\Exception $e) {
             DB::rollBack();
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed deleting App Menu',
+                'message' => 'Failed deleting Permission',
             ], 500);
         }
     }

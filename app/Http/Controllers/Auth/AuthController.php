@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\BusinessType;
-use App\Models\CompanyAddress;
-use App\Models\Company;
+use App\Models\Company\BusinessType;
+use App\Models\Company\CompanyAddress;
+use App\Models\Company\Company;
 use App\Models\CustomerRole;
-use App\Models\User;
+use App\Models\UserManagement\User;
 use App\Models\UserCustomerRole;
-use App\Models\UserRole;
+use App\Models\UserManagement\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -323,7 +323,7 @@ class AuthController extends Controller
     {
         $data = session('userLogged');
         unset($data['company']);
-        session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
+        session(['userLogged' => $data, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('home');
     }
@@ -343,7 +343,7 @@ class AuthController extends Controller
         if (Hash::check(implode('', $request->access_pin), session('userLogged')['user']['pin'])) {
             $dataSession = session()->all();
             session()->flush();
-            $dataSession['lifetime'] = now()->addMinutes(env('SESSION_LIFETIME', 120));
+            $dataSession['lifetime'] = now()->addMinutes((int)env('SESSION_LIFETIME', 120));
             session($dataSession);
             $status = 200;
             $message = ['message' => 'lifetime extended successfully'];

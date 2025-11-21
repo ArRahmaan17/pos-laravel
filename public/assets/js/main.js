@@ -12,7 +12,7 @@ let menu, animate;
 
   let layoutMenuEl = document.querySelectorAll('#layout-menu');
   layoutMenuEl.forEach(function (element) {
-    menu = new Menu(element, {
+    menu = new Permission(element, {
       orientation: 'vertical',
       closeChildren: false
     });

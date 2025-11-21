@@ -182,7 +182,7 @@ REDIS_TTL=
 - **Developer**: System development and maintenance
 
 ### User Permissions
-- Menu access control
+- Permission access control
 - Feature-level permissions
 - Data access restrictions
 - Action-based permissions

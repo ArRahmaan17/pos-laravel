@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Models\Company;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class CompanyAddress extends Model
+{
+    use HasFactory;
+    use SoftDeletes;
+
+    protected $fillable = ['company_id', 'place', 'address', 'city', 'province', 'zip_code'];
+}

@@ -1,11 +1,6 @@
 /.phpunit.cache
 /node_modules
 /public/build
-/public/cp
-/public/customer-product
-/public/temp-customer-product
-/public/customer-profile-picture
-/public/customer-task-evidence/*/*
 /public/hot
 /public/storage
 /storage/*.key
@@ -27,3 +22,4 @@ yarn-error.log
 pint.json
 composer.lock
 public/resources/companies/*/
+run-tests.sh

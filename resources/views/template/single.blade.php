@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="assets/"
-    data-template="vertical-menu-template-free">
+    data-template="vertical-menu-template">
 
 <head>
     <meta charset="utf-8" />
@@ -8,12 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="{{ env('APP_NAME') }}" name="description" />
     <meta content="{{ env('APP_AUTHOR') }}" name="author" />
-    <title>{{ env('APP_NAME') }} - @yield('title')</title>
+    <title>@yield('title') - {{ env('APP_NAME') }}</title>
     <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/favicon/apple-touch-icon.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('assets/img/favicon/favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('assets/img/favicon/favicon-16x16.png') }}">
-    <link rel="manifest" href="{{ asset('assets/img/favicon/site.webmanifest') }}">
+    @include('singleton.favico')
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

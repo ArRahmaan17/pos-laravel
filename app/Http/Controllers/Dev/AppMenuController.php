@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Dev;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppMenu;
+use App\Models\UserManagement\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -16,18 +16,18 @@ class AppMenuController extends Controller
     public function index()
     {
         $routes = Route::getRoutes()->getRoutesByMethod()['GET'];
-        $menus = AppMenu::orderBy('parent', 'asc')->get();
+        $menus = Permission::orderBy('parent', 'asc')->get();
 
-        return view('dev.app-menu', compact('routes', 'menus'));
+        return view('dev.permission', compact('routes', 'menus'));
     }
 
     public function dataTable(Request $request)
     {
-        $totalData = AppMenu::orderBy('id', 'asc')
+        $totalData = Permission::orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = AppMenu::select('*');
+            $assets = Permission::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -38,7 +38,7 @@ class AppMenuController extends Controller
             }
             $assets = $assets->get();
         } else {
-            $assets = AppMenu::select('*')
+            $assets = Permission::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
 
@@ -51,7 +51,7 @@ class AppMenuController extends Controller
             }
             $assets = $assets->get();
 
-            $totalFiltered = AppMenu::select('*')
+            $totalFiltered = Permission::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
 
@@ -66,8 +66,8 @@ class AppMenuController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['place'] = $item->place;
-            $row['child'] = AppMenu::getChildMenu($item->id);
-            $row['action'] = "<button class='btn btn-icon btn-success parent' data-app-menu='".$item->id."' ><i class='bx bx-plus' ></i></button><button class='btn btn-icon btn-warning edit' data-app-menu='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-app-menu='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['child'] = Permission::getChildMenu($item->id);
+            $row['action'] = "<button class='btn btn-icon btn-success parent' data-permission='".$item->id."' ><i class='bx bx-plus' ></i></button><button class='btn btn-icon btn-warning edit' data-permission='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-permission='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -95,7 +95,7 @@ class AppMenuController extends Controller
         try {
             $data = $request->except('_token', 'id');
             $data['dev_only'] = isset($data['dev_only']) ? 1 : 0;
-            AppMenu::create($data);
+            Permission::create($data);
             DB::commit();
             $response = ['message' => 'Resource create successfully'];
             $code = 200;
@@ -113,7 +113,7 @@ class AppMenuController extends Controller
      */
     public function show(string $id)
     {
-        $data = AppMenu::with(['child'])->find($id)->setHidden([]);
+        $data = Permission::with(['child'])->find($id)->setHidden([]);
         $response = ['message' => 'Showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -140,7 +140,7 @@ class AppMenuController extends Controller
         try {
             $data = $request->except('_token', 'id');
             $data['dev_only'] = isset($data['dev_only']) ? 1 : 0;
-            AppMenu::find($id)->update($data);
+            Permission::find($id)->update($data);
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -160,8 +160,8 @@ class AppMenuController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (empty(collect(AppMenu::with('child')->find($id)->child)->toArray())) {
-                AppMenu::destroy($id);
+            if (empty(collect(Permission::with('child')->find($id)->child)->toArray())) {
+                Permission::destroy($id);
                 DB::commit();
                 $response = ['message' => 'Deleting resource successfully'];
                 $code = 200;

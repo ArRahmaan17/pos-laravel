@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\AppMenu;
+use App\Models\UserManagement\Permission;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,13 +19,13 @@ class checkPageAuthorization
         if (getRole() == 'Developer') {
             return $next($request);
         } elseif (getRole() == 'Manager') {
-            if (AppMenu::where('route', $request->route()->action['as'])->where('dev_only', 0)->count() == 1) {
+            if (Permission::where('route', $request->route()->action['as'])->where('dev_only', 0)->count() == 1) {
                 return $next($request);
             } else {
                 return redirect()->route('home')->with('error', "You don't have permission to access ".implode(' > ', explode('.', implode('', explode('.index', $request->route()->action['as'])))));
             }
         } else {
-            if (AppMenu::join('customer_role_accessibilities as cra', 'permissions.id', '=', 'cra.menuId')->where('cra.role_id', session('userLogged')['role']['id'])->where('route', $request->route()->action['as'])->where('dev_only', 0)->count() == 1) {
+            if (Permission::join('customer_role_accessibilities as cra', 'permissions.id', '=', 'cra.menuId')->where('cra.role_id', session('userLogged')['role']['id'])->where('route', $request->route()->action['as'])->where('dev_only', 0)->count() == 1) {
                 return $next($request);
             } else {
                 return redirect()->route('home')->with('error', "You don't have permission to access ".implode(' > ', explode('.', implode('', explode('.index', $request->route()->action['as'])))));

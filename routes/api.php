@@ -100,7 +100,7 @@ Route::middleware(['auth:sanctum', 'throttle:100,1'])->group(function () {
             Route::get('/{id?}', [AppRoleController::class, 'show'])->name('show');
             Route::delete('/{id?}', [AppRoleController::class, 'destroy'])->name('delete');
         });
-        Route::prefix('app-menu')->name('app-menu.')->group(function () {
+        Route::prefix('permission')->name('permission.')->group(function () {
             Route::get('/', [AppMenuController::class, 'index'])->name('index');
             Route::post('/', [AppMenuController::class, 'store'])->name('store');
             Route::put('/{id?}', [AppMenuController::class, 'update'])->name('update');

@@ -154,7 +154,7 @@ customer_warehouses      # Warehouse locations
 transactions  # Sales transactions
 transaction_items  # Transaction details
 adjustment_products    # Pending products
-permissions               # Menu items
+permissions               # Permission items
 permissions               # System roles
 app_subscriptions       # Subscription plans
 ```
@@ -187,9 +187,9 @@ audit_logs              # Enhanced audit trail
 ### Interface Components
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│ Header (Logo, Navigation, User Menu)                       │
+│ Header (Logo, Navigation, User Permission)                       │
 ├─────────────────────────────────────────────────────────────┤
-│ Sidebar (Menu Items, Quick Actions)                        │
+│ Sidebar (Permission Items, Quick Actions)                        │
 ├─────────────────────────────────────────────────────────────┤
 │ Main Content Area                                           │
 │ ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐ │

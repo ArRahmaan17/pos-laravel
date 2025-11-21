@@ -46,7 +46,7 @@ class CustomerRole extends Model
     public function role_menus(): HasManyThrough
     {
         return $this->hasManyThrough(
-            AppMenu::class,
+            Permission::class,
             CustomerRoleAccessibility::class,
             'role_id',
             'id',
