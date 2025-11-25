@@ -10,25 +10,13 @@
         <div class="layout-container">
             <x-sidebar />
             <div class="layout-page">
-                <x-navbar/>
+                <x-navbar />
                 <div class="content-wrapper">
                     <div class="container-fluid flex-grow-1 container-p-y">
-                        @yield('content')
+                        @yield('content')`
                     </div>
 
-                    <footer class="content-footer footer bg-footer-theme">
-                        <div class="d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column align-items-end">
-                            <div class="mb-2 ms-4">
-                                ©
-                                <script>
-                                    document.write(new Date().getFullYear());
-                                </script>
-                                , made with ❤️ by
-                                <a href="https://www.rahmaanms.my.id" target="_blank" class="footer-link fw-bolder">Doglex's</a>
-                            </div>
-                        </div>
-                    </footer>
-                    <!-- / Footer -->
+                    <x-footer />
                     @if (env('APP_SUBS') == 'ON' && in_array(getRole(), ['Developer', 'Manager']))
                         <div class="modal fade" id="AppSubscriptionModal" tabindex="-1" aria-modal="true" role="dialog" data-bs-backdrop="static"
                             data-bs-keyboard="false">
@@ -113,8 +101,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade" id="SubscriptionProcessModal" tabindex="-1" aria-modal="true" role="dialog"
-                            data-bs-backdrop="static" data-bs-keyboard="false">
+                        <div class="modal fade" id="SubscriptionProcessModal" tabindex="-1" aria-modal="true" role="dialog" data-bs-backdrop="static"
+                            data-bs-keyboard="false">
                             <div class="modal-dialog modal-xl" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header m-0">
@@ -129,8 +117,8 @@
                                                         <div class="form-check border border-3 border-secondary rounded">
                                                             <label class="form-check-label d-flex gap-4 align-items-center px-3"
                                                                 for="customPaymentMethod1">
-                                                                <input name="payment-method" class="form-check-input" type="radio"
-                                                                    value="credit-card" id="customPaymentMethod1">
+                                                                <input name="payment-method" class="form-check-input" type="radio" value="credit-card"
+                                                                    id="customPaymentMethod1">
                                                                 <span class="col-11 d-flex justify-content-start align-items-center">
                                                                     <i class='bx bx-qr-scan h1 pt-3'></i>
                                                                     <span class="ms-4 fw-bold text-heading">Qris</span>

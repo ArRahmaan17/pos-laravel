@@ -8,7 +8,7 @@ use App\Models\AppSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class AppSubscriptionController extends Controller
+class SubscriptionController extends Controller
 {
     /**
      * Display a listing of the resource.

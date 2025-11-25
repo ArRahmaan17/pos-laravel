@@ -3,31 +3,27 @@
 namespace App\Http\Controllers\Dev;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserManagement\Permission;
+use App\Models\ProductWeight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
 
-class AppMenuController extends Controller
+class ProductUnitController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $routes = Route::getRoutes()->getRoutesByMethod()['GET'];
-        $menus = Permission::orderBy('parent', 'asc')->get();
-
-        return view('dev.permission', compact('routes', 'menus'));
+        return view('dev.product-unit');
     }
 
     public function dataTable(Request $request)
     {
-        $totalData = Permission::orderBy('id', 'asc')
+        $totalData = ProductWeight::orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = Permission::select('*');
+            $assets = ProductWeight::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -38,9 +34,9 @@ class AppMenuController extends Controller
             }
             $assets = $assets->get();
         } else {
-            $assets = Permission::select('*')
+            $assets = ProductWeight::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
@@ -51,9 +47,9 @@ class AppMenuController extends Controller
             }
             $assets = $assets->get();
 
-            $totalFiltered = Permission::select('*')
+            $totalFiltered = ProductWeight::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
@@ -65,9 +61,8 @@ class AppMenuController extends Controller
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
-            $row['place'] = $item->place;
-            $row['child'] = Permission::getChildMenu($item->id);
-            $row['action'] = "<button class='btn btn-icon btn-success parent' data-permission='".$item->id."' ><i class='bx bx-plus' ></i></button><button class='btn btn-icon btn-warning edit' data-permission='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-permission='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['description'] = $item->description;
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-role='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -87,22 +82,18 @@ class AppMenuController extends Controller
     {
         DB::beginTransaction();
         $request->validate([
-            'name' => 'required|min:2|max:20|unique:permissions,name',
-            'route' => 'required',
-            'icon' => 'required',
-            'parent' => 'required',
+            'name' => 'required|min:2|max:10|unique:product_weights,name',
+            'description' => 'required|min:6|max:100',
         ]);
         try {
-            $data = $request->except('_token', 'id');
-            $data['dev_only'] = isset($data['dev_only']) ? 1 : 0;
-            Permission::create($data);
+            ProductWeight::create($request->except('_token', 'id'));
             DB::commit();
-            $response = ['message' => 'Resource create successfully'];
+            $response = ['message' => 'App Good Unit create successfully'];
             $code = 200;
         } catch (\Throwable $th) {
             DB::rollBack();
             $code = 422;
-            $response = ['message' => 'Failed creating resource'];
+            $response = ['message' => 'Failed creating App Good Unit'];
         }
 
         return response()->json($response, $code);
@@ -113,11 +104,11 @@ class AppMenuController extends Controller
      */
     public function show(string $id)
     {
-        $data = Permission::with(['child'])->find($id)->setHidden([]);
-        $response = ['message' => 'Showing resource successfully', 'data' => $data];
+        $data = ProductWeight::find($id);
+        $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
-            $response = ['message' => 'Failed showing resource', 'data' => $data];
+            $response = ['message' => 'failed showing resource', 'data' => $data];
             $code = 404;
         }
 
@@ -131,16 +122,12 @@ class AppMenuController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'name' => 'required|min:2|max:15|unique:permissions,name,'.$id,
-            'route' => 'required',
-            'icon' => 'required',
-            'parent' => 'required',
+            'name' => 'required|unique:product_weights,name,'.$id,
+            'description' => 'required|min:6|max:100',
         ]);
         DB::beginTransaction();
         try {
-            $data = $request->except('_token', 'id');
-            $data['dev_only'] = isset($data['dev_only']) ? 1 : 0;
-            Permission::find($id)->update($data);
+            ProductWeight::find($id)->update($request->except('_token', 'id'));
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -160,10 +147,10 @@ class AppMenuController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (empty(collect(Permission::with('child')->find($id)->child)->toArray())) {
-                Permission::destroy($id);
+            if (empty(collect(ProductWeight::with('role_users')->find($id)->role_users)->toArray())) {
+                ProductWeight::destroy($id);
                 DB::commit();
-                $response = ['message' => 'Deleting resource successfully'];
+                $response = ['message' => 'deleting resource successfully'];
                 $code = 200;
             } else {
                 $response = ['message' => "Failed deleting resource. This data is still being used in other data. You can't delete it until it's removed from those data"];

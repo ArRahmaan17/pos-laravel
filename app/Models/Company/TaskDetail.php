@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CustomerCompanyTaskDetail extends Model
+class TaskDetail extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -16,6 +16,6 @@ class CustomerCompanyTaskDetail extends Model
 
     public function master(): HasOne
     {
-        return $this->hasOne(CustomerCompanyMasterTask::class, 'id', 'masterId');
+        return $this->hasOne(MasterTask::class, 'id', 'masterId');
     }
 }

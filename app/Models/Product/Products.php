@@ -15,7 +15,7 @@ class CustomerCompanyGood extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name', 'price', 'buy_price', 'stock', 'picture', 'company_id', 'unit_id', 'category_id', 'status'];
+    protected $fillable = ['name', 'price', 'buy_price', 'stock', 'picture', 'company_id', 'weight_id', 'category_id', 'status'];
 
     protected $defaultSearchColumns = ['name', 'price', 'buy_price', 'stock', 'status'];
 
@@ -27,7 +27,7 @@ class CustomerCompanyGood extends Model
 
     public function unit(): HasOne
     {
-        return $this->hasOne(AppGoodUnit::class, 'id', 'unit_id');
+        return $this->hasOne(ProductWeight::class, 'id', 'weight_id');
     }
 
     public function type(): HasOne

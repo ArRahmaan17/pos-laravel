@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\Dev\AppGoodUnitController;
-use App\Http\Controllers\Api\Dev\AppMenuController;
-use App\Http\Controllers\Api\Dev\AppRoleController;
-use App\Http\Controllers\Api\Dev\AppSubscriptionController;
+use App\Http\Controllers\Api\Dev\ProductUnitController;
+use App\Http\Controllers\Api\Dev\PermissionController;
+use App\Http\Controllers\Api\Dev\RoleController;
+use App\Http\Controllers\Api\Dev\SubscriptionController;
 use App\Http\Controllers\Api\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Api\Man\CustomerProductTypeController;
 use App\Http\Controllers\Api\Man\CustomerTemporaryProductController;
@@ -21,9 +21,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-// Public routes (no authentication required)
-Route::middleware('throttle:100,1')->group(function () {
+Route::middleware('throttle:60,1')->group(function () {
     Route::get('/', function () {
         return response()->json([
             'message' => 'Welcome to the API',
@@ -38,8 +36,7 @@ Route::middleware('throttle:100,1')->group(function () {
     });
 });
 
-// Protected routes (authentication required)
-Route::middleware(['auth:sanctum', 'throttle:100,1'])->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::prefix('auth')->name('auth.')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
         Route::post('/logout-all', [AuthController::class, 'logoutAll'])->name('api.logout-all');
@@ -92,37 +89,37 @@ Route::middleware(['auth:sanctum', 'throttle:100,1'])->group(function () {
     });
 
     Route::prefix('dev')->name('dev.')->group(function () {
-        Route::prefix('app-role')->name('app-role.')->group(function () {
-            Route::get('/', [AppRoleController::class, 'index'])->name('index');
-            Route::post('/', [AppRoleController::class, 'store'])->name('store');
-            Route::put('/{id?}', [AppRoleController::class, 'update'])->name('update');
-            Route::get('/data-table', [AppRoleController::class, 'dataTable'])->name('data-table');
-            Route::get('/{id?}', [AppRoleController::class, 'show'])->name('show');
-            Route::delete('/{id?}', [AppRoleController::class, 'destroy'])->name('delete');
+        Route::prefix('role')->name('role.')->group(function () {
+            Route::get('/', [RoleController::class, 'index'])->name('index');
+            Route::post('/', [RoleController::class, 'store'])->name('store');
+            Route::put('/{id?}', [RoleController::class, 'update'])->name('update');
+            Route::get('/data-table', [RoleController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [RoleController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [RoleController::class, 'destroy'])->name('delete');
         });
         Route::prefix('permission')->name('permission.')->group(function () {
-            Route::get('/', [AppMenuController::class, 'index'])->name('index');
-            Route::post('/', [AppMenuController::class, 'store'])->name('store');
-            Route::put('/{id?}', [AppMenuController::class, 'update'])->name('update');
-            Route::get('/data-table', [AppMenuController::class, 'dataTable'])->name('data-table');
-            Route::get('/{id?}', [AppMenuController::class, 'show'])->name('show');
-            Route::delete('/{id?}', [AppMenuController::class, 'destroy'])->name('delete');
+            Route::get('/', [PermissionController::class, 'index'])->name('index');
+            Route::post('/', [PermissionController::class, 'store'])->name('store');
+            Route::put('/{id?}', [PermissionController::class, 'update'])->name('update');
+            Route::get('/data-table', [PermissionController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [PermissionController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [PermissionController::class, 'destroy'])->name('delete');
         });
-        Route::prefix('app-good-unit')->name('app-good-unit.')->group(function () {
-            Route::get('/', [AppGoodUnitController::class, 'index'])->name('index');
-            Route::post('/', [AppGoodUnitController::class, 'store'])->name('store');
-            Route::put('/{id?}', [AppGoodUnitController::class, 'update'])->name('update');
-            Route::get('/data-table', [AppGoodUnitController::class, 'dataTable'])->name('data-table');
-            Route::get('/{id?}', [AppGoodUnitController::class, 'show'])->name('show');
-            Route::delete('/{id?}', [AppGoodUnitController::class, 'destroy'])->name('delete');
+        Route::prefix('product-unit')->name('product-unit.')->group(function () {
+            Route::get('/', [ProductUnitController::class, 'index'])->name('index');
+            Route::post('/', [ProductUnitController::class, 'store'])->name('store');
+            Route::put('/{id?}', [ProductUnitController::class, 'update'])->name('update');
+            Route::get('/data-table', [ProductUnitController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [ProductUnitController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [ProductUnitController::class, 'destroy'])->name('delete');
         });
-        Route::prefix('app-subscription')->name('app-subscription.')->group(function () {
-            Route::get('/', [AppSubscriptionController::class, 'index'])->name('index');
-            Route::post('/', [AppSubscriptionController::class, 'store'])->name('store');
-            Route::put('/{id?}', [AppSubscriptionController::class, 'update'])->name('update');
-            Route::get('/data-table', [AppSubscriptionController::class, 'dataTable'])->name('data-table');
-            Route::get('/{id?}', [AppSubscriptionController::class, 'show'])->name('show');
-            Route::delete('/{id?}', [AppSubscriptionController::class, 'destroy'])->name('delete');
+        Route::prefix('subscription')->name('subscription.')->group(function () {
+            Route::get('/', [SubscriptionController::class, 'index'])->name('index');
+            Route::post('/', [SubscriptionController::class, 'store'])->name('store');
+            Route::put('/{id?}', [SubscriptionController::class, 'update'])->name('update');
+            Route::get('/data-table', [SubscriptionController::class, 'dataTable'])->name('data-table');
+            Route::get('/{id?}', [SubscriptionController::class, 'show'])->name('show');
+            Route::delete('/{id?}', [SubscriptionController::class, 'destroy'])->name('delete');
         });
     });
 });

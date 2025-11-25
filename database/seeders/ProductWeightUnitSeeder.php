@@ -9,7 +9,7 @@ class ProductWeightUnitSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('product_weight_units')->insert([
+        DB::table('product_weights')->insert([
             [
                 'id' => 1,
                 'name' => 'Default Weight',

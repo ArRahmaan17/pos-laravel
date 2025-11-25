@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="app-brand justify-content-center">
-                        <a href="{{ route('home') }}" class="app-brand-link gap-2">
+                        <a href="{{ route('dashboard.index') }}" class="app-brand-link gap-2">
                             <span class="app-brand-logo demo">
                                <img rel="preload" height="100px" src="{{ asset('assets/img/icons/lock.webp') }}" />
                             </span>
@@ -59,7 +59,7 @@
                         <button class="btn btn-primary d-grid w-100 mb-2">Activate</button>
                         @if (!empty(session('userLogged')['user']['pin']))
                             <div class="text-center">
-                                <a href="{{ route('home') }}" class="d-flex align-items-center justify-content-center">
+                                <a href="{{ route('dashboard.index') }}" class="d-flex align-items-center justify-content-center">
                                     <i class="bx bx-chevron-left scaleX-n1-rtl bx-sm"></i>
                                     Back to home
                                 </a>

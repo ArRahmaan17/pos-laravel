@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerCompanyMasterTask;
-use App\Models\CustomerCompanyTaskDetail;
+use App\Models\MasterTask;
+use App\Models\TaskDetail;
 use App\Models\CustomerRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -25,11 +25,11 @@ class CustomerCompanyMasterTaskController extends Controller
     public function dataTable(Request $request)
     {
         $where = [['company_id', '=', session('userLogged')['company']['id']]];
-        $totalData = CustomerCompanyMasterTask::with('role')->where($where)->orderBy('id', 'asc')
+        $totalData = MasterTask::with('role')->where($where)->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompanyMasterTask::with('role')->select('*');
+            $assets = MasterTask::with('role')->select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -40,7 +40,7 @@ class CustomerCompanyMasterTaskController extends Controller
             }
             $assets = $assets->where($where)->get();
         } else {
-            $assets = CustomerCompanyMasterTask::with('role')->select('*')
+            $assets = MasterTask::with('role')->select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -53,7 +53,7 @@ class CustomerCompanyMasterTaskController extends Controller
             }
             $assets = $assets->where($where)->get();
 
-            $totalFiltered = CustomerCompanyMasterTask::with('role')->select('*')
+            $totalFiltered = MasterTask::with('role')->select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -100,7 +100,7 @@ class CustomerCompanyMasterTaskController extends Controller
         try {
             $data = $request->except('_token');
             $data['company_id'] = session('userLogged')['company']['id'];
-            CustomerCompanyMasterTask::create($data);
+            MasterTask::create($data);
             DB::commit();
             $status = 200;
             $message = ['message' => 'resources created successfully'];
@@ -118,7 +118,7 @@ class CustomerCompanyMasterTaskController extends Controller
      */
     public function show(string $id)
     {
-        $data = CustomerCompanyMasterTask::where('company_id', session('userLogged')['company']['id'])->find($id);
+        $data = MasterTask::where('company_id', session('userLogged')['company']['id'])->find($id);
         $status = 200;
         $message = ['message' => 'showing resources successfully', 'data' => $data];
         if (! $data) {
@@ -145,7 +145,7 @@ class CustomerCompanyMasterTaskController extends Controller
         try {
             $data = $request->except('_token');
             $data['company_id'] = session('userLogged')['company']['id'];
-            CustomerCompanyMasterTask::find($id)->update($data);
+            MasterTask::find($id)->update($data);
             DB::commit();
             $status = 200;
             $message = ['message' => 'resources updated successfully'];
@@ -165,12 +165,12 @@ class CustomerCompanyMasterTaskController extends Controller
     {
         $status = 422;
         $message = ['message' => 'failed deleting resources'];
-        if (! CustomerCompanyTaskDetail::where('masterId', $id)->exists()) {
+        if (! TaskDetail::where('masterId', $id)->exists()) {
             $status = 200;
             $message = ['message' => 'resources deleted successfully'];
             DB::beginTransaction();
             try {
-                CustomerCompanyMasterTask::find($id)->delete();
+                MasterTask::find($id)->delete();
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();

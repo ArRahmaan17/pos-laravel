@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_weight_units', function (Blueprint $table) {
+        Schema::create('product_weights', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('description');
@@ -38,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_weight_units');
+        Schema::dropIfExists('product_weights');
     }
 };

@@ -61,7 +61,7 @@ class AuthController extends Controller
         session()->flush();
         session(['userLogged' => $data, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
 
-        return redirect()->route('home');
+        return redirect()->route('dashboard.index');
     }
 
     public function loginAs($id)
@@ -213,7 +213,7 @@ class AuthController extends Controller
             }
             DB::commit();
 
-            return redirect()->route('home');
+            return redirect()->route('dashboard.index');
         } catch (\Throwable $th) {
             DB::rollBack();
 
@@ -225,7 +225,7 @@ class AuthController extends Controller
     {
         session()->flush();
 
-        return redirect()->route('home');
+        return redirect()->route('dashboard.index');
     }
 
     public function customerCompany()
@@ -316,7 +316,7 @@ class AuthController extends Controller
         session()->flush();
         session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
 
-        return redirect()->route('home')->with($message);
+        return redirect()->route('dashboard.index')->with($message);
     }
 
     public function changeCompany()
@@ -325,7 +325,7 @@ class AuthController extends Controller
         unset($data['company']);
         session(['userLogged' => $data, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
 
-        return redirect()->route('home');
+        return redirect()->route('dashboard.index');
     }
 
     public function unlockScreen(Request $request)

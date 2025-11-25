@@ -5,7 +5,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="app-brand justify-content-center">
-                        <a href="{{ route('home') }}" class="app-brand-link gap-2">
+                        <a href="{{ route('dashboard.index') }}" class="app-brand-link gap-2">
                             <span class="app-brand-logo demo">
                                 <img rel='preload' src="{{ asset('assets/img/favicon/favicon.ico') }}" />
                             </span>
@@ -13,7 +13,7 @@
                     </div>
                     <h4 class="mb-2 text-center">Forgot Password? 🔒</h4>
                     <p class="mb-4">Enter your phone number and we'll send you instructions to reset your password</p>
-                    <form id="formAuthentication" class="mb-3" action="{{ route('home') }}" method="POST">
+                    <form id="formAuthentication" class="mb-3" action="{{ route('dashboard.index') }}" method="POST">
                         <div class="mb-3">
                             <label for="phone number" class="form-label">Phone number</label>
                             <input type="text" class="form-control phone_number" id="phone number" name="phone number"

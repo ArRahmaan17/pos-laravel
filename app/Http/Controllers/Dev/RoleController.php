@@ -3,28 +3,27 @@
 namespace App\Http\Controllers\Dev;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppDetailSubscription;
-use App\Models\AppSubscription;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class AppSubscriptionController extends Controller
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('dev.app-subscription');
+        return view('dev.role');
     }
 
     public function dataTable(Request $request)
     {
-        $totalData = AppSubscription::with('planFeature')->orderBy('id', 'asc')
+        $totalData = Role::orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = AppSubscription::with('planFeature')->select('*');
+            $assets = Role::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -35,7 +34,7 @@ class AppSubscriptionController extends Controller
             }
             $assets = $assets->get();
         } else {
-            $assets = AppSubscription::with('planFeature')->select('*')
+            $assets = Role::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -48,7 +47,7 @@ class AppSubscriptionController extends Controller
             }
             $assets = $assets->get();
 
-            $totalFiltered = AppSubscription::with('planFeature')->select('*')
+            $totalFiltered = Role::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -63,9 +62,7 @@ class AppSubscriptionController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['description'] = $item->description;
-            $row['price'] = $item->price;
-            $row['plans'] = $item->planFeature;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-app-subscription='".$item->id."' ><i class='bx bx-pencil' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-role='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -83,40 +80,20 @@ class AppSubscriptionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|min:5|max:40|unique:app_subscriptions,name',
-            'description' => 'required|min:6|max:40',
-            'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
-            'details' => 'required|array',
-            'details.*.text_feature' => 'required|string',
-            'details.*.category' => 'required|in:file,logic,custom_menu,transaction,data,custom_report,full_access_report',
-            'details.*.amount' => 'required_if:category,file|required_if:category,transaction|required_if:category,data|regex:/(\d{1,3}(?:\.\d{3})*)/i',
-            'details.*.status' => 'required_if:category,logic|required_if:category,custom_menu|required_if:category,custom_report|required_if:category,full_access_report|in:0,1',
-        ]);
         DB::beginTransaction();
+        $request->validate([
+            'name' => 'required|min:2|max:10|unique:permissions,name',
+            'description' => 'required|min:6|max:100',
+        ]);
         try {
-            $data = $request->except('_token', 'id', 'details');
-            $data['price'] = intval(convertStringToNumber($data['price']));
-            $subscription = AppSubscription::create($data);
-            $subs_feature = array_map(function ($detail) use ($subscription) {
-                return [
-                    'subscriptionId' => $subscription->id,
-                    'text_feature' => $detail['text_feature'],
-                    'category' => $detail['category'],
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                    'amount' => ! empty($detail['amount']) ? intval(convertStringToNumber($detail['amount'])) : null,
-                    'status' => ! empty($detail['status']) ? intval($detail['status']) : null,
-                ];
-            }, $request->details);
-            AppDetailSubscription::insert($subs_feature);
-            $response = ['message' => 'creating resource successfully'];
-            $code = 200;
+            Role::create($request->except('_token', 'id'));
             DB::commit();
+            $response = ['message' => 'App Role create successfully'];
+            $code = 200;
         } catch (\Throwable $th) {
             DB::rollBack();
-            $response = ['message' => 'failed creating resource'];
             $code = 422;
+            $response = ['message' => 'Failed creating App Role'];
         }
 
         return response()->json($response, $code);
@@ -127,7 +104,7 @@ class AppSubscriptionController extends Controller
      */
     public function show(string $id)
     {
-        $data = AppSubscription::with('planFeature')->find($id);
+        $data = Role::find($id);
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -144,26 +121,19 @@ class AppSubscriptionController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required|min:6|max:40',
-            'description' => 'required|min:6|max:40',
-            'price' => 'required|numeric|max_digits:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
-            'planFeature' => 'required|array',
+            'id' => 'required',
+            'name' => 'required|unique:permissions,name,'.$id,
+            'description' => 'required|min:6|max:100',
         ]);
         DB::beginTransaction();
         try {
-            $data = $request->except('_token', 'id', 'planFeature');
-            AppSubscription::where('id', $id)->update($data);
-            $subs_feature = array_map(function ($data) use ($id) {
-                return ['subscriptionId' => $id, 'planFeature' => $data, 'created_at' => now(), 'updated_at' => now()];
-            }, $request->planFeature);
-            AppDetailSubscription::where('subscriptionId', $id)->delete();
-            AppDetailSubscription::insert($subs_feature);
-            $response = ['message' => 'updating resource successfully'];
+            Role::find($id)->update($request->except('_token', 'id'));
+            $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            $response = ['message' => 'failed updating resource'];
+            $response = ['message' => 'Failed updating resource'];
             $code = 422;
         }
 
@@ -177,11 +147,15 @@ class AppSubscriptionController extends Controller
     {
         DB::beginTransaction();
         try {
-            AppSubscription::where('id', $id)->delete();
-            AppDetailSubscription::where('subscriptionId', $id)->delete();
-            $response = ['message' => 'deleting resource successfully'];
-            $code = 200;
-            DB::commit();
+            if (empty(collect(Role::with('role_users')->find($id)->role_users)->toArray())) {
+                Role::destroy($id);
+                DB::commit();
+                $response = ['message' => 'deleting resource successfully'];
+                $code = 200;
+            } else {
+                $response = ['message' => "Failed deleting resource. This data is still being used in other data. You can't delete it until it's removed from those data"];
+                $code = 422;
+            }
         } catch (\Throwable $th) {
             DB::rollBack();
             $response = ['message' => 'failed deleting resource'];

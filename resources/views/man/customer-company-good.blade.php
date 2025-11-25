@@ -92,8 +92,8 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="unit_id" class="form-label">Unit</label>
-                                <select class="form-control select2" name="unit_id" id="unit_id">
+                                <label for="weight_id" class="form-label">Unit</label>
+                                <select class="form-control select2" name="weight_id" id="weight_id">
                                     <option value="">Not selected</option>
                                     @foreach ($units as $unit)
                                         <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->description }})
@@ -213,8 +213,8 @@
                         formElement.find('[name=price]')
                             .val(parseInt(response.data.price))
                             .trigger('change');
-                        formElement.find('[name=unit_id]')
-                            .val(response.data.unit_id)
+                        formElement.find('[name=weight_id]')
+                            .val(response.data.weight_id)
                             .trigger('change');
                         formElement.find('[name=category_id]')
                             .val(response.data.category_id)

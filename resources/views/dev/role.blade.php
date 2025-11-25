@@ -9,13 +9,13 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-app-role" data-bs-toggle="modal" data-bs-target="#modal-app-role">Add <i
+                        <button class="btn btn-success" id="add-role" data-bs-toggle="modal" data-bs-target="#modal-role">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table-app-role">
+                        <table class="table" id="table-role">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-app-role" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modal-role" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -40,7 +40,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-app-role">
+                    <form action="#" id="form-role">
                         @csrf
                         <input type="hidden" name="id">
                         <div class="row">
@@ -61,9 +61,9 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-app-role" class="btn btn-success">Save
+                    <button type="button" id="save-role" class="btn btn-success">Save
                         changes</button>
-                    <button type="button" id="edit-app-role" class="btn btn-warning d-none">Update
+                    <button type="button" id="edit-role" class="btn btn-warning d-none">Update
                         changes</button>
                 </div>
             </div>
@@ -80,26 +80,26 @@
         function actionData() {
             $('.edit').click(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("app-role");
-                $("#edit-app-role").data("app-role", idAppRole);
+                let idAppRole = $(this).data("role");
+                $("#edit-role").data("role", idAppRole);
                 if (window.dataTableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-app-role tbody').find('tr').removeClass('selected');
+                    $('#table-role tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
                 var data = window.dataTableAppRole.rows('.selected').data()[0];
 
-                $('#modal-app-role').modal('show');
-                $('#modal-app-role').find('.modal-title').html(`Edit @yield('title')`);
-                $('#save-app-role').addClass('d-none');
-                $('#edit-app-role').removeClass('d-none');
+                $('#modal-role').modal('show');
+                $('#modal-role').find('.modal-title').html(`Edit @yield('title')`);
+                $('#save-role').addClass('d-none');
+                $('#edit-role').removeClass('d-none');
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('dev.app-role.show') }}/" + idAppRole,
+                    url: "{{ route('dev.role.show') }}/" + idAppRole,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-app-role').find("form")
+                        $('#modal-role').find("form")
                             .find('input, textarea').map(function(index, element) {
                                 if (response.data[element.name]) {
                                     $(`[name=${element.name}]`).val(response.data[element
@@ -109,7 +109,7 @@
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-app-role-action',
+                            id: 'alert-role-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -122,10 +122,10 @@
 
             $('.delete').click(function() {
                 if (window.dataTableAppRole.rows('.selected').data().length == 0) {
-                    $('#table-app-role tbody').find('tr').removeClass('selected');
+                    $('#table-role tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("app-role");
+                let idAppRole = $(this).data("role");
                 var data = window.dataTableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
@@ -147,7 +147,7 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('dev.app-role.delete') }}/" +
+                                url: "{{ route('dev.role.delete') }}/" +
                                     idAppRole,
                                 data: {
                                     _token: `{{ csrf_token() }}`,
@@ -155,7 +155,7 @@
                                 dataType: "json",
                                 success: function(response) {
                                     iziToast.success({
-                                        id: 'alert-app-role-form',
+                                        id: 'alert-role-form',
                                         title: 'Success',
                                         message: response.message,
                                         position: 'topRight',
@@ -166,7 +166,7 @@
                                 },
                                 error: function(error) {
                                     iziToast.error({
-                                        id: 'alert-app-role-action',
+                                        id: 'alert-role-action',
                                         title: 'Error',
                                         message: error.responseJSON.message,
                                         position: 'topRight',
@@ -186,8 +186,8 @@
             });
         }
         $(function() {
-            window.dataTableAppRole = $("#table-app-role").DataTable({
-                ajax: "{{ route('dev.app-role.data-table') }}",
+            window.dataTableAppRole = $("#table-role").DataTable({
+                ajax: "{{ route('dev.role.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -234,17 +234,17 @@
             window.dataTableAppRole.on('draw.dt', function() {
                 actionData();
             });
-            $('#save-app-role').click(function() {
-                let data = serializeObject($('#form-app-role'));
+            $('#save-role').click(function() {
+                let data = serializeObject($('#form-role'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('dev.app-role.store') }}`,
+                    url: `{{ route('dev.role.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-app-role').modal('hide')
+                        $('#modal-role').modal('hide')
                         iziToast.success({
-                            id: 'alert-app-role-form',
+                            id: 'alert-role-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -255,14 +255,14 @@
 
                     },
                     error: function(error) {
-                        $('#modal-app-role .is-invalid').removeClass('is-invalid')
+                        $('#modal-role .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-app-role').find('[name=' + indexInArray +
+                            $('#modal-role').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-app-role-form',
+                            id: 'alert-role-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -272,17 +272,17 @@
                     }
                 });
             });
-            $('#edit-app-role').click(function() {
-                let data = serializeObject($('#form-app-role'));
+            $('#edit-role').click(function() {
+                let data = serializeObject($('#form-role'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('dev.app-role.update') }}/${data.id}`,
+                    url: `{{ route('dev.role.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-app-role').modal('hide')
+                        $('#modal-role').modal('hide')
                         iziToast.success({
-                            id: 'alert-app-role-form',
+                            id: 'alert-role-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -292,14 +292,14 @@
                         window.dataTableAppRole.ajax.reload()
                     },
                     error: function(error) {
-                        $('#modal-app-role .is-invalid').removeClass('is-invalid')
+                        $('#modal-role .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-app-role').find('[name=' + indexInArray +
+                            $('#modal-role').find('[name=' + indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-app-role-form',
+                            id: 'alert-role-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -309,13 +309,13 @@
                     }
                 });
             });
-            $('#modal-app-role').on('hidden.bs.modal', function() {
+            $('#modal-role').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
-                $('#save-app-role').removeClass('d-none');
-                $('#edit-app-role').addClass('d-none');
-                $('#modal-app-role .is-invalid').removeClass('is-invalid')
-                $('#table-app-role tbody').find('tr').removeClass('selected');
+                $('#save-role').removeClass('d-none');
+                $('#edit-role').addClass('d-none');
+                $('#modal-role .is-invalid').removeClass('is-invalid')
+                $('#table-role tbody').find('tr').removeClass('selected');
             });
         });
     </script>

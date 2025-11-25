@@ -18,7 +18,7 @@ class ProductSeeder extends Seeder
                 'picture' => str_replace(public_path('/'), '', Storage::disk('default')->path('product/default-product.png')),
                 'price' => random_int(1000, 10000),
                 'buy_price' => random_int(1000, 10000),
-                'unit_id' => 1,
+                'weight_id' => 1,
                 'category_id' => 1,
                 'company_id' => 1,
                 'created_by' => 1

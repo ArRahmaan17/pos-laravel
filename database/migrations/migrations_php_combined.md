@@ -779,10 +779,10 @@ return new class extends Migration
             $table->string('picture');
             $table->decimal('price', 12, 2);
             $table->decimal('buy_price', 12, 2);
-            $table->bigInteger('unit_id')
+            $table->bigInteger('weight_id')
                 ->unsigned();
-            $table->foreign('unit_id')
-                ->on('product_weight_units')
+            $table->foreign('weight_id')
+                ->on('product_weights')
                 ->references('id')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
@@ -806,7 +806,7 @@ return new class extends Migration
             $table->bigInteger('deleted_by')->unsigned()->nullable();
             $table->foreign('deleted_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->enum('status', ['draft', 'archive', 'publish']);
-            $table->index(['name', 'code',  'category_id', 'unit_id', 'company_id']);
+            $table->index(['name', 'code',  'category_id', 'weight_id', 'company_id']);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -1264,7 +1264,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_weight_units', function (Blueprint $table) {
+        Schema::create('product_weights', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('description');
@@ -1291,7 +1291,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_weight_units');
+        Schema::dropIfExists('product_weights');
     }
 };
 ```

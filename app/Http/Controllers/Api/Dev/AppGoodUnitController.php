@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api\Dev;
 
 use App\Helpers\RedisHelper;
 use App\Http\Controllers\Controller;
-use App\Models\AppGoodUnit;
+use App\Models\ProductWeight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class AppGoodUnitController extends Controller
+class ProductUnitController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,11 +16,11 @@ class AppGoodUnitController extends Controller
     public function index()
     {
         try {
-            if (RedisHelper::exists('product_weight_units')) {
-                $appGoodUnits = json_decode(RedisHelper::get('product_weight_units'));
+            if (RedisHelper::exists('product_weights')) {
+                $appGoodUnits = json_decode(RedisHelper::get('product_weights'));
             } else {
-                $appGoodUnits = AppGoodUnit::orderBy('id', 'asc')->get();
-                RedisHelper::set('product_weight_units', json_encode($appGoodUnits));
+                $appGoodUnits = ProductWeight::orderBy('id', 'asc')->get();
+                RedisHelper::set('product_weights', json_encode($appGoodUnits));
             }
 
             return response()->json([
@@ -38,11 +38,11 @@ class AppGoodUnitController extends Controller
     public function dataTable(Request $request)
     {
         try {
-            $totalData = AppGoodUnit::orderBy('id', 'asc')->count();
+            $totalData = ProductWeight::orderBy('id', 'asc')->count();
             $totalFiltered = $totalData;
 
             if (empty($request['search']['value'])) {
-                $assets = AppGoodUnit::select('*');
+                $assets = ProductWeight::select('*');
 
                 if ($request['length'] != '-1') {
                     $assets->limit($request['length']);
@@ -55,7 +55,7 @@ class AppGoodUnitController extends Controller
                 }
                 $assets = $assets->get();
             } else {
-                $assets = AppGoodUnit::select('*')
+                $assets = ProductWeight::select('*')
                     ->where('name', 'like', '%'.$request['search']['value'].'%')
                     ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -70,7 +70,7 @@ class AppGoodUnitController extends Controller
                 }
                 $assets = $assets->get();
 
-                $totalFiltered = AppGoodUnit::select('*')
+                $totalFiltered = ProductWeight::select('*')
                     ->where('name', 'like', '%'.$request['search']['value'].'%')
                     ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -116,13 +116,13 @@ class AppGoodUnitController extends Controller
         DB::beginTransaction();
         try {
             $request->validate([
-                'name' => 'required|min:2|max:50|unique:product_weight_units,name',
+                'name' => 'required|min:2|max:50|unique:product_weights,name',
                 'description' => 'required|min:6|max:100',
             ]);
 
-            $appGoodUnit = AppGoodUnit::create($request->only(['name', 'description']));
+            $appGoodUnit = ProductWeight::create($request->only(['name', 'description']));
             DB::commit();
-            RedisHelper::del('product_weight_units');
+            RedisHelper::del('product_weights');
 
             return response()->json([
                 'success' => true,
@@ -153,7 +153,7 @@ class AppGoodUnitController extends Controller
     public function show($id)
     {
         try {
-            $appGoodUnit = AppGoodUnit::findOrFail($id);
+            $appGoodUnit = ProductWeight::findOrFail($id);
 
             return response()->json([
                 'success' => true,
@@ -179,14 +179,14 @@ class AppGoodUnitController extends Controller
     {
         DB::beginTransaction();
         try {
-            $appGoodUnit = AppGoodUnit::findOrFail($id);
+            $appGoodUnit = ProductWeight::findOrFail($id);
             $request->validate([
-                'name' => 'required|min:2|max:50|unique:product_weight_units,name,'.$id,
+                'name' => 'required|min:2|max:50|unique:product_weights,name,'.$id,
                 'description' => 'required|min:6|max:100',
             ]);
 
             $appGoodUnit->update($request->only(['name', 'description']));
-            RedisHelper::del('product_weight_units');
+            RedisHelper::del('product_weights');
             DB::commit();
 
             return response()->json([
@@ -226,9 +226,9 @@ class AppGoodUnitController extends Controller
     {
         DB::beginTransaction();
         try {
-            $appGoodUnit = AppGoodUnit::findOrFail($id);
+            $appGoodUnit = ProductWeight::findOrFail($id);
             $appGoodUnit->delete();
-            RedisHelper::del('product_weight_units');
+            RedisHelper::del('product_weights');
             DB::commit();
 
             return response()->json([

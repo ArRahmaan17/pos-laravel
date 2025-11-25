@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\AppGoodUnit;
+use App\Models\ProductWeight;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerProductType;
 use App\Models\CustomerTemporaryProduct;
@@ -19,7 +19,7 @@ class CustomerCompanyGoodController extends Controller
      */
     public function index()
     {
-        $units = AppGoodUnit::get();
+        $units = ProductWeight::get();
         $categories = CustomerProductType::with('category')->where('bussiness_id', session('userLogged')['company']['bussiness_id'])->get();
 
         return view('man.customer-company-good', compact('units', 'categories'));
@@ -73,8 +73,8 @@ class CustomerCompanyGoodController extends Controller
             $row['buy_price'] = $item->buy_price;
             $row['stock'] = $item->stock;
             $row['unit'] = $item->unit->name;
-            $row['unit_id'] = $item->unit->id;
-            $row['unit_id'] = $item->unit->id;
+            $row['weight_id'] = $item->unit->id;
+            $row['weight_id'] = $item->unit->id;
             $row['picture'] = $item->picture;
             $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
             $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
@@ -104,11 +104,11 @@ class CustomerCompanyGoodController extends Controller
             'buy_price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'status' => 'required|in:archive,draft,publish',
             'company_id' => 'required|exists:companies,id',
-            'unit_id' => 'required|exists:product_weight_units,id',
+            'weight_id' => 'required|exists:product_weights,id',
             'category_id' => 'required|exists:product_categories,id',
             'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ], [
-            'unit_id' => 'The unit field is required.',
+            'weight_id' => 'The unit field is required.',
             'category_id' => 'The type field is required.',
             'company_id' => 'The company field is required.',
         ]);
@@ -160,7 +160,7 @@ class CustomerCompanyGoodController extends Controller
                     'picture' => $value->picture,
                     'price' => $value->price,
                     'buy_price' => $value->buy_price,
-                    'unit_id' => $value->unit_id,
+                    'weight_id' => $value->weight_id,
                     'category_id' => $value->category_id,
                     'company_id' => $value->company_id,
                     'status' => $value->status,
@@ -187,7 +187,7 @@ class CustomerCompanyGoodController extends Controller
                 }
             }
             if (! empty($dataUpdate)) {
-                CustomerCompanyGood::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buy_price', 'unit_id']);
+                CustomerCompanyGood::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buy_price', 'weight_id']);
                 foreach ($dataUpdate as $index => $value) {
                     if (Storage::disk('public-asset')->exists('temp-customer-product/'.$value['picture'])) {
                         Storage::disk('public-asset')->move('temp-customer-product/'.$value['picture'], 'customer-product/'.$value['picture']);
@@ -263,11 +263,11 @@ class CustomerCompanyGoodController extends Controller
             'buy_price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'status' => 'required|in:archive,draft,publish',
             'company_id' => 'required|exists:companies,id',
-            'unit_id' => 'required|exists:product_weight_units,id',
+            'weight_id' => 'required|exists:product_weights,id',
             'category_id' => 'required|exists:product_categories,id',
             'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ], [
-            'unit_id' => 'The unit field is required.',
+            'weight_id' => 'The unit field is required.',
             'category_id' => 'The type field is required.',
             'company_id' => 'The unit field is required.',
         ]);

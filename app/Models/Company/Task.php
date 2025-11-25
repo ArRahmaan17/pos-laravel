@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CustomerCompanyTask extends Model
+class Task extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -22,6 +22,6 @@ class CustomerCompanyTask extends Model
 
     public function details(): HasMany
     {
-        return $this->hasMany(CustomerCompanyTaskDetail::class, 'task_id', 'id');
+        return $this->hasMany(TaskDetail::class, 'task_id', 'id');
     }
 }

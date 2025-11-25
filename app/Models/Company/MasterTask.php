@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CustomerCompanyMasterTask extends Model
+class MasterTask extends Model
 {
     protected $fillable = ['company_id', 'name', 'description', 'role_id', 'priority', 'repeateable'];
 

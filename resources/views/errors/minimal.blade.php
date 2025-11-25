@@ -546,7 +546,7 @@
                 </div>
             </div>
             <div class="flex items-center pt-8 justify-center sm:pt-1">
-                <a href="{{ route('home') }}" class="text-sm uppercase text-gray-500">home</a>
+                <a href="{{ route('dashboard.index') }}" class="text-sm uppercase text-gray-500">home</a>
             </div>
         </div>
     </div>

@@ -144,8 +144,8 @@
             </div>
             <div class="row">
                 <div class="col mb-3">
-                    <label for="unit_id" class="form-label">Unit</label>
-                    <select class="form-control select2" name="unit_id" id="unit_id">
+                    <label for="weight_id" class="form-label">Unit</label>
+                    <select class="form-control select2" name="weight_id" id="weight_id">
                         <option value="">Not selected</option>
                         @foreach ($units as $unit)
                             <option value="{{ $unit->id }}">{{ $unit->name }} ({{ $unit->description }})
@@ -646,7 +646,7 @@
                 const clone = template[0].content.cloneNode(true);
                 container.append(clone);
                 formattedInput();
-                container.find(`.select2:first`).attr('id', `unit_id${window.lastProductAccordion}`)
+                container.find(`.select2:first`).attr('id', `weight_id${window.lastProductAccordion}`)
                 container.find(`.select2:last`).attr('id', `category_id${window.lastProductAccordion}`)
                 setTimeout(() => {
                     if (container.find(`.select2`).hasClass("select2-hidden-accessible")) {

@@ -33,7 +33,7 @@
         </div>
     </div>
     <div class="modal fade" id="modal-permission" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog modal-xl" menu="document">
+        <div class="modal-dialog modal-fullscreen" menu="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel3">Add New @yield('title')</h5>
@@ -45,30 +45,34 @@
                         <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="parent" class="form-label">Permission Parent</label>
-                                <select name="parent" id="parent" class="form-control select2">
-                                    <option value="0">Kosong</option>
-                                    @foreach ($menus as $menu)
-                                        <option value="{{ $menu->id }}" data-place="{{ $menu->place }}">{{ $menu->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
                                 <label for="name" class="form-label">Permission Name</label>
                                 <input type="text" id="name" name="name" class="form-control" placeholder="Enter Permission Name" />
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label for="route" class="form-label">Permission Route</label>
-                                <input list="routes" type="text" id="route" name="route" class="form-control" placeholder="Enter Permission Route" />
-                                <datalist id="routes">
-                                    @foreach ($routes as $route)
-                                        <option value="{{ $route->getName() }}">{{ url($route->uri()) }}</option>
-                                    @endforeach
-                                </datalist>
+                        <div class="col">
+                            <div class="accordion mt-3" id="accordionExample">
+                                <div class="card shadow-none border-2 p-0 accordion-item active">
+                                    <h2 class="accordion-header" id="headingOne">
+                                        <button type="button" class="accordion-button p-2" data-bs-toggle="collapse" data-bs-target="#accordionOne"
+                                            aria-expanded="true" aria-controls="accordionOne">
+                                            Application Menu
+                                        </button>
+                                    </h2>
+
+                                    <div id="accordionOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                                        <div class="container-fluid">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="all" id="all">
+                                                <label for="all" class="form-check-label">
+                                                    ALL
+                                                </label>
+                                            </div>
+                                            <div class="container-fluid">
+                                                {!! buildMenuRoleAccessibillity($routes) !!}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -308,6 +312,16 @@
                 });
             });
         }
+
+        function containerChecker(firstContainer = $('.modal-body #accordionExample .container-fluid:first').children('.container-fluid')) {
+            $.map(firstContainer, function(element, index) {
+                if ($(element).children('.container-fluid').length > 0) {
+                    containerChecker($(element).children('.container-fluid'))
+                } else {
+                    $(element).addClass('my-2 d-flex flex-wrap justify-content-left gap-3')
+                }
+            });
+        }
         $(function() {
             window.dataTableAppMenu = $("#table-permission").DataTable({
                 ajax: "{{ route('dev.permission.data-table') }}",
@@ -437,16 +451,9 @@
                     }
                 });
             });
-            $('#parent').change(function() {
-                if ($(this).find(`option[value=${this.value}]`).data('place')) {
-                    $('#modal-permission')
-                        .find('form input#place-profile')
-                        .attr('checked', 'checked')
-                } else {
-                    $('#modal-permission')
-                        .find('form input#place-sidebar')
-                        .attr('checked', 'checked')
-                }
+            $('#all').change(function() {
+                let parent = $(this).parents('.container-fluid:first');
+                $(parent).find('.container-fluid input.form-check-input').attr('checked', $(this).prop('checked'))
             });
             $('#modal-permission').on('hidden.bs.modal', function() {
                 window.state = 'add';
@@ -474,6 +481,7 @@
                     });
                 }, 140);
             });
+            containerChecker();
         });
     </script>
 @endpush

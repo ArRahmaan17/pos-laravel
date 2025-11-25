@@ -20,7 +20,7 @@ class unSelectCustomerCompany
         } elseif (empty(session('userLogged'))) {
             return redirect()->route('auth.login')->with('error', 'Please report to your manager to add the accessibility role');
         } elseif (! empty(session('userLogged'))) {
-            return redirect()->route('home');
+            return redirect()->route('dashboard.index');
         }
     }
 }

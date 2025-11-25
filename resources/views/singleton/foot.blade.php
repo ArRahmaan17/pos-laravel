@@ -251,7 +251,7 @@
             } else {
                 $.ajax({
                     type: "get",
-                    url: `{{ route('dev.app-subscription.show') }}/${window.process_subscription.id}`,
+                    url: `{{ route('dev.subscription.show') }}/${window.process_subscription.id}`,
                     dataType: "json",
                     success: function(response) {
                         $('.subs-title').html(response.data.name);

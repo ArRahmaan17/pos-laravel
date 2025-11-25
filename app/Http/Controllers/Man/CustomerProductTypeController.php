@@ -62,7 +62,7 @@ class CustomerProductTypeController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['description'] = $item->description;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-app-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-app-role='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-role='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -127,7 +127,7 @@ class CustomerProductTypeController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            AppGoodUnit::find($id)->update($request->except('_token', 'id'));
+            ProductWeight::find($id)->update($request->except('_token', 'id'));
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -147,8 +147,8 @@ class CustomerProductTypeController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (empty(collect(AppGoodUnit::with('role_users')->find($id)->role_users)->toArray())) {
-                AppGoodUnit::destroy($id);
+            if (empty(collect(ProductWeight::with('role_users')->find($id)->role_users)->toArray())) {
+                ProductWeight::destroy($id);
                 DB::commit();
                 $response = ['message' => 'deleting resource successfully'];
                 $code = 200;

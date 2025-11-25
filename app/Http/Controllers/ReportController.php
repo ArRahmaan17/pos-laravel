@@ -208,7 +208,7 @@ class ReportController extends Controller
         $fastMoving = DB::table('transactions as cpt')
             ->join('transaction_items as cdpt', 'cpt.orderCode', '=', 'cdpt.orderCode')
             ->leftJoin('products as cpg', 'cdpt.goodId', '=', 'cpg.id')
-            ->join('product_categories as apt', 'cpg.unit_id', '=', 'apt.id')
+            ->join('product_categories as apt', 'cpg.weight_id', '=', 'apt.id')
             ->selectRaw('
         row_number() over ( ORDER BY sold) as row_numbers,
         cpg.name AS product_name,
@@ -226,7 +226,7 @@ class ReportController extends Controller
 
         $slowMoving = DB::table('transaction_items as cdpt')
             ->rightJoin('products as cpg', 'cdpt.goodId', '=', 'cpg.id')
-            ->join('product_categories as apt', 'cpg.unit_id', '=', 'apt.id')
+            ->join('product_categories as apt', 'cpg.weight_id', '=', 'apt.id')
             ->select(
                 DB::raw('row_number() over ( ORDER BY cpg.name) as row_numbers'),
                 'cpg.name as product_name',
@@ -257,7 +257,7 @@ class ReportController extends Controller
     private function stockTaking($startDate, $endDate)
     {
         return DB::table('products as cpg')
-            ->join('product_weight_units as agu', 'cpg.unit_id', '=', 'agu.id')
+            ->join('product_weights as agu', 'cpg.weight_id', '=', 'agu.id')
             ->leftJoin('customer_company_stocktakings as cps', 'cpg.id', '=', 'cps.goodId')
             ->select([
                 'cpg.name',
@@ -386,7 +386,7 @@ class ReportController extends Controller
     {
         return DB::table('products as cpg')
             ->join('product_categories as apt', 'cpg.category_id', '=', 'apt.id')
-            ->join('product_weight_units as agu', 'cpg.unit_id', '=', 'agu.id')
+            ->join('product_weights as agu', 'cpg.weight_id', '=', 'agu.id')
             ->select(
                 'cpg.name',
                 'apt.name as category',

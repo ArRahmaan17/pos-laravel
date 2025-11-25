@@ -7,7 +7,7 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class AppRoleController extends Controller
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.

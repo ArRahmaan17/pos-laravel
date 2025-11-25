@@ -20,7 +20,7 @@ class UnAuthorization
         } elseif (! empty(session('userLogged')) && empty(session('userLogged')['company']) && ! empty(session('userLogged')['role'])) {
             return redirect()->route('select-company');
         } else {
-            return redirect()->route('home');
+            return redirect()->route('dashboard.index');
         }
     }
 }

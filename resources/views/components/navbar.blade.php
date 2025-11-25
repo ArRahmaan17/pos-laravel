@@ -9,12 +9,12 @@
         <div class="navbar-nav align-items-center">
             <div class="nav-item d-flex align-items-center text-capitalize">
                 <i class='bx bxs-user-account'></i> &nbsp;
-                <span class="d-none d-sm-block col-1 col-sm-10 col-md-12 text-truncate">{!! session('userLogged')['user']['name'] !!}</span>
+                <span class="d-none d-sm-block col-1 col-sm-10 col-md-12 text-truncate fw-bold">{!! session('userLogged')['user']['name'] !!}</span>
             </div>
         </div>
 
         <ul class="navbar-nav flex-row justify-content-between align-items-center ms-auto">
-            <li class="serverTime text-xs my-auto px-2">
+            <li class="serverTime text-xs my-auto px-2 fw-bold">
                 <div class="spinner-border spinner-border-sm"></div>
             </li>
             @if (env('APP_SUBS') == 'ON' && in_array(getRole(), ['Developer', 'Manager']))

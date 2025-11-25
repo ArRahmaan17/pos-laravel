@@ -431,7 +431,7 @@ class CustomerProductTransactionController extends Controller
 
             return $pdf->stream('Transaction-'.$orderCode.'.pdf');
         } else {
-            return redirect()->route('home')->with('error', 'Transaction not found <b>'.$orderCode.'</b>');
+            return redirect()->route('dashboard.index')->with('error', 'Transaction not found <b>'.$orderCode.'</b>');
         }
     }
 

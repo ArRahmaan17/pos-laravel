@@ -66,7 +66,7 @@ class CustomerCompanyGoodController extends Controller
                 $row['stock'] = $item->stock;
                 $row['status'] = $item->status;
                 $row['unit'] = $item->unit->name;
-                $row['unit_id'] = $item->unit->id;
+                $row['weight_id'] = $item->unit->id;
                 $row['type'] = $item->type->name;
                 $row['category_id'] = $item->type->id;
                 $row['picture'] = $item->picture;
@@ -104,11 +104,11 @@ class CustomerCompanyGoodController extends Controller
             'buy_price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'status' => 'required|in:archive,draft,publish',
             'company_id' => 'required|exists:companies,id',
-            'unit_id' => 'required|exists:product_weight_units,id',
+            'weight_id' => 'required|exists:product_weights,id',
             'category_id' => 'required|exists:product_categories,id',
             'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ], [
-            'unit_id' => 'The unit field is required.',
+            'weight_id' => 'The unit field is required.',
             'category_id' => 'The type field is required.',
             'company_id' => 'The company field is required.',
         ]);
@@ -192,11 +192,11 @@ class CustomerCompanyGoodController extends Controller
             'buy_price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'status' => 'required|in:archive,draft,publish',
             'company_id' => 'required|exists:companies,id',
-            'unit_id' => 'required|exists:product_weight_units,id',
+            'weight_id' => 'required|exists:product_weights,id',
             'category_id' => 'required|exists:product_categories,id',
             'picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
         ], [
-            'unit_id' => 'The unit field is required.',
+            'weight_id' => 'The unit field is required.',
             'category_id' => 'The type field is required.',
             'company_id' => 'The unit field is required.',
         ]);
