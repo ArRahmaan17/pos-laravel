@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-company-warehouse" data-bs-toggle="modal"
+                        <button class="btn btn-outline-success" id="add-customer-company-warehouse" data-bs-toggle="modal"
                             data-bs-target="#modal-customer-company-warehouse">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -82,16 +82,16 @@
                                     rows="3"></textarea>
                             </div>
                         </div>
-                        <button id="add-rack" type="button" class="btn btn-icon btn-success"><i class='bx bx-add-to-queue'></i></button>
-                        <button id="remove-rack" type="button" class="btn btn-icon btn-danger d-none"><i class='bx bx-trash'></i></button>
-                        <button id="edit-rack" type="button" class="btn btn-icon btn-warning d-none"><i class='bx bx-pencil'></i></button>
+                        <button id="add-rack" type="button" class="btn btn-icon btn-outline-success"><i class='bx bx-add-to-queue'></i></button>
+                        <button id="remove-rack" type="button" class="btn btn-icon btn-outline-danger d-none"><i class='bx bx-trash'></i></button>
+                        <button id="edit-rack" type="button" class="btn btn-icon btn-outline-warning d-none"><i class='bx bx-pencil'></i></button>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-company-warehouse" class="btn btn-success">Save
+                    <button type="button" id="save-customer-company-warehouse" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-company-warehouse" class="btn btn-warning d-none">Update
                         changes</button>
@@ -113,7 +113,7 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-company-warehouse");
                 $("#edit-customer-company-warehouse").data("customer-company-warehouse", idAppRole);
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length === 0) {
                     $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -158,7 +158,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length === 0) {
                     $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -187,7 +187,7 @@
                                 url: "{{ route('man.customer-company-warehouse.delete') }}/" +
                                     idAppRole,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -412,7 +412,7 @@
                     $('[name="rack[description]"]').val('');
                     $('[name="rack[id]"]').val('');
                     $('.rack-action').click(function() {
-                        if ($('input.rack-action:checked').length == 1) {
+                        if ($('input.rack-action:checked').length === 1) {
                             $('#remove-rack').removeClass('d-none');
                             $('#edit-rack').removeClass('d-none');
                         } else if ($('input.rack-action:checked').length != 0) {
@@ -424,9 +424,9 @@
                         }
                     });
                 } else {
-                    if (data.name == '') {
+                    if (data.name === '') {
                         $('[name="rack[name]"]').addClass('is-invalid')
-                    } else if (data.description == '') {
+                    } else if (data.description === '') {
                         $('[name="rack[description]"]').addClass('is-invalid')
                     }
                 }

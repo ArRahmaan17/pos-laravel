@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-product-unit" data-bs-toggle="modal" data-bs-target="#modal-product-unit">Add <i
+                        <button class="btn btn-outline-success" id="add-product-unit" data-bs-toggle="modal" data-bs-target="#modal-product-unit">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-product-unit" class="btn btn-success">Save
+                    <button type="button" id="save-product-unit" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-product-unit" class="btn btn-warning d-none">Update
                         changes</button>
@@ -82,7 +82,7 @@
                 window.state = 'update';
                 let idAppUnit = $(this).data("product-unit");
                 $("#edit-product-unit").data("product-unit", idAppUnit);
-                if (window.dataTableAppUnit.rows('.selected').data().length == 0) {
+                if (window.dataTableAppUnit.rows('.selected').data().length === 0) {
                     $('#table-product-unit tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -96,7 +96,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('dev.product-unit.show') }}/" + idAppUnit,
+                    url: "{{ route('settings.product-unit.show') }}/" + idAppUnit,
                     dataType: "json",
                     success: function(response) {
                         $('#modal-product-unit').find("form")
@@ -121,7 +121,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableAppUnit.rows('.selected').data().length == 0) {
+                if (window.dataTableAppUnit.rows('.selected').data().length === 0) {
                     $('#table-product-unit tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -147,10 +147,10 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('dev.product-unit.delete') }}/" +
+                                url: "{{ route('settings.product-unit.delete') }}/" +
                                     idAppUnit,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -187,7 +187,7 @@
         }
         $(function() {
             window.dataTableAppUnit = $("#table-product-unit").DataTable({
-                ajax: "{{ route('dev.product-unit.data-table') }}",
+                ajax: "{{ route('settings.product-unit.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -238,7 +238,7 @@
                 let data = serializeObject($('#form-product-unit'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('dev.product-unit.store') }}`,
+                    url: `{{ route('settings.product-unit.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
@@ -276,7 +276,7 @@
                 let data = serializeObject($('#form-product-unit'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('dev.product-unit.update') }}/${data.id}`,
+                    url: `{{ route('settings.product-unit.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {

@@ -66,7 +66,7 @@ class CustomerCompanyStocktakingController extends Controller
             $row['expect_stock'] = $item->expect_stock;
             $row['real_stock'] = $item->real_stock;
             $row['status'] = (! $item->status) ? '<span class="badge rounded-pill bg-label-warning">Wait for approval</span>' : '<span class="badge rounded-pill bg-label-success">Approved</span>';
-            $row['action'] = ((! $item->status) ? "<button class='btn btn-icon btn-success approve' data-customer-product-stocktaking='".$item->id."' ><i class='bx bx-check'></i></button><button class='btn btn-icon btn-warning edit' data-customer-product-stocktaking='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-product-stocktaking='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>" : "<button data-customer-product-stocktaking='".$item->id."' class='btn btn-icon btn-info show-stocktaking'><i class='bx bx-search'></i></button>");
+            $row['action'] = ((! $item->status) ? "<button class='btn btn-icon btn-outline-success approve' data-customer-product-stocktaking='".$item->id."' ><i class='bx bx-check'></i></button><button class='btn btn-icon btn-outline-warning edit' data-customer-product-stocktaking='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-product-stocktaking='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>" : "<button data-customer-product-stocktaking='".$item->id."' class='btn btn-icon btn-info show-stocktaking'><i class='bx bx-search'></i></button>");
             $dataFiltered[] = $row;
         }
         $response = [

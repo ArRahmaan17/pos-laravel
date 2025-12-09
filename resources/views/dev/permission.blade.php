@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-permission" data-bs-toggle="modal" data-bs-target="#modal-permission">Add <i
+                        <button class="btn btn-outline-success" id="add-permission" data-bs-toggle="modal" data-bs-target="#modal-permission">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -86,15 +86,6 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label class="form-label">Permission Accessibility</label>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" name="dev_only" id="dev_only">
-                                    <label class="form-check-label" for="dev_only">Only Developer</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
                                 <label class="form-label">Permission Place</label>
                                 <div class="col">
                                     <div class="form-check form-check-inline">
@@ -125,7 +116,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-permission" class="btn btn-success">Save
+                    <button type="button" id="save-permission" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-permission" class="btn btn-warning d-none">Update
                         changes</button>
@@ -134,10 +125,11 @@
         </div>
     </div>
 @endsection
-@push('js')
+@push('resource-js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
-
-    <script src="{{ asset('assets/js/select2.min.js') }}"></script>
+    <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+@endpush
+@push('js')
     <script>
         window.dataTableAppMenu = null;
         window.state = 'add';
@@ -147,7 +139,7 @@
                 window.state = 'update';
                 let idAppMenu = $(this).data("permission");
                 $("#edit-permission").data("permission", idAppMenu);
-                if (window.dataTableAppMenu.rows('.selected').data().length == 0) {
+                if (window.dataTableAppMenu.rows('.selected').data().length === 0) {
                     $('#table-permission tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -161,7 +153,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('dev.permission.show') }}/" + idAppMenu,
+                    url: "{{ route('settings.permission.show') }}/" + idAppMenu,
                     dataType: "json",
                     success: function(response) {
                         let childHtml = '';
@@ -171,7 +163,7 @@
                                     if (element.name === 'dev_only') {
                                         $(`[name=${element.name}]`)
                                             .prop('checked', response.data[element
-                                                .name] == 1 ? true : false)
+                                                .name] === 1 ? true : false)
                                     } else if (element.name === 'place') {
                                         $(`[name=${element.name}][value=${response.data[element
                                                 .name]}]`).prop('checked', true)
@@ -206,7 +198,7 @@
                 window.state = 'add';
                 let idAppMenu = $(this).data("permission");
                 $("#edit-permission").data("permission", idAppMenu);
-                if (window.dataTableAppMenu.rows('.selected').data().length == 0) {
+                if (window.dataTableAppMenu.rows('.selected').data().length === 0) {
                     $('#table-permission tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -248,7 +240,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableAppMenu.rows('.selected').data().length == 0) {
+                if (window.dataTableAppMenu.rows('.selected').data().length === 0) {
                     $('#table-permission tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -274,10 +266,10 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('dev.permission.delete') }}/" +
+                                url: "{{ route('settings.permission.delete') }}/" +
                                     idAppMenu,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -324,7 +316,7 @@
         }
         $(function() {
             window.dataTableAppMenu = $("#table-permission").DataTable({
-                ajax: "{{ route('dev.permission.data-table') }}",
+                ajax: "{{ route('settings.permission.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -380,7 +372,7 @@
                 let data = serializeObject($('#form-permission'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('dev.permission.store') }}`,
+                    url: `{{ route('settings.permission.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
@@ -418,7 +410,7 @@
                 let data = serializeObject($('#form-permission'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('dev.permission.update') }}/${data.id}`,
+                    url: `{{ route('settings.permission.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
@@ -469,17 +461,11 @@
                     .removeAttr('checked')
             });
             $('#modal-permission').on('shown.bs.modal', function() {
-                if (window.state == 'add') {
+                if (window.state === 'add') {
                     $('#container-child-list').addClass('d-none');
                 } else {
                     $('#container-child-list').removeClass('d-none');
                 }
-                setTimeout(() => {
-                    $('.select2').select2({
-                        dropdownParent: $('#modal-permission'),
-
-                    });
-                }, 140);
             });
             containerChecker();
         });

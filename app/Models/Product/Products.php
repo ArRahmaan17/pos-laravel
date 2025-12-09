@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Product;
 
 use App\Traits\HasDefaultSearch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

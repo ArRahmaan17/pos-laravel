@@ -4,8 +4,7 @@
             ©
             <script>
                 document.write(new Date().getFullYear());
-            </script>
-            , made with ❤️ by
+            </script>, made with ❤️ by
             <a href="https://www.rahmaanms.my.id" target="_blank" class="footer-link fw-bolder">Doglex's</a>
         </div>
     </div>

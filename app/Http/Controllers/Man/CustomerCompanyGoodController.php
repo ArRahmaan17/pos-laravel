@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\ProductWeight;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerProductType;
 use App\Models\CustomerTemporaryProduct;
+use App\Models\ProductWeight;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +20,7 @@ class CustomerCompanyGoodController extends Controller
     public function index()
     {
         $units = ProductWeight::get();
-        $categories = CustomerProductType::with('category')->where('bussiness_id', session('userLogged')['company']['bussiness_id'])->get();
+        $categories = CustomerProductType::with('category')->where('business_id', session('userLogged')['company']['business_id'])->get();
 
         return view('man.customer-company-good', compact('units', 'categories'));
     }
@@ -76,10 +76,10 @@ class CustomerCompanyGoodController extends Controller
             $row['weight_id'] = $item->unit->id;
             $row['weight_id'] = $item->unit->id;
             $row['picture'] = $item->picture;
-            $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
-            $row['action_temp'] = "<button class='btn btn-icon btn-warning edit-temp' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='".$item->id."' class='btn btn-icon btn-danger delete-temp'><i class='bx bxs-trash-alt' ></i></button>";
-            $row['action_stocktaking'] = "<button type='button' class='btn btn-icon btn-warning edit-stock' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button>";
+            $row['status'] = ($item->status === 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status === 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action_temp'] = "<button class='btn btn-icon btn-outline-warning edit-temp' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='".$item->id."' class='btn btn-icon btn-outline-danger delete-temp'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action_stocktaking'] = "<button type='button' class='btn btn-icon btn-outline-warning edit-stock' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -146,7 +146,7 @@ class CustomerCompanyGoodController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (! in_array(getRole(), ['Developer', 'Manager'])) {
+            if (! getScope() !== 'user_created') {
                 throw new Exception('Not Authorize');
             }
             $data = CustomerTemporaryProduct::with('reference')->whereDate('created_at', now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
@@ -214,7 +214,7 @@ class CustomerCompanyGoodController extends Controller
             DB::commit();
         } catch (\Exception $th) {
             DB::rollBack();
-            $response = ['message' => 'failed creating resource'.($th->getCode() == 0) ? ', '.$th->getMessage() : ''];
+            $response = ['message' => 'failed creating resource'.($th->getCode() === 0) ? ', '.$th->getMessage() : ''];
             $code = 422;
         }
 

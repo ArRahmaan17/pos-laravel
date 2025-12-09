@@ -43,7 +43,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-master-tasks" data-bs-toggle="modal" data-bs-target="#modal-customer-master-tasks">Add <i
+                        <button class="btn btn-outline-success" id="add-customer-master-tasks" data-bs-toggle="modal" data-bs-target="#modal-customer-master-tasks">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -131,7 +131,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-master-tasks" class="btn btn-success">Save
+                    <button type="button" id="save-customer-master-tasks" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-master-tasks" class="btn btn-warning d-none">Update
                         changes</button>
@@ -153,7 +153,7 @@
                 window.state = 'update';
                 let idCustomerUser = $(this).data("customer-master-tasks");
                 $("#edit-customer-master-tasks").data("customer-master-tasks", idCustomerUser);
-                if (window.dataTableCustomerMasterTasks.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerMasterTasks.rows('.selected').data().length === 0) {
                     $('#table-customer-master-tasks tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -197,7 +197,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableCustomerMasterTasks.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerMasterTasks.rows('.selected').data().length === 0) {
                     $('#table-customer-master-tasks tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -226,7 +226,7 @@
                                 url: "{{ route('man.customer-master-tasks.delete') }}/" +
                                     idCustomerUser,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -440,7 +440,7 @@
                 let id = e.currentTarget.value;
                 $.ajax({
                     type: "get",
-                    url: `{{ route('man.customer-role.role') }}/${(`{{ getRole() }}` === 'Developer' ) ? id : `{{ session('userLogged')['user']['id'] }}`}`,
+                    url: `{{ route('man.customer-role.role') }}/${(`{{ getScope() }}` === 'Developer' ) ? id : `{{ session('userLogged')['user']['id'] }}`}`,
                     dataType: "json",
                     success: function(response) {
                         $('#customerRoleIdLink').html()

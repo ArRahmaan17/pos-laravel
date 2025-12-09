@@ -12,7 +12,7 @@ class UserRole extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'role_id'];
+    protected $fillable = ['user_id', 'role_id', 'company_id'];
 
     public function user(): HasOne
     {

@@ -5,6 +5,7 @@
 /public/storage
 /storage/*.key
 /vendor
+/dist
 CaddyFile
 .env
 .env.backup

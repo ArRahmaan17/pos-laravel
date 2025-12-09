@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomerRole;
 use App\Models\MasterTask;
 use App\Models\Task;
 use App\Models\TaskDetail;
-use App\Models\CustomerRole;
 use App\Models\UserCustomerRole;
 use Exception;
 use Illuminate\Http\Request;
@@ -37,7 +37,7 @@ class CustomerTaskController extends Controller
         $where = [
             ['tasks.company_id', '=', session('userLogged')['company']['id']],
         ];
-        if (! in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
+        if (! in_array(session('userLogged')['role']['scope']['code'], ['Developer', 'Manager'])) {
             $where[] = ['tasks.user_id',  '=', session('userLogged')['user']['id']];
         }
         $totalData = Task::join('users', 'users.id', '=', 'tasks.user_id')->with('user', 'details', 'details.master')->select('tasks.*', 'users.name as user_name')
@@ -85,10 +85,10 @@ class CustomerTaskController extends Controller
             $row['name'] = $item['name'];
             $row['details'] = $item['details'];
             $row['user_name'] = $item['user']['name'];
-            $row['activity'] = (($item['start_at'] && $item['end_at']) ? now()->createFromTimeString($item['start_at'])->diffForHumans(now()->createFromTimeString($item['end_at']), true) : (($item['start_at'] && $item['end_at'] == null) ? 'Started '.now()->createFromTimeString($item['start_at'])->diffForHumans(now()) : 'Not Started Yet'));
+            $row['activity'] = (($item['start_at'] && $item['end_at']) ? now()->createFromTimeString($item['start_at'])->diffForHumans(now()->createFromTimeString($item['end_at']), true) : (($item['start_at'] && $item['end_at'] === null) ? 'Started '.now()->createFromTimeString($item['start_at'])->diffForHumans(now()) : 'Not Started Yet'));
             $row['percentage'] = $item['percentage'].' %';
             $row['time_limit'] = now()->createFromTimeString(now()->format('Y-m-d H:i:s'))->diffInDays($item['time_limit'], false).' days left';
-            $row['action'] = ((! $item['start_at']) ? "<button class='btn btn-success btn-icon start' data-customer-task-status='new' data-customer-task-management='".$item['id']."'><i class='bx bx-play'></i></button>" : '').((! $item['end_at']) ? "<button class='btn btn-icon btn-warning edit' data-customer-task-management='".$item['id']."' ><i class='bx bx-pencil' ></i></button><button data-customer-task-management='".$item['id']."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>" : '');
+            $row['action'] = ((! $item['start_at']) ? "<button class='btn btn-outline-success btn-icon start' data-customer-task-status='new' data-customer-task-management='".$item['id']."'><i class='bx bx-play'></i></button>" : '').((! $item['end_at']) ? "<button class='btn btn-icon btn-outline-warning edit' data-customer-task-management='".$item['id']."' ><i class='bx bx-pencil' ></i></button><button data-customer-task-management='".$item['id']."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>" : '');
             $dataFiltered[] = $row;
         }
         $response = [
@@ -171,7 +171,7 @@ class CustomerTaskController extends Controller
             'id' => $id,
             ['time_limit', '>=', now()->format('Y-m-d')],
         ];
-        if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
+        if (in_array(session('userLogged')['role']['scope']['code'], ['Developer', 'Manager'])) {
             unset($where['user_id']);
         }
         $status = 404;
@@ -195,12 +195,12 @@ class CustomerTaskController extends Controller
             'end_at' => null,
             ['time_limit', '>=', now()->format('Y-m-d')],
         ];
-        if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager'])) {
+        if (in_array(session('userLogged')['role']['scope']['code'], ['Developer', 'Manager'])) {
             unset($where['user_id']);
         }
         DB::beginTransaction();
         try {
-            if ($type == 'new') {
+            if ($type === 'new') {
                 Task::where($where)->update(['start_at' => now()]);
             }
             unset($where['user_id'], $where['company_id'], $where[0]);
@@ -240,7 +240,7 @@ class CustomerTaskController extends Controller
         $message = ['message' => 'tasks found', 'data' => $dataTask];
         if (empty($dataTask)) {
             $status = 404;
-            $message = ['message' => 'tasks not found, please contact manager to create new task for '.session('userLogged')['role']['name'], 'data' => $dataTask];
+            $message = ['message' => 'tasks not found, please contact manager to create new task for '.session('userLogged')['role']['scope']['code'], 'data' => $dataTask];
         }
 
         return response()->json($message, $status);
@@ -263,7 +263,7 @@ class CustomerTaskController extends Controller
             ]);
             $builder = TaskDetail::where(['task_id' => $data->task_id]);
             [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
-            Task::find($data->task_id)->update(['percentage' => (($countFinish / $countDetail) * 100), 'end_at' => ($countDetail == $countFinish) ? now() : null]);
+            Task::find($data->task_id)->update(['percentage' => (($countFinish / $countDetail) * 100), 'end_at' => ($countDetail === $countFinish) ? now() : null]);
             DB::commit();
             $status = 200;
             $message = ['message' => 'update resources successfully'];
@@ -307,7 +307,7 @@ class CustomerTaskController extends Controller
             Task::find($id)->update($dataTask);
             $dataTaskDetails = array_map(function ($detail) use ($id) {
                 $detail['task_id'] = $id;
-                ($detail['type'] == 'new') ? $detail['masterId'] = $detail['masterId'] : $detail['id'] = $detail['id'];
+                ($detail['type'] === 'new') ? $detail['masterId'] = $detail['masterId'] : $detail['id'] = $detail['id'];
                 $detail['created_at'] = now();
                 $detail['updated_at'] = now();
                 unset($detail['type']);

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserManagement\Permission;
 use App\Models\CustomerRole;
 use App\Models\CustomerRoleAccessibility;
+use App\Models\UserManagement\Permission;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +29,7 @@ class CustomerRoleAccessibilityController extends Controller
         $where = [
             ['customer_roles.user_id', '=', session('userLogged')['user']['id']],
         ];
-        if (getRole() === 'Developer') {
+        if (getScope() === 'Developer') {
             $where = [
                 ['customer_roles.user_id', '=', session('userLogged')['company']['user_id']],
             ];
@@ -95,7 +95,7 @@ class CustomerRoleAccessibilityController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['menu'] = $item->role_menus;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-role-accessibility='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-role-accessibility='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-role-accessibility='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-role-accessibility='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -142,7 +142,7 @@ class CustomerRoleAccessibilityController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             $response = ['message' => 'Failed creating resources'];
-            if ($th->getCode() == 422) {
+            if ($th->getCode() === 422) {
                 $response = ['message' => $th->getMessage()];
             }
             $code = 422;
@@ -203,7 +203,7 @@ class CustomerRoleAccessibilityController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             $response = ['message' => 'Failed creating resources'];
-            if ($th->getCode() == 422) {
+            if ($th->getCode() === 422) {
                 $response = ['message' => $th->getMessage()];
             }
             $code = 422;

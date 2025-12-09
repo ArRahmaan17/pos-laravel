@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-subscription" data-bs-toggle="modal" data-bs-target="#modal-subscription">Add <i
+                        <button class="btn btn-outline-success" id="add-subscription" data-bs-toggle="modal" data-bs-target="#modal-subscription">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -173,7 +173,7 @@
                         <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                             Close
                         </button>
-                        <button type="button" id="save-subscription" class="btn btn-success">Save
+                        <button type="button" id="save-subscription" class="btn btn-outline-success">Save
                             changes</button>
                         <button type="button" id="edit-subscription" class="btn btn-warning d-none">Update
                             changes</button>
@@ -196,7 +196,7 @@
                 window.state = 'update';
                 let idAppSubscription = $(this).data("subscription");
                 $("#edit-subscription").data("subscription", idAppSubscription);
-                if (window.dataTableAppSubscription.rows('.selected').data().length == 0) {
+                if (window.dataTableAppSubscription.rows('.selected').data().length === 0) {
                     $('#table-subscription tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -209,7 +209,7 @@
                 $('#edit-subscription').removeClass('d-none');
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('dev.subscription.show') }}/" + idAppSubscription,
+                    url: "{{ route('settings.subscription.show') }}/" + idAppSubscription,
                     dataType: "json",
                     success: function(response) {
                         let first = true;
@@ -217,7 +217,7 @@
                             .find('input, textarea').map(function(index, element) {
                                 if (element.name != '_token') {
                                     if (response.data[element.name]) {
-                                        if (element.name == 'price') {
+                                        if (element.name === 'price') {
                                             $(`[name=${element.name}]`).val(numberFormat(response.data[element
                                                 .name], ''))
                                         } else {
@@ -250,7 +250,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableAppSubscription.rows('.selected').data().length == 0) {
+                if (window.dataTableAppSubscription.rows('.selected').data().length === 0) {
                     $('#table-subscription tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -276,10 +276,10 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('dev.subscription.delete') }}/" +
+                                url: "{{ route('settings.subscription.delete') }}/" +
                                     idAppSubscription,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -334,7 +334,7 @@
 
         $(function() {
             window.dataTableAppSubscription = $("#table-subscription").DataTable({
-                ajax: "{{ route('dev.subscription.data-table') }}",
+                ajax: "{{ route('settings.subscription.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -410,7 +410,7 @@
                 });
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('dev.subscription.store') }}`,
+                    url: `{{ route('settings.subscription.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
@@ -448,7 +448,7 @@
                 let data = serializeObject($('#form-subscription'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('dev.subscription.update') }}/${data.id}`,
+                    url: `{{ route('settings.subscription.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {

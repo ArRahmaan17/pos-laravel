@@ -92,7 +92,7 @@ abstract class TestCase extends BaseTestCase
                 $table->id();
                 $table->string('name');
                 $table->string('phone_number');
-                $table->unsignedBigInteger('bussiness_id');
+                $table->unsignedBigInteger('business_id');
                 $table->unsignedBigInteger('user_id');
                 $table->timestamps();
                 $table->softDeletes();

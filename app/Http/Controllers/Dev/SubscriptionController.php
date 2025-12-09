@@ -65,7 +65,7 @@ class SubscriptionController extends Controller
             $row['description'] = $item->description;
             $row['price'] = $item->price;
             $row['plans'] = $item->planFeature;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-subscription='".$item->id."' ><i class='bx bx-pencil' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-subscription='".$item->id."' ><i class='bx bx-pencil' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [

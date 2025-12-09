@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-company-good" data-bs-toggle="modal" data-bs-target="#modal-customer-company-good">
+                        <button class="btn btn-outline-success" id="add-customer-company-good" data-bs-toggle="modal" data-bs-target="#modal-customer-company-good">
                             Add <i class='bx bxs-file-plus pb-1'></i></button>
                         <button id="toggle-off-canvas-temporary-cart" class="btn btn-primary" type="button" data-bs-toggle="offcanvas"
                             data-bs-target="#off-canvas-temporary-cart" aria-controls="off-canvas-temporary-cart">
@@ -117,7 +117,7 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                    <img src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded" height="100"
+                                    <img draggable="false" src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded" height="100"
                                         width="100" id="uploadedAvatar" />
                                     <div class="button-wrapper">
                                         <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
@@ -141,7 +141,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-company-good" class="btn btn-success">Save
+                    <button type="button" id="save-customer-company-good" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-company-good" class="btn btn-warning d-none">Update
                         changes</button>
@@ -161,7 +161,7 @@
         </div>
         <div class="offcanvas-footer mb-1 mx-1">
             <button type="button" id="save-temporary-product"
-                class="btn btn-primary mb-2 d-grid w-100 {{ in_array(getRole(), ['Manager', 'Developer']) ? '' : 'disabled' }}">Continue
+                class="btn btn-primary mb-2 d-grid w-100 {{ in_array(getScope(), ['Manager', 'Developer']) ? '' : 'disabled' }}">Continue
                 (Hanya bisa dilakukan oleh manager)</button>
             <button type="button" class="btn btn-outline-secondary d-grid w-100" data-bs-dismiss="offcanvas">
                 Cancel
@@ -183,7 +183,7 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-company-good");
                 $("#edit-customer-company-good").data("customer-company-good", idAppRole);
-                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length === 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected');
                 }
@@ -226,7 +226,7 @@
                             .val(parseInt(response.data.buy_price))
                             .trigger('change');
                         formElement.find('[name=status]').map((key, element) => {
-                            if ($(element).val() == response.data.status) {
+                            if ($(element).val() === response.data.status) {
                                 $(element).prop('checked', true);
                             } else {
                                 $(element).prop('checked', false);
@@ -249,7 +249,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length === 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -278,7 +278,7 @@
                                 url: "{{ route('man.customer-company-good.delete') }}/" +
                                     idAppRole,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -471,7 +471,7 @@
                     type: "POST",
                     url: `{{ route('man.customer-company-good.store-temp-product', ['date' => now()->format('Y-m-d')]) }}`,
                     data: {
-                        '_token': `{{ csrf_token() }}`
+                       
                     },
                     dataType: "json",
                     success: function(response) {

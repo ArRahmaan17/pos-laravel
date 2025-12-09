@@ -4,12 +4,25 @@ use App\Models\CustomerProductTransaction;
 use App\Models\CustomerTemporaryProduct;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-if (! function_exists('getRole')) {
-    function getRole()
+if (! function_exists('getScope')) {
+    function getScope()
     {
-        return session('userLogged')['role']['name'];
+        return session('userLogged')['role']['scope']['code'];
+    }
+}
+if (! function_exists('getLevel')) {
+    function getLevel()
+    {
+        return session('userLogged')['role']['scope']['level'];
+    }
+}
+if (! function_exists('parentRole')) {
+    function parentRole()
+    {
+        return session('userLogged')['role']['scope']['level'];
     }
 }
 function generateAffiliateCode()
@@ -41,7 +54,7 @@ if (! function_exists('lastCompanyOrderCode')) {
         if (! $date) {
             $date = now()->format('Y-m-d');
         }
-        if ($transaction_status == 'OUT') {
+        if ($transaction_status === 'OUT') {
             $data = CustomerProductTransaction::where('orderCode', 'like', '%' . $transaction_status . '%')
                 ->where('company_id', session('userLogged')['company']['id'])->whereRaw("DATE(created_at) = '" . $date . "'")
                 ->orderBy('id', 'DESC')
@@ -83,7 +96,10 @@ if (! function_exists('stringPad')) {
         return str_pad($word, $length, $pad, $type);
     }
 }
-
+function getFilePathDisk(string $filename, ?string $disk = 'public')
+{
+    return Storage::disk($disk)->path($filename);
+}
 function unFormattedPhoneNumber($formattedNumber)
 {
     $unformattedNumber = preg_replace('/\D/', '', $formattedNumber);
@@ -137,7 +153,7 @@ function removeDuplicate(array $array, ?string $customKey = null)
             $id = is_array($item) ? json_encode($item) : $item;
         }
 
-        if (!in_array($id, $uniqueIds, true)) {
+        if (! in_array($id, $uniqueIds, true)) {
             $uniqueIds[] = $id;
             $uniqueArray[] = $item;
         }
@@ -145,7 +161,6 @@ function removeDuplicate(array $array, ?string $customKey = null)
 
     return $uniqueArray;
 }
-
 
 if (! function_exists('convertStringToNumber')) {
     function convertStringToNumber($string)
@@ -305,7 +320,7 @@ if (! function_exists('buildTreeMenu')) {
 //         $result = [];
 //         foreach ($parentArrays as $index => $parent) {
 //             foreach ($array as $indexArray => $value) {
-//                 if ($value['parent'] == $parent) {
+//                 if ($value['parent'] === $parent) {
 //                     $result[$parentArrays[$index]][] = $value;
 //                 }
 //             }
@@ -314,14 +329,14 @@ if (! function_exists('buildTreeMenu')) {
 //     }
 // }
 
-if (!function_exists('arrayTree')) {
-    function arrayTree(&$elements, $key = 'parent', $idParent = null)
+if (! function_exists('arrayTree')) {
+    function arrayTree(&$elements, $keyparent = 'parent', $key = 'id',  $idParent = null)
     {
         $branch = [];
         foreach ($elements as $element) {
             $element = (array) $element;
-            if ($element['parent'] === $idParent) {
-                $children = buildTreeMenu($elements, $element['id']);
+            if ($element[$keyparent] === $idParent) {
+                $children = buildTreeMenu($elements, $element[$key]);
                 if ($children) {
                     $element['children'] = $children;
                 }
@@ -384,43 +399,28 @@ if (! function_exists('checkPermissionMenu')) {
 }
 if (! function_exists('buildMenu')) {
 
-    function buildMenu(array &$elements, $place = 0)
+    function buildMenu(array &$elements)
     {
         $html = '';
         foreach ($elements as $element) {
-            if (getRole() == 'Developer' || (getRole() == 'Manager' && $element['dev_only'] == 0) || checkPermissionMenu($element['id'], session('userLogged')['role_id'])) {
-                if ($place == 0) {
-                    if (isset($element['children'])) {
-                        $children = buildMenu($element['children']);
-                        $html .= '<li class="menu-item">
+            if (isset($element['children'])) {
+                $children = buildMenu($element['children']);
+                $html .= '<li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon tf-icons ' . $element['icon'] . '"></i>
-                            <div data-i18n="Layouts">' . $element['name'] . '</div>
+                            <i class="menu-icon ' . $element['icon'] . '"></i>
+                            <div data-i18n="Layouts">' . $element['id'] . '</div>
                         </a>
-
                         <ul class="menu-sub">' . $children . '</ul>
                     </li>';
-                    } else {
-                        $html .= '<li class="menu-item">
-                    <a href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '" class="menu-link ' . (Route::is($element['route']) ? 'bg-primary text-white rounded-sm' : '') . '">
-                        <i class="menu-icon tf-icons ' . $element['icon'] . '"></i>
-                        <div data-i18n="' . $element['name'] . '">' . $element['name'] . '</div>
+            } else {
+                $html .= '<li class="menu-item">
+                    <a href="' . (Route::has($element['ref']) ? route($element['ref']) : $element['ref']) . '" class="menu-link ' . (Route::is($element['ref']) ? 'bg-primary text-white rounded-sm' : '') . '">
+                        <i class="menu-icon ' . $element['icon'] . '"></i>
+                        <div data-i18n="' . $element['id'] . '">' . $element['id'] . '</div>
                     </a>
                 </li>';
-                    }
-                } elseif ($place == 1) {
-                    $html .= '<li>
-                        <a class="dropdown-item ' . (Route::is($element['route']) ? 'bg-primary' : '') . '" href="' . (Route::has($element['route']) ? route($element['route']) : $element['route']) . '">
-                            <span class="d-flex align-items-center align-middle ' . (Route::is($element['route']) ? 'bg-primary rounded-sm text-white' : '') . '">
-                                <i class="flex-shrink-0 me-2 ' . $element['icon'] . '"></i>
-                                <span class="flex-grow-1 align-middle">' . $element['name'] . '</span>
-                            </span>
-                        </a>
-                    </li>';
-                }
             }
         }
-
         return $html;
     }
 }
@@ -438,7 +438,7 @@ if (! function_exists('buildMenuRoleAccessibillity')) {
                             </label>
                         </div>';
             if (isset($element['children'])) {
-                $html .= '<div class="container-fluid">' . buildMenuRoleAccessibillity($element['children']) . "</div>";
+                $html .= '<div class="container-fluid">' . buildMenuRoleAccessibillity($element['children']) . '</div>';
             }
         }
 

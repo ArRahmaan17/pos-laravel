@@ -2,6 +2,7 @@
 
 namespace App\Models\Company;
 
+use App\Models\UserManagement\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,7 +14,7 @@ class Company extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $fillable = ['name', 'user_id', 'picture', 'phone_number', 'email', 'bussiness_id', 'affiliate_code'];
+    protected $fillable = ['name', 'user_id', 'created_by', 'picture', 'phone_number', 'email', 'business_id'];
 
     public function address(): HasOne
     {
@@ -30,8 +31,8 @@ class Company extends Model
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
-    public function racks(): HasMany
-    {
-        return $this->hasMany(CustomerWarehouseRack::class, 'id', 'warehouse_id');
-    }
+    // public function racks(): HasMany
+    // {
+    //     return $this->hasMany(CustomerWarehouseRack::class, 'id', 'warehouse_id');
+    // }
 }

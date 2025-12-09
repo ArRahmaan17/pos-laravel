@@ -43,7 +43,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">Add <i
+                        <button class="btn btn-outline-success" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-create-registration-link">Generate Registration Link <i
                                 class='bx bx-link-alt pb-1'></i></button>
@@ -109,7 +109,7 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                @if (in_array(getRole(), ['Manager', 'Developer']))
+                                @if (in_array(getScope(), ['Manager', 'Developer']))
                                     <label for="role_id" class="form-label">Role User</label>
                                     <select class="form-control select2" name="role_id" id="role_id">
                                         <option value="">Select Role</option>
@@ -129,7 +129,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-user" class="btn btn-success">Save
+                    <button type="button" id="save-customer-user" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-user" class="btn btn-warning d-none">Update
                         changes</button>
@@ -150,7 +150,7 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <label for="managerIdLink" class="form-label">Customer User</label>
-                                @if (getRole() === 'Developer')
+                                @if (getScope() === 'Developer')
                                     <select class="form-control select2" name="managerIdLink" id="managerIdLink">
                                         <option value="">Select User</option>
                                         @foreach ($users as $user)
@@ -166,7 +166,7 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                @if (getRole() === 'Developer')
+                                @if (getScope() === 'Developer')
                                     <label for="customerRoleIdLink" class="form-label">Customer User Role</label>
                                     <select class="form-control select2" name="customerRoleIdLink" id="customerRoleIdLink">
                                         <option value="">Select Role</option>
@@ -219,7 +219,7 @@
                     type: "POST",
                     url: `{{ route('auth.login-as') }}/${$(this).data('customer-user')}`,
                     data: {
-                        '_token': `{{ csrf_token() }}`
+                       
                     },
                     dataType: "json",
                     success: function(response) {
@@ -241,7 +241,7 @@
                 window.state = 'update';
                 let idCustomerUser = $(this).data("customer-user");
                 $("#edit-customer-user").data("customer-user", idCustomerUser);
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length === 0) {
                     $('#table-customer-user tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -292,7 +292,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length === 0) {
                     $('#table-customer-user tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -321,7 +321,7 @@
                                 url: "{{ route('man.customer-user.delete') }}/" +
                                     idCustomerUser,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -549,7 +549,7 @@
                 let id = e.currentTarget.value;
                 $.ajax({
                     type: "get",
-                    url: `{{ route('man.customer-role.role') }}/${(`{{ getRole() }}` === 'Developer' ) ? id : `{{ session('userLogged')['user']['id'] }}`}`,
+                    url: `{{ route('man.customer-role.role') }}/${(`{{ getScope() }}` === 'Developer' ) ? id : `{{ session('userLogged')['user']['id'] }}`}`,
                     dataType: "json",
                     success: function(response) {
                         $('#customerRoleIdLink').html()

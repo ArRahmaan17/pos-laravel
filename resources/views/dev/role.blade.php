@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-role" data-bs-toggle="modal" data-bs-target="#modal-role">Add <i
+                        <button class="btn btn-outline-success" id="add-role" data-bs-toggle="modal" data-bs-target="#modal-role">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-role" class="btn btn-success">Save
+                    <button type="button" id="save-role" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-role" class="btn btn-warning d-none">Update
                         changes</button>
@@ -82,7 +82,7 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("role");
                 $("#edit-role").data("role", idAppRole);
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length === 0) {
                     $('#table-role tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -96,7 +96,7 @@
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('dev.role.show') }}/" + idAppRole,
+                    url: "{{ route('settings.role.show') }}/" + idAppRole,
                     dataType: "json",
                     success: function(response) {
                         $('#modal-role').find("form")
@@ -121,7 +121,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length === 0) {
                     $('#table-role tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -147,10 +147,10 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('dev.role.delete') }}/" +
+                                url: "{{ route('settings.role.delete') }}/" +
                                     idAppRole,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -187,7 +187,7 @@
         }
         $(function() {
             window.dataTableAppRole = $("#table-role").DataTable({
-                ajax: "{{ route('dev.role.data-table') }}",
+                ajax: "{{ route('settings.role.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -238,7 +238,7 @@
                 let data = serializeObject($('#form-role'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('dev.role.store') }}`,
+                    url: `{{ route('settings.role.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
@@ -276,7 +276,7 @@
                 let data = serializeObject($('#form-role'));
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('dev.role.update') }}/${data.id}`,
+                    url: `{{ route('settings.role.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {

@@ -1,16 +1,14 @@
-<script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
-<script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
 <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
+<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
 
 <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
-<!-- endbuild -->
-
 <!-- Vendors JS -->
-<script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
+<script src="{{ asset('assets/js/apexcharts.js') }}"></script>
 <script src="{{ asset('assets/js/iziModal.min.js') }}"></script>
 <script src="{{ asset('assets/js/moment.min.js') }}"></script>
 <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
+<script src="{{ asset('assets/js/datatables.min.js') }}"></script>
 
 <!-- Main JS -->
 <script src="{{ asset('assets/js/main.js') }}"></script>
@@ -18,10 +16,7 @@
 <!-- Page JS -->
 <script src="{{ asset('assets/js/dashboards-analytics.js') }}"></script>
 <script src="{{ asset('assets/js/pages-pricing.js') }}"></script>
-
-<!-- Place this tag in your head or just before your close body tag. -->
-<script async defer src="https://buttons.github.io/buttons.js"></script>
-<script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+@stack('resource-js')
 @if (env('APP_ENV') === 'production')
     <script>
         document.addEventListener('contextmenu', (e) => {
@@ -39,14 +34,10 @@
         $('.container-p-y').addClass('blur')
         setTimeout(() => {
             $('.lockscreen').offcanvas('show');
-        }, 1000);
+        }, 500);
         $.ajax({
             type: "POST",
             url: "{{ route('auth.lockscreen') }}",
-            data: {
-                _token: `{{ csrf_token() }}`,
-            },
-            dataType: "json",
             success: function(response) {}
         });
         $('#form-lockscreen').submit(function(e) {
@@ -159,7 +150,7 @@
     function buildTree(elements, parentId = 0) {
         var branch = [];
         elements.forEach(element => {
-            if (element['parent'] == parentId) {
+            if (element['parent'] === parentId) {
                 var children = buildTree(elements, element['id']);
                 if (children.length > 0) {
                     element['children'] = children;
@@ -178,15 +169,15 @@
         if (window.intervalTime) {
             clearInterval(window.intervalTime)
         }
-        window.serverTime = moment(date).format('YYYY-MM-DD HH:mm:ss')
+        window.serverTime = moment(date, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss')
         window.intervalTime = setInterval(() => {
-            window.serverTime = moment(window.serverTime).add('1', 's').format('YYYY-MM-DD HH:mm:ss');
+            window.serverTime = moment(window.serverTime, 'YYYY-MM-DD HH:mm:ss').add('1', 's').format('YYYY-MM-DD HH:mm:ss');
             $('.serverTime').html(window.serverTime)
         }, 1000)
     }
 
     function formattedInput() {
-        $('.phone_number').inputmask('(+62) 999-999-9999[9]')
+        $('.phone_number').inputmask('+628-999-999-999[9]')
         $('.price').inputmask('currency', {
             radixPoint: ',',
             groupSeparator: ".",
@@ -198,7 +189,6 @@
             rightAlign: false,
             allowMinus: false
         });
-
         $('.single_number').inputmask({
             mask: "9{1}",
             placeholder: "",
@@ -220,6 +210,17 @@
     }
     $(function() {
         server_time();
+        const csrfToken = $('meta[name="csrf-token"]').attr('content');
+        if (csrfToken) {
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
+                },
+            });
+            console.log("Token CSRF sebelum setup:", $('meta[name="csrf-token"]').attr('content'));
+        } else {
+            console.error("Kesalahan: CSRF Token tidak ditemukan di meta tag.");
+        }
         $(".menu-sub").find('.menu-link.bg-primary').parents('.menu-item:not(:first)').map((index, element) => {
             $(element).addClass('open');
             $(element).children('.menu-link.menu-toggle').addClass('bg-primary text-white')
@@ -232,11 +233,6 @@
             ],
             "responsive": true
         });
-        $.ajaxSetup({
-            complete: function(e, status) {
-                server_time(e.getResponseHeader('Date'))
-            }
-        });
         $('.process-subscription').click(function() {
             window.process_subscription = {
                 id: $(this).data('subscription'),
@@ -246,12 +242,12 @@
             $('#SubscriptionProcessModal').modal('show');
         });
         $('#SubscriptionProcessModal').on('shown.bs.modal', function() {
-            if (window.process_subscription == null) {
+            if (window.process_subscription === null) {
                 $(this).modal('hide')
             } else {
                 $.ajax({
                     type: "get",
-                    url: `{{ route('dev.subscription.show') }}/${window.process_subscription.id}`,
+                    url: `{{ route('settings.subscription.show') }}/${window.process_subscription.id}`,
                     dataType: "json",
                     success: function(response) {
                         $('.subs-title').html(response.data.name);
@@ -265,60 +261,48 @@
             }
         });
         $('#SubscriptionProcessModal').on('hidden.bs.modal', function() {
-            window.process_subscription == null;
+            window.process_subscription === null;
+        });
+        $("#modalDisconect").iziModal({
+            title: 'Warning',
+            subtitle: 'You About To Disconected',
+            headerColor: '#ff3e1d',
+            radius: 3,
+            zindex: 9999,
+            width: 900,
+            navigateCaption: true,
+            restoreDefaultContent: false,
+            timeout: 120000,
+            timeoutProgressbar: true,
+            onClosed: function() {
+                $('.lockscreen').offcanvas('show');
+            }
+        });
+        $('.offcanvas input').keydown(function(e) {
+            if (e.which === 9) {
+                e.preventDefault();
+            }
+        });
+        $('.single_number').keyup(function(e) {
+            if (e.currentTarget.value.split('').length === 1 && /\d{1}/y.exec(e.currentTarget.value) != null) {
+                if (e.currentTarget.nextElementSibling) {
+                    $(e.currentTarget.nextElementSibling).focus();
+                } else {
+                    $($(e.currentTarget).parents('.mb-3')[0].nextElementSibling).find('.single_number:first').focus()
+                }
+            }
         });
     });
-    $("#modalDisconect").iziModal({
-        title: 'Warning',
-        subtitle: 'You About To Disconected',
-        headerColor: '#ff3e1d',
-        radius: 3,
-        zindex: 9999,
-        width: 900,
-        navigateCaption: true,
-        restoreDefaultContent: false,
-        timeout: 120000,
-        timeoutProgressbar: true,
-        onClosed: function() {
-            $('.lockscreen').offcanvas('show');
-        }
-    });
-    $('.offcanvas input').keydown(function(e) {
-        if (e.which == 9) {
-            e.preventDefault();
-        }
-    });
-    $('.single_number').keyup(function(e) {
-        if (e.currentTarget.value.split('').length == 1 && /\d{1}/y.exec(e.currentTarget.value) != null) {
-            if (e.currentTarget.nextElementSibling) {
-                $(e.currentTarget.nextElementSibling).focus();
-            } else {
-                $($(e.currentTarget).parents('.mb-3')[0].nextElementSibling).find('.single_number:first').focus()
-            }
-        }
-    });
-    @if (session('lifetime') !== null)
-        @if (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
-                [2, 1]))
-            $("#modalDisconect").iziModal('open');
-        @elseif (in_array(now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false),
-                [5, 4, 3]))
-            iziToast.warning({
-                id: 'alert-session-expirated',
-                title: 'Alert',
-                message: `session expirate in {{ now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta')) }} minutes`,
-                position: 'bottomRight',
-                layout: 2,
-                balloon: true,
-                displayMode: 'replace'
-            });
-        @elseif (now()->createFromTimeString($serverTime, 'Asia/Jakarta')->diffInMinutes(now()->createFromTimeString(session('lifetime'), 'Asia/Jakarta'), false) < 0 || session('lifetime') == null)
-            lockscreenTrigger();
-        @endif
-    @else
-        lockscreenTrigger();
-    @endif
-    $('.trigger-lockscreen').click(function() {
-        lockscreenTrigger();
-    });
 </script>
+    @if (session('lifetime') !== null)
+        <script>
+            const session_lifetime = `{{ session('lifetime') }}`;
+        </script>
+    @else
+        <script>
+            $(function() {
+                lockscreenTrigger();
+            });
+        </script>
+    @endif
+@stack('js')

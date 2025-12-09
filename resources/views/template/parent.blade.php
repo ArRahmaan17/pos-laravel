@@ -1,23 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-theme="theme-default" data-assets-path="../assets/"
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-bs-theme="light" data-assets-path="../assets/"
     data-template="vertical-menu-template">
-
 @include('singleton.head')
 
 <body>
-    <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
             <x-sidebar />
             <div class="layout-page">
                 <x-navbar />
+                {{-- <x-breadcrumbs /> --}}
                 <div class="content-wrapper">
                     <div class="container-fluid flex-grow-1 container-p-y">
-                        @yield('content')`
+                        @yield('content')
                     </div>
-
                     <x-footer />
-                    @if (env('APP_SUBS') == 'ON' && in_array(getRole(), ['Developer', 'Manager']))
+                    @if (env('APP_SUBS') === 'ON' && getScope() !== 'user_created')
                         <div class="modal fade" id="AppSubscriptionModal" tabindex="-1" aria-modal="true" role="dialog" data-bs-backdrop="static"
                             data-bs-keyboard="false">
                             <div class="modal-dialog modal-xl" role="document">
@@ -170,7 +168,7 @@
                                                         <h6 class="mb-0">$90.98</h6>
                                                     </div>
                                                     <div class="d-grid mt-5">
-                                                        <button class="btn btn-success">
+                                                        <button class="btn btn-outline-success">
                                                             <span class="me-2">Proceed with Payment</span>
                                                             <i class='bx bx-cart scaleX-n1-rtl'></i>
                                                         </button>
@@ -203,7 +201,8 @@
                                                 <div class="app-brand justify-content-center">
                                                     <a class="app-brand-link gap-2">
                                                         <span class="app-brand-logo demo">
-                                                            <img rel="preload" height="100px" src="{{ asset('assets/img/icons/lock.webp') }}" />
+                                                            <img draggable="false" rel="preload" height="100px"
+                                                                src="{{ asset('assets/img/icons/lock.webp') }}" />
                                                         </span>
                                                     </a>
                                                 </div>
@@ -213,7 +212,7 @@
                                                     @csrf
                                                     <div class="mb-3">
                                                         <label for="access_pin" class="form-label">Access Pin</label>
-                                                        <div class="d-flex gap-3">
+                                                        <div class="d-flex gap-1 gap-sm-2 gap-md-3">
                                                             <input type="password" class="form-control single_number" id="access_pin"
                                                                 name="access_pin[0]" autofocus />
                                                             <input type="password" class="form-control single_number" name="access_pin[1]" />
@@ -236,12 +235,9 @@
                 </div>
             </div>
         </div>
-
-        <!-- Overlay -->
         <div class="layout-overlay layout-menu-toggle"></div>
     </div>
     @include('singleton.foot')
-    @stack('js')
 </body>
 
 </html>

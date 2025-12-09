@@ -42,7 +42,7 @@
                         </div>
                         <div class="card-footer align-self-end">
                             <button type="submit" class="btn btn-info btn-sm" name="report" value="pdf"><i class='bx bxs-file-export'></i> pdf</button>
-                            <button type="submit" class="btn btn-success btn-sm" name="report" value="xlxs"><i class='bx bxs-file-export'></i>
+                            <button type="submit" class="btn btn-outline-success btn-sm" name="report" value="xlxs"><i class='bx bxs-file-export'></i>
                                 xlxs</button>
                         </div>
                     </form>

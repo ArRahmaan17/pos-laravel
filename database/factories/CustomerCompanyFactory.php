@@ -29,7 +29,7 @@ class CustomerCompanyFactory extends Factory
         return [
             'name' => $this->faker->company(),
             'phone_number' => $this->faker->phoneNumber(),
-            'bussiness_id' => BusinessType::factory(),
+            'business_id' => BusinessType::factory(),
             'user_id' => User::factory(),
         ];
     }

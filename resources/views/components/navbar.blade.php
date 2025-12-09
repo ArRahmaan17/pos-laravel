@@ -17,11 +17,11 @@
             <li class="serverTime text-xs my-auto px-2 fw-bold">
                 <div class="spinner-border spinner-border-sm"></div>
             </li>
-            @if (env('APP_SUBS') == 'ON' && in_array(getRole(), ['Developer', 'Manager']))
+            @if (env('APP_SUBS') === 'ON' && getScope() !== 'user_created')
                 <li class="nav-item me-4">
                     <div>
                         <button data-bs-toggle="modal" data-bs-target="#AppSubscriptionModal"
-                            class="{{ isset(session('userLogged')['subscription']['name']) ? 'btn btn-success' : 'btn btn-warning' }} buy-now">
+                            class="{{ isset(session('userLogged')['subscription']['name']) ? 'btn btn-outline-success' : 'btn btn-warning' }} buy-now">
                             {!! session('userLogged')['subscription']['name'] ??
                                 '<i class="bx bxs-layer-plus mb-1" ></i><span class="d-none d-md-inline-block">Choose Subscription</span>' !!}
                         </button>
@@ -31,7 +31,7 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <img src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('resources/default/user/profesional/1.webp') }}"
+                        <img draggable="false" src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('resources/default/user/profesional/1.webp') }}"
                             alt class="w-px-40 h-100 rounded-circle" />
                     </div>
                 </a>
@@ -40,7 +40,7 @@
                         <a class="dropdown-item" href="#">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="avatar avatar-online">
-                                    <img src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('resources/default/user/profesional/1.webp') }}"
+                                    <img draggable="false" src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('resources/default/user/profesional/1.webp') }}"
                                         alt class="w-px-40 h-100 rounded-circle" />
                                 </div>
                                 <div>{{ buatSingkatan(session('userLogged')['company']['name']) }}</div>
@@ -50,11 +50,11 @@
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>
-                    {!! buildMenu($profileAppMenu, 1) !!}
-                    <li>
+                    {{-- {!! buildMenu($profileAppMenu, 1) !!} --}}
+                    {{-- <li>
                         <div class="dropdown-divider"></div>
-                    </li>
-                    @if (in_array(getRole(), ['Developer', 'Manager']))
+                    </li> --}}
+                    @if (getScope() !== 'user_created')
                         <li>
                             <a class="dropdown-item" href="{{ route('auth.change-company') }}">
                                 <i class='bx bxs-door-open me-2'></i>
@@ -63,7 +63,7 @@
                         </li>
                     @endif
                     <li>
-                        <a class="dropdown-item trigger-lockscreen">
+                        <a class="dropdown-item" onclick="lockscreenTrigger()">
                             <i class='bx bx-lock-alt me-2'></i>
                             <span class="align-middle">Lock Screen</span>
                         </a>

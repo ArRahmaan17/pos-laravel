@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-role" data-bs-toggle="modal" data-bs-target="#modal-customer-role">Add <i
+                        <button class="btn btn-outline-success" id="add-customer-role" data-bs-toggle="modal" data-bs-target="#modal-customer-role">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-role" class="btn btn-success">Save
+                    <button type="button" id="save-customer-role" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-role" class="btn btn-warning d-none">Update
                         changes</button>
@@ -100,7 +100,7 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-role");
                 $("#edit-customer-role").data("customer-role", idAppRole);
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length === 0) {
                     $('#table-customer-role tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -139,7 +139,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length === 0) {
                     $('#table-customer-role tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -168,7 +168,7 @@
                                 url: "{{ route('man.customer-role.delete') }}/" +
                                     idAppRole,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {

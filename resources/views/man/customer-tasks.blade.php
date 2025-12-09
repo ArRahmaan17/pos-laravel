@@ -43,7 +43,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-task-management" data-bs-toggle="modal"
+                        <button class="btn btn-outline-success" id="add-customer-task-management" data-bs-toggle="modal"
                             data-bs-target="#modal-customer-task-management">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -99,7 +99,7 @@
                                     name="date" class="form-control" />
                             </div>
                         </div>
-                        @if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager']))
+                        @if (in_array(session('userLogged')['role']['scope']['code'], ['Developer', 'Manager']))
                             <div class="row">
                                 <div class="col mb-3">
                                     <label for="role" class="form-label">Role</label>
@@ -145,7 +145,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-task-management" class="btn btn-success">Save
+                    <button type="button" id="save-customer-task-management" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-task-management" class="btn btn-warning d-none">Update
                         changes</button>
@@ -197,7 +197,7 @@
                 window.state = 'update';
                 let idCustomerTask = $(this).data("customer-task-management");
                 $("#edit-customer-task-management").data("customer-task-management", idCustomerTask);
-                if (window.dataTableCustomerTaskManagement.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerTaskManagement.rows('.selected').data().length === 0) {
                     $('#table-customer-task-management tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -223,7 +223,7 @@
                         });
                         let formElement = $('#modal-customer-task-management').find("form");
                         $.each(response.data, function(indexInArray, valueOfElement) {
-                            if (indexInArray == 'time_limit') {
+                            if (indexInArray === 'time_limit') {
                                 formElement.find(`[name=${indexInArray}]`).data('daterangepicker').setStartDate(valueOfElement);
                                 formElement.find(`[name=${indexInArray}]`).data('daterangepicker').setEndDate(valueOfElement);
                             } else {
@@ -248,7 +248,7 @@
                 });
             })
             $('.delete').click(function() {
-                if (window.dataTableCustomerTaskManagement.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerTaskManagement.rows('.selected').data().length === 0) {
                     $('#table-customer-task-management tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -277,7 +277,7 @@
                                 url: "{{ route('man.customer-task-management.delete') }}/" +
                                     idCustomerTask,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -352,7 +352,7 @@
                             url: "{{ route('man.customer-task-management.delete-detail') }}/" +
                                 idDetailTask,
                             data: {
-                                _token: `{{ csrf_token() }}`,
+                                
                             },
                             dataType: "json",
                             success: function(response) {
@@ -403,7 +403,7 @@
                 type: "PUT",
                 url: `{{ route('man.customer-task-management.start-task') }}/${$(e.currentTarget).data('customer-task-detail')??$(e.currentTarget).data('customer-task-management')}/${$(e.currentTarget).data('customer-task-status')}`,
                 data: {
-                    '_token': `{{ csrf_token() }}`
+                   
                 },
                 dataType: "json",
                 success: function(response) {
@@ -510,7 +510,7 @@
             let contentTableBody = ``;
             d.details.forEach(detail => {
                 contentTableBody +=
-                    `<div class="accordion-item shadow-sm my-1 ${detail.start_at !== null && detail.end_at !== null  ? 'border border-success' : (detail.start_at != null &&  detail.end_at == null)? 'border border-info': 'border border-warning'}">
+                    `<div class="accordion-item shadow-sm my-1 ${detail.start_at !== null && detail.end_at !== null  ? 'border border-success' : (detail.start_at != null &&  detail.end_at === null)? 'border border-info': 'border border-warning'}">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${kebabCase(detail.master.name)}${detail.id}"
                                 aria-expanded="false" aria-controls="${kebabCase(detail.master.name)}${detail.id}">
@@ -524,7 +524,7 @@
                                         ${detail.master.description}
                                     </div>
                                     <div class="flex-fill align-self-center d-flex gap-1 justify-content-end">
-                                        ${detail.start_at !== null && detail.end_at !== null  ? `<button class="btn btn-icon btn-success evidence" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.task_id}' data-task-evidence='${detail.evidence}'><i class='bx bxs-file-find'></i></button>`: (detail.start_at != null && detail.end_at == null)?`<button type="button" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.task_id}' class="btn btn-icon btn-info end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-warning start" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.task_id}'><i class='bx bx-play'></i></button><button type="button" class="btn btn-icon btn-danger trash" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.task_id}'><i class='bx bxs-trash-alt'></i></button>`}
+                                        ${detail.start_at !== null && detail.end_at !== null  ? `<button class="btn btn-icon btn-outline-success evidence" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.task_id}' data-task-evidence='${detail.evidence}'><i class='bx bxs-file-find'></i></button>`: (detail.start_at != null && detail.end_at === null)?`<button type="button" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.task_id}' class="btn btn-icon btn-info end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-outline-warning start" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.task_id}'><i class='bx bx-play'></i></button><button type="button" class="btn btn-icon btn-outline-danger trash" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.task_id}'><i class='bx bxs-trash-alt'></i></button>`}
                                     </div>
                                 </div>
                             </div>

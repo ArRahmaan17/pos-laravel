@@ -25,7 +25,7 @@
                             <input type="hidden" name="user_id" value="{{ session('userLogged')['company']['user_id'] }}">
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
-                            <img src="@if (session('userLogged')['company']['picture'] === 'default-company.png') {{ asset('cp/default-company.png') }} @else {{ asset('cp/' . session('userLogged')['company']['picture']) }} @endif"
+                            <img draggable="false" src="@if (session('userLogged')['company']['picture'] === 'default-company.png') {{ asset('cp/default-company.png') }} @else {{ asset('cp/' . session('userLogged')['company']['picture']) }} @endif"
                                 alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
                             <div class="button-wrapper">
                                 <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
@@ -41,11 +41,11 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="bussiness_id" class="form-label">Type of Business *</label>
-                            <select id="bussiness_id" name="bussiness_id" class="form-control select2">
+                            <label for="business_id" class="form-label">Type of Business *</label>
+                            <select id="business_id" name="business_id" class="form-control select2">
                                 <option value="" disabled selected>Please Select</option>
                                 @foreach ($types as $type)
-                                    <option @if (session('userLogged')['company']['bussiness_id']) selected @endif value="{{ $type->id }}">{{ $type->name }}</option>
+                                    <option @if (session('userLogged')['company']['business_id']) selected @endif value="{{ $type->id }}">{{ $type->name }}</option>
                                 @endforeach
                             </select>
                             <div class="invalid-feedback"></div>
@@ -131,7 +131,7 @@
                     type: "PATCH",
                     url: `{{ route('man.customer-user.generate-affiliate-code') }}`,
                     data: {
-                        '_token': `{{ csrf_token() }}`
+                       
                     },
                     dataType: "json",
                     success: function(response) {

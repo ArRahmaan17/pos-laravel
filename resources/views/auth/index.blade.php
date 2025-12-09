@@ -5,13 +5,7 @@
         <div class="authentication-inner">
             <div class="card">
                 <div class="card-body">
-                    <div class="app-brand justify-content-center">
-                        <a class="app-brand-link gap-2">
-                            <span class="app-brand-logo demo">
-                                <img rel='preload' style="width: 100px;height: 100px;" src="{{ asset('assets/img/icons/icon.png') }}" />
-                            </span>
-                        </a>
-                    </div>
+                    @include('singleton.icon')
                     <div class="col-12">
                         @if (session('error'))
                             <div class="alert alert-danger">{!! session('error') !!}</div>
@@ -21,9 +15,8 @@
                         @csrf
                         <div class="mb-3">
                             <label for="username" class="form-label">Email/Username/Phone number</label>
-                            <input type="text" class="form-control @error('username') is-invalid @enderror"
-                                id="username" name="username" value="{{ old('username') }}"
-                                placeholder="Masukan Email/Username/Phone Number Anda" autofocus />
+                            <input type="text" autofocus class="form-control @error('username') is-invalid @enderror" id="username" name="username"
+                                value="{{ old('username') }}" placeholder="Masukan Email/Username/Phone Number Anda" autofocus />
                             @error('username')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -31,10 +24,8 @@
                         <div class="mb-3 form-password-toggle">
                             <label class="form-label" for="password">Password</label>
                             <div class="input-group input-group-merge">
-                                <input type="password" id="password"
-                                    class="form-control @error('password') is-invalid @enderror" name="password"
-                                    placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                    aria-describedby="password" />
+                                <input type="password" id="password" class="form-control @error('password') is-invalid @enderror" name="password"
+                                    placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password" />
                                 <span class="input-group-text cursor-pointer rounded-end"><i class="bx bx-hide"></i></span>
                                 @error('password')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -53,16 +44,31 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <button class="btn btn-primary w-100 py-2" type="submit">
+                            <button class="btn btn-outline-primary w-100 py-2 fw-bolder" type="submit">
                                 Masuk
-                                <span class='tf-icons bx bx-right-arrow-circle bx-tada bx-sm'></span>
+                                <span class='tf-icons bx bx-right-arrow-circle bx-fade-right-hover bx-sm'></span>
                             </button>
                         </div>
                         <div class="mb-3">
-                            <a href="{{ route('auth.registration') }}" class="btn btn-success w-100 py-2">
-                                Registrasi
-                                <span class='tf-icons bx bx-right-arrow-circle bx-tada bx-sm'></span>
-                            </a>
+                            <button class="btn btn-outline-secondary w-100 py-2 fw-bolder" type="submit">
+                                Masuk
+                                <span class='tf-icons bx bx-right-arrow-circle bx-fade-right-hover bx-sm'></span>
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-outline-success w-100 py-2 fw-bolder" type="submit">
+                                Masuk
+                                <span class='tf-icons bx bx-right-arrow-circle bx-fade-right-hover bx-sm'></span>
+                            </button>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-outline-danger w-100 py-2 fw-bolder" type="submit">
+                                Masuk
+                                <span class='tf-icons bx bx-right-arrow-circle bx-fade-right-hover bx-sm'></span>
+                            </button>
+                        </div>
+                        <div class="text-center mt-2">
+                            Belum Punya Akun? <a href="{{ route('auth.registration') }}">Register</a>
                         </div>
                     </form>
                 </div>

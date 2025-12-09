@@ -18,12 +18,12 @@ class CustomerRole extends Model
     public static function customer_roles($customerId = null, $id = null)
     {
         $where = [];
-        if ($customerId == null) {
+        if ($customerId === null) {
             $where[] = ['customer_roles.user_id', '<>', $customerId];
         } else {
             $where[] = ['customer_roles.user_id', '=', $customerId];
         }
-        if ($id == null) {
+        if ($id === null) {
             $where[] = ['customer_roles.id', '<>', $id];
         } else {
             $where[] = ['customer_roles.id', '=', $id];

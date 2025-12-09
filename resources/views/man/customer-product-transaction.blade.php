@@ -12,7 +12,7 @@
                 <h3>@yield('title')</h3>
             </div>
             <div class="col-6 text-end">
-                <button class="btn btn-success" id="show-customer-company-transaction" data-bs-toggle="modal"
+                <button class="btn btn-outline-success" id="show-customer-company-transaction" data-bs-toggle="modal"
                     data-bs-target="#modal-customer-company-transaction">Show <i class='bx bx-folder-open pb-1'></i></button>
             </div>
         </div>
@@ -171,7 +171,7 @@
 
         function actionCustomerDiscount() {
             $('.use-discount').click(function() {
-                if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length === 0) {
                     $('#table-customer-product tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -205,13 +205,13 @@
             container.find('.stock').html(numberToAlphabet(parseInt(data.stock) - parseInt(data.quantity)))
             container.find('.subtotal').html(numberToAlphabet(data.subtotal))
             container.data('product', data);
-            if (quantity == 1) {
+            if (quantity === 1) {
                 container.find('.decrease').addClass('disabled');
                 container.find('.increase').removeClass('disabled');
             } else if (data.stock > quantity) {
                 container.find('.increase').removeClass('disabled');
                 container.find('.decrease').removeClass('disabled');
-            } else if (parseInt(quantity) == parseInt(data.stock)) {
+            } else if (parseInt(quantity) === parseInt(data.stock)) {
                 container.find('.alert').remove();
                 container.removeClass('border border-danger');
                 container.find('.increase').addClass('disabled');
@@ -266,7 +266,7 @@
             if ($('.cart-product').find('div.cart-item').length != 0) {
                 let matchId = false
                 $('.cart-product').find('div.cart-item').map(function(indexOrKey, elementOrValue) {
-                    if (elementOrValue.id == data.id) {
+                    if (elementOrValue.id === data.id) {
                         matchId = true;
                         if ((data.stock - 1) >= parseInt($(elementOrValue).find('input.quantity').val())) {
                             $(elementOrValue).find('input.quantity').val(parseInt($(elementOrValue).find(
@@ -282,7 +282,7 @@
                     $('.cart-product').append(`<div id="${data.id}" data-product='${JSON.stringify(data)}' class="list-group-item cart-item d-flex flex-wrap justify-content-between">
                         <div class="row align-items-center">
                             <div class="col-3">
-                                <img src="../customer-product/${data.picture}" width="45px" alt="${data.name}" class="rounded">
+                                <img draggable="false" src="../customer-product/${data.picture}" width="45px" alt="${data.name}" class="rounded">
                             </div>
                             <div class="col-8 align-self-center pt-2">
                                 <h5 class="mb-1">${data.name}</h5>
@@ -316,7 +316,7 @@
                 $('.cart-product').append(`<div id="${data.id}" data-product='${JSON.stringify(data)}' class="list-group-item cart-item d-flex flex-wrap justify-content-between">
                         <div class="row align-items-center">
                             <div class="col-3">
-                                <img src="../customer-product/${data.picture}" width="45px" alt="${data.name}" class="rounded">
+                                <img draggable="false" src="../customer-product/${data.picture}" width="45px" alt="${data.name}" class="rounded">
                             </div>
                             <div class="col-8 align-self-center pt-2">
                                 <h5 class="mb-1">${data.name}</h5>
@@ -357,10 +357,10 @@
 
         function actionCustomerProduct() {
             $('.add-cart').click(function() {
-                if ($('#discountCode').val() != '' && Object.keys(window.discount).length == 0) {
+                if ($('#discountCode').val() != '' && Object.keys(window.discount).length === 0) {
                     $('#discountCode').val('');
                 }
-                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length === 0) {
                     $('#table-customer-product tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -373,7 +373,7 @@
 
         function actionCustomerProductTransaction() {
             $('.print-transaction').click(function() {
-                if (window.dataTableCustomerProductTransaction.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerProductTransaction.rows('.selected').data().length === 0) {
                     $('#table-customer-product-transaction tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -386,7 +386,7 @@
 
         function setDiscount() {
             let discountCode = $('#discountCode').val();
-            if (discountCode != '' && Object.keys(window.discount).length == 0) {
+            if (discountCode != '' && Object.keys(window.discount).length === 0) {
                 $.ajax({
                     type: "get",
                     url: `{{ route('man.customer-product-transaction.validate-discount-code') }}/${discountCode}`,
@@ -400,7 +400,7 @@
                             layout: 2,
                             displayMode: 'replace'
                         });
-                        if (response.data.max_transaction_discount == null) {
+                        if (response.data.max_transaction_discount === null) {
                             delete response.data.max_transaction_discount;
                         }
                         window.discount = response.data;
@@ -435,7 +435,7 @@
                     };
                 });
                 data = {
-                    _token: `{{ csrf_token() }}`,
+                    
                     ...serializeObject($('#form-product-transaction')),
                     transactions: data.toArray(),
                     discount: window.discount
@@ -500,7 +500,7 @@
                     type: "POST",
                     url: `{{ route('man.customer-product-transaction.validate-transaction-items') }}`,
                     data: {
-                        _token: `{{ csrf_token() }}`,
+                        
                         products: products.toArray(),
                         discount: discount.code
                     },

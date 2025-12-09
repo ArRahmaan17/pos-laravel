@@ -20,11 +20,11 @@
         rel="stylesheet" />
 
     <!-- Icons. Uncomment required icon fonts -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/boxicons.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/fonts/boxicons.css') }}" />
 
     <!-- Core CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/theme-default.css') }}" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{{ asset('assets/css/core_v1.css') }}" class="template-customizer-core-css" />
+    <link rel="stylesheet" href="{{ asset('assets/css/theme-default.css') }}" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
 
     <!-- Vendors CSS -->
@@ -32,7 +32,7 @@
 
     <!-- Page CSS -->
     <!-- Page -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/pages/page-auth.css') }}" />
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
 
@@ -50,11 +50,11 @@
                     <div class="card-body">
                         <!-- Logo -->
                         <div class="app-brand justify-content-center align-items-middle fs-1 fw-bold">
-                            SELECT YOUR COMPANY
+                            SELECT YOUR COMPANY 
                         </div>
                         <div class="d-flex row company-container justify-content-center gap-2 gap-md-5 mt-5">
                             <div class="card col-12 col-sm-5 col-md-4 col-lg-3" aria-hidden="true">
-                                <img class="card-img-top placeholder-glow">
+                                <img draggable="false" class="card-img-top placeholder-glow">
                                 <div class="card-body">
                                     <h5 class="card-title placeholder-glow">
                                         <span class="placeholder col-6"></span>
@@ -70,7 +70,7 @@
                                 </div>
                             </div>
                             <div class="card col-12 col-sm-5 col-md-4 col-lg-3" aria-hidden="true">
-                                <img class="card-img-top placeholder-glow">
+                                <img draggable="false" class="card-img-top placeholder-glow">
                                 <div class="card-body">
                                     <h5 class="card-title placeholder-glow">
                                         <span class="placeholder col-6"></span>
@@ -86,7 +86,7 @@
                                 </div>
                             </div>
                             <div class="card col-12 col-sm-5 col-md-4 col-lg-3" aria-hidden="true">
-                                <img class="card-img-top placeholder-glow">
+                                <img draggable="false" class="card-img-top placeholder-glow">
                                 <div class="card-body">
                                     <h5 class="card-title placeholder-glow">
                                         <span class="placeholder col-6"></span>
@@ -108,11 +108,9 @@
         </div>
     </div>
 
-    <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
-
-    <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
     <!-- endbuild -->
 
     <!-- Vendors JS -->
@@ -150,7 +148,7 @@
                                         <form action="{{ route('select-company') }}" method="post">
                                             @csrf
                                             <input type="hidden" name="id" value="${item.id}">
-                                            <button class="btn btn-success d-block d-sm-inline-block">Apply <i class='mb-1 bx bx-log-in' ></i></button>
+                                            <button class="btn btn-outline-success d-block d-sm-inline-block">Apply <i class='mb-1 bx bx-log-in' ></i></button>
                                         </form>
                                     </div>
                                 </div>`;

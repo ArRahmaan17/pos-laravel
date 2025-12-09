@@ -82,7 +82,7 @@ class CustomerProductTransactionController extends Controller
             $row['discount'] = $item->discount;
             $row['name'] = $item->name;
             $row['details'] = $item->details;
-            $row['action'] = "<button class='btn btn-icon btn-success print-transaction' data-customer-product-transaction='".$item->orderCode."' ><i class='bx bxs-printer' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-success print-transaction' data-customer-product-transaction='".$item->orderCode."' ><i class='bx bxs-printer' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -155,7 +155,7 @@ class CustomerProductTransactionController extends Controller
             $row['stock'] = $item->stock;
             $row['unit'] = $item->unit->name;
             $row['picture'] = $item->picture;
-            $row['action'] = "<button class='btn btn-icon btn-success add-cart' data-customer-product='".$item->id."' ><i class='bx bxs-cart-add' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-success add-cart' data-customer-product='".$item->id."' ><i class='bx bxs-cart-add' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -237,8 +237,8 @@ class CustomerProductTransactionController extends Controller
             $row['percentage'] = $item->percentage;
             $row['max_transaction_discount'] = $item->max_transaction_discount;
             $row['min_transaction_price'] = $item->min_transaction_price;
-            $row['applyLeft'] = (($item->maxApply == 0) ? 'Unlimited' : ($appliedDiscount < $item->maxApply)) ? ($item->maxApply - $appliedDiscount).' x' : '0 x';
-            $row['action'] = (CustomerCompanyDiscount::appliedDiscounts($item->code) < $item->maxApply || $item->maxApply == 0) ? "<button class='btn btn-icon btn-success use-discount' data-customer-company-discount='".$item->id."' ><i class='bx bx-check-double' ></i></button>" : "<button class='btn btn-icon btn-danger disabled'><i class='bx bx-x' ></i></button>";
+            $row['applyLeft'] = (($item->maxApply === 0) ? 'Unlimited' : ($appliedDiscount < $item->maxApply)) ? ($item->maxApply - $appliedDiscount).' x' : '0 x';
+            $row['action'] = (CustomerCompanyDiscount::appliedDiscounts($item->code) < $item->maxApply || $item->maxApply === 0) ? "<button class='btn btn-icon btn-outline-success use-discount' data-customer-company-discount='".$item->id."' ><i class='bx bx-check-double' ></i></button>" : "<button class='btn btn-icon btn-outline-danger disabled'><i class='bx bx-x' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -273,10 +273,10 @@ class CustomerProductTransactionController extends Controller
             if ($request->discount != null && $request->discount['id'] != null) {
                 $data_discount = CustomerCompanyDiscount::find($request->discount['id']);
                 $appliedDiscount = CustomerCompanyDiscount::appliedDiscounts($data_discount->code);
-                if ($data_discount->maxApply != 0 && $data_discount->maxApply == $appliedDiscount) {
+                if ($data_discount->maxApply != 0 && $data_discount->maxApply === $appliedDiscount) {
                     throw new Exception('Max applied discount already reached', 422);
                 }
-                if ($total >= $data_discount->min_transaction_price && ($data_discount->max_apply == 0 || $data_discount->max_apply >= CustomerCompanyDiscount::appliedDiscounts($data_discount->code))) {
+                if ($total >= $data_discount->min_transaction_price && ($data_discount->max_apply === 0 || $data_discount->max_apply >= CustomerCompanyDiscount::appliedDiscounts($data_discount->code))) {
                     $discount = (
                         floatval($total)
                         - floatval(($data_discount->max_transaction_discount != null) ? ($data_discount->max_transaction_discount * $data_discount->percentage / 100) : 0)
@@ -330,7 +330,7 @@ class CustomerProductTransactionController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             $response = [
-                'message' => ($th->getCode() == 422) ? 'Failed creating transaction. '.$th->getMessage() : 'Failed creating transaction. Unexpected error on processing your transaction',
+                'message' => ($th->getCode() === 422) ? 'Failed creating transaction. '.$th->getMessage() : 'Failed creating transaction. Unexpected error on processing your transaction',
             ];
             $code = 422;
         }
@@ -340,7 +340,7 @@ class CustomerProductTransactionController extends Controller
 
     private function checkOrderCode(string $orderCode)
     {
-        if (CustomerProductTransaction::where('orderCode', $orderCode)->count() == 0) {
+        if (CustomerProductTransaction::where('orderCode', $orderCode)->count() === 0) {
             return $orderCode;
         } else {
             return lastCompanyOrderCode();
@@ -378,13 +378,13 @@ class CustomerProductTransactionController extends Controller
         $data_errors = [];
         if (in_array(false, array_map(function ($status) {
             return $status['status'];
-        }, $status_product)) == false) {
+        }, $status_product)) === false) {
             $data_success['products'] = array_filter($status_product, function ($status) {
-                return $status['status'] == true;
+                return $status['status'] === true;
             });
         } else {
             $data_errors['products'] = array_filter($status_product, function ($status) {
-                return $status['status'] == false;
+                return $status['status'] === false;
             });
         }
         if ($isAppliedDiscount) {

@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-company" data-bs-toggle="modal" data-bs-target="#modal-customer-company">Add <i
+                        <button class="btn btn-outline-success" id="add-customer-company" data-bs-toggle="modal" data-bs-target="#modal-customer-company">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                         <input type="hidden" name="id">
                         <p class="mb-4">Please provide all required details to register your business with us.</p>
                         <div class="mb-3">
-                            @if (getRole() === 'Developer')
+                            @if (getScope() === 'Developer')
                                 <label for="user_id" class="form-label">Customer *</label>
                                 <select id="user_id" name="user_id" class="form-control select2">
                                     <option value="" disabled selected>Please Select</option>
@@ -64,7 +64,7 @@
                             @endif
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 mb-3">
-                            <img src="{{ asset('cp/default-company.png') }}" alt="user-avatar" class="d-block rounded" height="100" width="100"
+                            <img draggable="false" src="{{ asset('cp/default-company.png') }}" alt="user-avatar" class="d-block rounded" height="100" width="100"
                                 id="uploadedAvatar" />
                             <div class="button-wrapper">
                                 <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
@@ -81,8 +81,8 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="bussiness_id" class="form-label">Type of Business *</label>
-                            <select id="bussiness_id" name="bussiness_id" class="form-control select2">
+                            <label for="business_id" class="form-label">Type of Business *</label>
+                            <select id="business_id" name="business_id" class="form-control select2">
                                 <option value="" disabled selected>Please Select</option>
                                 @foreach ($types as $type)
                                     <option value="{{ $type->id }}">{{ $type->name }}</option>
@@ -144,7 +144,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-company" class="btn btn-success">Save
+                    <button type="button" id="save-customer-company" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-company" class="btn btn-warning d-none">Update
                         changes</button>
@@ -166,7 +166,7 @@
                 window.state = 'update';
                 let idCustomerCompany = $(this).data("customer-company");
                 $("#edit-customer-company").data("customer-company", idCustomerCompany);
-                if (window.dataTableCustomerCompany.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompany.rows('.selected').data().length === 0) {
                     $('#table-customer-company tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -190,7 +190,7 @@
                                     .split('[').join('.').split(']').join('') : element.name;
                                 if (response.data[name] !== undefined && $("[name='" + element
                                         .name + "']").length != 0) {
-                                    if (name == 'picture') {
+                                    if (name === 'picture') {
                                         $("#uploadedAvatar").prop('src',
                                             `{{ url('/') }}/cp/` + response.data[name])
                                     } else {
@@ -236,7 +236,7 @@
                     type: "POST",
                     url: "{{ route('man.customer-company.login-company') }}",
                     data: {
-                        _token: `{{ csrf_token() }}`,
+                        
                         id: idCustomerCompany
                     },
                     dataType: "json",

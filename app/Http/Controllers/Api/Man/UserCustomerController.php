@@ -49,7 +49,7 @@ class UserCustomerController extends Controller
 
         $user = $request->user();
 
-        if (getRole() === 'Developer') {
+        if (getScope() === 'Developer') {
             $id = $request->managerId;
         } else {
             $id = $user->id;

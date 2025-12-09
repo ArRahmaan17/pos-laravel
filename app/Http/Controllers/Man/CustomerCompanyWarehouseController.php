@@ -66,7 +66,7 @@ class CustomerCompanyWarehouseController extends Controller
             $row['name'] = $item->name;
             $row['description'] = $item->description;
             $row['racks'] = $item->racks;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-warehouse='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-warehouse='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-company-warehouse='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-warehouse='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [

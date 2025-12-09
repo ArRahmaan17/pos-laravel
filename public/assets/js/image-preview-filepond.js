@@ -600,11 +600,11 @@
     }
 
     function _objectDestructuringEmpty(obj) {
-        if (obj == null) throw new TypeError('Cannot destructure undefined');
+        if (obj === null) throw new TypeError('Cannot destructure undefined');
     }
 
     function _objectWithoutPropertiesLoose(source, excluded) {
-        if (source == null) return {};
+        if (source === null) return {};
         var target = {};
         var sourceKeys = Object.keys(source);
         var key, i;
@@ -619,7 +619,7 @@
     }
 
     function _objectWithoutProperties(source, excluded) {
-        if (source == null) return {};
+        if (source === null) return {};
 
         var target = _objectWithoutPropertiesLoose(source, excluded);
 

@@ -25,7 +25,7 @@ class CustomerWareHouseRackGoodController extends Controller
     public function racks($id)
     {
         $where = [['company_id', '=', session('userLogged')['company']['id']]];
-        if (getRole() == 'Developer') {
+        if (getScope() === 'Developer') {
             $where = [['company_id', '<>', 0]];
         }
         $data = CustomerCompanyWarehouse::with(['racks.products.product'])->where($where)->get();
@@ -48,10 +48,10 @@ class CustomerWareHouseRackGoodController extends Controller
     {
         DB::beginTransaction();
         try {
-            if ($rackId == 'shelfless') {
+            if ($rackId === 'shelfless') {
                 throw new Exception('Products that have been entered into the account cannot be removed again', 422);
             }
-            if (CustomerWarehouseRackGood::where('goodId', $goodId)->count() == 1) {
+            if (CustomerWarehouseRackGood::where('goodId', $goodId)->count() === 1) {
                 CustomerWarehouseRackGood::where('goodId', $goodId)->update(['rackId' => $rackId]);
             } else {
                 CustomerWarehouseRackGood::create(['rackId' => $rackId, 'goodId' => $goodId]);
@@ -61,7 +61,7 @@ class CustomerWareHouseRackGoodController extends Controller
             $code = 200;
         } catch (\Throwable $th) {
             DB::rollBack();
-            $response = ['message' => $th->getCode() == 422 ? $th->getMessage() : 'failed updating resource'];
+            $response = ['message' => $th->getCode() === 422 ? $th->getMessage() : 'failed updating resource'];
             $code = 422;
         }
 

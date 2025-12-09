@@ -127,53 +127,53 @@ class ReportController extends Controller
 
     private function reportData(string $template, $cashiers, $startDate, $endDate)
     {
-        if ($template == 'sales.sales-summary') {
+        if ($template === 'sales.sales-summary') {
             return [
                 'salesOverview' => $this->salesOverview($startDate, $endDate),
                 'salesByCategory' => $this->salesByCategory($startDate, $endDate),
                 'salesTopProduct' => $this->salesTopProduct($startDate, $endDate),
             ];
-        } elseif ($template == 'sales.sales-by-product') {
+        } elseif ($template === 'sales.sales-by-product') {
             return [
                 'salesProduct' => $this->salesProduct($startDate, $endDate),
             ];
-        } elseif ($template == 'sales.sales-by-category') {
+        } elseif ($template === 'sales.sales-by-category') {
             return [
                 'salesByCategory' => $this->salesByCategory($startDate, $endDate),
             ];
-        } elseif ($template == 'sales.sales-by-cashier') {
+        } elseif ($template === 'sales.sales-by-cashier') {
             return [
                 'salesByStaff' => $this->salesByStaff($cashiers, $startDate, $endDate),
             ];
-        } elseif ($template == 'product.stock-on-hand') {
+        } elseif ($template === 'product.stock-on-hand') {
             return [
                 'stockOnHand' => $this->stockOnHand($startDate, $endDate),
             ];
-        } elseif ($template == 'product.stock-movements') {
+        } elseif ($template === 'product.stock-movements') {
             return [
                 'stockMovement' => $this->stockMovement($startDate, $endDate),
             ];
-        } elseif ($template == 'product.stocktaking') {
+        } elseif ($template === 'product.stocktaking') {
             return [
                 'stockTaking' => $this->stockTaking($startDate, $endDate),
             ];
-        } elseif ($template == 'product.product-performance') {
+        } elseif ($template === 'product.product-performance') {
             return [
                 'productPerformance' => $this->productPerformance($startDate, $endDate),
             ];
-        } elseif ($template == 'sales.transaction-list') {
+        } elseif ($template === 'sales.transaction-list') {
             return [
                 'transactionComplete' => $this->transactionComplete($cashiers, $startDate, $endDate),
             ];
-        } elseif ($template == 'sales.discount-usage') {
+        } elseif ($template === 'sales.discount-usage') {
             return [
                 'discountUsage' => $this->discountUsage($cashiers, $startDate, $endDate),
             ];
-        } elseif ($template == 'finance.cash-flow-summary') {
+        } elseif ($template === 'finance.cash-flow-summary') {
             return [
                 'cashFlow' => $this->cashFlow($startDate, $endDate),
             ];
-        } elseif ($template == 'finance.income-vs-expense') {
+        } elseif ($template === 'finance.income-vs-expense') {
             return [
                 'incomeVsExpense' => $this->incomeVsExpense($startDate, $endDate),
             ];

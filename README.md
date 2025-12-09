@@ -115,7 +115,7 @@ DPOS/
 │   │   │   ├── CustomerProductTransactionController.php    # POS transactions
 │   │   │   ├── CustomerTemporaryProductController.php     # Pending products
 │   │   │   ├── CustomerCompanyGoodController.php          # Product management
-│   │   │   ├── CustomerCompanyController.php              # Company management
+│   │   │   ├── CompanyController.php              # Company management
 │   │   │   ├── CustomerRoleController.php                 # Role management
 │   │   │   └── ...                                        # Other management
 │   │   ├── Dev/            # Development/admin controllers

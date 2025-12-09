@@ -27,7 +27,7 @@ class CustomerProductTypeController extends Controller
             $data = json_decode(RedisHelper::get("cutomer_product_categories:{$this->company_id}"));
         } else {
             $company = Company::find($request->header('x-customer-company-id'));
-            $data = CustomerProductType::orderBy('id', 'asc')->where('bussiness_id', $company->bussiness_id)->get();
+            $data = CustomerProductType::orderBy('id', 'asc')->where('business_id', $company->business_id)->get();
             RedisHelper::set("cutomer_product_categories:{$this->company_id}", json_encode($data));
         }
         $response = ['message' => 'showing resource successfully', 'data' => $data];
@@ -40,11 +40,11 @@ class CustomerProductTypeController extends Controller
     {
         $company = Company::find($request->header('x-customer-company-id'));
         try {
-            $totalData = CustomerProductType::orderBy('id', 'asc')->where('bussiness_id', $company->bussiness_id)
+            $totalData = CustomerProductType::orderBy('id', 'asc')->where('business_id', $company->business_id)
                 ->count();
             $totalFiltered = $totalData;
             if (empty($request['search']['value'])) {
-                $assets = CustomerProductType::select('*')->where('bussiness_id', $company->bussiness_id);
+                $assets = CustomerProductType::select('*')->where('business_id', $company->business_id);
 
                 if ($request['length'] != '-1') {
                     $assets->limit($request['length']);
@@ -57,7 +57,7 @@ class CustomerProductTypeController extends Controller
                 }
                 $assets = $assets->get();
             } else {
-                $assets = CustomerProductType::select('*')->where('bussiness_id', $company->bussiness_id)
+                $assets = CustomerProductType::select('*')->where('business_id', $company->business_id)
                     ->where('name', 'like', '%'.$request['search']['value'].'%')
                     ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -72,7 +72,7 @@ class CustomerProductTypeController extends Controller
                 }
                 $assets = $assets->get();
 
-                $totalFiltered = CustomerProductType::select('*')->where('bussiness_id', $company->bussiness_id)
+                $totalFiltered = CustomerProductType::select('*')->where('business_id', $company->business_id)
                     ->where('name', 'like', '%'.$request['search']['value'].'%')
                     ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -87,7 +87,7 @@ class CustomerProductTypeController extends Controller
                 $row['order_number'] = $request['start'] + ($index + 1);
                 $row['name'] = $item->name;
                 $row['description'] = $item->description;
-                $row['action'] = "<button class='btn btn-icon btn-warning edit' data-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-role='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+                $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-role='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
                 $dataFiltered[] = $row;
             }
             $response = [
@@ -115,7 +115,7 @@ class CustomerProductTypeController extends Controller
         ]);
         try {
             $company = Company::find($this->company_id);
-            $request->merge(['bussiness_id' => $this->company_id]);
+            $request->merge(['business_id' => $this->company_id]);
             CustomerProductType::create($request->except('_token', 'id'));
             DB::commit();
             RedisHelper::del("cutomer_product_categories:{$this->company_id}");
@@ -135,7 +135,7 @@ class CustomerProductTypeController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $data = CustomerProductType::find($id)->where('bussiness_id', $this->company_id);
+        $data = CustomerProductType::find($id)->where('business_id', $this->company_id);
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -179,7 +179,7 @@ class CustomerProductTypeController extends Controller
     {
         DB::beginTransaction();
         try {
-            CustomerProductType::find($id)->where('bussiness_id', $this->company_id)->destroy($id);
+            CustomerProductType::find($id)->where('business_id', $this->company_id)->destroy($id);
             DB::commit();
             RedisHelper::del("cutomer_product_categories:{$this->company_id}");
             $response = ['message' => 'deleting resource successfully'];

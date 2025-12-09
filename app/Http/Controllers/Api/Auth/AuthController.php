@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\BusinessType;
-use App\Models\CompanyAddress;
 use App\Models\Company;
+use App\Models\CompanyAddress;
 use App\Models\CustomerRole;
 use App\Models\User;
 use App\Models\UserCustomerRole;
@@ -196,7 +196,7 @@ class AuthController extends Controller
         $targetUserData = $targetUser->toArray();
         $targetUserData['company'] = UserCustomerRole::employeeCompany($targetUser->user_id);
 
-        if (UserCustomerRole::employeeMenu($targetUser->user_id) == 0) {
+        if (UserCustomerRole::employeeMenu($targetUser->user_id) === 0) {
             $hasPrivileges = false;
         }
 
@@ -442,7 +442,7 @@ class AuthController extends Controller
             'name' => 'required|string|unique:companies,name',
             'email' => 'required|string|unique:companies,email|email',
             'phone_number' => 'required|string|unique:companies,phone_number|regex:/8\d{10,11}$/',
-            'bussiness_id' => 'required|exists:business_types,id',
+            'business_id' => 'required|exists:business_types,id',
         ]);
 
         $checkCompany = Company::where([

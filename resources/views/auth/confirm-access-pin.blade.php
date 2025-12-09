@@ -8,7 +8,7 @@
                     <div class="app-brand justify-content-center">
                         <a href="{{ route('dashboard.index') }}" class="app-brand-link gap-2">
                             <span class="app-brand-logo demo">
-                               <img rel="preload" height="100px" src="{{ asset('assets/img/icons/lock.webp') }}" />
+                               <img draggable="false" rel="preload" height="100px" src="{{ asset('assets/img/icons/lock.webp') }}" />
                             </span>
                         </a>
                     </div>
@@ -76,12 +76,12 @@
         $(function() {
             formattedInput();
             $('input').keydown(function(e) {
-                if (e.which == 9) {
+                if (e.which === 9) {
                     e.preventDefault();
                 }
             });
             $('.single_number').keyup(function(e) {
-                if (e.currentTarget.value.split('').length == 1 && /\d{1}/y.exec(e.currentTarget.value) != null) {
+                if (e.currentTarget.value.split('').length === 1 && /\d{1}/y.exec(e.currentTarget.value) != null) {
                     if (e.currentTarget.nextElementSibling) {
                         $(e.currentTarget.nextElementSibling).focus();
                     } else {

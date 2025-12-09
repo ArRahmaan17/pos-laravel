@@ -69,7 +69,7 @@
                 $total_cash_in = 0;
             @endphp
             @foreach ($data['cashFlow'] as $flow)
-                @if (statusTransaction($flow->orderCode) == 'OUT')
+                @if (statusTransaction($flow->orderCode) === 'OUT')
                     <tr>
                         <td>{{ $flow->created_at }}</td>
                         <td>Description</td>
@@ -104,7 +104,7 @@
                 $total_cash_out = 0;
             @endphp
             @foreach ($data['cashFlow'] as $flow)
-                @if (statusTransaction($flow->orderCode) == 'IN')
+                @if (statusTransaction($flow->orderCode) === 'IN')
                     <tr>
                         <td>{{ $flow->created_at }}</td>
                         <td>Description</td>

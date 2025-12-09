@@ -7,7 +7,7 @@
                     <div class="app-brand justify-content-center">
                         <a href="{{ route('dashboard.index') }}" class="app-brand-link gap-2">
                             <span class="app-brand-logo demo">
-                                <img rel='preload' src="{{ asset('assets/img/favicon/favicon.ico') }}" />
+                                <img draggable="false" rel='preload' src="{{ asset('assets/img/favicon/favicon.ico') }}" />
                             </span>
                         </a>
                     </div>

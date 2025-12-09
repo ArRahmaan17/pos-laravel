@@ -11,6 +11,6 @@
 
     <div class="menu-inner-shadow"></div>
     <div class="menu-inner py-1 ps ps--active-y">
-        {!! buildMenu($sidebarAppMenu) !!}
+        {!! buildMenu($menus) !!}
     </div>
 </aside>

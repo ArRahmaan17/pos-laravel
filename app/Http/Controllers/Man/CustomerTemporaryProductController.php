@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\ProductWeight;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerProductType;
 use App\Models\CustomerTemporaryProduct;
+use App\Models\ProductWeight;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +20,7 @@ class CustomerTemporaryProductController extends Controller
     public function index()
     {
         $units = ProductWeight::get();
-        $categories = CustomerProductType::with('category')->where('bussiness_id', session('userLogged')['company']['bussiness_id'])->get();
+        $categories = CustomerProductType::with('category')->where('business_id', session('userLogged')['company']['business_id'])->get();
 
         return view('man.customer-temp-product', compact('units', 'categories'));
     }
@@ -93,7 +93,7 @@ class CustomerTemporaryProductController extends Controller
             $row['sum_product_restock'] = $item->sum_product_restock;
             $row['sum_product_remove'] = $item->sum_product_remove;
             $row['changedProduct'] = $item->changedProduct;
-            $row['action'] = (intval($item->sum_accepted) !== (intval($item->sum_product_in) + intval($item->sum_product_restock) + intval($item->sum_product_remove)) && in_array(session('userLogged')['role']['name'], ['Manager', 'Developer']) ? "<button class='btn btn-icon btn-success accept' data-customer-temporary-product='".$item->transaction_created."' ><i class='bx bx-check' ></i></button>" : "<button class='btn btn-icon btn-warning edit' data-customer-temporary-product='".$item->transaction_created."' ><i class='bx bx-pencil' ></i></button><button data-customer-temporary-product='".$item->transaction_created."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>");
+            $row['action'] = (intval($item->sum_accepted) !== (intval($item->sum_product_in) + intval($item->sum_product_restock) + intval($item->sum_product_remove)) && in_array(session('userLogged')['role']['scope']['code'], ['Manager', 'Developer']) ? "<button class='btn btn-icon btn-outline-success accept' data-customer-temporary-product='".$item->transaction_created."' ><i class='bx bx-check' ></i></button>" : "<button class='btn btn-icon btn-outline-warning edit' data-customer-temporary-product='".$item->transaction_created."' ><i class='bx bx-pencil' ></i></button><button data-customer-temporary-product='".$item->transaction_created."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>");
             $dataFiltered[] = $row;
         }
         $response = [
@@ -189,7 +189,7 @@ class CustomerTemporaryProductController extends Controller
             foreach ($request->products as $key => $value) {
                 foreach ($default_data as $indexDefault => $valueDefault) {
                     $resultTempProduct[$key][$indexDefault] = (! empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buy_price']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
-                    if ($indexDefault == 'picture') {
+                    if ($indexDefault === 'picture') {
                         if (! empty($request->products[$key][$indexDefault])) {
                             $filename = md5($request->products[$key]['name'].now()->format('Y-m-d h:i:s')).'.'.$request->products[$key][$indexDefault]->extension();
                             if (Storage::disk('public-asset')->directories('temp-customer-product')) {
@@ -199,11 +199,11 @@ class CustomerTemporaryProductController extends Controller
                             $resultTempProduct[$key][$indexDefault] = $filename;
                         } else {
                             $resultTempProduct[$key][$indexDefault] = ($resultTempProduct[$key]['customerCompanyGoodId']) ? collect($referenceProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
-                                return $ref['id'] == $resultTempProduct[$key]['customerCompanyGoodId'];
+                                return $ref['id'] === $resultTempProduct[$key]['customerCompanyGoodId'];
                             })->first()['picture'] : 'default-product.png';
                         }
                     }
-                    if ($indexDefault == 'status') {
+                    if ($indexDefault === 'status') {
                         $resultTempProduct[$key]['orderCode'] = $orderCode[strtolower($resultTempProduct[$key][$indexDefault])];
                         if (in_array($resultTempProduct[$key][$indexDefault], ['IN', 'RESTOCK'])) {
                             $resultTempProduct[$key][$indexDefault] = 'publish';
@@ -211,9 +211,9 @@ class CustomerTemporaryProductController extends Controller
                             $resultTempProduct[$key][$indexDefault] = null;
                         }
                     }
-                    if ($indexDefault == 'stock_reference') {
+                    if ($indexDefault === 'stock_reference') {
                         $resultTempProduct[$key][$indexDefault] = collect($referenceProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
-                            return $ref['id'] == $resultTempProduct[$key]['customerCompanyGoodId'];
+                            return $ref['id'] === $resultTempProduct[$key]['customerCompanyGoodId'];
                         })->first()['stock'] ?? 0;
                     }
                 }
@@ -236,7 +236,7 @@ class CustomerTemporaryProductController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (! in_array(getRole(), ['Developer', 'Manager'])) {
+            if (! getScope() !== 'user_created') {
                 throw new Exception('Not Authorize');
             }
             $data = CustomerTemporaryProduct::with('reference')->whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
@@ -305,7 +305,7 @@ class CustomerTemporaryProductController extends Controller
             DB::commit();
         } catch (\Exception $th) {
             DB::rollBack();
-            $response = ['message' => 'failed creating resource'.($th->getCode() == 0) ? ', '.$th->getMessage() : ''];
+            $response = ['message' => 'failed creating resource'.($th->getCode() === 0) ? ', '.$th->getMessage() : ''];
             $code = 422;
         }
 
@@ -430,7 +430,7 @@ class CustomerTemporaryProductController extends Controller
             foreach ($request->products as $key => $value) {
                 foreach ($default_data as $indexDefault => $valueDefault) {
                     $resultTempProduct[$key][$indexDefault] = (! empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buy_price']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
-                    if ($indexDefault == 'picture') {
+                    if ($indexDefault === 'picture') {
                         if (! empty($request->products[$key][$indexDefault])) {
                             $filename = md5($request->products[$key]['name'].now()->format('Y-m-d h:i:s')).'.'.$request->products[$key][$indexDefault]->extension();
                             if (Storage::disk('public-asset')->directories('temp-customer-product')) {
@@ -440,13 +440,13 @@ class CustomerTemporaryProductController extends Controller
                             $resultTempProduct[$key][$indexDefault] = $filename;
                         } else {
                             $resultTempProduct[$key][$indexDefault] = ($resultTempProduct[$key]['customerCompanyGoodId']) ? collect($referenceProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
-                                return $ref['id'] == $resultTempProduct[$key]['customerCompanyGoodId'];
+                                return $ref['id'] === $resultTempProduct[$key]['customerCompanyGoodId'];
                             })->first()['picture'] : 'default-product.png';
                         }
                     }
-                    if ($indexDefault == 'status') {
+                    if ($indexDefault === 'status') {
                         $resultTempProduct[$key]['orderCode'] = ($resultTempProduct[$key]['id']) ? collect($referenceTemporaryProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
-                            return $ref['id'] == $resultTempProduct[$key]['id'];
+                            return $ref['id'] === $resultTempProduct[$key]['id'];
                         })->first()['orderCode'] : $orderCode[strtolower($resultTempProduct[$key][$indexDefault])];
                         if (in_array($resultTempProduct[$key][$indexDefault], ['IN', 'RESTOCK'])) {
                             $resultTempProduct[$key][$indexDefault] = 'publish';
@@ -454,9 +454,9 @@ class CustomerTemporaryProductController extends Controller
                             $resultTempProduct[$key][$indexDefault] = null;
                         }
                     }
-                    if ($indexDefault == 'stock_reference') {
+                    if ($indexDefault === 'stock_reference') {
                         $resultTempProduct[$key][$indexDefault] = collect($referenceProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
-                            return $ref['id'] == $resultTempProduct[$key]['customerCompanyGoodId'];
+                            return $ref['id'] === $resultTempProduct[$key]['customerCompanyGoodId'];
                         })->first()['stock'] ?? 0;
                     }
                 }
@@ -487,7 +487,7 @@ class CustomerTemporaryProductController extends Controller
                 'accepted' => 0,
                 'company_id' => session('userLogged')['company']['id'],
             ];
-            if (! in_array(session('userLogged')['role']['name'], ['Manager', 'Developer'])) {
+            if (! in_array(session('userLogged')['role']['scope']['code'], ['Manager', 'Developer'])) {
                 $where[] = ['user_id' => session('userLogged')['user']['id']];
             }
             $builder = CustomerTemporaryProduct::where($where);

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\ProductWeight;
 use App\Models\Company;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerProductType;
 use App\Models\CustomerTemporaryProduct;
+use App\Models\ProductWeight;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +24,7 @@ class CustomerTemporaryProductController extends Controller
         $company = $request->header('x-customer-company-id');
 
         $units = ProductWeight::get();
-        $categories = CustomerProductType::with('category')->where('bussiness_id', $company->bussiness_id)->get();
+        $categories = CustomerProductType::with('category')->where('business_id', $company->business_id)->get();
 
         return response()->json([
             'message' => 'Data retrieved successfully',
@@ -240,7 +240,7 @@ class CustomerTemporaryProductController extends Controller
                 foreach ($default_data as $indexDefault => $valueDefault) {
                     $resultTempProduct[$key][$indexDefault] = (! empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buy_price']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
 
-                    if ($indexDefault == 'picture') {
+                    if ($indexDefault === 'picture') {
                         if (! empty($request->products[$key][$indexDefault])) {
                             $filename = md5($request->products[$key]['name'].now()->format('Y-m-d h:i:s')).'.'.$request->products[$key][$indexDefault]->extension();
                             if (Storage::disk('public-asset')->directories('temp-customer-product')) {
@@ -250,12 +250,12 @@ class CustomerTemporaryProductController extends Controller
                             $resultTempProduct[$key][$indexDefault] = $filename;
                         } else {
                             $resultTempProduct[$key][$indexDefault] = ($resultTempProduct[$key]['customerCompanyGoodId']) ? collect($referenceProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
-                                return $ref['id'] == $resultTempProduct[$key]['customerCompanyGoodId'];
+                                return $ref['id'] === $resultTempProduct[$key]['customerCompanyGoodId'];
                             })->first()['picture'] : 'default-product.png';
                         }
                     }
 
-                    if ($indexDefault == 'status') {
+                    if ($indexDefault === 'status') {
                         $resultTempProduct[$key]['orderCode'] = $orderCode[strtolower($resultTempProduct[$key][$indexDefault])];
                         if (in_array($resultTempProduct[$key][$indexDefault], ['IN', 'RESTOCK'])) {
                             $resultTempProduct[$key][$indexDefault] = 'publish';
@@ -264,9 +264,9 @@ class CustomerTemporaryProductController extends Controller
                         }
                     }
 
-                    if ($indexDefault == 'stock_reference') {
+                    if ($indexDefault === 'stock_reference') {
                         $resultTempProduct[$key][$indexDefault] = collect($referenceProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
-                            return $ref['id'] == $resultTempProduct[$key]['customerCompanyGoodId'];
+                            return $ref['id'] === $resultTempProduct[$key]['customerCompanyGoodId'];
                         })->first()['stock'] ?? 0;
                     }
                 }
@@ -375,7 +375,7 @@ class CustomerTemporaryProductController extends Controller
             DB::commit();
         } catch (\Exception $th) {
             DB::rollBack();
-            $response = ['message' => 'Failed creating resource'.($th->getCode() == 0) ? ', '.$th->getMessage() : ''];
+            $response = ['message' => 'Failed creating resource'.($th->getCode() === 0) ? ', '.$th->getMessage() : ''];
             $code = 422;
         }
 
@@ -523,7 +523,7 @@ class CustomerTemporaryProductController extends Controller
                 foreach ($default_data as $indexDefault => $valueDefault) {
                     $resultTempProduct[$key][$indexDefault] = (! empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buy_price']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
 
-                    if ($indexDefault == 'picture') {
+                    if ($indexDefault === 'picture') {
                         if (! empty($request->products[$key][$indexDefault])) {
                             $filename = md5($request->products[$key]['name'].now()->format('Y-m-d h:i:s')).'.'.$request->products[$key][$indexDefault]->extension();
                             if (Storage::disk('public-asset')->directories('temp-customer-product')) {
@@ -533,14 +533,14 @@ class CustomerTemporaryProductController extends Controller
                             $resultTempProduct[$key][$indexDefault] = $filename;
                         } else {
                             $resultTempProduct[$key][$indexDefault] = ($resultTempProduct[$key]['customerCompanyGoodId']) ? collect($referenceProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
-                                return $ref['id'] == $resultTempProduct[$key]['customerCompanyGoodId'];
+                                return $ref['id'] === $resultTempProduct[$key]['customerCompanyGoodId'];
                             })->first()['picture'] : 'default-product.png';
                         }
                     }
 
-                    if ($indexDefault == 'status') {
+                    if ($indexDefault === 'status') {
                         $resultTempProduct[$key]['orderCode'] = ($resultTempProduct[$key]['id']) ? collect($referenceTemporaryProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
-                            return $ref['id'] == $resultTempProduct[$key]['id'];
+                            return $ref['id'] === $resultTempProduct[$key]['id'];
                         })->first()['orderCode'] : $orderCode[strtolower($resultTempProduct[$key][$indexDefault])];
                         if (in_array($resultTempProduct[$key][$indexDefault], ['IN', 'RESTOCK'])) {
                             $resultTempProduct[$key][$indexDefault] = 'publish';
@@ -549,9 +549,9 @@ class CustomerTemporaryProductController extends Controller
                         }
                     }
 
-                    if ($indexDefault == 'stock_reference') {
+                    if ($indexDefault === 'stock_reference') {
                         $resultTempProduct[$key][$indexDefault] = collect($referenceProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
-                            return $ref['id'] == $resultTempProduct[$key]['customerCompanyGoodId'];
+                            return $ref['id'] === $resultTempProduct[$key]['customerCompanyGoodId'];
                         })->first()['stock'] ?? 0;
                     }
                 }

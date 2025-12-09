@@ -82,11 +82,11 @@
             @endphp
             @foreach ($data['stockMovement'] as $stock)
                 @php
-                    $stat = $stock->orderCode == null ? 'adj' : strtolower(statusTransaction($stock->orderCode));
+                    $stat = $stock->orderCode === null ? 'adj' : strtolower(statusTransaction($stock->orderCode));
                     [$total_in, $total_out, $total_restock] =
-                        $stat == 'in'
+                        $stat === 'in'
                             ? [($total_in += $stock->quantity), ($total_out += 0), ($total_restock += 0)]
-                            : ($stat == 'out'
+                            : ($stat === 'out'
                                 ? [($total_in += 0), ($total_out += $stock->quantity), ($total_restock += 0)]
                                 : [($total_in += 0), ($total_out += 0), ($total_restock += $stock->quantity)]);
                 @endphp

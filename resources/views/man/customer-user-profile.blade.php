@@ -50,7 +50,7 @@
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="role" class="form-label">Role</label>
-                                <input type="text" id="role" name="role" class="form-control" value="{{ session('userLogged')['role']['name'] }}"
+                                <input type="text" id="role" name="role" class="form-control" value="{{ session('userLogged')['role']['scope']['code'] }}"
                                     disabled />
                             </div>
                             <div class="mb-3 col-md-6">
@@ -60,7 +60,7 @@
                                         value="{{ session('userLogged')['user']['affiliate_code'] }}"
                                         @if (empty(session('userLogged')['user']['affiliate_code'])) autofocus @else readonly @endif />
                                     <button type="button"
-                                        class="btn btn-icon btn-success @if (empty(session('userLogged')['user']['affiliate_code'])) btn-success generate @else btn-info copy @endif">
+                                        class="btn btn-icon btn-outline-success @if (empty(session('userLogged')['user']['affiliate_code'])) btn-success generate @else btn-info copy @endif">
                                         @if (empty(session('userLogged')['user']['affiliate_code']))
                                             <i class='bx bx-link'></i>
                                         @else
@@ -71,7 +71,7 @@
                             </div>
                         </div>
                         <div class="d-flex align-items-start align-items-sm-center gap-4 my-3">
-                            <img src="{{ !empty(session('userLogged')['user']['profile_picture']) ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('/assets/img/avatars/1.png') }}"
+                            <img draggable="false" src="{{ !empty(auth()->user()->profile_picture) ? asset('/customer-profile-picture/' . auth()->user()->profile_picture) : asset('/assets/img/avatars/1.png') }}"
                                 alt="user-avatar" class="d-block rounded" height="100" width="100" id="uploadedAvatar" />
                             <div class="button-wrapper">
                                 <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
@@ -124,7 +124,7 @@
                                 class="d-none d-sm-inline-block">Change Access Pin</span></a>
                     </div>
                 </div>
-                @if (in_array(session('userLogged')['role']['name'], ['Developer', 'Manager']))
+                @if (in_array(session('userLogged')['role']['scope']['code'], ['Developer', 'Manager']))
                     <div class="card px-0 flex-grow-1">
                         <h5 class="card-header">Delete Account</h5>
                         <div class="card-body">
@@ -165,7 +165,7 @@
                     type: "PATCH",
                     url: `{{ route('man.customer-user.generate-affiliate-code') }}`,
                     data: {
-                        '_token': `{{ csrf_token() }}`
+                       
                     },
                     dataType: "json",
                     success: function(response) {

@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-product-stocktaking" data-bs-toggle="modal"
+                        <button class="btn btn-outline-success" id="add-customer-product-stocktaking" data-bs-toggle="modal"
                             data-bs-target="#modal-customer-product-stocktaking">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-product-stocktaking" class="btn btn-success">Save
+                    <button type="button" id="save-customer-product-stocktaking" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-product-stocktaking" class="btn btn-warning d-none">Update
                         changes</button>
@@ -92,7 +92,7 @@
                 window.state = 'update';
                 let idStocktaking = $(this).data("customer-product-stocktaking");
                 $("#edit-customer-product-stocktaking").data("customer-product-stocktaking", idStocktaking);
-                if (window.dataTableCustomerCompany.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompany.rows('.selected').data().length === 0) {
                     $('#table-customer-product-stocktaking tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -143,7 +143,7 @@
                 window.state = 'show';
                 let idStocktaking = $(this).data("customer-product-stocktaking");
                 $("#edit-customer-product-stocktaking").data("customer-product-stocktaking", idStocktaking);
-                if (window.dataTableCustomerCompany.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompany.rows('.selected').data().length === 0) {
                     $('#table-customer-product-stocktaking tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -184,7 +184,7 @@
             $('.edit-stock').click(debounce(function() {
                 window.state = 'update';
                 let goodId = $(this).data("customer-company-good");
-                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length === 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected');
                 }
@@ -200,7 +200,7 @@
                 window.state = 'update';
                 let idStocktaking = $(this).data("customer-product-stocktaking");
                 $("#edit-customer-product-stocktaking").data("customer-product-stocktaking", idStocktaking);
-                if (window.dataTableCustomerCompany.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompany.rows('.selected').data().length === 0) {
                     $('#table-customer-product-stocktaking tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -230,7 +230,7 @@
                 });
             });
             $('.delete').click(function() {
-                if (window.dataTableCustomerCompany.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompany.rows('.selected').data().length === 0) {
                     $('#table-customer-product-stocktaking tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -259,7 +259,7 @@
                                 url: "{{ route('man.customer-product-stocktaking.delete') }}/" +
                                     idStocktaking,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -298,7 +298,7 @@
 
         function generateProductAccordion(data = null, state = 'new') {
             const accordionTemporaryProduct = $('#accordion-customer-product-stocktaking');
-            if (accordionTemporaryProduct.find(`#collaps-${data.customerCompanyGoodId}`).length == 0) {
+            if (accordionTemporaryProduct.find(`#collaps-${data.customerCompanyGoodId}`).length === 0) {
                 accordionTemporaryProduct.append(`<div class="accordion-item shadow-sm">
                     <h2 class="accordion-header">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collaps-${data.customerCompanyGoodId}"

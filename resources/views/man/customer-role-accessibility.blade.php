@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-role-accessibility" data-bs-toggle="modal"
+                        <button class="btn btn-outline-success" id="add-customer-role-accessibility" data-bs-toggle="modal"
                             data-bs-target="#modal-customer-role-accessibility">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-role-accessibility" class="btn btn-success">Save
+                    <button type="button" id="save-customer-role-accessibility" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-role-accessibility" class="btn btn-warning d-none">Update
                         changes</button>
@@ -113,7 +113,7 @@
                 window.state = 'update';
                 let idAppRole = $(this).data("customer-role-accessibility");
                 $("#edit-customer-role-accessibility").data("customer-role-accessibility", idAppRole);
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length === 0) {
                     $('#table-customer-role-accessibility tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -129,7 +129,7 @@
                     url: "{{ route('man.customer-role-accessibility.show') }}/" + idAppRole,
                     dataType: "json",
                     success: function(response) {
-                        if (response.data.role_menus.length == $('#modal-customer-role-accessibility')
+                        if (response.data.role_menus.length === $('#modal-customer-role-accessibility')
                             .find("form").find('input.menu-access:not(#selectAll)').length) {
                             $('#selectAll').prop('checked', true);
                         }
@@ -141,7 +141,7 @@
                         $('#modal-customer-role-accessibility').find("form")
                             .find('select, input').map(function(index, element) {
                                 if (response.data[`${element.name}`] != undefined) {
-                                    if (element.name == 'role_id') {
+                                    if (element.name === 'role_id') {
                                         setTimeout(() => {
                                             $(`[name="${element.name}"]`).val(response.data[
                                                 `${element.name}`]).trigger('change');
@@ -167,7 +167,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableAppRole.rows('.selected').data().length == 0) {
+                if (window.dataTableAppRole.rows('.selected').data().length === 0) {
                     $('#table-customer-role-accessibility tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -196,7 +196,7 @@
                                 url: "{{ route('man.customer-role-accessibility.delete') }}/" +
                                     idAppRole,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {

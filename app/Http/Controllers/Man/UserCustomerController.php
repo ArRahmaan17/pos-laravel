@@ -33,7 +33,7 @@ class UserCustomerController extends Controller
             'managerId.required' => 'The customer user field is required',
             'role_id.required' => 'The customer user role field is required',
         ]);
-        if (getRole() === 'Developer') {
+        if (getScope() === 'Developer') {
             $id = $request->managerId;
         } else {
             $id = session('userLogged')['user']['id'];
@@ -105,7 +105,7 @@ class UserCustomerController extends Controller
             $row['name'] = $item->name.'<br><small>('.$item->username.')</small>';
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['role'] = $item->role_name;
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-user='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-user='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>".(in_array(getRole(), ['Developer', 'Manager']) ? '<button class="btn btn-icon btn-info login-as" data-customer-user="'.$item->id.'"><i class="bx bx-log-in"></i></button>' : '');
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-user='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-user='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>".(getScope() !== 'user_created' ? '<button class="btn btn-icon btn-info login-as" data-customer-user="'.$item->id.'"><i class="bx bx-log-in"></i></button>' : '');
             $dataFiltered[] = $row;
         }
         $response = [

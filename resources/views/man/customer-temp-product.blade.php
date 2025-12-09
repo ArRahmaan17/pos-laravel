@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-temp-product" data-bs-toggle="modal" data-bs-target="#modal-customer-temp-product">
+                        <button class="btn btn-outline-success" id="add-customer-temp-product" data-bs-toggle="modal" data-bs-target="#modal-customer-temp-product">
                             Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -81,7 +81,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-temp-product" class="btn btn-success">Save
+                    <button type="button" id="save-customer-temp-product" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-temp-product" class="btn btn-warning d-none">Update
                         changes</button>
@@ -101,7 +101,7 @@
             <div class="row">
                 <div class="col mb-3">
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
-                        <img src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded user-avatar" height="100"
+                        <img draggable="false" src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded user-avatar" height="100"
                             width="100" />
                         <div class="button-wrapper">
                             <label class="btn btn-primary me-2 mb-4" tabindex="0">
@@ -207,7 +207,7 @@
                 window.state = 'update';
                 let transactionDate = $(this).data("customer-temporary-product");
                 $("#edit-customer-temp-product").data("customer-temporary-product", transactionDate)
-                if (window.dataTableCustomerTemporaryProduct.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerTemporaryProduct.rows('.selected').data().length === 0) {
                     $('#table-customer-temp-product tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -243,7 +243,7 @@
                 });
             });
             $('.delete').click(function() {
-                if (window.dataTableCustomerTemporaryProduct.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerTemporaryProduct.rows('.selected').data().length === 0) {
                     $('#table-customer-temp-product tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -272,7 +272,7 @@
                                 url: "{{ route('man.customer-temp-product.delete') }}/" +
                                     transactionDate,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -308,7 +308,7 @@
                 });
             });
             $('.accept').click(function() {
-                if (window.dataTableCustomerTemporaryProduct.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerTemporaryProduct.rows('.selected').data().length === 0) {
                     $('#table-customer-temp-product tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -337,7 +337,7 @@
                                 url: "{{ route('man.customer-temp-product.store-temp-product') }}/" +
                                     transactionDate,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -375,7 +375,7 @@
             $('.edit-temp').click(debounce(function() {
                 window.state = 'update';
                 let goodId = $(this).data("customer-company-good");
-                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length === 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected');
                 }
@@ -388,7 +388,7 @@
                 $('#table-customer-company-good tbody').find('tr').removeClass('selected');
             }, 500));
             $('.delete-temp').click(debounce(function() {
-                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyGood.rows('.selected').data().length === 0) {
                     $('#table-customer-company-good tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -630,9 +630,9 @@
             const accordionTemporaryProduct = $('#accordion-temporary-product');
             accordionTemporaryProduct.append(`<div class="accordion-item shadow-sm mb-3" data-id=${window.lastProductAccordion}>
                                 <h2 class="accordion-header">
-                                    <button class="accordion-button ${data?.id ? 'collapsed': ''} ${status == 'IN'? '' :((status == 'RESTOCK')?'text-warning': 'text-danger')}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${window.lastProductAccordion}"
+                                    <button class="accordion-button ${data?.id ? 'collapsed': ''} ${status === 'IN'? '' :((status === 'RESTOCK')?'text-warning': 'text-danger')}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${window.lastProductAccordion}"
                                         aria-expanded="false" aria-controls="collapse${window.lastProductAccordion}">
-                                        ${status == 'IN' ? `${status} Temporary Product` : `${status} ${data?.reference?.name??data.name}`}
+                                        ${status === 'IN' ? `${status} Temporary Product` : `${status} ${data?.reference?.name??data.name}`}
                                     </button>
                                 </h2>
                                 <div id="collapse${window.lastProductAccordion}" class="accordion-collapse collapse ${data?.id ? '': 'show'}">
@@ -675,10 +675,10 @@
                     }
                 });
                 const containerImage = container.find('.user-avatar')
-                if (data.picture == 'default-product.png') {
+                if (data.picture === 'default-product.png') {
                     containerImage.attr('src', `{{ asset('customer-product/default-product.png') }}`);
                 } else {
-                    if (status == 'RESTOCK' && data.id) {
+                    if (status === 'RESTOCK' && data.id) {
                         containerImage.attr('src', `{{ asset('temp-customer-product') }}/${data.picture}`);
                     } else {
                         containerImage.attr('src', `{{ asset('customer-product') }}/${data?.reference?.picture}`);

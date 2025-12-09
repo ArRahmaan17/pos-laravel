@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Product;
 
+use App\Models\Company\BusinessType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -14,6 +15,6 @@ class CustomerProductType extends Model
 
     public function category(): HasOne
     {
-        return $this->hasOne(BusinessType::class, 'id', 'bussiness_id');
+        return $this->hasOne(BusinessType::class, 'id', 'business_id');
     }
 }

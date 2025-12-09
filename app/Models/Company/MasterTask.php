@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Company;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,8 +14,8 @@ class MasterTask extends Model
     use HasFactory;
     use SoftDeletes;
 
-    public function role(): HasOne
-    {
-        return $this->hasOne(CustomerRole::class, 'id', 'role_id');
-    }
+    // public function role(): HasOne
+    // {
+    //     return $this->hasOne(CustomerRole::class, 'id', 'role_id');
+    // }
 }

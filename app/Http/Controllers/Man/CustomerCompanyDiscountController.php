@@ -75,9 +75,9 @@ class CustomerCompanyDiscountController extends Controller
             $row['percentage'] = $item->percentage;
             $row['max_discount'] = $item->max_transaction_discount;
             $row['min_transaction'] = $item->min_transaction_price;
-            $row['max_apply'] = $item->maxApply == 0 ? 'Unlimited' : $item->maxApply.'x';
-            $row['status'] = ($item->status == 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status == 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
-            $row['action'] = "<button class='btn btn-icon btn-warning edit' data-customer-company-discount='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-discount='".$item->id."' class='btn btn-icon btn-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['max_apply'] = $item->maxApply === 0 ? 'Unlimited' : $item->maxApply.'x';
+            $row['status'] = ($item->status === 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status === 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-company-discount='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-discount='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [

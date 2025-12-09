@@ -63,7 +63,7 @@ class BasicTest extends TestCase
     /** @test */
     public function api_check_company_availability_endpoint_works()
     {
-        $response = $this->getJson('/api/check-company-availability?name=TestCompany&email=test@company.com&phone_number=081234567890&bussiness_id=1');
+        $response = $this->getJson('/api/check-company-availability?name=TestCompany&email=test@company.com&phone_number=081234567890&business_id=1');
         // Should return 422 for validation error, which is expected
         $response->assertStatus(422);
     }

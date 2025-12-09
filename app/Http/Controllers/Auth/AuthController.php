@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company\BusinessType;
-use App\Models\Company\CompanyAddress;
 use App\Models\Company\Company;
+use App\Models\Company\CompanyAddress;
 use App\Models\CustomerRole;
-use App\Models\UserManagement\User;
 use App\Models\UserCustomerRole;
+use App\Models\UserManagement\Role;
+use App\Models\UserManagement\User;
 use App\Models\UserManagement\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,18 +30,15 @@ class AuthController extends Controller
         ]);
         $user = User::where('username', $request->username)
             ->orWhere('email', $request->username)
-            ->orWhere('phone_number', $request->username)
             ->first();
         if (! empty($user) && Hash::check($request->password, $user->password)) {
-            $roleUser = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
-            if (! $roleUser->role->is_system) {
-                $roleUser['company'] = UserCustomerRole::employeeCompany($roleUser->user_id);
-                $roleUser['company']['address'] = CompanyAddress::where('company_id', $roleUser['company']['id'])->first()->toArray();
-            }
+            $roleUser = UserRole::with('role', 'user', 'role.company', 'role.scope', 'role.company.address')->where('user_id', $user->id)->first();
             $access = collect($roleUser)->toArray();
+            if ($roleUser->role->scope->code !== 'user_created') {
+                unset($access['company']);
+            }
             session()->flush();
-            session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
-            User::find($user->id)->update(['personal_access_token' => base64_encode(json_encode($access) . '.' . base64_encode(env('APP_SECRET')))]);
+            session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int) env('SESSION_LIFETIME', 120))]);
             return redirect()->route('select-company');
         }
 
@@ -52,14 +50,14 @@ class AuthController extends Controller
 
     public function selectCompany(Request $request)
     {
-        $data = session('userLogged');
+        $roleUser = session('userLogged');
         $where = [['id', '=', $request->id]];
-        if (in_array($data['role']['name'], ['Manager'])) {
-            $where = [['id', '=', $request->id], ['user_id', '=', $data['user_id']]];
+        if (! $roleUser['role']['scope']['code'] === 'user_created') {
+            $where = [['id', '=', $request->id], ['user_id', '=', $roleUser['user_id']]];
         }
-        $data['company'] = Company::with('address')->where($where)->first()->toArray();
-        session()->flush();
-        session(['userLogged' => $data, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
+        $roleUser['company'] = Company::with('address')->where($where)->first()->toArray();
+        $roleUser = collect($roleUser)->toArray();
+        session(['userLogged' => $roleUser, 'lifetime' => now()->addMinutes((int) env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('dashboard.index');
     }
@@ -76,7 +74,7 @@ class AuthController extends Controller
         if (! empty($user)) {
             $hasPrivileges = true;
             $user['company'] = UserCustomerRole::employeeCompany($user['user_id']);
-            if (UserCustomerRole::employeeMenu($user['user_id']) == 0) {
+            if (UserCustomerRole::employeeMenu($user['user_id']) === 0) {
                 $hasPrivileges = false;
             }
             if ($hasPrivileges) {
@@ -117,11 +115,11 @@ class AuthController extends Controller
             'user.name' => ['required', 'min:5', 'max:30'],
             'user.username' => ['required', 'min:8', 'max:15', 'unique:users,username'],
             'user.email' => ['required', 'email', 'unique:users,email'],
-            'user.phone_number' => ['required', 'min:10', 'max:19', 'unique:users,phone_number', 'regex:/8\d{10,11}$/'],
+            'user.phone_number' => ['required', 'min:10', 'max:19', 'unique:users,phone_number', 'regex:/^\+628(-\d{3,4}){3,4}/s'],
             'user.password' => ['required', 'min:8', 'max:15', 'regex:/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/'],
             'company.name' => ['required', 'min:5', 'max:30'],
             'company.email' => ['required', 'email', 'unique:companies,email'],
-            'company.phone_number' => ['required', 'min:10', 'max:19', 'unique:companies,phone_number', 'regex:/8\d{10,11}$/'],
+            'company.phone_number' => ['required', 'min:10', 'max:19', 'unique:companies,phone_number', 'regex:/^\+628(-\d{3,4}){3,4}/s'],
             'address.place' => ['required', 'min:4', 'max:30'],
             'address.address' => ['required', 'min:4', 'max:30'],
             'address.city' => ['required', 'min:4', 'max:30'],
@@ -156,7 +154,7 @@ class AuthController extends Controller
             'company.phone_number.min' => 'The company phone number field must be at least 4 characters.',
             'company.phone_number.max' => 'The company phone number field must not be greater than 30 characters.',
             'company.phone_number.unique' => 'The company phone number has already been taken.',
-            'bussiness_id.required' => 'The business type is required.',
+            'business_id.required' => 'The business type is required.',
             'address.address.required' => 'The address is required.',
             'address.place.required' => 'The building is required.',
             'address.city.required' => 'The address city is required.',
@@ -198,18 +196,25 @@ class AuthController extends Controller
                     ]);
                 }
             } else {
-                $user['hr'] = 1;
                 $user_register = User::create($user);
-                UserRole::create([
-                    'user_id' => $user_register->id,
-                    'role_id' => 2,
-                ]);
-                $company['affiliate_code'] = generateAffiliateCode();
                 $company['user_id'] = $user_register->id;
-                $company['picture'] = 'default-picture.png';
+                $company['created_by'] = $user_register->id;
+                $company['picture'] = str_replace(public_path('/'), '', getFilePathDisk('company/default-company.png', 'default'));
                 $data_company = Company::create($company);
                 $address['company_id'] = $data_company->id;
+                $address['created_by'] = $user_register->id;
                 CompanyAddress::create($address);
+                $data_role = Role::where('code', 'root')->first()->toArray();
+                unset($data_role['id']);
+                $data_role['name'] = 'Your Default Manager Role';
+                $data_role['code'] = 'root-' . str(buatSingkatan($data_company->name))->lower();
+                $data_role['company_id'] = $data_company->id;
+                $data_role['created_by'] = $user_register->id;
+                $create_role = Role::create($data_role);
+                UserRole::create([
+                    'user_id' => $user_register->id,
+                    'role_id' => $create_role->id,
+                ]);
             }
             DB::commit();
 
@@ -217,7 +222,7 @@ class AuthController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
 
-            return redirect()->back();
+            return redirect()->back()->withInput();
         }
     }
 
@@ -231,7 +236,7 @@ class AuthController extends Controller
     public function customerCompany()
     {
         $where = [['user_id', '=', session('userLogged')['user']['id']]];
-        if (getRole() === 'Developer') {
+        if (getScope() === 'Developer') {
             $where = [['user_id', '<>', null]];
         }
         $data = Company::with('address', 'type')->where($where)->get();
@@ -272,16 +277,16 @@ class AuthController extends Controller
             'current_access_pin.*' => 'nullable|numeric',
             'access_pin' => ['array', function ($attribute, $value, $fail) {
                 if (count(array_filter($value, function ($val) {
-                    return $val == null;
-                })) == 6) {
+                    return $val === null;
+                })) === 6) {
                     $fail("The {$attribute} must be 6 digits.");
                 }
             }],
             'access_pin.*' => 'required|numeric',
             'confirm_access_pin' => ['array', function ($attribute, $value, $fail) {
                 if (count(array_filter($value, function ($val) {
-                    return $val == null;
-                })) == 6) {
+                    return $val === null;
+                })) === 6) {
                     $fail("The {$attribute} must be 6 digits.");
                 }
             }],
@@ -296,25 +301,13 @@ class AuthController extends Controller
             DB::commit();
         } catch (\Throwable $th) {
             DB::rollBack();
-            $message = ['error', 'Unexpected error in our record, try again later.'];
+            $message = ['error', 'Unexpected error in our system, try again later.'];
         }
-        $roleUser = UserRole::with('user', 'role')->where('user_id', session('userLogged')['user']['id'])->first();
-        if (empty($roleUser) || empty($roleUser->user) || empty($roleUser->role)) {
-            $roleUser = UserCustomerRole::with('user', 'role')->where('user_id', session('userLogged')['user']['id'])->first();
-        }
-        if (! in_array($roleUser->role->name, ['Developer', 'Manager'])) {
-            $roleUser['company'] = UserCustomerRole::employeeCompany($roleUser->user_id);
-            $roleUser['company']['address'] = CompanyAddress::where('company_id', $roleUser['company']['id'])->first()->toArray();
-        } else {
-            if ($roleUser->role->name == 'Manager') {
-                $roleUser['company'] = Company::with('address')->where(['id' => session('userLogged')['company']['id'], 'user_id' => session('userLogged')['user']['id']])->first()->toArray();
-            } else {
-                $roleUser['company'] = Company::with('address')->where('id', session('userLogged')['company']['id'])->first()->toArray();
-            }
-        }
+        $roleUser = UserRole::with('role', 'role.company', 'role.scope', 'role.company.address')->where('user_id', session('userLogged')['user']['id'])->first();
+        $roleUser['company'] = $roleUser->role->company;
+        $roleUser['company']['address'] = $roleUser->role->company->address;
         $access = collect($roleUser)->toArray();
-        session()->flush();
-        session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
+        session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int) env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('dashboard.index')->with($message);
     }
@@ -323,7 +316,7 @@ class AuthController extends Controller
     {
         $data = session('userLogged');
         unset($data['company']);
-        session(['userLogged' => $data, 'lifetime' => now()->addMinutes((int)env('SESSION_LIFETIME', 120))]);
+        session(['userLogged' => $data, 'lifetime' => now()->addMinutes((int) env('SESSION_LIFETIME', 120))]);
 
         return redirect()->route('dashboard.index');
     }
@@ -333,8 +326,8 @@ class AuthController extends Controller
         $request->validate([
             'access_pin' => ['array', function ($attribute, $value, $fail) {
                 if (count(array_filter($value, function ($val) {
-                    return $val == null;
-                })) == 6) {
+                    return $val === null;
+                })) === 6) {
                     $fail("The {$attribute} must be 6 digits.");
                 }
             }],
@@ -342,8 +335,7 @@ class AuthController extends Controller
         ]);
         if (Hash::check(implode('', $request->access_pin), session('userLogged')['user']['pin'])) {
             $dataSession = session()->all();
-            session()->flush();
-            $dataSession['lifetime'] = now()->addMinutes((int)env('SESSION_LIFETIME', 120));
+            $dataSession['lifetime'] = now()->addMinutes((int) env('SESSION_LIFETIME', 120));
             session($dataSession);
             $status = 200;
             $message = ['message' => 'lifetime extended successfully'];
@@ -358,8 +350,7 @@ class AuthController extends Controller
     public function lockscreen(Request $request)
     {
         $dataSession = session()->all();
-        unset($dataSession['lifetime']);
-        session()->flush();
+        $dataSession['lifetime'] = null;
         session($dataSession);
     }
 }

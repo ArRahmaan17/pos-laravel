@@ -9,7 +9,7 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-success" id="add-customer-company-discount" data-bs-toggle="modal"
+                        <button class="btn btn-outline-success" id="add-customer-company-discount" data-bs-toggle="modal"
                             data-bs-target="#modal-customer-company-discount">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-company-discount" class="btn btn-success">Save
+                    <button type="button" id="save-customer-company-discount" class="btn btn-outline-success">Save
                         changes</button>
                     <button type="button" id="edit-customer-company-discount" class="btn btn-warning d-none">Update
                         changes</button>
@@ -124,7 +124,7 @@
                 window.state = 'update';
                 let idCustomerCompany = $(this).data("customer-company-discount");
                 $("#edit-customer-company-discount").data("customer-company-discount", idCustomerCompany);
-                if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length === 0) {
                     $('#table-customer-company-discount tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -150,7 +150,7 @@
                                         response.data[element.name])
                                     .trigger('change');
                                 formElement.find('[name=status]').map((key, element) => {
-                                    if ($(element).val() == response.data.status) {
+                                    if ($(element).val() === response.data.status) {
                                         $(element).prop('checked', true);
                                     } else {
                                         $(element).prop('checked', false);
@@ -175,7 +175,7 @@
             })
 
             $('.delete').click(function() {
-                if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length == 0) {
+                if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length === 0) {
                     $('#table-customer-company-discount tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
@@ -204,7 +204,7 @@
                                 url: "{{ route('man.customer-company-discount.delete') }}/" +
                                     idCustomerCompany,
                                 data: {
-                                    _token: `{{ csrf_token() }}`,
+                                    
                                 },
                                 dataType: "json",
                                 success: function(response) {
@@ -292,7 +292,7 @@
                     orderable: true,
                     searchable: true,
                     render: (data, type, row, meta) => {
-                        return `<div class='text-wrap'>${(data == null)? 'Tak Terbatas' : $.fn.dataTable.render.number('.', ',', 2, 'Rp.').display(data)}</div>`
+                        return `<div class='text-wrap'>${(data === null)? 'Tak Terbatas' : $.fn.dataTable.render.number('.', ',', 2, 'Rp.').display(data)}</div>`
                     }
                 }, {
                     target: 5,
@@ -386,7 +386,7 @@
                     type: "PUT",
                     url: `{{ route('man.customer-company-discount.update') }}/${data.id}`,
                     data: {
-                        _token: `{{ csrf_token() }}`,
+                        
                         ...data
                     },
                     dataType: "json",
