@@ -48,10 +48,10 @@ Route::middleware([unAuthorization::class])->name('auth.')->prefix('auth')->grou
     Route::post('/registration', [AuthController::class, 'registration'])->name('registration.process');
 });
 Route::middleware([unSelectCustomerCompany::class])->group(function () {
-    Route::get('/select-company', function () {
+    Route::get('/', function () {
         return view('select-company');
     })->name('select-company');
-    Route::post('/select-company', [AuthController::class, 'selectCompany'])
+    Route::post('/', [AuthController::class, 'selectCompany'])
         ->name('choosing-company');
     Route::get('/list-company', [AuthController::class, 'customerCompany'])->name('list-company');
 });

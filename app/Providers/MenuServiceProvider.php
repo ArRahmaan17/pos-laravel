@@ -62,7 +62,6 @@ class MenuServiceProvider extends ServiceProvider
         }));
         $menus = array_merge($menus, $parents);
         $menus = arrayTree($menus);
-// dd($menus);
         View::composer('*', function ($view) use ($menus, $subscriptions) {
             $view->with([
                 'menus' => $menus,

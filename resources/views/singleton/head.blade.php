@@ -40,6 +40,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="{{ env('APP_NAME') }}" name="description" />
+    <meta content="{{ env('APP_NAME') }}" name="name" />
     <meta content="{{ env('APP_AUTHOR') }}" name="author" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 

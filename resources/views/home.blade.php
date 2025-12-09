@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'Home')
+@section('title', 'Dashboard')
 @section('content')
     <div class="row">
         @session('error')
