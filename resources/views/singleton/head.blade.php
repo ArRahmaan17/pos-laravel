@@ -43,6 +43,7 @@
     <meta content="{{ env('APP_NAME') }}" name="name" />
     <meta content="{{ env('APP_AUTHOR') }}" name="author" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta content="@yield('title')" name="title_page" />
 
     <!-- Favicon -->
     @include('singleton.favico')
@@ -53,7 +54,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="{{ asset('assets/css/googleapis.css') }}" rel="stylesheet" />
     <!-- Icons. Uncomment required icon fonts -->
-    <link rel="stylesheet" href="{{ asset('assets/fonts/boxicons.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/fonts/basic/boxicons.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/fonts/transformations.min.css') }}" />
 
     <!-- Core CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/core_v1.css') }}" class="template-customizer-core-css" />

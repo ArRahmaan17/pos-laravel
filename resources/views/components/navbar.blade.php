@@ -1,14 +1,14 @@
 <nav class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
-    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-            <i class="bx bx-menu bx-sm"></i>
+    <div class="layout-menu-toggle navbar-nav me-3 me-xl-0 d-xl-none">
+        <a class="nav-item nav-link px-0" href="javascript:void(0)">
+            <i class="bx bx-menu bx-md py-1"></i>
         </a>
     </div>
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <div class="navbar-nav align-items-center">
             <div class="nav-item d-flex align-items-center text-capitalize">
-                <i class='bx bxs-user-account'></i> &nbsp;
+                <i class='bx bxs-user-square bx-sm'></i> &nbsp;
                 <span class="d-none d-sm-block col-1 col-sm-10 col-md-12 text-truncate fw-bold">{!! session('userLogged')['user']['name'] !!}</span>
             </div>
         </div>
@@ -31,7 +31,8 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <img draggable="false" src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('resources/default/user/profesional/1.webp') }}"
+                        <img draggable="false"
+                            src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('resources/default/user/profesional/1.webp') }}"
                             alt class="w-px-40 h-100 rounded-circle" />
                     </div>
                 </a>
@@ -40,7 +41,8 @@
                         <a class="dropdown-item" href="#">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="avatar avatar-online">
-                                    <img draggable="false" src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('resources/default/user/profesional/1.webp') }}"
+                                    <img draggable="false"
+                                        src="{{ !empty(session('userLogged')['user']['profile_picture']) && session('userLogged')['user']['profile_picture'] !== null ? asset('/customer-profile-picture/' . session('userLogged')['user']['profile_picture']) : asset('resources/default/user/profesional/1.webp') }}"
                                         alt class="w-px-40 h-100 rounded-circle" />
                                 </div>
                                 <div>{{ buatSingkatan(session('userLogged')['company']['name']) }}</div>
@@ -50,28 +52,24 @@
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>
-                    {{-- {!! buildMenu($profileAppMenu, 1) !!} --}}
-                    {{-- <li>
-                        <div class="dropdown-divider"></div>
-                    </li> --}}
                     @if (getScope() !== 'user_created')
                         <li>
-                            <a class="dropdown-item" href="{{ route('auth.change-company') }}">
-                                <i class='bx bxs-door-open me-2'></i>
-                                <span class="align-middle">Change Company</span>
+                            <a class="dropdown-item d-flex align-items-center" href="{{ route('auth.change-company') }}">
+                                <i class='bx bxs-door-open bx-sm me-2'></i>
+                                <span>Change Company</span>
                             </a>
                         </li>
                     @endif
                     <li>
-                        <a class="dropdown-item" onclick="lockscreenTrigger()">
-                            <i class='bx bx-lock-alt me-2'></i>
-                            <span class="align-middle">Lock Screen</span>
+                        <a class="dropdown-item d-flex align-items-center" onclick="lockscreenTrigger()">
+                            <i class='bx bxs-lock bx-sm me-2'></i>
+                            <span>Lock Screen</span>
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="{{ route('auth.logout') }}">
-                            <i class="bx bx-power-off me-2"></i>
-                            <span class="align-middle">Log Out System</span>
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('auth.logout') }}">
+                            <i class='bx bxs-eject bx-sm bx-rotate-90 me-2'></i>
+                            <span>Log Out System</span>
                         </a>
                     </li>
                 </ul>

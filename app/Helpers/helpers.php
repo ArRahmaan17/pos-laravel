@@ -407,16 +407,16 @@ if (! function_exists('buildMenu')) {
                 $children = buildMenu($element['children']);
                 $html .= '<li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon ' . $element['icon'] . '"></i>
-                            <div data-i18n="Layouts">' . $element['id'] . '</div>
+                            <i class="menu-icon ' . $element['icon'] . ' bx-sm"></i>
+                            <div data-i18n="Layouts">' . $element['name'] . '</div>
                         </a>
                         <ul class="menu-sub">' . $children . '</ul>
                     </li>';
             } else {
                 $html .= '<li class="menu-item">
                     <a href="' . (Route::has($element['ref']) ? route($element['ref']) : $element['ref']) . '" class="menu-link ' . (Route::is($element['ref']) ? 'bg-primary text-white rounded-sm' : '') . '">
-                        <i class="menu-icon ' . $element['icon'] . '"></i>
-                        <div data-i18n="' . $element['id'] . '">' . $element['id'] . '</div>
+                        <i class="menu-icon ' . $element['icon'] . ' bx-sm"></i>
+                        <div data-i18n="' . $element['id'] . '">' . $element['name'] . '</div>
                     </a>
                 </li>';
             }

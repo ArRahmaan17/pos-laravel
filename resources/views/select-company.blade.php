@@ -20,7 +20,7 @@
         rel="stylesheet" />
 
     <!-- Icons. Uncomment required icon fonts -->
-    <link rel="stylesheet" href="{{ asset('assets/fonts/boxicons.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/fonts/basic/boxicons.min.css') }}" />
 
     <!-- Core CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/core_v1.css') }}" class="template-customizer-core-css" />

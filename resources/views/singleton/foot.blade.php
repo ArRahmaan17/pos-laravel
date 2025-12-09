@@ -40,6 +40,7 @@
             url: "{{ route('auth.lockscreen') }}",
             success: function(response) {}
         });
+        $('title').html(`Lockscreen - {{ env('APP_NAME') }}`);
         $('#form-lockscreen').submit(function(e) {
             e.preventDefault();
             let data = serializeObject($('#form-lockscreen'));
@@ -50,7 +51,8 @@
                 dataType: "json",
                 success: function(response) {
                     $('.lockscreen').offcanvas('hide');
-                    $('.blur').removeClass('blur')
+                    $('.blur').removeClass('blur');
+                    $('title').html(`${$('meta[name="title_page"]').attr('content')} - {{ env('APP_NAME') }}`);
                 }
             });
         });
@@ -294,15 +296,15 @@
         });
     });
 </script>
-    @if (session('lifetime') !== null)
-        <script>
-            const session_lifetime = `{{ session('lifetime') }}`;
-        </script>
-    @else
-        <script>
-            $(function() {
-                lockscreenTrigger();
-            });
-        </script>
-    @endif
+@if (session('lifetime') !== null)
+    <script>
+        const session_lifetime = `{{ session('lifetime') }}`;
+    </script>
+@else
+    <script>
+        $(function() {
+            lockscreenTrigger();
+        });
+    </script>
+@endif
 @stack('js')

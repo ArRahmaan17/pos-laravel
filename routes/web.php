@@ -62,7 +62,7 @@ Route::name('privacy.')->prefix('privacy')->as('privacy.')->middleware([Authoriz
 });
 Route::middleware([Authorization::class, setupAccessPin::class])->group(function () {
     Route::name('dashboard')->as('dashboard.')->prefix('dashboard')->group(function () {
-        Route::get('/', [HomeController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class])->defaults('icon', 'bx bxs-home-smile');
+        Route::get('/', [HomeController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class])->defaults('icon', 'bx bxs-home-alt-3');
     });
     Route::name('auth')->as('auth.')->prefix('auth')->group(function () {
         Route::post('/login-as/{id?}', [AuthController::class, 'loginAs'])->name('login-as')->middleware([checkPageAuthorization::class]);
@@ -73,9 +73,15 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
         Route::get('/change-company', [AuthController::class, 'changeCompany'])->name('change-company');
     });
 
-    Route::name('management')->as('management.')->prefix('management')->middleware([checkPageAuthorization::class])->group(function () {
+    Route::meta([
+        'icon' => 'bx bxs-enterprise',
+        'prefix' => 'management',
+        'as' => 'management.',
+        'name' => 'management',
+        'middleware' => [checkPageAuthorization::class],
+    ], function () {
         Route::name('company')->as('company.')->prefix('company')->group(function () {
-            Route::get('/', [CompanyController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-building-house');
+            Route::get('/', [CompanyController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-apartment');
             Route::post('/', [CompanyController::class, 'store'])->name('store');
             Route::get('/company', [CompanyController::class, 'company'])->name('company');
             Route::get('/profile', [CompanyController::class, 'profile'])->name('profile');
@@ -84,10 +90,6 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::get('/data-table', [CompanyController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CompanyController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CompanyController::class, 'destroy'])->name('delete');
-        });
-        Route::name('report')->as('report.')->prefix('report')->group(function () {
-            Route::get('/', [ReportController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-printer');
-            Route::post('/', [ReportController::class, 'generateReport'])->name('generate-report');
         });
         Route::name('role-accessibility')->as('role-accessibility.')->prefix('role-accessibility')->group(function () {
             Route::get('/', [CustomerRoleAccessibilityController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bx-universal-access');
@@ -106,7 +108,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [CustomerCompanyDiscountController::class, 'destroy'])->name('delete');
         });
         Route::name('role')->as('role.')->prefix('role')->group(function () {
-            Route::get('/', [CustomerRoleController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-user-detail');
+            Route::get('/', [CustomerRoleController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-user-id-card');
             Route::post('/', [CustomerRoleController::class, 'store'])->name('store');
             Route::put('/{id?}', [CustomerRoleController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerRoleController::class, 'dataTable'])->name('data-table');
@@ -115,7 +117,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [CustomerRoleController::class, 'destroy'])->name('delete');
         });
         Route::name('user')->as('user.')->prefix('user')->group(function () {
-            Route::get('/', [UserCustomerController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bx-users');
+            Route::get('/', [UserCustomerController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-group');
             Route::post('/', [UserCustomerController::class, 'store'])->name('store');
             Route::get('/profile', [UserCustomerController::class, 'profile'])->name('profile');
             Route::post('/update-profile', [UserCustomerController::class, 'updateProfile'])->name('update-profile');
@@ -127,7 +129,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [UserCustomerController::class, 'destroy'])->name('delete');
         });
         Route::name('company-good')->as('company-good.')->prefix('company-good')->group(function () {
-            Route::get('/', [CustomerCompanyGoodController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-grid-alt');
+            Route::get('/', [CustomerCompanyGoodController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-package');
             Route::post('/', [CustomerCompanyGoodController::class, 'store'])->name('store');
             Route::post('/store-temp-product/{date?}', [CustomerTemporaryProductController::class, 'storeTempProduct'])->name('store-temp-product');
             Route::post('/{id?}', [CustomerCompanyGoodController::class, 'update'])->name('update');
@@ -137,7 +139,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [CustomerCompanyGoodController::class, 'destroy'])->name('delete');
         });
         Route::name('company-warehouse')->as('company-warehouse.')->prefix('company-warehouse')->group(function () {
-            Route::get('/', [CustomerCompanyWarehouseController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-grid-alt');
+            Route::get('/', [CustomerCompanyWarehouseController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-warehouse');
             Route::post('/', [CustomerCompanyWarehouseController::class, 'store'])->name('store');
             Route::put('/{id?}', [CustomerCompanyWarehouseController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyWarehouseController::class, 'dataTable'])->name('data-table');
@@ -145,13 +147,13 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [CustomerCompanyWarehouseController::class, 'destroy'])->name('delete');
         });
         Route::name('warehouse-rack-good')->as('warehouse-rack-good.')->prefix('warehouse-rack-good')->group(function () {
-            Route::get('/', [CustomerWareHouseRackGoodController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-grid-alt');
+            Route::get('/', [CustomerWareHouseRackGoodController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-cupboard-alt');
             Route::post('/', [CustomerWareHouseRackGoodController::class, 'store'])->name('store');
             Route::put('/{rackId?}/{id?}', [CustomerWareHouseRackGoodController::class, 'update'])->name('update');
             Route::get('/{id?}', [CustomerWareHouseRackGoodController::class, 'racks'])->name('show');
         });
         Route::name('product-transaction')->as('product-transaction.')->prefix('product-transaction')->group(function () {
-            Route::get('/', [CustomerProductTransactionController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-grid-alt');
+            Route::get('/', [CustomerProductTransactionController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-computer');
             Route::post('/', [CustomerProductTransactionController::class, 'store'])->name('store');
             Route::post('/validate-transaction-items', [CustomerProductTransactionController::class, 'validateTransactionItems'])->name('validate-transaction-items');
             Route::get('/transaction-receipt/{orderCode?}/print', [CustomerProductTransactionController::class, 'viewPdf'])->name('print-transaction-receipt');
@@ -161,7 +163,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::get('/validate-discount-code/{id?}', [CustomerProductTransactionController::class, 'validateDiscountCode'])->name('validate-discount-code');
         });
         Route::name('temp-product')->as('temp-product.')->prefix('temp-product')->group(function () {
-            Route::get('/', [CustomerTemporaryProductController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-grid-alt');
+            Route::get('/', [CustomerTemporaryProductController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-box-alt');
             Route::post('/', [CustomerTemporaryProductController::class, 'store'])->name('store');
             Route::post('/store-temp-product/{date?}', [CustomerTemporaryProductController::class, 'storeTempProduct'])->name('store-temp-product');
             Route::post('/{id?}', [CustomerTemporaryProductController::class, 'update'])->name('update');
@@ -171,7 +173,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [CustomerTemporaryProductController::class, 'destroy'])->name('delete');
         });
         Route::name('task-management')->as('task-management.')->prefix('task-management')->group(function () {
-            Route::get('/', [CustomerTaskController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-grid-alt');
+            Route::get('/', [CustomerTaskController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-list');
             Route::get('/new-task', [CustomerTaskController::class, 'newTask'])->name('new-task');
             Route::get('/unfinish-task', [CustomerTaskController::class, 'unfinishTask'])->name('unfinish-task');
             Route::post('/', [CustomerTaskController::class, 'store'])->name('store');
@@ -185,7 +187,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [CustomerTaskController::class, 'destroy'])->name('delete');
         });
         Route::name('master-tasks')->as('master-tasks.')->prefix('master-tasks')->group(function () {
-            Route::get('/', [CustomerCompanyMasterTaskController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-grid-alt');
+            Route::get('/', [CustomerCompanyMasterTaskController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-queue');
             Route::post('/', [CustomerCompanyMasterTaskController::class, 'store'])->name('store');
             Route::put('/{id?}', [CustomerCompanyMasterTaskController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyMasterTaskController::class, 'dataTable'])->name('data-table');
@@ -193,7 +195,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [CustomerCompanyMasterTaskController::class, 'destroy'])->name('delete');
         });
         Route::name('product-stocktaking')->as('product-stocktaking.')->prefix('product-stocktaking')->group(function () {
-            Route::get('/', [CustomerCompanyStocktakingController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-grid-alt');
+            Route::get('/', [CustomerCompanyStocktakingController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-chart-bar-big-columns');
             Route::post('/', [CustomerCompanyStocktakingController::class, 'store'])->name('store');
             Route::put('/{id?}', [CustomerCompanyStocktakingController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerCompanyStocktakingController::class, 'dataTable'])->name('data-table');
@@ -202,17 +204,27 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [CustomerCompanyStocktakingController::class, 'destroy'])->name('delete');
         });
         Route::name('product-type')->as('product-type.')->prefix('product-type')->group(function () {
-            Route::get('/', [CustomerProductTypeController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-grid-alt');
+            Route::get('/', [CustomerProductTypeController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-group-alt');
             Route::post('/', [CustomerProductTypeController::class, 'store'])->name('store');
             Route::put('/{id?}', [CustomerProductTypeController::class, 'update'])->name('update');
             Route::get('/data-table', [CustomerProductTypeController::class, 'dataTable'])->name('data-table');
             Route::get('/{id?}', [CustomerProductTypeController::class, 'show'])->name('show');
             Route::delete('/{id?}', [CustomerProductTypeController::class, 'destroy'])->name('delete');
         });
+        Route::name('report')->as('report.')->prefix('report')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index')->defaults('module', 'management')->defaults('icon', 'bx bxs-printer');
+            Route::post('/', [ReportController::class, 'generateReport'])->name('generate-report');
+        });
     });
-    Route::prefix('settings')->as('settings.')->name('settings.')->middleware([checkPageAuthorization::class])->group(function () {
+    Route::meta([
+        'icon' => 'bx bxs-cog',
+        'prefix' => 'settings',
+        'as' => 'settings.',
+        'name' => 'settings',
+        'middleware' => [checkPageAuthorization::class],
+    ], function () {
         Route::prefix('role')->name('role.')->group(function () {
-            Route::get('/', [RoleController::class, 'index'])->name('index')->defaults('module', 'settings')->defaults('icon', 'bx bxs-cog');
+            Route::get('/', [RoleController::class, 'index'])->name('index')->defaults('module', 'settings')->defaults('icon', 'bx bx-universal-access');
             Route::post('/', [RoleController::class, 'store'])->name('store');
             Route::put('/{id?}', [RoleController::class, 'update'])->name('update');
             Route::get('/data-table', [RoleController::class, 'dataTable'])->name('data-table');
@@ -220,7 +232,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [RoleController::class, 'destroy'])->name('delete');
         });
         Route::prefix('permission')->name('permission.')->group(function () {
-            Route::get('/', [PermissionController::class, 'index'])->name('index')->defaults('module', 'settings')->defaults('icon', 'bx bxs-cog');
+            Route::get('/', [PermissionController::class, 'index'])->name('index')->defaults('module', 'settings')->defaults('icon', 'bx bxs-key-alt');
             Route::post('/', [PermissionController::class, 'store'])->name('store');
             Route::put('/{id?}', [PermissionController::class, 'update'])->name('update');
             Route::get('/data-table', [PermissionController::class, 'dataTable'])->name('data-table');
@@ -236,7 +248,7 @@ Route::middleware([Authorization::class, setupAccessPin::class])->group(function
             Route::delete('/{id?}', [ProductUnitController::class, 'destroy'])->name('delete');
         });
         Route::prefix('subscription')->middleware([AuthorizationOnly::class])->name('subscription.')->group(function () {
-            Route::get('/', [SubscriptionController::class, 'index'])->name('index')->defaults('module', 'settings')->defaults('icon', 'bx bxs-cog');
+            Route::get('/', [SubscriptionController::class, 'index'])->name('index')->defaults('module', 'settings')->defaults('icon', 'bx bxs-dollar');
             Route::post('/', [SubscriptionController::class, 'store'])->name('store');
             Route::put('/{id?}', [SubscriptionController::class, 'update'])->name('update');
             Route::get('/data-table', [SubscriptionController::class, 'dataTable'])->name('data-table');

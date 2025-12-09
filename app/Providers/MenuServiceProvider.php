@@ -41,6 +41,8 @@ class MenuServiceProvider extends ServiceProvider
                         'ref' => $rt->action['as'],
                         'parent' => $rt->defaults['module'] ?? null,
                         'icon' => $rt->defaults['icon'] ?? null,
+                        'parent-icon' => $rt->action['icon'] ?? null,
+                        'name' => str(str_replace('-', ' ', explode('/', $rt->uri)[1] ?? $rt->uri))->title(),
                         'id' => explode('/', $rt->uri)[1] ?? $rt->uri,
                     ]
                 )->toArray());
@@ -54,8 +56,10 @@ class MenuServiceProvider extends ServiceProvider
         $parents = removeDuplicate($menus, 'parent');
         $parents = array_map(function ($parent) {
             $parent['ref'] = '#' . $parent['parent'];
+            $parent['name'] = str($parent['parent'])->title();
             $parent['id'] = $parent['parent'];
             $parent['parent'] = null;
+            $parent['icon'] = $parent['parent-icon'];
             return $parent;
         }, array_filter($parents, function ($parent) {
             return $parent['parent'] !== null;
