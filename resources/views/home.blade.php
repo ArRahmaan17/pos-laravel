@@ -1,7 +1,10 @@
 @extends('template.parent')
 @section('title', 'Dashboard')
+@push('resource-css')
+    <link rel="stylesheet" href="{{ asset('assets/css/apex-charts.css') }}" />
+@endpush
 @section('content')
-    <div class="row">
+    <div id="container-swapy-home" class="row">
         @session('error')
             <div class="col-12">
                 <div class="alert alert-danger alert-dismissible fade show">
@@ -10,8 +13,8 @@
                 </div>
             </div>
         @endsession
-        <div class="col-lg-12 mb-4 order-0">
-            <div class="card">
+        <div data-swapy-slot="test1" class="col-lg-12 mb-4 order-0">
+            <div data-swapy-item="test1" class="card">
                 <div class="d-flex align-items-end row">
                     <div class="col-sm-7">
                         <div class="card-body">
@@ -33,8 +36,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-lg-12 mb-4">
-            <div class="card">
+        <div data-swapy-slot="test2" class="col-12 col-lg-12 mb-4">
+            <div data-swapy-item="test2" class="card">
                 <div class="row row-bordered g-0">
                     <div class="col-md-8">
                         <h5 class="card-header m-0 me-2 pb-3">Total Revenue</h5>
@@ -83,135 +86,131 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-12 col-md-12">
-            <div class="row align-items-stretch">
-                <div class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
-                    <div class="card h-100 w-100">
-                        <div class="card-body">
-                            <div class="card-title d-flex align-items-start justify-content-between">
-                                <div class="avatar flex-shrink-0">
-                                    <img draggable="false" src="../assets/img/icons/unicons/chart-success.png" alt="chart success" class="rounded" />
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="cardOpt3" data-bs-toggle="dropdown">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="#">View More</a>
-                                        <a class="dropdown-item" href="#">Delete</a>
-                                    </div>
+        <div id="container-swapy-earning" class="col-12 row p-0 m-0 align-items-stretch">
+            <div data-swapy-slot="earning-1" class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
+                <div data-swapy-item="earning-1" class="card h-100 w-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between">
+                            <div class="avatar flex-shrink-0">
+                                <img draggable="false" src="../assets/img/icons/unicons/chart-success.png" alt="chart success" class="rounded" />
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn p-0" type="button" id="cardOpt3" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="#">View More</a>
+                                    <a class="dropdown-item" href="#">Delete</a>
                                 </div>
                             </div>
-                            <span class="fw-semibold d-block mb-1">Profit</span>
-                            <h3 class="card-title mb-2">$12,628</h3>
-                            <small class="text-success fw-semibold">
-                                <i class="bx bx-up-arrow-alt"></i> +72.80%
-                            </small>
                         </div>
+                        <span class="fw-semibold d-block mb-1">Profit</span>
+                        <h3 class="card-title mb-2">$12,628</h3>
+                        <small class="text-success fw-semibold">
+                            <i class="bx bx-up-arrow-alt"></i> +72.80%
+                        </small>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
-                    <div class="card h-100 w-100">
-                        <div class="card-body">
-                            <div class="card-title d-flex align-items-start justify-content-between">
-                                <div class="avatar flex-shrink-0">
-                                    <img draggable="false" src="../assets/img/icons/unicons/wallet-info.png" alt="Credit Card" class="rounded" />
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="cardOpt6" data-bs-toggle="dropdown">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="#">View More</a>
-                                        <a class="dropdown-item" href="#">Delete</a>
-                                    </div>
+            </div>
+            <div data-swapy-slot="earning-2" class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
+                <div data-swapy-item="earning-2" class="card h-100 w-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between">
+                            <div class="avatar flex-shrink-0">
+                                <img draggable="false" src="../assets/img/icons/unicons/wallet-info.png" alt="Credit Card" class="rounded" />
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn p-0" type="button" id="cardOpt6" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="#">View More</a>
+                                    <a class="dropdown-item" href="#">Delete</a>
                                 </div>
                             </div>
-                            <span>Sales</span>
-                            <h3 class="card-title text-nowrap mb-1">$4,679</h3>
-                            <small class="text-success fw-semibold">
-                                <i class="bx bx-up-arrow-alt"></i> +28.42%
-                            </small>
                         </div>
+                        <span>Sales</span>
+                        <h3 class="card-title text-nowrap mb-1">$4,679</h3>
+                        <small class="text-success fw-semibold">
+                            <i class="bx bx-up-arrow-alt"></i> +28.42%
+                        </small>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
-                    <div class="card h-100 w-100">
-                        <div class="card-body">
-                            <div class="card-title d-flex align-items-start justify-content-between">
-                                <div class="avatar flex-shrink-0">
-                                    <img draggable="false" src="../assets/img/icons/unicons/paypal.png" alt="PayPal" class="rounded" />
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-end">
-                                        <a class="dropdown-item" href="#">View More</a>
-                                        <a class="dropdown-item" href="#">Delete</a>
-                                    </div>
+            </div>
+            <div data-swapy-slot="earning-3" class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
+                <div data-swapy-item="earning-3" class="card h-100 w-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between">
+                            <div class="avatar flex-shrink-0">
+                                <img draggable="false" src="../assets/img/icons/unicons/paypal.png" alt="PayPal" class="rounded" />
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a class="dropdown-item" href="#">View More</a>
+                                    <a class="dropdown-item" href="#">Delete</a>
                                 </div>
                             </div>
-                            <span class="d-block mb-1">Payments</span>
-                            <h3 class="card-title text-nowrap mb-2">$2,456</h3>
-                            <small class="text-danger fw-semibold">
-                                <i class="bx bx-down-arrow-alt"></i> -14.82%
-                            </small>
                         </div>
+                        <span class="d-block mb-1">Payments</span>
+                        <h3 class="card-title text-nowrap mb-2">$2,456</h3>
+                        <small class="text-danger fw-semibold">
+                            <i class="bx bx-down-arrow-alt"></i> -14.82%
+                        </small>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
-                    <div class="card h-100 w-100">
-                        <div class="card-body">
-                            <div class="card-title d-flex align-items-start justify-content-between">
-                                <div class="avatar flex-shrink-0">
-                                    <img draggable="false" src="../assets/img/icons/unicons/cc-primary.png" alt="Credit Card" class="rounded" />
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown">
-                                        <i class="bx bx-dots-vertical-rounded"></i>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="#">View More</a>
-                                        <a class="dropdown-item" href="#">Delete</a>
-                                    </div>
+            </div>
+            <div data-swapy-slot="earning-4" class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
+                <div data-swapy-item="earning-4" class="card h-100 w-100">
+                    <div class="card-body">
+                        <div class="card-title d-flex align-items-start justify-content-between">
+                            <div class="avatar flex-shrink-0">
+                                <img draggable="false" src="../assets/img/icons/unicons/cc-primary.png" alt="Credit Card" class="rounded" />
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown">
+                                    <i class="bx bx-dots-vertical-rounded"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="#">View More</a>
+                                    <a class="dropdown-item" href="#">Delete</a>
                                 </div>
                             </div>
-                            <span class="fw-semibold d-block mb-1">Transactions</span>
-                            <h3 class="card-title mb-2">$14,857</h3>
-                            <small class="text-success fw-semibold">
-                                <i class="bx bx-up-arrow-alt"></i> +28.14%
-                            </small>
                         </div>
+                        <span class="fw-semibold d-block mb-1">Transactions</span>
+                        <h3 class="card-title mb-2">$14,857</h3>
+                        <small class="text-success fw-semibold">
+                            <i class="bx bx-up-arrow-alt"></i> +28.14%
+                        </small>
                     </div>
                 </div>
-                <div class="col-12 col-md-8 mb-4 d-flex">
-                    <div class="card h-100 w-100">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
-                                <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
-                                    <div class="card-title">
-                                        <h5 class="text-nowrap mb-2">Profile Report</h5>
-                                        <span class="badge bg-label-warning rounded-pill">Year 2021</span>
-                                    </div>
-                                    <div class="mt-sm-auto">
-                                        <small class="text-success text-nowrap fw-semibold">
-                                            <i class="bx bx-chevron-up"></i> 68.2%
-                                        </small>
-                                        <h3 class="mb-0">$84,686k</h3>
-                                    </div>
+            </div>
+            <div data-swapy-slot="earning-5" class="col-12 col-md-8 col-lg-8 mb-4 d-flex">
+                <div data-swapy-item="earning-5" class="card h-100 w-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
+                            <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
+                                <div class="card-title">
+                                    <h5 class="text-nowrap mb-2">Profile Report</h5>
+                                    <span class="badge bg-label-warning rounded-pill">Year 2021</span>
                                 </div>
-                                <div id="profileReportChart"></div>
+                                <div class="mt-sm-auto">
+                                    <small class="text-success text-nowrap fw-semibold">
+                                        <i class="bx bx-chevron-up"></i> 68.2%
+                                    </small>
+                                    <h3 class="mb-0">$84,686k</h3>
+                                </div>
                             </div>
+                            <div id="profileReportChart"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6 col-lg-4 col-xl-4 order-0 mb-4">
-            <div class="card h-100">
+        <div data-swapy-slot="test4" class="col-lg-6 order-0 mb-4">
+            <div data-swapy-item="test4" class="card h-100">
                 <div class="card-header d-flex align-items-center justify-content-between pb-0">
                     <div class="card-title mb-0">
                         <h5 class="m-0 me-2">Order Statistics</h5>
@@ -298,11 +297,8 @@
                 </div>
             </div>
         </div>
-        <!--/ Order Statistics -->
-
-        <!-- Expense Overview -->
-        <div class="col-md-6 col-lg-4 order-1 mb-4">
-            <div class="card h-100">
+        <div data-swapy-slot="test5" class="col-lg-6 order-1 mb-4">
+            <div data-swapy-item="test5" class="card h-100">
                 <div class="card-header">
                     <ul class="nav nav-pills" role="tablist">
                         <li class="nav-item">
@@ -352,11 +348,8 @@
                 </div>
             </div>
         </div>
-        <!--/ Expense Overview -->
-
-        <!-- Transactions -->
-        <div class="col-md-6 col-lg-4 order-2 mb-4">
-            <div class="card h-100">
+        <div data-swapy-slot="test6" class="order-2 mb-4">
+            <div data-swapy-item="test6" class="card h-100">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <h5 class="card-title m-0 me-2">Transactions</h5>
                     <div class="dropdown">
@@ -466,11 +459,11 @@
                 </div>
             </div>
         </div>
-        <!--/ Transactions -->
     </div>
 @endsection
 @push('resource-js')
-    <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
+    {{-- <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script> --}}
+    <script src="{{ asset('assets/js/swappy.js') }}"></script>
 @endpush
 @push('js')
     <script>
@@ -739,5 +732,15 @@
             const totalRevenueChart = new ApexCharts(totalRevenueChartEl, totalRevenueChartOptions);
             totalRevenueChart.render();
         }
+        const swapyHome = Swapy.createSwapy($('#container-swapy-home')[0], {
+            // animation: 'spring',
+            autoScrollOnDrag: true,
+            dragAxis: 'y'
+        });
+        const swapyEarning = Swapy.createSwapy($('#container-swapy-earning')[0], {
+            // animation: 'spring',
+            autoScrollOnDrag: false,
+            dragAxis: 'both'
+        })
     </script>
 @endpush

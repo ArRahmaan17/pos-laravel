@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BusinessType;
 use App\Models\Company;
 use App\Models\CompanyAddress;
-use App\Models\CustomerRole;
+use App\Models\UserManagement\Role;
 use App\Models\User;
 use App\Models\UserCustomerRole;
 use App\Models\UserRole;
@@ -248,7 +248,7 @@ class AuthController extends Controller
                 $dataUser = User::user_manager($request->managerId);
             }
             if ($request->has('role_id')) {
-                $dataCustomerRole = CustomerRole::customer_roles($request->managerId, $request->role_id);
+                $dataCustomerRole = Role::customer_roles($request->managerId, $request->role_id);
             }
 
             if ($request->has('managerId')) {

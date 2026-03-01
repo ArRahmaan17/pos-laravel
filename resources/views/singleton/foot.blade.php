@@ -1,15 +1,13 @@
 <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
 <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-<script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
 
-<script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
 <!-- Vendors JS -->
 <script src="{{ asset('assets/js/apexcharts.js') }}"></script>
 <script src="{{ asset('assets/js/iziModal.min.js') }}"></script>
 <script src="{{ asset('assets/js/moment.min.js') }}"></script>
 <script src="{{ asset('assets/js/iziToast.min.js') }}"></script>
 <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
-
+<script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
 <!-- Main JS -->
 <script src="{{ asset('assets/js/main.js') }}"></script>
 
@@ -28,7 +26,7 @@
     window.process_subscription = null;
     window.serverTime = undefined;
     window.intervalTime = undefined;
-    window.company = `{{ buatSingkatan(session('userLogged')['company']['name']) }}`;
+    window.company = `{{ session('userLogged') ? buatSingkatan(session('userLogged')['company']['name']) : '' }}`;
 
     function lockscreenTrigger() {
         $('.container-p-y').addClass('blur')
@@ -211,6 +209,7 @@
         });
     }
     $(function() {
+        formattedInput();
         server_time();
         const csrfToken = $('meta[name="csrf-token"]').attr('content');
         if (csrfToken) {
@@ -219,7 +218,6 @@
                     xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken);
                 },
             });
-            console.log("Token CSRF sebelum setup:", $('meta[name="csrf-token"]').attr('content'));
         } else {
             console.error("Kesalahan: CSRF Token tidak ditemukan di meta tag.");
         }

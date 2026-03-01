@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\Role;
+use App\Models\UserManagement\Role;
 use App\Models\BusinessType;
 use App\Models\Company;
-use App\Models\CustomerRole;
+use App\Models\UserManagement\Role;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,7 +24,7 @@ class ApplicationTest extends TestCase
     //     // Create necessary roles and business types
     //     $this->developerRole = Role::factory()->create(['name' => 'Developer']);
     //     $this->managerRole = Role::factory()->create(['name' => 'Manager']);
-    //     $this->customerRole = CustomerRole::factory()->create(['name' => 'Customer']);
+    //     $this->customerRole = Role::factory()->create(['name' => 'Customer']);
     //     $this->businessType = BusinessType::factory()->create();
     // }
 

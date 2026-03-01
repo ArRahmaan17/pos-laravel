@@ -88,7 +88,7 @@ use Illuminate\Support\Facades\Route;
 //         });
 //     });
 
-//     Route::prefix('dev')->name('dev.')->group(function () {
+//     Route::prefix('dev')->name('settings.')->group(function () {
 //         Route::prefix('role')->name('role.')->group(function () {
 //             Route::get('/', [RoleController::class, 'index'])->name('index');
 //             Route::post('/', [RoleController::class, 'store'])->name('store');

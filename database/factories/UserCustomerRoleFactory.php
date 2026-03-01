@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Company;
-use App\Models\CustomerRole;
+use App\Models\UserManagement\Role;
 use App\Models\User;
 use App\Models\UserCustomerRole;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -29,7 +29,7 @@ class UserCustomerRoleFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'role_id' => CustomerRole::factory(),
+            'role_id' => Role::factory(),
             'company_id' => Company::factory(),
         ];
     }

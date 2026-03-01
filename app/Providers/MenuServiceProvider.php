@@ -39,9 +39,9 @@ class MenuServiceProvider extends ServiceProvider
                     fn($rt) =>
                     [
                         'ref' => $rt->action['as'],
-                        'parent' => $rt->defaults['module'] ?? null,
-                        'icon' => $rt->defaults['icon'] ?? null,
-                        'parent-icon' => $rt->action['icon'] ?? null,
+                        'parent' => $rt->action['parent'],
+                        'icon' => $rt->action['icon'] ?? null,
+                        'parent-icon' => $rt->action['parent-icon'] ?? null,
                         'name' => str(str_replace('-', ' ', explode('/', $rt->uri)[1] ?? $rt->uri))->title(),
                         'id' => explode('/', $rt->uri)[1] ?? $rt->uri,
                     ]
@@ -55,16 +55,19 @@ class MenuServiceProvider extends ServiceProvider
         }
         $parents = removeDuplicate($menus, 'parent');
         $parents = array_map(function ($parent) {
-            $parent['ref'] = '#' . $parent['parent'];
-            $parent['name'] = str($parent['parent'])->title();
-            $parent['id'] = $parent['parent'];
+            $parent['ref'] = '#' . (is_array($parent['parent']) ? $parent['parent'][1] : $parent['parent']);
+            $parent['name'] = Str(is_array($parent['parent']) ? $parent['parent'][1] : $parent['parent'])->title();
+            $parent['id'] = is_array($parent['parent']) ? $parent['parent'][1] : $parent['parent'];
             $parent['parent'] = null;
             $parent['icon'] = $parent['parent-icon'];
             return $parent;
         }, array_filter($parents, function ($parent) {
             return $parent['parent'] !== null;
         }));
-        $menus = array_merge($menus, $parents);
+        $menus = array_merge(array_map(function ($menu) {
+            $menu['parent'] = is_array($menu['parent']) ? $menu['parent'][1] : $menu['parent'];
+            return $menu;
+        }, $menus), $parents);
         $menus = arrayTree($menus);
         View::composer('*', function ($view) use ($menus, $subscriptions) {
             $view->with([

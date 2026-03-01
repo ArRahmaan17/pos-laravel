@@ -1,6 +1,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta property="og:title" content="@yield('title') - {{ env('APP_NAME') }}">
+    <meta property="og:description" content="Penjelasan singkat apa isi website ini agar orang tertarik klik.">
+    <meta property="og:image" content="{{ asset('assets/banner-preview.jpg') }}">
+    <meta property="og:url" content="https://websitekamu.com">
+    <meta property="og:type" content="website">
     <title>@yield('title') - {{ env('APP_NAME') }}</title>
     <style>
         *::-webkit-scrollbar {
@@ -48,7 +53,6 @@
     <!-- Favicon -->
     @include('singleton.favico')
     <link href="{{ asset('assets/css/datatables.min.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -67,15 +71,16 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/iziModal.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/iziToast.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+    @stack('resource-css')
 
-    <link rel="stylesheet" href="{{ asset('assets/css/apex-charts.css') }}" />
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
+    <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
     <script src="{{ asset('assets/js/config.js') }}"></script>
+    <script src="{{ asset('assets/js/theme-switcher.js') }}"></script>
     <style>
         .blur {
             filter: blur(16px);
         }
     </style>
-    @stack('resource-css')
-    @stack('css')
 </head>

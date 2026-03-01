@@ -9,13 +9,13 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-outline-success" id="add-customer-company" data-bs-toggle="modal" data-bs-target="#modal-customer-company">Add <i
+                        <button class="btn btn-outline-success" id="add-your-company" data-bs-toggle="modal" data-bs-target="#modal-your-company">Add <i
                                 class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table-customer-company">
+                        <table class="table" id="table-your-company">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
@@ -36,7 +36,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-company" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modal-your-company" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -44,7 +44,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-customer-company" method="POST" class="container mt-2" enctype="multipart/form-data">
+                    <form action="#" id="form-your-company" method="POST" class="container mt-2" enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="id">
                         <p class="mb-4">Please provide all required details to register your business with us.</p>
@@ -144,9 +144,9 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-company" class="btn btn-outline-success">Save
+                    <button type="button" id="save-your-company" class="btn btn-outline-success">Save
                         changes</button>
-                    <button type="button" id="edit-customer-company" class="btn btn-warning d-none">Update
+                    <button type="button" id="edit-your-company" class="btn btn-warning d-none">Update
                         changes</button>
                 </div>
             </div>
@@ -164,27 +164,27 @@
         function actionData() {
             $('.edit').click(function() {
                 window.state = 'update';
-                let idCustomerCompany = $(this).data("customer-company");
-                $("#edit-customer-company").data("customer-company", idCustomerCompany);
+                let idCustomerCompany = $(this).data("your-company");
+                $("#edit-your-company").data("your-company", idCustomerCompany);
                 if (window.dataTableCustomerCompany.rows('.selected').data().length === 0) {
-                    $('#table-customer-company tbody').find('tr').removeClass('selected');
+                    $('#table-your-company tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
                 var data = window.dataTableCustomerCompany.rows('.selected').data()[0];
 
-                $('#modal-customer-company').modal('show');
-                $('#modal-customer-company').find('.modal-title').html(`Edit @yield('title')`);
-                $('#save-customer-company').addClass('d-none');
-                $('#edit-customer-company').removeClass('d-none');
+                $('#modal-your-company').modal('show');
+                $('#modal-your-company').find('.modal-title').html(`Edit @yield('title')`);
+                $('#save-your-company').addClass('d-none');
+                $('#edit-your-company').removeClass('d-none');
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('man.customer-company.show') }}/" + idCustomerCompany,
+                    url: "{{ route('settings.your-company.show') }}/" + idCustomerCompany,
                     dataType: "json",
                     success: function(response) {
-                        let formElement = $('#modal-customer-company').find("form");
-                        $('#modal-customer-company').find("form")
+                        let formElement = $('#modal-your-company').find("form");
+                        $('#modal-your-company').find("form")
                             .find('select, input').map(function(index, element) {
                                 let name = (element.name.split('[').length > 1) ? '.' + element.name
                                     .split('[').join('.').split(']').join('') : element.name;
@@ -217,7 +217,7 @@
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-customer-company-action',
+                            id: 'alert-your-company-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -225,16 +225,16 @@
                             displayMode: 'replace'
                         });
                         setTimeout(() => {
-                            $('#modal-customer-company').modal('hide');
+                            $('#modal-your-company').modal('hide');
                         }, 400);
                     }
                 });
             });
             $('.activate').click(function() {
-                let idCustomerCompany = $(this).data("customer-company");
+                let idCustomerCompany = $(this).data("your-company");
                 $.ajax({
                     type: "POST",
-                    url: "{{ route('man.customer-company.login-company') }}",
+                    url: "{{ route('settings.your-company.login-company') }}",
                     data: {
                         
                         id: idCustomerCompany
@@ -242,7 +242,7 @@
                     dataType: "json",
                     success: function(response) {
                         iziToast.success({
-                            id: 'alert-customer-company-action',
+                            id: 'alert-your-company-action',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -255,7 +255,7 @@
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-customer-company-action',
+                            id: 'alert-your-company-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -263,7 +263,7 @@
                             displayMode: 'replace'
                         });
                         setTimeout(() => {
-                            $('#modal-customer-company').modal('hide');
+                            $('#modal-your-company').modal('hide');
                         }, 400);
                     }
                 });
@@ -271,8 +271,8 @@
         }
 
         $(function() {
-            window.dataTableCustomerCompany = $("#table-customer-company").DataTable({
-                ajax: "{{ route('man.customer-company.data-table') }}",
+            window.dataTableCustomerCompany = $("#table-your-company").DataTable({
+                ajax: "{{ route('settings.your-company.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -337,20 +337,20 @@
             window.dataTableCustomerCompany.on('draw.dt', function() {
                 actionData();
             });
-            $('#save-customer-company').click(function() {
-                let data = serializeFiles($('#form-customer-company'));
+            $('#save-your-company').click(function() {
+                let data = serializeFiles($('#form-your-company'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-company.store') }}`,
+                    url: `{{ route('settings.your-company.store') }}`,
                     data: data,
                     dataType: "json",
                     cache: false,
                     contentType: false,
                     processData: false,
                     success: function(response) {
-                        $('#modal-customer-company').modal('hide')
+                        $('#modal-your-company').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-company-form',
+                            id: 'alert-your-company-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -361,21 +361,21 @@
 
                     },
                     error: function(error) {
-                        $('#modal-customer-company .is-invalid').removeClass('is-invalid')
+                        $('#modal-your-company .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
                             let name = (indexInArray
                                     .split('.').length > 1) ?
                                 `${indexInArray.split('.').join('[')}]` :
                                 indexInArray
-                            $('#modal-customer-company').find("[name='" + name +
+                            $('#modal-your-company').find("[name='" + name +
                                 "']").addClass('is-invalid');
-                            $('#modal-customer-company').find("[name='" + name +
+                            $('#modal-your-company').find("[name='" + name +
                                 "']").siblings('.invalid-feedback').html(
                                 valueOfElement[0])
                         });
                         iziToast.error({
-                            id: 'alert-customer-company-form',
+                            id: 'alert-your-company-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -385,20 +385,20 @@
                     }
                 });
             });
-            $('#edit-customer-company').click(function() {
-                let data = serializeFiles($('#form-customer-company'));
+            $('#edit-your-company').click(function() {
+                let data = serializeFiles($('#form-your-company'));
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-company.update') }}/${$('#form-customer-company').find('[name=id]').val()}`,
+                    url: `{{ route('settings.your-company.update') }}/${$('#form-your-company').find('[name=id]').val()}`,
                     data: data,
                     cache: false,
                     contentType: false,
                     processData: false,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-company').modal('hide')
+                        $('#modal-your-company').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-company-form',
+                            id: 'alert-your-company-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -408,21 +408,21 @@
                         window.dataTableCustomerCompany.ajax.reload()
                     },
                     error: function(error) {
-                        $('#modal-customer-company .is-invalid').removeClass('is-invalid')
+                        $('#modal-your-company .is-invalid').removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
                             let name = (indexInArray
                                     .split('.').length > 1) ?
                                 `${indexInArray.split('.').join('[')}]` :
                                 indexInArray
-                            $('#modal-customer-company').find("[name='" + name +
+                            $('#modal-your-company').find("[name='" + name +
                                 "']").addClass('is-invalid');
-                            $('#modal-customer-company').find("[name='" + name +
+                            $('#modal-your-company').find("[name='" + name +
                                 "']").siblings('.invalid-feedback').html(
                                 valueOfElement[0])
                         });
                         iziToast.error({
-                            id: 'alert-customer-company-form',
+                            id: 'alert-your-company-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -432,19 +432,19 @@
                     }
                 });
             });
-            $('#modal-customer-company').on('hidden.bs.modal', function() {
+            $('#modal-your-company').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
-                $('#save-customer-company').removeClass('d-none');
-                $('#edit-customer-company').addClass('d-none');
-                $('#modal-customer-company .is-invalid').removeClass('is-invalid')
-                $('#table-customer-company tbody').find('tr').removeClass('selected');
+                $('#save-your-company').removeClass('d-none');
+                $('#edit-your-company').addClass('d-none');
+                $('#modal-your-company .is-invalid').removeClass('is-invalid')
+                $('#table-your-company tbody').find('tr').removeClass('selected');
                 $('#uploadedAvatar').prop('src', `{{ asset('cp/default-company.png') }}`);
             });
-            $('#modal-customer-company').on('shown.bs.modal', function() {
+            $('#modal-your-company').on('shown.bs.modal', function() {
                 setTimeout(() => {
                     $('.select2').select2({
-                        dropdownParent: $('#modal-customer-company'),
+                        dropdownParent: $('#modal-your-company'),
                     });
                 }, 170);
             });

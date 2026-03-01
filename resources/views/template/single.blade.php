@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="light-style customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="assets/"
+<html lang="en" class="light-style customizer-hide" dir="ltr" data-bs-theme="dark" data-assets-path="assets/"
     data-template="vertical-menu-template">
 
 <head>
@@ -28,7 +28,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/pages/page-auth.css') }}" />
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
-
+    <script src="{{ asset('assets/js/theme-switcher.js') }}"></script>
 </head>
 
 <body>
@@ -90,7 +90,6 @@
             formattedInput();
         });
     </script>
-    @stack('js')
 </body>
 
 </html>

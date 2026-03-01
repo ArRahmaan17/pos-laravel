@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Dev;
+namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Models\AppDetailSubscription;
@@ -15,7 +15,7 @@ class SubscriptionController extends Controller
      */
     public function index()
     {
-        return view('dev.subscription');
+        return view('settings.subscription');
     }
 
     public function dataTable(Request $request)

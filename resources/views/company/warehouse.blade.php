@@ -9,13 +9,13 @@
                         <h3>@yield('title')</h3>
                     </div>
                     <div class="col-6 text-end">
-                        <button class="btn btn-outline-success" id="add-customer-company-warehouse" data-bs-toggle="modal"
-                            data-bs-target="#modal-customer-company-warehouse">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                        <button class="btn btn-outline-success" id="add-warehouse" data-bs-toggle="modal"
+                            data-bs-target="#modal-warehouse">Add <i class='bx bxs-file-plus pb-1'></i></button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table" id="table-customer-company-warehouse">
+                        <table class="table" id="table-warehouse">
                             <thead>
                                 <tr>
                                     <th scope="col">#</th>
@@ -33,7 +33,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="modal-customer-company-warehouse" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="modal-warehouse" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -41,7 +41,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="#" id="form-customer-company-warehouse">
+                    <form action="#" id="form-warehouse">
                         <div class="divider">
                             <div class="divider-text">Warehouse</div>
                         </div>
@@ -82,7 +82,7 @@
                                     rows="3"></textarea>
                             </div>
                         </div>
-                        <button id="add-rack" type="button" class="btn btn-icon btn-outline-success"><i class='bx bx-add-to-queue'></i></button>
+                        <button id="add-rack" type="button" class="btn btn-icon btn-outline-success"><i class="bx bx-layers-plus-alt"></i></button>
                         <button id="remove-rack" type="button" class="btn btn-icon btn-outline-danger d-none"><i class='bx bx-trash'></i></button>
                         <button id="edit-rack" type="button" class="btn btn-icon btn-outline-warning d-none"><i class='bx bx-pencil'></i></button>
                     </div>
@@ -91,9 +91,9 @@
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                         Close
                     </button>
-                    <button type="button" id="save-customer-company-warehouse" class="btn btn-outline-success">Save
+                    <button type="button" id="save-warehouse" class="btn btn-outline-success">Save
                         changes</button>
-                    <button type="button" id="edit-customer-company-warehouse" class="btn btn-warning d-none">Update
+                    <button type="button" id="edit-warehouse" class="btn btn-warning d-none">Update
                         changes</button>
                 </div>
             </div>
@@ -111,22 +111,22 @@
         function actionData() {
             $('.edit').click(function() {
                 window.state = 'update';
-                let idAppRole = $(this).data("customer-company-warehouse");
-                $("#edit-customer-company-warehouse").data("customer-company-warehouse", idAppRole);
+                let idAppRole = $(this).data("warehouse");
+                $("#edit-warehouse").data("warehouse", idAppRole);
                 if (window.dataTableAppRole.rows('.selected').data().length === 0) {
-                    $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
+                    $('#table-warehouse tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
 
                 var data = window.dataTableAppRole.rows('.selected').data()[0];
-                $('#modal-customer-company-warehouse').modal('show');
-                $('#modal-customer-company-warehouse').find('.modal-title').html(`Edit @yield('title')`);
-                $('#save-customer-company-warehouse').addClass('d-none');
-                $('#edit-customer-company-warehouse').removeClass('d-none');
+                $('#modal-warehouse').modal('show');
+                $('#modal-warehouse').find('.modal-title').html(`Edit @yield('title')`);
+                $('#save-warehouse').addClass('d-none');
+                $('#edit-warehouse').removeClass('d-none');
 
                 $.ajax({
                     type: "GET",
-                    url: "{{ route('man.customer-company-warehouse.show') }}/" + idAppRole,
+                    url: "{{ route('company.warehouse.show') }}/" + idAppRole,
                     dataType: "json",
                     success: function(response) {
                         $('#user_id').val(response.data.company.user_id).trigger('change')
@@ -146,7 +146,7 @@
                     },
                     error: function(error) {
                         iziToast.error({
-                            id: 'alert-customer-company-warehouse-action',
+                            id: 'alert-warehouse-action',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -159,10 +159,10 @@
 
             $('.delete').click(function() {
                 if (window.dataTableAppRole.rows('.selected').data().length === 0) {
-                    $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
+                    $('#table-warehouse tbody').find('tr').removeClass('selected');
                     $(this).parents('tr').addClass('selected')
                 }
-                let idAppRole = $(this).data("customer-company-warehouse");
+                let idAppRole = $(this).data("warehouse");
                 var data = window.dataTableAppRole.rows('.selected').data()[0];
                 iziToast.question({
                     timeout: 5000,
@@ -184,7 +184,7 @@
                             }, toast, 'button');
                             $.ajax({
                                 type: "DELETE",
-                                url: "{{ route('man.customer-company-warehouse.delete') }}/" +
+                                url: "{{ route('company.warehouse.delete') }}/" +
                                     idAppRole,
                                 data: {
                                     
@@ -192,7 +192,7 @@
                                 dataType: "json",
                                 success: function(response) {
                                     iziToast.success({
-                                        id: 'alert-customer-company-warehouse-action',
+                                        id: 'alert-warehouse-action',
                                         title: 'Success',
                                         message: response.message,
                                         position: 'topRight',
@@ -203,7 +203,7 @@
                                 },
                                 error: function(error) {
                                     iziToast.error({
-                                        id: 'alert-customer-company-warehouse-action',
+                                        id: 'alert-warehouse-action',
                                         title: 'Error',
                                         message: error.responseJSON.message,
                                         position: 'topRight',
@@ -223,8 +223,8 @@
             });
         }
         $(function() {
-            window.dataTableAppRole = $("#table-customer-company-warehouse").DataTable({
-                ajax: "{{ route('man.customer-company-warehouse.data-table') }}",
+            window.dataTableAppRole = $("#table-warehouse").DataTable({
+                ajax: "{{ route('company.warehouse.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -285,15 +285,15 @@
             $('#user_id').change(function() {
                 $.ajax({
                     type: "GET",
-                    url: `{{ route('man.customer-company.company') }}`,
+                    url: `{{ route('settings.profile-company.companies') }}`,
                     dataType: "json",
                     success: function(response) {
                         $('#company_id').html(dataToOption(response.data, true))
                     }
                 });
             });
-            $('#save-customer-company-warehouse').click(function() {
-                let data = serializeObject($('#form-customer-company-warehouse'));
+            $('#save-warehouse').click(function() {
+                let data = serializeObject($('#form-warehouse'));
                 let racks = [];
                 $('#container-rack').find('.list-group-item').map((index, element) => {
                     racks.push($(element).data('rack'));
@@ -303,13 +303,13 @@
                 }
                 $.ajax({
                     type: "POST",
-                    url: `{{ route('man.customer-company-warehouse.store') }}`,
+                    url: `{{ route('company.warehouse.store') }}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-company-warehouse').modal('hide')
+                        $('#modal-warehouse').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-company-warehouse-form',
+                            id: 'alert-warehouse-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -319,12 +319,12 @@
                         window.dataTableAppRole.ajax.reload();
                     },
                     error: function(error) {
-                        $('#modal-customer-company-warehouse .is-invalid')
+                        $('#modal-warehouse .is-invalid')
                             .removeClass('is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
                             if (indexInArray.split('racks.').length > 1) {
-                                $('#modal-customer-company-warehouse .border-danger')
+                                $('#modal-warehouse .border-danger')
                                     .removeClass('border-danger')
                                 let index = indexInArray.split('racks.').join('').split(
                                     '.name').join('');
@@ -334,13 +334,13 @@
                                     )
                                     .addClass('border border-danger')
                             } else {
-                                $('#modal-customer-company-warehouse').find('[name=' +
+                                $('#modal-warehouse').find('[name=' +
                                     indexInArray +
                                     ']').addClass('is-invalid')
                             }
                         });
                         iziToast.error({
-                            id: 'alert-customer-company-warehouse-form',
+                            id: 'alert-warehouse-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -350,8 +350,8 @@
                     }
                 });
             });
-            $('#edit-customer-company-warehouse').click(function() {
-                let data = serializeObject($('#form-customer-company-warehouse'));
+            $('#edit-warehouse').click(function() {
+                let data = serializeObject($('#form-warehouse'));
                 let racks = [];
                 $('#container-rack').find('.list-group-item').map((index, element) => {
                     racks.push($(element).data('rack'));
@@ -361,13 +361,13 @@
                 }
                 $.ajax({
                     type: "PUT",
-                    url: `{{ route('man.customer-company-warehouse.update') }}/${data.id}`,
+                    url: `{{ route('company.warehouse.update') }}/${data.id}`,
                     data: data,
                     dataType: "json",
                     success: function(response) {
-                        $('#modal-customer-company-warehouse').modal('hide')
+                        $('#modal-warehouse').modal('hide')
                         iziToast.success({
-                            id: 'alert-customer-company-warehouse-form',
+                            id: 'alert-warehouse-form',
                             title: 'Success',
                             message: response.message,
                             position: 'topRight',
@@ -377,16 +377,16 @@
                         window.dataTableAppRole.ajax.reload()
                     },
                     error: function(error) {
-                        $('#modal-customer-company-warehouse .is-invalid').removeClass(
+                        $('#modal-warehouse .is-invalid').removeClass(
                             'is-invalid')
                         $.each(error.responseJSON.errors, function(indexInArray,
                             valueOfElement) {
-                            $('#modal-customer-company-warehouse').find('[name=' +
+                            $('#modal-warehouse').find('[name=' +
                                 indexInArray +
                                 ']').addClass('is-invalid')
                         });
                         iziToast.error({
-                            id: 'alert-customer-company-warehouse-form',
+                            id: 'alert-warehouse-form',
                             title: 'Error',
                             message: error.responseJSON.message,
                             position: 'topRight',
@@ -447,13 +447,13 @@
                 $('[name="rack[description]"]').val(data.description);
                 $('.rack-action:checked').parent('label.list-group-item').remove();
             });
-            $('#modal-customer-company-warehouse').on('hidden.bs.modal', function() {
+            $('#modal-warehouse').on('hidden.bs.modal', function() {
                 $(this).find('form')[0].reset();
                 $(this).find('.modal-title').html(`Add New @yield('title')`);
-                $('#save-customer-company-warehouse').removeClass('d-none');
-                $('#edit-customer-company-warehouse').addClass('d-none');
-                $('#modal-customer-company-warehouse .is-invalid').removeClass('is-invalid')
-                $('#table-customer-company-warehouse tbody').find('tr').removeClass('selected');
+                $('#save-warehouse').removeClass('d-none');
+                $('#edit-warehouse').addClass('d-none');
+                $('#modal-warehouse .is-invalid').removeClass('is-invalid')
+                $('#table-warehouse tbody').find('tr').removeClass('selected');
                 $('#container-rack').html('');
             });
         });

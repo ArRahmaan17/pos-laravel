@@ -1,5 +1,8 @@
 @extends('template.parent')
 @section('title', 'Permissions')
+@push('resource-css')
+    <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+@endpush
 @section('content')
     <div class="row">
         <div class="col-12">
@@ -45,8 +48,13 @@
                         <input type="hidden" name="id">
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="name" class="form-label">Permission Name</label>
-                                <input type="text" id="name" name="name" class="form-control" placeholder="Enter Permission Name" />
+                                <label for="name" class="form-label">Role Name</label>
+                                <select id="name" class="form-select select2">
+                                    <option value="">Pilih Salah Satu</option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="col">
@@ -58,7 +66,6 @@
                                             Application Menu
                                         </button>
                                     </h2>
-
                                     <div id="accordionOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
                                         <div class="container-fluid">
                                             <div class="form-check">
@@ -73,41 +80,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label for="icon" class="form-label">Permission Icon</label>
-                                <input type="text" id="icon" name="icon" class="form-control" placeholder="Enter Permission Icon" />
-                                <div id="passwordHelpBlock" class="form-text">
-                                    compatible icon is on <a href="https://v2.boxicons.com/">boxicons</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col mb-3">
-                                <label class="form-label">Permission Place</label>
-                                <div class="col">
-                                    <div class="form-check form-check-inline">
-                                        <input name="place" class="form-check-input" type="radio" value="0" id="place-sidebar">
-                                        <label class="form-check-label" for="place-sidebar">
-                                            Sidebar
-                                        </label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input name="place" class="form-check-input" type="radio" value="1" id="place-profile">
-                                        <label class="form-check-label" for="place-profile">
-                                            Profile
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="container-child-list" class="row container">
-                            <div class="col-12 row">
-                                Permission Child
-                            </div>
-                            <div id="child-menu-container" class="col-12 row">
                             </div>
                         </div>
                     </form>
@@ -128,10 +100,11 @@
 @push('resource-js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/datatables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/select2.min.js') }}"></script>
 @endpush
 @push('js')
     <script>
-        window.dataTableAppMenu = null;
+        window.dataTablePermission = null;
         window.state = 'add';
 
         function actionData() {
@@ -314,6 +287,7 @@
                 }
             });
         }
+
         $(function() {
             window.dataTableAppMenu = $("#table-permission").DataTable({
                 ajax: "{{ route('settings.permission.data-table') }}",
@@ -458,14 +432,12 @@
                 $('#table-permission tbody').find('tr').removeClass('selected');
                 $('#modal-permission')
                     .find('form input')
-                    .removeAttr('checked')
+                    .removeAttr('checked');
             });
             $('#modal-permission').on('shown.bs.modal', function() {
-                if (window.state === 'add') {
-                    $('#container-child-list').addClass('d-none');
-                } else {
-                    $('#container-child-list').removeClass('d-none');
-                }
+                $('.select2').select2({
+                    dropdownParent: $('#modal-permission'),
+                });
             });
             containerChecker();
         });

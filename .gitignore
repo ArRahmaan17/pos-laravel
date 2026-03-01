@@ -24,3 +24,4 @@ pint.json
 composer.lock
 public/resources/companies/*/
 run-tests.sh
+plan.md

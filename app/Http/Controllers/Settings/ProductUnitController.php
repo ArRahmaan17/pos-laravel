@@ -1,29 +1,29 @@
 <?php
 
-namespace App\Http\Controllers\Dev;
+namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Models\Role;
+use App\Models\ProductWeight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class RoleController extends Controller
+class ProductUnitController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('dev.role');
+        return view('settings.product-unit');
     }
 
     public function dataTable(Request $request)
     {
-        $totalData = Role::orderBy('id', 'asc')
+        $totalData = ProductWeight::orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = Role::select('*');
+            $assets = ProductWeight::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -34,7 +34,7 @@ class RoleController extends Controller
             }
             $assets = $assets->get();
         } else {
-            $assets = Role::select('*')
+            $assets = ProductWeight::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -47,7 +47,7 @@ class RoleController extends Controller
             }
             $assets = $assets->get();
 
-            $totalFiltered = Role::select('*')
+            $totalFiltered = ProductWeight::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -82,18 +82,18 @@ class RoleController extends Controller
     {
         DB::beginTransaction();
         $request->validate([
-            'name' => 'required|min:2|max:10|unique:permissions,name',
+            'name' => 'required|min:2|max:10|unique:product_weights,name',
             'description' => 'required|min:6|max:100',
         ]);
         try {
-            Role::create($request->except('_token', 'id'));
+            ProductWeight::create($request->except('_token', 'id'));
             DB::commit();
-            $response = ['message' => 'App Role create successfully'];
+            $response = ['message' => 'App Good Unit create successfully'];
             $code = 200;
         } catch (\Throwable $th) {
             DB::rollBack();
             $code = 422;
-            $response = ['message' => 'Failed creating App Role'];
+            $response = ['message' => 'Failed creating App Good Unit'];
         }
 
         return response()->json($response, $code);
@@ -104,7 +104,7 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
-        $data = Role::find($id);
+        $data = ProductWeight::find($id);
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -122,12 +122,12 @@ class RoleController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'name' => 'required|unique:permissions,name,'.$id,
+            'name' => 'required|unique:product_weights,name,'.$id,
             'description' => 'required|min:6|max:100',
         ]);
         DB::beginTransaction();
         try {
-            Role::find($id)->update($request->except('_token', 'id'));
+            ProductWeight::find($id)->update($request->except('_token', 'id'));
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -147,8 +147,8 @@ class RoleController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (empty(collect(Role::with('role_users')->find($id)->role_users)->toArray())) {
-                Role::destroy($id);
+            if (empty(collect(ProductWeight::with('role_users')->find($id)->role_users)->toArray())) {
+                ProductWeight::destroy($id);
                 DB::commit();
                 $response = ['message' => 'deleting resource successfully'];
                 $code = 200;

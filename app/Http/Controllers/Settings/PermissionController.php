@@ -1,63 +1,81 @@
 <?php
 
-namespace App\Http\Controllers\Dev;
+namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Models\UserManagement\Permission;
+use App\Models\UserManagement\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 class PermissionController extends Controller
 {
+    private $develope_app_scope_id = 1;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $result = ['children' => []];
-
+        $result = [];
         $routes = collect(Route::getRoutes())->toArray();
         foreach ($routes as $route) {
             $route = collect($route)->toArray();
-            if (array_find(
-                $route['action']['middleware'],
-                fn($v) => $v === 'App\Http\Middleware\checkPageAuthorization'
-            )) {
-                if (!array_find($route['action']['middleware'], fn($v) => $v === 'App\Http\Middleware\AuthorizationOnly')) {
-                    unset($route['action']['uses']);
-                    $p = explode('.', $route['action']['as']);
-                    $count = count($p);
-                    $p = explode('.', $route['action']['as']);
-                    $id = $p[count($p) - 1];
-                    foreach ($p as $key => $value) {
-                        if ($value !== 'data-table') {
-                            if ($value === $id) {
-                                $result['children'][] = [
-                                    'uri' => $route['uri'],
-                                    'unique' => $route['uri'] . '_' . ($route['methods'][0]),
-                                    'id' => $id,
-                                    'parent' => $p[$key - 1],
-                                    'action' => $route['action'],
-                                ];
-                            } else {
-                                $result['children'][] = [
-                                    'uri' => '#' . $value,
-                                    'unique' => '#' . $value,
-                                    'id' => $value,
-                                    'parent' => $key === 0 ? null : $p[$key - 1],
-                                    'action' => $route['action'],
-                                ];
-                            }
+            if (isset($route['action']['group']) && $route['action']['group'] === 'web') {
+                if (array_find(
+                    $route['action']['middleware'],
+                    fn($v) => $v === 'App\Http\Middleware\checkPageAuthorization'
+                )) {
+                    if (!array_find($route['action']['middleware'], fn($v) => $v === 'App\Http\Middleware\AuthorizationOnly')) {
+                        $data = &$route['action'];
+                        $data['uri'] = &$route['uri'];
+                        $data['methods'] = &$route['methods'];
+                        $as = explode('.', $data['as']);
+                        foreach ($as as $key => $value) {
+                            $result[] = [
+                                'id' => $as[$key],
+                                'parent' => $as[$key - 1] ?? null,
+                                'as' => ($key === (count($as) - 1)) ? $data['as'] : '#' . $as[$key],
+                            ];
                         }
+                        // if (is_array($data['name'])) {
+                        //     $result[] = [
+                        //         'id' => $data['name'][0],
+                        //         'parent' => $data['parent'][0],
+                        //         'as' => '#' . $data['name'][0],
+                        //     ];
+                        //     $id = str_replace($data['parent'][1] . '.', '', str_replace($data['name'][1] . '.', '', $data['as']));
+                        //     $result[] = [
+                        //         'id' => $id,
+                        //         'parent' => $data['module'][1],
+                        //         'as' => $data['as'],
+                        //     ];
+                        // } else {
+                        //     $result[] = [
+                        //         'id' => explode('.', $data['as'])[0],
+                        //         'parent' => null,
+                        //         'as' => '#' . explode('.', $data['as'])[0],
+                        //     ];
+                        //     $id = str_replace($data['parent'] . '.', '', str_replace($data['name'] . '.', '', $data['as']));
+                        //     $result[] = [
+                        //         'id' => $id,
+                        //         'parent' => explode('.', $data['as'])[0],
+                        //         'as' => $data['as'],
+                        //     ];
+                        // }
                     }
                 }
             }
         }
-        $result['children'] = removeDuplicate($result['children'], 'unique');
-        $routes = arrayTree($result['children'], 'id');
-
-        return view('dev.permission', compact('routes'));
+        $result = removeDuplicate($result, 'as');
+        $routes = arrayTree($result, 'parent');
+        $score_role_id = session('userLogged')['role']['scope_id'];
+        $where = [];
+        if (session('userLogged')['role']['scope_id'] !== $this->develope_app_scope_id) {
+            $where = [['is_system', '=', 0]];
+        }
+        $roles = Role::where('scope_id', '>=', session('userLogged')['role']['scope_id'])->where($where)->get();
+        return view('settings.permission', compact('routes', 'roles'));
     }
 
     public function dataTable(Request $request)

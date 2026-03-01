@@ -28,6 +28,28 @@
                     </div>
                 </li>
             @endif
+            <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
+                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    <i class="bx theme-switcher-icon bx-sm"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
+                    <li>
+                        <a class="dropdown-item" href="javascript:void(0);" data-bs-theme-value="light">
+                            <span class="align-middle"><i class="bx bx-sun me-2"></i>Light</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="javascript:void(0);" data-bs-theme-value="dark">
+                            <span class="align-middle"><i class="bx bx-moon me-2"></i>Dark</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="javascript:void(0);" data-bs-theme-value="system">
+                            <span class="align-middle"><i class="bx bx-desktop me-2"></i>System</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">

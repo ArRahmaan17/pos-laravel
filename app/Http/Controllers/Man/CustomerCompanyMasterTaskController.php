@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerRole;
+use App\Models\UserManagement\Role;
 use App\Models\MasterTask;
 use App\Models\TaskDetail;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ class CustomerCompanyMasterTaskController extends Controller
      */
     public function index()
     {
-        $customer_roles = CustomerRole::where('user_id', session('userLogged')['user']['id'])->get();
+        $customer_roles = Role::where('user_id', session('userLogged')['user']['id'])->get();
 
         return view('man.customer-master-tasks', compact('customer_roles'));
     }

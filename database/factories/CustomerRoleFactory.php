@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\CustomerRole;
+use App\Models\UserManagement\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CustomerRole>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserManagement\Role>
  */
 class CustomerRoleFactory extends Factory
 {
@@ -16,7 +16,7 @@ class CustomerRoleFactory extends Factory
      *
      * @var string
      */
-    protected $model = CustomerRole::class;
+    protected $model = Role::class;
 
     /**
      * Define the model's default state.

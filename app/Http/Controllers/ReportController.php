@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CustomerRole;
+use App\Models\UserManagement\Role;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -13,7 +13,7 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $cashiers = CustomerRole::with('userByRole', 'userByRole.user')->where([
+        $cashiers = Role::with('userByRole', 'userByRole.user')->where([
             'as_role' => 'cashier',
             'user_id' => session('userLogged')['company']['user_id'],
         ])->first();

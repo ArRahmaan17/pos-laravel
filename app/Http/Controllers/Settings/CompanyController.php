@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Company;
+namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Models\Company\BusinessType;
@@ -21,7 +21,7 @@ class CompanyController extends Controller
         $users = User::user_manager();
         $types = BusinessType::all();
 
-        return view('man.customer-company', compact('users', 'types'));
+        return view('settings.your-company', compact('users', 'types'));
     }
 
     public function dataTable(Request $request)
@@ -80,7 +80,7 @@ class CompanyController extends Controller
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['business'] = $item->type->name;
             $row['address'] = '<div class="font-sm">'.$item->address->place.'</div><div class="text-xs">'.$item->address->address.' '.$item->address->city.' '.$item->address->province.' '.$item->address->zip_code.'</div>';
-            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-company='".$item->id."' ><i class='bx bx-pencil' ></i></button><button class='btn btn-icon ".($item->id != session('userLogged')['company']['id'] ? 'btn-info activate' : 'btn-danger logout')."' data-customer-company='".$item->id."' >".($item->id != session('userLogged')['company']['id'] ? "<i class='bx bxs-log-in' ></i>" : "<i class='bx bxs-log-out' ></i>").'</button>';
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-company='".$item->id."' ><i class='bx bx-pencil' ></i></button><button class='btn btn-icon ".($item->id != session('userLogged')['company']['id'] ? 'btn-outline-info activate' : 'btn-outline-danger logout')."' data-customer-company='".$item->id."' >".($item->id != session('userLogged')['company']['id'] ? "<i class='bx bx-arrow-in-left-square-half' ></i>" : "<i class='bx bx-arrow-in-right-square-half' ></i>").'</button>';
             $dataFiltered[] = $row;
         }
         $response = [

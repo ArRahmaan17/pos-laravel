@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerRole;
+use App\Models\UserManagement\Role;
 use App\Models\User;
 use App\Models\UserCustomerRole;
 use Illuminate\Http\Request;
@@ -19,7 +19,7 @@ class UserCustomerController extends Controller
     {
         $users = User::user_manager();
         $where = [['user_id', '=', session('userLogged')['company']['user_id']]];
-        $customer_roles = CustomerRole::where($where)->get();
+        $customer_roles = Role::where($where)->get();
 
         return view('man.customer-user', compact('users', 'customer_roles'));
     }

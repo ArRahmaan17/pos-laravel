@@ -21,6 +21,7 @@
                                     <th scope="col">#</th>
                                     <th scope="col">Role</th>
                                     <th scope="col">Description</th>
+                                    <th scope="col">Company</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -220,8 +221,17 @@
                     render: (data, type, row, meta) => {
                         return `<div class='text-wrap'>${data}</div>`
                     }
-                }, {
+                },{
                     target: 3,
+                    name: 'company',
+                    data: 'company',
+                    orderable: false,
+                    searchable: false,
+                    render: (data, type, row, meta) => {
+                        return `<div class='text-wrap'>${data}</div>`
+                    }
+                }, {
+                    target: 4,
                     name: 'action',
                     data: 'action',
                     orderable: false,

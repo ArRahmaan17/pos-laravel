@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerRole;
+use App\Models\UserManagement\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +19,7 @@ class CustomerRoleController extends Controller
 
     public function role($id)
     {
-        $data = CustomerRole::where('user_id', $id)->get();
+        $data = Role::where('user_id', $id)->get();
         $response = ['message' => 'Showing resource successfully', 'data' => dataToOption($data)];
         $code = 200;
         if (empty($data)) {
@@ -33,11 +33,11 @@ class CustomerRoleController extends Controller
     public function dataTable(Request $request)
     {
         $where = [['user_id', '=', session('userLogged')['company']['user_id']]];
-        $totalData = CustomerRole::where($where)->orderBy('id', 'asc')
+        $totalData = Role::where($where)->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerRole::select('*');
+            $assets = Role::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -48,7 +48,7 @@ class CustomerRoleController extends Controller
             }
             $assets = $assets->where($where)->get();
         } else {
-            $assets = CustomerRole::select('*')
+            $assets = Role::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -61,7 +61,7 @@ class CustomerRoleController extends Controller
             }
             $assets = $assets->where($where)->get();
 
-            $totalFiltered = CustomerRole::select('*')
+            $totalFiltered = Role::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -102,7 +102,7 @@ class CustomerRoleController extends Controller
         ], ['user_id.required' => 'The customer user field is required']);
         DB::beginTransaction();
         try {
-            CustomerRole::create($request->except('_token'));
+            Role::create($request->except('_token'));
             $response = ['message' => 'Creating resources successfully'];
             $code = 200;
             DB::commit();
@@ -120,7 +120,7 @@ class CustomerRoleController extends Controller
      */
     public function show(string $id)
     {
-        $data = CustomerRole::where('id', $id)->first();
+        $data = Role::where('id', $id)->first();
         $response = ['message' => 'Showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -145,7 +145,7 @@ class CustomerRoleController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            CustomerRole::find($id)->update($request->except('_token', 'id'));
+            Role::find($id)->update($request->except('_token', 'id'));
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -165,8 +165,8 @@ class CustomerRoleController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (empty(collect(CustomerRole::with('role_users')->find($id)->role_users)->toArray())) {
-                CustomerRole::destroy($id);
+            if (empty(collect(Role::with('role_users')->find($id)->role_users)->toArray())) {
+                Role::destroy($id);
                 DB::commit();
                 $response = ['message' => 'deleting resource successfully'];
                 $code = 200;

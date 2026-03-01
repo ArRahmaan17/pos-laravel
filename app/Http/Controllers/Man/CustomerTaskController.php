@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerRole;
+use App\Models\UserManagement\Role;
 use App\Models\MasterTask;
 use App\Models\Task;
 use App\Models\TaskDetail;
@@ -21,7 +21,7 @@ class CustomerTaskController extends Controller
      */
     public function index()
     {
-        $customer_roles = CustomerRole::where('user_id', session('userLogged')['company']['user_id'])->get();
+        $customer_roles = Role::where('user_id', session('userLogged')['company']['user_id'])->get();
         $employees = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
             ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
             ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')

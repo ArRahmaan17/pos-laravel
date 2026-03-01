@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerRole;
+use App\Models\UserManagement\Role;
 use App\Models\User;
 use App\Models\UserCustomerRole;
 use Illuminate\Http\Request;
@@ -26,7 +26,7 @@ class UserCustomerController extends Controller
 
         $users = User::user_manager();
         $where = [['user_id', '=', $user->id]];
-        $customer_roles = CustomerRole::where($where)->get();
+        $customer_roles = Role::where($where)->get();
 
         return response()->json([
             'message' => 'Users retrieved successfully',

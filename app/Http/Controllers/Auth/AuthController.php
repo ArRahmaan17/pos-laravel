@@ -6,9 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Company\BusinessType;
 use App\Models\Company\Company;
 use App\Models\Company\CompanyAddress;
-use App\Models\CustomerRole;
-use App\Models\UserCustomerRole;
 use App\Models\UserManagement\Role;
+use App\Models\UserCustomerRole;
 use App\Models\UserManagement\User;
 use App\Models\UserManagement\UserRole;
 use Illuminate\Http\Request;
@@ -99,7 +98,7 @@ class AuthController extends Controller
         $types = BusinessType::all();
         if ($request->action) {
             [$managerId, $lifetime, $role_id, $secret] = explode('|', base64_decode($request->action));
-            if ($secret != env('APP_SECRET') || empty(User::find($managerId)) || empty(CustomerRole::find($role_id)) || now()->format('Y-m-d H:i:s') > date('Y-m-d H:i:s', strtotime($lifetime))) {
+            if ($secret != env('APP_SECRET') || empty(User::find($managerId)) || empty(Role::find($role_id)) || now()->format('Y-m-d H:i:s') > date('Y-m-d H:i:s', strtotime($lifetime))) {
                 abort(401, 'Token invalid');
             }
 
@@ -182,7 +181,7 @@ class AuthController extends Controller
                 $dataUser = User::user_manager($request->managerId);
             }
             if ($request->has('role_id')) {
-                $dataCustomerRole = CustomerRole::customer_roles($request->managerId, $request->role_id);
+                $dataCustomerRole = Role::customer_roles($request->managerId, $request->role_id);
             }
             if ($request->has('managerId')) {
                 $user_register = User::create($user);

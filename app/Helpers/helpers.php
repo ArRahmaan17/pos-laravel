@@ -145,11 +145,9 @@ function removeDuplicate(array $array, ?string $customKey = null)
     $uniqueArray = [];
 
     foreach ($array as $item) {
-        // if custom key provided AND key exists in item → use it
         if ($customKey !== null && isset($item[$customKey])) {
             $id = $item[$customKey];
         } else {
-            // fallback: use the whole item as the unique value (stringified)
             $id = is_array($item) ? json_encode($item) : $item;
         }
 
@@ -445,6 +443,7 @@ if (! function_exists('buildMenuRoleAccessibillity')) {
         return $html;
     }
 }
+
 if (! function_exists('limitOffsetToArray')) {
 
     function limitOffsetToArray($limit = 5, $offset = 1)

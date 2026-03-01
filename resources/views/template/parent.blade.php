@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-bs-theme="light" data-assets-path="../assets/"
+<html lang="en" class="light-style layout-menu-fixed" dir="ltr" data-bs-theme="dark" data-assets-path="../assets/"
     data-template="vertical-menu-template">
 @include('singleton.head')
-
+@vite(['resources/app.js', 'resources/css/app.css'])
 <body>
     <div class="layout-wrapper layout-content-navbar">
         <div class="layout-container">
