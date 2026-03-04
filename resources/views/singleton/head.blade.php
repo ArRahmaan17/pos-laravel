@@ -1,11 +1,18 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <meta property="og:title" content="@yield('title') - {{ env('APP_NAME') }}">
-    <meta property="og:description" content="Penjelasan singkat apa isi website ini agar orang tertarik klik.">
-    <meta property="og:image" content="{{ asset('assets/banner-preview.jpg') }}">
-    <meta property="og:url" content="https://websitekamu.com">
-    <meta property="og:type" content="website">
+    <meta property="og:title" content="@yield('title') - {{ env('OG_TITLE', env('APP_NAME')) }}">
+    <meta property="og:description" content="{{ env('OG_DESCRIPTION') }}">
+    <meta property="og:image" content="{{ asset(env('OG_IMAGE')) }}">
+    <meta property="og:url" content="{{ env('OG_URL', url()->current()) }}">
+    <meta property="og:type" content="{{ env('OG_TYPE', 'website') }}">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title') - {{ env('OG_TITLE', env('APP_NAME')) }}">
+    <meta name="twitter:description" content="{{ env('OG_DESCRIPTION') }}">
+    <meta name="twitter:image" content="{{ asset(env('OG_IMAGE')) }}">
+
     <title>@yield('title') - {{ env('APP_NAME') }}</title>
     <style>
         *::-webkit-scrollbar {
@@ -43,8 +50,7 @@
         }
     </style>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="{{ env('APP_NAME') }}" name="description" />
+    <meta content="{{ env('OG_DESCRIPTION') }}" name="description" />
     <meta content="{{ env('APP_NAME') }}" name="name" />
     <meta content="{{ env('APP_AUTHOR') }}" name="author" />
     <meta name="csrf-token" content="{{ csrf_token() }}">

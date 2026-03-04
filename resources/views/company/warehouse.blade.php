@@ -285,7 +285,7 @@
             $('#user_id').change(function() {
                 $.ajax({
                     type: "GET",
-                    url: `{{ route('settings.profile-company.companies') }}`,
+                    url: `{{ route('settings.your-company.companies') }}`,
                     dataType: "json",
                     success: function(response) {
                         $('#company_id').html(dataToOption(response.data, true))
