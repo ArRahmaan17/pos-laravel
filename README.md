@@ -73,7 +73,7 @@ php artisan key:generate
 ### 4. Configure Database
 Edit `.env` file with your database credentials:
 ```env
-DB_CONNECTION=
+DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=your_database
