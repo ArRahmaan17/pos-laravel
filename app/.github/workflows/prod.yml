@@ -1,0 +1,100 @@
+name: Production Deploy
+
+on:
+  push:
+    branches: ["master"]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    env:
+      PROD_PATH: ${{ vars.PROD_PATH }}
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set Release Name
+      id: release
+      run: echo "RELEASE=$(date +%s)" >> $GITHUB_ENV
+
+    # -------------------------
+    # Build
+    # -------------------------
+
+    - name: Install Composer Dependencies
+      run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+    - name: Install Node Dependencies
+      run: npm install
+
+    - name: Build Assets
+      run: npm run build
+
+    # -------------------------
+    # Create Release Folder
+    # -------------------------
+
+    - name: Create Release Directory
+      run: |
+        mkdir -p $PROD_PATH/releases/$RELEASE
+
+    - name: Copy Files to Release
+      run: |
+        rsync -av --exclude=".git" ./ $PROD_PATH/releases/$RELEASE
+
+    # -------------------------
+    # Shared Files
+    # -------------------------
+
+    - name: Link Storage
+      run: |
+        ln -nfs $PROD_PATH/shared/storage $PROD_PATH/releases/$RELEASE/storage
+
+    - name: Link .env
+      run: |
+        ln -nfs $PROD_PATH/shared/.env $PROD_PATH/releases/$RELEASE/.env
+
+    # -------------------------
+    # Laravel Setup
+    # -------------------------
+
+    - name: Run Migration
+      run: |
+        cd $PROD_PATH/releases/$RELEASE
+        php artisan migrate --force
+
+    - name: Optimize Laravel
+      run: |
+        cd $PROD_PATH/releases/$RELEASE
+        php artisan config:cache
+        php artisan route:cache
+        php artisan view:cache
+
+    # -------------------------
+    # Switch Release
+    # -------------------------
+
+    - name: Activate New Release
+      run: |
+        ln -nfs $PROD_PATH/releases/$RELEASE $PROD_PATH/current
+
+    # -------------------------
+    # Restart Services
+    # -------------------------
+
+    - name: Restart Queue
+      run: |
+        cd $PROD_PATH/current
+        php artisan queue:restart || true
+
+    - name: Reload FrankenPHP
+      run: sudo systemctl restart frankenphp
+
+    # -------------------------
+    # Cleanup Old Releases
+    # -------------------------
+
+    - name: Cleanup Old Releases
+      run: |
+        ls -dt $PROD_PATH/releases/* | tail -n +6 | xargs rm -rf
