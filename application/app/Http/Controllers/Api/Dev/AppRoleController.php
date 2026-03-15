@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api\Dev;
 
 use App\Http\Controllers\Controller;
 use App\Models\UserManagement\Role;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class RoleController extends Controller
 {
@@ -122,7 +124,7 @@ class RoleController extends Controller
                 'message' => 'App Role created successfully',
                 'data' => $appRole,
             ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             DB::rollBack();
 
             return response()->json([
@@ -152,7 +154,7 @@ class RoleController extends Controller
                 'success' => true,
                 'data' => $appRole,
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'App Role not found',
@@ -187,14 +189,14 @@ class RoleController extends Controller
                 'message' => 'App Role updated successfully',
                 'data' => $appRole,
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
 
             return response()->json([
                 'success' => false,
                 'message' => 'App Role not found',
             ], 404);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             DB::rollBack();
 
             return response()->json([
@@ -227,7 +229,7 @@ class RoleController extends Controller
                 'success' => true,
                 'message' => 'App Role deleted successfully',
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
 
             return response()->json([

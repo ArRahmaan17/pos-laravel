@@ -14,13 +14,13 @@ trait HasDefaultSearch
             return $query;
         }
 
-        $operator  = $this->getSearchOperator();
-        $columns   = $this->getSearchableColumns();
+        $operator = $this->getSearchOperator();
+        $columns = $this->getSearchableColumns();
         $relations = $this->getSearchableRelations();
 
         return $query->where(function ($q) use ($columns, $relations, $term, $operator) {
             foreach ($columns as $column) {
-                $q->orWhere($this->getTable() . '.' . $column, $operator, "%{$term}%");
+                $q->orWhere($this->getTable().'.'.$column, $operator, "%{$term}%");
             }
             // foreach ($relations as $relationPath => $relColumns) {
             //     $q->orWhereHas($relationPath, function ($relQ) use ($relColumns, $term, $operator) {
@@ -58,7 +58,7 @@ trait HasDefaultSearch
             : '/(id|_at)$/i';
 
         return collect($columns)
-            ->reject(fn($col) => preg_match($pattern, $col))
+            ->reject(fn ($col) => preg_match($pattern, $col))
             ->values()
             ->all();
     }
@@ -68,6 +68,7 @@ trait HasDefaultSearch
         if (property_exists($this, 'defaultSearchRelations')) {
             return (array) $this->defaultSearchRelations;
         }
+
         return [];
     }
 

@@ -63,7 +63,7 @@ class RoleController extends Controller
             $row['name'] = $item->name;
             $row['description'] = $item->description;
             $row['company'] = $item->company->name ?? 'System';
-            $row['action'] = $item->company_id === null ? "<button class='btn btn-icon btn-outline-success copy' data-role='".$item->id."' ><i class='bx bx-copy' ></i></button>" :"<button class='btn btn-icon btn-outline-warning edit' data-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-role='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = $item->company_id === null ? "<button class='btn btn-icon btn-outline-success copy' data-role='".$item->id."' ><i class='bx bx-copy' ></i></button>" : "<button class='btn btn-icon btn-outline-warning edit' data-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-role='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [

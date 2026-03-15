@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class TransactionTypeSeeder extends Seeder
 {
@@ -15,14 +15,14 @@ class TransactionTypeSeeder extends Seeder
                 'code' => 'SALE',
                 'description' => 'Sales transaction',
                 'created_by' => 1,
-                'created_at' => now()
+                'created_at' => now(),
             ],
             [
                 'id' => 2,
                 'code' => 'RETURN',
                 'description' => 'Return transaction',
                 'created_by' => 1,
-                'created_at' => now()
+                'created_at' => now(),
             ],
             [
                 'id' => 3,

@@ -2,8 +2,8 @@
 
 namespace App\Helpers;
 
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class RedisHelper
 {
@@ -13,6 +13,7 @@ class RedisHelper
     {
         $this->connection = $connection;
     }
+
     /**
      * Get value from Redis
      */
@@ -21,7 +22,8 @@ class RedisHelper
         try {
             return Redis::get($key);
         } catch (\Exception $e) {
-            Log::error("Redis GET error for key {$key}: " . $e->getMessage());
+            Log::error("Redis GET error for key {$key}: ".$e->getMessage());
+
             return null;
         }
     }
@@ -36,10 +38,12 @@ class RedisHelper
                 Log::warning("key already found, your replace that {$key}");
             }
             Redis::setex($key, $ttl ?? env('REDIS_TTL'), $value);
+
             return true;
         } catch (\Exception $e) {
             dd($e);
-            Log::error("Redis SET error for key {$key}: " . $e->getMessage());
+            Log::error("Redis SET error for key {$key}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -67,9 +71,11 @@ class RedisHelper
     {
         try {
             Redis::del($key);
+
             return true;
         } catch (\Exception $e) {
-            Log::error("Redis DEL error for key {$key}: " . $e->getMessage());
+            Log::error("Redis DEL error for key {$key}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -82,7 +88,8 @@ class RedisHelper
         try {
             return Redis::exists($key) > 0;
         } catch (\Exception $e) {
-            Log::error("Redis EXISTS error for key {$key}: " . $e->getMessage());
+            Log::error("Redis EXISTS error for key {$key}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -95,7 +102,8 @@ class RedisHelper
         try {
             return Redis::incrby($key, $amount);
         } catch (\Exception $e) {
-            Log::error("Redis INCR error for key {$key}: " . $e->getMessage());
+            Log::error("Redis INCR error for key {$key}: ".$e->getMessage());
+
             return null;
         }
     }
@@ -108,7 +116,8 @@ class RedisHelper
         try {
             return Redis::decrby($key, $amount);
         } catch (\Exception $e) {
-            Log::error("Redis DECR error for key {$key}: " . $e->getMessage());
+            Log::error("Redis DECR error for key {$key}: ".$e->getMessage());
+
             return null;
         }
     }

@@ -373,7 +373,7 @@ class CustomerTemporaryProductController extends Controller
             $response = ['message' => 'Creating resource successfully'];
             $code = 200;
             DB::commit();
-        } catch (\Exception $th) {
+        } catch (Exception $th) {
             DB::rollBack();
             $response = ['message' => 'Failed creating resource'.($th->getCode() === 0) ? ', '.$th->getMessage() : ''];
             $code = 422;

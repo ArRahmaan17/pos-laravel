@@ -11,14 +11,14 @@ class AuthorizationOnly
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
         if (getLevel() === 3) {
             return $next($request);
         } else {
-            return redirect()->route('dashboard.index')->with('error', "You don't have permission to access " . implode(' > ', explode('.', implode('', explode('.index', $request->route()->action['as'])))));
+            return redirect()->route('dashboard.index')->with('error', "You don't have permission to access ".implode(' > ', explode('.', implode('', explode('.index', $request->route()->action['as'])))));
         }
     }
 }

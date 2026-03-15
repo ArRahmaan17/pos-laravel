@@ -6,7 +6,7 @@ use App\Models\BusinessType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BusinessType>
+ * @extends Factory<BusinessType>
  */
 class BusinessTypeFactory extends Factory
 {

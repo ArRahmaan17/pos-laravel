@@ -45,7 +45,7 @@ return new class extends Migration
                 ->on('companies')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-             $table->bigInteger('created_by')->unsigned();
+            $table->bigInteger('created_by')->unsigned();
             $table->foreign('created_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->bigInteger('updated_by')->unsigned()->nullable();
             $table->foreign('updated_by')->on('users')->references('id')->cascadeOnDelete()->cascadeOnUpdate();

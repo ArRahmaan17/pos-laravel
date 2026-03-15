@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 class PermissionController extends Controller
 {
     private $develope_app_scope_id = 1;
+
     /**
      * Display a listing of the resource.
      */
@@ -24,9 +25,9 @@ class PermissionController extends Controller
             if (isset($route['action']['group']) && $route['action']['group'] === 'web') {
                 if (array_find(
                     $route['action']['middleware'],
-                    fn($v) => $v === 'App\Http\Middleware\checkPageAuthorization'
+                    fn ($v) => $v === 'App\Http\Middleware\checkPageAuthorization'
                 )) {
-                    if (!array_find($route['action']['middleware'], fn($v) => $v === 'App\Http\Middleware\AuthorizationOnly')) {
+                    if (! array_find($route['action']['middleware'], fn ($v) => $v === 'App\Http\Middleware\AuthorizationOnly')) {
                         $data = &$route['action'];
                         $data['uri'] = &$route['uri'];
                         $data['methods'] = &$route['methods'];
@@ -35,7 +36,7 @@ class PermissionController extends Controller
                             $result[] = [
                                 'id' => $as[$key],
                                 'parent' => $as[$key - 1] ?? null,
-                                'as' => ($key === (count($as) - 1)) ? $data['as'] : '#' . $as[$key],
+                                'as' => ($key === (count($as) - 1)) ? $data['as'] : '#'.$as[$key],
                             ];
                         }
                         // if (is_array($data['name'])) {
@@ -75,6 +76,7 @@ class PermissionController extends Controller
             $where = [['is_system', '=', 0]];
         }
         $roles = Role::where('scope_id', '>=', session('userLogged')['role']['scope_id'])->where($where)->get();
+
         return view('settings.permission', compact('routes', 'roles'));
     }
 
@@ -91,16 +93,16 @@ class PermissionController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->get();
         } else {
             $assets = Permission::select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('route', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -109,11 +111,11 @@ class PermissionController extends Controller
             $assets = $assets->get();
 
             $totalFiltered = Permission::select('*')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('route', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('route', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->count();
         }
@@ -124,7 +126,7 @@ class PermissionController extends Controller
             $row['name'] = $item->name;
             $row['place'] = $item->place;
             $row['child'] = Permission::getChildMenu($item->id);
-            $row['action'] = "<button class='btn btn-icon btn-outline-success parent' data-permission='" . $item->id . "' ><i class='bx bx-plus' ></i></button><button class='btn btn-icon btn-outline-warning edit' data-permission='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-permission='" . $item->id . "' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-success parent' data-permission='".$item->id."' ><i class='bx bx-plus' ></i></button><button class='btn btn-icon btn-outline-warning edit' data-permission='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-permission='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -189,7 +191,7 @@ class PermissionController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'name' => 'required|min:2|max:15|unique:permissions,name,' . $id,
+            'name' => 'required|min:2|max:15|unique:permissions,name,'.$id,
             'route' => 'required',
             'icon' => 'required',
             'parent' => 'required',

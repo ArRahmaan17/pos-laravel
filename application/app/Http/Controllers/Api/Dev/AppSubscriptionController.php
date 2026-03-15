@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\Dev;
 use App\Http\Controllers\Controller;
 use App\Models\AppDetailSubscription;
 use App\Models\AppSubscription;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class SubscriptionController extends Controller
 {
@@ -17,14 +19,15 @@ class SubscriptionController extends Controller
     {
         try {
             $appSubscriptions = AppSubscription::with('planFeature')->orderBy('id', 'asc')->get();
+
             return response()->json([
                 'success' => true,
-                'data' => $appSubscriptions
+                'data' => $appSubscriptions,
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve app subscriptions'
+                'message' => 'Failed to retrieve app subscriptions',
             ], 500);
         }
     }
@@ -45,16 +48,16 @@ class SubscriptionController extends Controller
                     }
                 }
                 if (isset($request['order'][0]['column'])) {
-                    $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                    $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
                 }
                 $assets = $assets->get();
             } else {
                 $assets = AppSubscription::with('planFeature')->select('*')
-                    ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                    ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                    ->where('name', 'like', '%'.$request['search']['value'].'%')
+                    ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
                 if (isset($request['order'][0]['column'])) {
-                    $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                    $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
                 }
                 if ($request['length'] != '-1') {
                     $assets->limit($request['length']);
@@ -65,11 +68,11 @@ class SubscriptionController extends Controller
                 $assets = $assets->get();
 
                 $totalFiltered = AppSubscription::with('planFeature')->select('*')
-                    ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                    ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                    ->where('name', 'like', '%'.$request['search']['value'].'%')
+                    ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
                 if (isset($request['order'][0]['column'])) {
-                    $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                    $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
                 }
                 $totalFiltered = $totalFiltered->count();
             }
@@ -100,7 +103,7 @@ class SubscriptionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve data table'
+                'message' => 'Failed to retrieve data table',
             ], 500);
         }
     }
@@ -138,20 +141,22 @@ class SubscriptionController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'App Subscription created successfully',
-                'data' => $appSubscription->load('planFeature')
+                'data' => $appSubscription->load('planFeature'),
             ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed creating App Subscription'
+                'message' => 'Failed creating App Subscription',
             ], 500);
         }
     }
@@ -163,19 +168,20 @@ class SubscriptionController extends Controller
     {
         try {
             $appSubscription = AppSubscription::with('planFeature')->findOrFail($id);
+
             return response()->json([
                 'success' => true,
-                'data' => $appSubscription
+                'data' => $appSubscription,
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'App Subscription not found'
+                'message' => 'App Subscription not found',
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve App Subscription'
+                'message' => 'Failed to retrieve App Subscription',
             ], 500);
         }
     }
@@ -190,7 +196,7 @@ class SubscriptionController extends Controller
             $appSubscription = AppSubscription::findOrFail($id);
 
             $request->validate([
-                'name' => 'required|min:2|max:50|unique:app_subscriptions,name,' . $id,
+                'name' => 'required|min:2|max:50|unique:app_subscriptions,name,'.$id,
                 'description' => 'required|min:6|max:500',
                 'price' => 'required|numeric|min:0',
                 'duration_days' => 'required|integer|min:1',
@@ -221,26 +227,29 @@ class SubscriptionController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'App Subscription updated successfully',
-                'data' => $appSubscription->load('planFeature')
+                'data' => $appSubscription->load('planFeature'),
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'App Subscription not found'
+                'message' => 'App Subscription not found',
             ], 404);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed updating App Subscription'
+                'message' => 'Failed updating App Subscription',
             ], 500);
         }
     }
@@ -262,19 +271,21 @@ class SubscriptionController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'App Subscription deleted successfully'
+                'message' => 'App Subscription deleted successfully',
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'App Subscription not found'
+                'message' => 'App Subscription not found',
             ], 404);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed deleting App Subscription'
+                'message' => 'Failed deleting App Subscription',
             ], 500);
         }
     }

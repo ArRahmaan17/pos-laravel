@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\Dev\ProductUnitController;
 use App\Http\Controllers\Api\Dev\PermissionController;
+use App\Http\Controllers\Api\Dev\ProductUnitController;
 use App\Http\Controllers\Api\Dev\RoleController;
 use App\Http\Controllers\Api\Dev\SubscriptionController;
 use App\Http\Controllers\Api\Man\CustomerCompanyGoodController;

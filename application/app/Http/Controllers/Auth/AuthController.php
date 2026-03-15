@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Company\BusinessType;
 use App\Models\Company\Company;
 use App\Models\Company\CompanyAddress;
-use App\Models\UserManagement\Role;
 use App\Models\UserCustomerRole;
+use App\Models\UserManagement\Role;
 use App\Models\UserManagement\User;
 use App\Models\UserManagement\UserRole;
 use Illuminate\Http\Request;
@@ -38,6 +38,7 @@ class AuthController extends Controller
             }
             session()->flush();
             session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int) env('SESSION_LIFETIME', 120))]);
+
             return redirect()->route('select-company');
         }
 
@@ -79,14 +80,14 @@ class AuthController extends Controller
             if ($hasPrivileges) {
                 session()->flush();
                 session(['userLogged' => collect($user)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
-                $response = ['message' => 'successfully login as ' . $user['user']['username']];
+                $response = ['message' => 'successfully login as '.$user['user']['username']];
                 $status = 200;
             } else {
-                $response = ['message' => 'failed login as ' . $user['user']['username'] . ', please set menu for the role'];
+                $response = ['message' => 'failed login as '.$user['user']['username'].', please set menu for the role'];
                 $status = 404;
             }
         } else {
-            $response = ['message' => 'failed login as ' . $user['user']['username'] . ', unexpected error on process login as'];
+            $response = ['message' => 'failed login as '.$user['user']['username'].', unexpected error on process login as'];
             $status = 404;
         }
 
@@ -206,7 +207,7 @@ class AuthController extends Controller
                 $data_role = Role::where('code', 'root')->first()->toArray();
                 unset($data_role['id']);
                 $data_role['name'] = 'Your Default Manager Role';
-                $data_role['code'] = 'root-' . str(buatSingkatan($data_company->name))->lower();
+                $data_role['code'] = 'root-'.str(buatSingkatan($data_company->name))->lower();
                 $data_role['company_id'] = $data_company->id;
                 $data_role['created_by'] = $user_register->id;
                 $create_role = Role::create($data_role);
@@ -303,6 +304,7 @@ class AuthController extends Controller
             $message = ['error', 'Unexpected error in our system, try again later.'];
         }
         $roleUser = UserRole::with('role', 'role.company', 'role.scope', 'role.company.address')->where('user_id', session('userLogged')['user']['id'])->first();
+        dd($roleUser);
         $roleUser['company'] = $roleUser->role->company;
         $roleUser['company']['address'] = $roleUser->role->company->address;
         $access = collect($roleUser)->toArray();

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\UserManagement\User;
+
 return [
 
     /*
@@ -62,7 +64,7 @@ return [
     'providers' => [
         'tests' => [
             'driver' => 'eloquent',
-            'model' => App\Models\UserManagement\User::class,
+            'model' => User::class,
         ],
     ],
 

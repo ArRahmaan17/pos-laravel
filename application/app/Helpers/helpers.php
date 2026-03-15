@@ -45,7 +45,7 @@ function defaultPassword()
 }
 function buatSingkatan($kalimat)
 {
-    return strtoupper(implode('', array_map(fn($kata) => $kata[0] . $kata[1], explode(' ', $kalimat))));
+    return strtoupper(implode('', array_map(fn ($kata) => $kata[0].$kata[1], explode(' ', $kalimat))));
 }
 
 if (! function_exists('lastCompanyOrderCode')) {
@@ -55,27 +55,27 @@ if (! function_exists('lastCompanyOrderCode')) {
             $date = now()->format('Y-m-d');
         }
         if ($transaction_status === 'OUT') {
-            $data = CustomerProductTransaction::where('orderCode', 'like', '%' . $transaction_status . '%')
-                ->where('company_id', session('userLogged')['company']['id'])->whereRaw("DATE(created_at) = '" . $date . "'")
+            $data = CustomerProductTransaction::where('orderCode', 'like', '%'.$transaction_status.'%')
+                ->where('company_id', session('userLogged')['company']['id'])->whereRaw("DATE(created_at) = '".$date."'")
                 ->orderBy('id', 'DESC')
                 ->first();
         } else {
-            $data = CustomerTemporaryProduct::where('orderCode', 'like', '%' . $transaction_status . '%')
+            $data = CustomerTemporaryProduct::where('orderCode', 'like', '%'.$transaction_status.'%')
                 ->where('company_id', session('userLogged')['company']['id'])->where('transaction_created', $date)
                 ->orderBy('id', 'DESC')
                 ->first();
         }
-        $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-' . str_pad(1, 5, '0', STR_PAD_LEFT);
+        $lastOrder = buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-'.str_pad(1, 5, '0', STR_PAD_LEFT);
         if ($data && explode(
-            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-',
+            buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-',
             $data->orderCode
         )) {
-            $lastOrder = buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-' . str_pad(
+            $lastOrder = buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-'.str_pad(
                 intval(
                     implode(
                         '',
                         explode(
-                            buatSingkatan(session('userLogged')['company']['name']) . '-' . $transaction_status . '-' . $date . '-',
+                            buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-',
                             $data->orderCode
                         )
                     )
@@ -117,7 +117,7 @@ function formatIndonesianPhoneNumber($phoneNumber)
         $cleaned = substr($cleaned, 2);
     }
     if ($cleaned[0] !== '+62') {
-        $cleaned = '+62' . $cleaned;
+        $cleaned = '+62'.$cleaned;
     }
     $formatted = preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})/', '$1 $2-$3-$4', $cleaned);
 
@@ -130,9 +130,9 @@ if (! function_exists('dataToOption')) {
         $html = "<option value=''>Mohon Pilih</option>";
         foreach ($allData as $index => $data) {
             if ($attr) {
-                $html .= "<option data-attr='" . $data->attribute . "' value='" . (isset($data->id) ? $data->id : $data->name) . "'>" . $data->name . ' ( Tersedia di ' . $data->attribute . ')</option>';
+                $html .= "<option data-attr='".$data->attribute."' value='".(isset($data->id) ? $data->id : $data->name)."'>".$data->name.' ( Tersedia di '.$data->attribute.')</option>';
             } else {
-                $html .= "<option value='" . (isset($data->id) ? $data->id : $data->name) . "'>" . $data->name . '</option>';
+                $html .= "<option value='".(isset($data->id) ? $data->id : $data->name)."'>".$data->name.'</option>';
             }
         }
 
@@ -175,43 +175,43 @@ if (! function_exists('convertAlphabeticalToNumberDate')) {
             $stringDate = explode(' ', $stringDate);
             switch ($stringDate[1]) {
                 case 'Januari':
-                    $str = $stringDate[2] . '-' . $number[0] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[0].'-'.$stringDate[0];
                     break;
                 case 'Februari':
-                    $str = $stringDate[2] . '-' . $number[1] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[1].'-'.$stringDate[0];
                     break;
                 case 'Maret':
-                    $str = $stringDate[2] . '-' . $number[2] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[2].'-'.$stringDate[0];
                     break;
                 case 'April':
-                    $str = $stringDate[2] . '-' . $number[3] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[3].'-'.$stringDate[0];
                     break;
                 case 'Mei':
-                    $str = $stringDate[2] . '-' . $number[4] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[4].'-'.$stringDate[0];
                     break;
                 case 'Juni':
-                    $str = $stringDate[2] . '-' . $number[5] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[5].'-'.$stringDate[0];
                     break;
                 case 'Juli':
-                    $str = $stringDate[2] . '-' . $number[6] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[6].'-'.$stringDate[0];
                     break;
                 case 'Agustus':
-                    $str = $stringDate[2] . '-' . $number[7] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[7].'-'.$stringDate[0];
                     break;
                 case 'September':
-                    $str = $stringDate[2] . '-' . $number[8] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[8].'-'.$stringDate[0];
                     break;
                 case 'Oktober':
-                    $str = $stringDate[2] . '-' . $number[9] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[9].'-'.$stringDate[0];
                     break;
                 case 'November':
-                    $str = $stringDate[2] . '-' . $number[10] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[10].'-'.$stringDate[0];
                     break;
                 case 'Desember':
-                    $str = $stringDate[2] . '-' . $number[11] . '-' . $stringDate[0];
+                    $str = $stringDate[2].'-'.$number[11].'-'.$stringDate[0];
                     break;
                 default:
-                    $str = $stringDate[2] . '- not valid -' . $stringDate[0];
+                    $str = $stringDate[2].'- not valid -'.$stringDate[0];
                     break;
             }
 
@@ -229,43 +229,43 @@ if (! function_exists('convertNumericDateToAlphabetical')) {
             $stringDate = explode('-', $stringDate);
             switch ($stringDate[1]) {
                 case '01':
-                    $str = $stringDate[2] . ' ' . $number[0] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[0].' '.$stringDate[0];
                     break;
                 case '02':
-                    $str = $stringDate[2] . ' ' . $number[1] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[1].' '.$stringDate[0];
                     break;
                 case '03':
-                    $str = $stringDate[2] . ' ' . $number[2] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[2].' '.$stringDate[0];
                     break;
                 case '04':
-                    $str = $stringDate[2] . ' ' . $number[3] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[3].' '.$stringDate[0];
                     break;
                 case '05':
-                    $str = $stringDate[2] . ' ' . $number[4] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[4].' '.$stringDate[0];
                     break;
                 case '06':
-                    $str = $stringDate[2] . ' ' . $number[5] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[5].' '.$stringDate[0];
                     break;
                 case '07':
-                    $str = $stringDate[2] . ' ' . $number[6] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[6].' '.$stringDate[0];
                     break;
                 case '08':
-                    $str = $stringDate[2] . ' ' . $number[7] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[7].' '.$stringDate[0];
                     break;
                 case '09':
-                    $str = $stringDate[2] . ' ' . $number[8] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[8].' '.$stringDate[0];
                     break;
                 case '10':
-                    $str = $stringDate[2] . ' ' . $number[9] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[9].' '.$stringDate[0];
                     break;
                 case '11':
-                    $str = $stringDate[2] . ' ' . $number[10] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[10].' '.$stringDate[0];
                     break;
                 case '12':
-                    $str = $stringDate[2] . ' ' . $number[11] . ' ' . $stringDate[0];
+                    $str = $stringDate[2].' '.$number[11].' '.$stringDate[0];
                     break;
                 default:
-                    $str = $stringDate[2] . '  not valid  ' . $stringDate[0];
+                    $str = $stringDate[2].'  not valid  '.$stringDate[0];
                     break;
             }
 
@@ -328,7 +328,7 @@ if (! function_exists('buildTreeMenu')) {
 // }
 
 if (! function_exists('arrayTree')) {
-    function arrayTree(&$elements, $keyparent = 'parent', $key = 'id',  $idParent = null)
+    function arrayTree(&$elements, $keyparent = 'parent', $key = 'id', $idParent = null)
     {
         $branch = [];
         foreach ($elements as $element) {
@@ -354,7 +354,7 @@ function getSql($model)
             $pos = strpos($sql, $needle);
             if ($pos !== false) {
                 if (gettype($replace) === 'string') {
-                    $replace = ' "' . addslashes($replace) . '" ';
+                    $replace = ' "'.addslashes($replace).'" ';
                 }
                 $sql = substr_replace($sql, $replace, $pos, strlen($needle));
             }
@@ -405,20 +405,21 @@ if (! function_exists('buildMenu')) {
                 $children = buildMenu($element['children']);
                 $html .= '<li class="menu-item">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon ' . $element['icon'] . ' bx-sm"></i>
-                            <div data-i18n="Layouts">' . $element['name'] . '</div>
+                            <i class="menu-icon '.$element['icon'].' bx-sm"></i>
+                            <div data-i18n="Layouts">'.$element['name'].'</div>
                         </a>
-                        <ul class="menu-sub">' . $children . '</ul>
+                        <ul class="menu-sub">'.$children.'</ul>
                     </li>';
             } else {
                 $html .= '<li class="menu-item">
-                    <a href="' . (Route::has($element['ref']) ? route($element['ref']) : $element['ref']) . '" class="menu-link ' . (Route::is($element['ref']) ? 'bg-primary text-white rounded-sm' : '') . '">
-                        <i class="menu-icon ' . $element['icon'] . ' bx-sm"></i>
-                        <div data-i18n="' . $element['id'] . '">' . $element['name'] . '</div>
+                    <a href="'.(Route::has($element['ref']) ? route($element['ref']) : $element['ref']).'" class="menu-link '.(Route::is($element['ref']) ? 'bg-primary text-white rounded-sm' : '').'">
+                        <i class="menu-icon '.$element['icon'].' bx-sm"></i>
+                        <div data-i18n="'.$element['id'].'">'.$element['name'].'</div>
                     </a>
                 </li>';
             }
         }
+
         return $html;
     }
 }
@@ -429,14 +430,14 @@ if (! function_exists('buildMenuRoleAccessibillity')) {
         $html = '';
         foreach ($elements as $element) {
             $html .= '<div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="' . $element['id'] . '"
-                                id="option-' . ($element['parent'] ?? '0') . '-' . $element['id'] . '">
-                            <label for="option-' . ($element['parent'] ?? '0') . '-' . $element['id'] . '" class="form-check-label">
-                                ' . str_replace('-', ' ', $element['id']) . '
+                            <input class="form-check-input" type="checkbox" value="'.$element['id'].'"
+                                id="option-'.($element['parent'] ?? '0').'-'.$element['id'].'">
+                            <label for="option-'.($element['parent'] ?? '0').'-'.$element['id'].'" class="form-check-label">
+                                '.str_replace('-', ' ', $element['id']).'
                             </label>
                         </div>';
             if (isset($element['children'])) {
-                $html .= '<div class="container-fluid">' . buildMenuRoleAccessibillity($element['children']) . '</div>';
+                $html .= '<div class="container-fluid">'.buildMenuRoleAccessibillity($element['children']).'</div>';
             }
         }
 

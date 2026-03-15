@@ -23,10 +23,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::macro('meta', function (array $attributes, \Closure $callback) {
-        $attributes = array_merge([
-        ], $attributes);
+            $attributes = array_merge([
+            ], $attributes);
 
-        return Route::group($attributes, $callback);
-    });
+            return Route::group($attributes, $callback);
+        });
     }
 }

@@ -13,11 +13,11 @@ class DiscountCodeSeeder extends Seeder
             [
                 'id' => 1,
                 'code' => 'WELCOME10',
-                'description' => implode(' ',fake('id')->words),
+                'description' => implode(' ', fake('id')->words),
                 'company_id' => 1,
                 'created_by' => 1,
                 'created_at' => now(),
-            ]
+            ],
         ]);
     }
 }

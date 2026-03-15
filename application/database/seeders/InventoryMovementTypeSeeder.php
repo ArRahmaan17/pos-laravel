@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class InventoryMovementTypeSeeder extends Seeder
 {
@@ -14,7 +14,7 @@ class InventoryMovementTypeSeeder extends Seeder
                 'code' => 'STOCK_IN',
                 'direction' => 'in',
                 'name' => 'Stock In',
-                'description' => implode(" ", fake('id')->words(3)),
+                'description' => implode(' ', fake('id')->words(3)),
                 'company_id' => 1,
                 'created_by' => 1,
                 'created_at' => now(),
@@ -23,7 +23,7 @@ class InventoryMovementTypeSeeder extends Seeder
                 'code' => 'SALE',
                 'direction' => 'out',
                 'name' => 'Sales',
-                'description' => implode(" ", fake('id')->words(3)),
+                'description' => implode(' ', fake('id')->words(3)),
                 'company_id' => 1,
                 'created_by' => 1,
                 'created_at' => now(),
@@ -32,10 +32,10 @@ class InventoryMovementTypeSeeder extends Seeder
                 'code' => 'ADJUSTMENT',
                 'direction' => 'none',
                 'name' => 'Adjustment',
-                'description' => implode(" ", fake('id')->words(3)),
+                'description' => implode(' ', fake('id')->words(3)),
                 'company_id' => 1,
                 'created_by' => 1,
-                'created_at' => now()
+                'created_at' => now(),
             ],
         ]);
     }

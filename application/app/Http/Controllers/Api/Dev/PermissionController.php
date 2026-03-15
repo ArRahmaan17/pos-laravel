@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\Dev;
 
 use App\Http\Controllers\Controller;
 use App\Models\UserManagement\Permission;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 
 class PermissionController extends Controller
 {
@@ -131,7 +133,7 @@ class PermissionController extends Controller
                 'message' => 'Permission created successfully',
                 'data' => $appMenu,
             ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             DB::rollBack();
 
             return response()->json([
@@ -161,7 +163,7 @@ class PermissionController extends Controller
                 'success' => true,
                 'data' => $appMenu,
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Permission not found',
@@ -198,14 +200,14 @@ class PermissionController extends Controller
                 'message' => 'Permission updated successfully',
                 'data' => $appMenu,
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
 
             return response()->json([
                 'success' => false,
                 'message' => 'Permission not found',
             ], 404);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             DB::rollBack();
 
             return response()->json([
@@ -238,7 +240,7 @@ class PermissionController extends Controller
                 'success' => true,
                 'message' => 'Permission deleted successfully',
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
 
             return response()->json([

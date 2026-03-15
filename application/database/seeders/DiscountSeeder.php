@@ -22,7 +22,7 @@ class DiscountSeeder extends Seeder
                 'max_usage' => 100,
                 'created_by' => 1,
                 'created_at' => now(),
-            ]
+            ],
         ]);
     }
 }

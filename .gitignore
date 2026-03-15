@@ -1,2 +1,5 @@
 .env
 plan.md
+data/database/*
+data/logs/*
+data/redis/*

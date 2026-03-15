@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\UserManagement\Permission;
-use App\Models\AppSubscription;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
@@ -32,12 +30,11 @@ class MenuServiceProvider extends ServiceProvider
                 $routes = collect(Route::getRoutes())->filter(function ($route) {
                     return str_contains($route->getActionName(), '@index') && array_find(
                         $route->action['middleware'],
-                        fn($v) => $v === 'App\Http\Middleware\checkPageAuthorization'
-                    ) && !array_find($route->action['middleware'], fn($v) => $v === 'App\Http\Middleware\AuthorizationOnly');
+                        fn ($v) => $v === 'App\Http\Middleware\checkPageAuthorization'
+                    ) && ! array_find($route->action['middleware'], fn ($v) => $v === 'App\Http\Middleware\AuthorizationOnly');
                 })->all();
                 $routes = array_values(collect($routes)->map(
-                    fn($rt) =>
-                    [
+                    fn ($rt) => [
                         'ref' => $rt->action['as'],
                         'parent' => $rt->action['parent'],
                         'icon' => $rt->action['icon'] ?? null,
@@ -55,17 +52,19 @@ class MenuServiceProvider extends ServiceProvider
         }
         $parents = removeDuplicate($menus, 'parent');
         $parents = array_map(function ($parent) {
-            $parent['ref'] = '#' . (is_array($parent['parent']) ? $parent['parent'][1] : $parent['parent']);
+            $parent['ref'] = '#'.(is_array($parent['parent']) ? $parent['parent'][1] : $parent['parent']);
             $parent['name'] = Str(is_array($parent['parent']) ? $parent['parent'][1] : $parent['parent'])->title();
             $parent['id'] = is_array($parent['parent']) ? $parent['parent'][1] : $parent['parent'];
             $parent['parent'] = null;
             $parent['icon'] = $parent['parent-icon'];
+
             return $parent;
         }, array_filter($parents, function ($parent) {
             return $parent['parent'] !== null;
         }));
         $menus = array_merge(array_map(function ($menu) {
             $menu['parent'] = is_array($menu['parent']) ? $menu['parent'][1] : $menu['parent'];
+
             return $menu;
         }, $menus), $parents);
         $menus = arrayTree($menus);

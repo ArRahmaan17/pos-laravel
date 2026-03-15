@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserManagement\Role;
 use App\Models\CustomerRoleAccessibility;
 use App\Models\UserManagement\Permission;
+use App\Models\UserManagement\Role;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

@@ -17,7 +17,7 @@ class WarehouseInventorySeeder extends Seeder
                 'quantity_on_hand' => 100,
                 'created_by' => 1,
                 'created_at' => now(),
-            ]
+            ],
         ]);
     }
 }

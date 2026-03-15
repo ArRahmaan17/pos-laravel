@@ -17,7 +17,7 @@ class WarehouseSeeder extends Seeder
                 'company_id' => 1,
                 'created_by' => 1,
                 'created_at' => now(),
-            ]
+            ],
         ]);
     }
 }

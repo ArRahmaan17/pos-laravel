@@ -1,17 +1,12 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Settings\PermissionController;
-use App\Http\Controllers\Settings\ProductUnitController;
-use App\Http\Controllers\Settings\RoleController;
-use App\Http\Controllers\Settings\SubscriptionController;
-use App\Http\Controllers\Settings\CompanyController;
+use App\Http\Controllers\Company\WarehouseController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Man\CustomerCompanyMasterTaskController;
 use App\Http\Controllers\Man\CustomerCompanyStocktakingController;
-use App\Http\Controllers\Company\WarehouseController;
 use App\Http\Controllers\Man\CustomerProductTransactionController;
 use App\Http\Controllers\Man\CustomerProductTypeController;
 use App\Http\Controllers\Man\CustomerTaskController;
@@ -19,6 +14,11 @@ use App\Http\Controllers\Man\CustomerTemporaryProductController;
 use App\Http\Controllers\Man\CustomerWareHouseRackGoodController;
 use App\Http\Controllers\Man\UserCustomerController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Settings\CompanyController;
+use App\Http\Controllers\Settings\PermissionController;
+use App\Http\Controllers\Settings\ProductUnitController;
+use App\Http\Controllers\Settings\RoleController;
+use App\Http\Controllers\Settings\SubscriptionController;
 use App\Http\Middleware\Authorization;
 use App\Http\Middleware\AuthorizationOnly;
 use App\Http\Middleware\checkPageAuthorization;
@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::meta(['group' => 'web'], function () {
-    Route::middleware([unAuthorization::class])->name('auth.')->prefix('auth')->group(function () {
+    Route::middleware([UnAuthorization::class])->name('auth.')->prefix('auth')->group(function () {
         Route::get('/login', [AuthController::class, 'index'])->name('login');
         Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login.process');
         Route::get('/registration', [AuthController::class, 'register'])->name('registration');
@@ -115,7 +115,7 @@ Route::meta(['group' => 'web'], function () {
                 Route::delete('/{id?}', [UserCustomerController::class, 'destroy'])->name('delete');
             });
             Route::meta([
-                'icon' => 'bx bxs-list-square' ,
+                'icon' => 'bx bxs-list-square',
                 'prefix' => 'master-task',
                 'as' => 'master-task.',
                 'parent' => 'company',
@@ -152,7 +152,7 @@ Route::meta(['group' => 'web'], function () {
                 Route::delete('/detail/{id?}', [CustomerTaskController::class, 'destroyDetail'])->name('delete-detail');
                 Route::delete('/{id?}', [CustomerTaskController::class, 'destroy'])->name('delete');
             });
-Route::meta([
+            Route::meta([
                 'icon' => 'bx bxs-warehouse',
                 'prefix' => 'warehouse',
                 'as' => 'warehouse.',

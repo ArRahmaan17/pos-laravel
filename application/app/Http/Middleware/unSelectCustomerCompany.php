@@ -11,15 +11,15 @@ class unSelectCustomerCompany
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!empty(session('userLogged')['user']) && empty(session('userLogged')['company'])) {
+        if (! empty(session('userLogged')['user']) && empty(session('userLogged')['company'])) {
             return $next($request);
         } elseif (empty(session('userLogged'))) {
             return redirect()->route('auth.login')->with('error', 'Please report to your manager to add the accessibility role');
-        } elseif (!empty(session('userLogged')['user']) && !empty(session('userLogged')) && !empty(session('userLogged')['company']) && !empty(session('userLogged')['role'])) {
+        } elseif (! empty(session('userLogged')['user']) && ! empty(session('userLogged')) && ! empty(session('userLogged')['company']) && ! empty(session('userLogged')['role'])) {
             return redirect()->route('dashboard.index');
         }
     }

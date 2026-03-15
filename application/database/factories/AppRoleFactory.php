@@ -6,7 +6,7 @@ use App\Models\UserManagement\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\UserManagement\Role>
+ * @extends Factory<Role>
  */
 class AppRoleFactory extends Factory
 {

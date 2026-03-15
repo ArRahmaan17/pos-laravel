@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\Dev;
 use App\Helpers\RedisHelper;
 use App\Http\Controllers\Controller;
 use App\Models\ProductWeight;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ProductUnitController extends Controller
 {
@@ -129,7 +131,7 @@ class ProductUnitController extends Controller
                 'message' => 'App Good Unit created successfully',
                 'data' => $appGoodUnit,
             ], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             DB::rollBack();
 
             return response()->json([
@@ -159,7 +161,7 @@ class ProductUnitController extends Controller
                 'success' => true,
                 'data' => $appGoodUnit,
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'App Good Unit not found',
@@ -194,14 +196,14 @@ class ProductUnitController extends Controller
                 'message' => 'App Good Unit updated successfully',
                 'data' => $appGoodUnit,
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
 
             return response()->json([
                 'success' => false,
                 'message' => 'App Good Unit not found',
             ], 404);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             DB::rollBack();
 
             return response()->json([
@@ -235,7 +237,7 @@ class ProductUnitController extends Controller
                 'success' => true,
                 'message' => 'App Good Unit deleted successfully',
             ], 200);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             DB::rollBack();
 
             return response()->json([
