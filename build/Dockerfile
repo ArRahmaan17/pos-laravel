@@ -6,13 +6,13 @@ FROM node:22-alpine AS node-builder
 WORKDIR /build
 
 # Install JS dependencies
-COPY app/package.json app/package-lock.json ./
+COPY application/package.json application/package-lock.json ./
 RUN npm ci --prefer-offline
 
 # Copy source files needed by Vite
-COPY app/vite.config.js ./
-COPY app/resources/ ./resources/
-COPY app/public/ ./public/
+COPY application/vite.config.js ./
+COPY application/resources/ ./resources/
+COPY application/public/ ./public/
 
 # Build production assets
 RUN npm run build
@@ -24,7 +24,7 @@ FROM composer:2 AS composer-builder
 
 WORKDIR /app
 
-COPY app/composer.json app/composer.lock ./
+COPY application/composer.json application/composer.lock ./
 RUN composer install \
     --no-dev \
     --no-interaction \
@@ -83,7 +83,7 @@ RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
 # ── Working directory ─────────────────────────────────────────────────────────
 WORKDIR /var/www/html
 # ── Copy application source ───────────────────────────────────────────────────
-COPY --chown=www-data:www-data app/ .
+COPY --chown=www-data:www-data application/ .
 
 # ── Remove stale cache files ──────────────────────────────────────────────────
 RUN rm -f bootstrap/cache/*.php
@@ -95,7 +95,7 @@ COPY --from=composer-builder --chown=www-data:www-data /app/vendor ./vendor
 COPY --from=node-builder --chown=www-data:www-data /build/public/build ./public/build
 
 # ── CaddyFile (FrankenPHP embedded Caddy config) ─────────────────────────────
-COPY --chown=www-data:www-data app/CaddyFile /etc/frankenphp/Caddyfile
+COPY --chown=www-data:www-data application/CaddyFile /etc/frankenphp/Caddyfile
 
 # ── Storage & cache directories ───────────────────────────────────────────────
 RUN mkdir -p \
