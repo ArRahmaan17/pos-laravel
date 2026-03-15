@@ -1,4 +1,4 @@
-name: Staging Runner
+name: Staging DPOS Deploy
 
 on:
   push:

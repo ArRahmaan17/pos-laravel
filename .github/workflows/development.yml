@@ -1,4 +1,4 @@
-name: Laravel CI - Development
+name: Development DPOS Deploy
 
 on:
   push:
