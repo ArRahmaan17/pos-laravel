@@ -13,7 +13,6 @@ CaddyFile
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
-package-lock.json
 auth.json
 npm-debug.log
 yarn-error.log
@@ -21,6 +20,5 @@ yarn-error.log
 /.idea
 /.vscode
 pint.json
-composer.lock
 public/resources/companies/*/
 plan.md
