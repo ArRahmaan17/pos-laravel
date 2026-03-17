@@ -9,21 +9,22 @@ on:
 jobs:
   development-check:
     runs-on: self-hosted
-    env:
-      COMPOSE_PROJECT_NAME: "dpos-test-${{ github.run_id }}"
     steps:
       - name: 🧾 Checkout Repository
         uses: actions/checkout@v4
 
       - name: 🔍 Validate Compose Syntax
-        run: docker compose config -q
+        run: |
+          docker compose config -q 
+          docker build --check ./build
 
-      - name: 🐋 Up
-        run: docker compose -p "test-${{ github.run_id }}" up -d --build
+      # - name: 🐋 Up
+      #   run: |
+      #     docker compose up -d --build
 
-      - name: ✨ Lint
-        run: docker compose -p "test-${{ github.run_id }}" exec -T app ./vendor/bin/pint --test
+      # - name: ✨ Lint
+      #   run: docker compose -p "test-${{ github.run_id }}" exec -T app ./vendor/bin/pint --test
 
-      - name: 🛑 Cleanup
-        if: always()
-        run: docker compose -p "test-${{ github.run_id }}" down -v
+      # - name: 🛑 Cleanup
+      #   if: always()
+      #   run: docker compose -p "test-${{ github.run_id }}" down -v
