@@ -13,13 +13,19 @@ jobs:
       - name: 🧾 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🐋 Docker Compose Build
-        run: docker compose build
+      - name: 🐋 Docker Compose Up
+        # --build memastikan image terbaru selalu dibuat
+        run: docker compose up -d --build
 
       - name: 🧰 Install Dependencies
-        working-directory: application
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        # Jalankan composer di dalam container aplikasi
+        run: docker compose exec -T app composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: ✨ Run Laravel Pint
-        working-directory: application
-        run: ./vendor/bin/pint --test
+        # Jalankan pint di dalam container
+        run: docker compose exec -T app ./vendor/bin/pint --test
+
+      - name: 🛑 Cleanup
+        # Matikan container setelah selesai test (biar hemat RAM server)
+        if: always()
+        run: docker compose down
