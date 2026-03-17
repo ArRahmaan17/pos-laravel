@@ -95,7 +95,7 @@ COPY --from=composer-builder --chown=www-data:www-data /app/vendor ./vendor
 COPY --from=node-builder --chown=www-data:www-data /build/public/build ./public/build
 
 # ── CaddyFile (FrankenPHP embedded Caddy config) ─────────────────────────────
-COPY --chown=www-data:www-data application/CaddyFile /etc/frankenphp/Caddyfile
+COPY --chown=www-data:www-data application/example.CaddyFile /etc/frankenphp/Caddyfile
 RUN sed -i 's/:your_awesome_application_port/:${APP_PORT}/g' /etc/frankenphp/Caddyfile
 
 # ── Storage & cache directories ───────────────────────────────────────────────
