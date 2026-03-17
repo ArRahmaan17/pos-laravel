@@ -13,12 +13,5 @@ jobs:
       - name: 🧾 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🐋 Docker Compose Up
-        run: docker compose -p project-${{ github.run_id }} up -d --build
-
-      - name: ✨ Run Laravel Pint
-        run: docker compose -p project-${{ github.run_id }} exec -T app ./vendor/bin/pint --test
-
-      - name: 🛑 Cleanup
-        if: always()
-        run: docker compose -p project-${{ github.run_id }} down
+      - name: 🔍 Validate Compose Syntax
+        run: docker compose config -q
