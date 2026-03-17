@@ -3,3 +3,4 @@ plan.md
 data/database/*
 data/logs/*
 data/redis/*
+data/app/*
