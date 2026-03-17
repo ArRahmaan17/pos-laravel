@@ -9,6 +9,8 @@ on:
 jobs:
   development-check:
     runs-on: self-hosted
+    env:
+      COMPOSE_PROJECT_NAME: "dpos-test-${{ github.run_id }}"
     steps:
       - name: 🧾 Checkout Repository
         uses: actions/checkout@v4
