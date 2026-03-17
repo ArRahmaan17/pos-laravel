@@ -15,3 +15,13 @@ jobs:
 
       - name: 🔍 Validate Compose Syntax
         run: docker compose config -q
+
+      - name: 🐋 Up
+        run: docker compose -p "test-${{ github.run_id }}" up -d --build
+
+      - name: ✨ Lint
+        run: docker compose -p "test-${{ github.run_id }}" exec -T app ./vendor/bin/pint --test
+
+      - name: 🛑 Cleanup
+        if: always()
+        run: docker compose -p "test-${{ github.run_id }}" down -v
