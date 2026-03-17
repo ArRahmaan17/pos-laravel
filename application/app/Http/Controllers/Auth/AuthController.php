@@ -303,8 +303,7 @@ class AuthController extends Controller
             DB::rollBack();
             $message = ['error', 'Unexpected error in our system, try again later.'];
         }
-        $roleUser = UserRole::with('role', 'role.company', 'role.scope', 'role.company.address')->where('user_id', session('userLogged')['user']['id'])->first();
-        dd($roleUser);
+        $roleUser = UserRole::with('role', 'user', 'role.company', 'role.scope', 'role.company.address')->where('user_id', session('userLogged')['user']['id'])->first();
         $roleUser['company'] = $roleUser->role->company;
         $roleUser['company']['address'] = $roleUser->role->company->address;
         $access = collect($roleUser)->toArray();
