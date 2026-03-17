@@ -1,0 +1,80 @@
+name: Staging DPOS Deploy
+
+on:
+  push:
+    branches: ["staging"]
+  pull_request:
+    branches: ["staging"]
+
+jobs:
+  laravel-tests:
+    runs-on: self-hosted
+    env:
+      STAGING_PATH: ${{ vars.STAGING_PATH }}
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Check PHP
+      run: php -v
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache Composer Dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    - name: Install Composer Dependencies
+      run: composer install --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Cache NPM
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-
+
+    - name: Install NPM Dependencies
+      run: npm install
+
+    - name: Compile Assets
+      run: npm run build
+
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Generate App Key
+      run: php artisan key:generate
+
+    - name: Set Directory Permissions
+      run: chmod -R 775 storage bootstrap/cache
+
+    - name: Create SQLite Database
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+
+    - name: Run Migrations
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan migrate --force
+
+    - name: Generate Swagger Docs
+      run: php artisan l5-swagger:generate
+
+    - name: Run Tests
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: php artisan test
+
+    - name: Check Code Styling (Pint)
+      run: vendor/bin/pint --test

@@ -1,5 +1,5 @@
 # DPOS - Point of Sale System 
-A comprehensive, multi-company Point of Sale (POS) system built with Laravel framework. This system provides complete inventory management, transaction processing, user management, and reporting capabilities for businesses of all sizes.`for those who come after`
+A comprehensive, multi-company Point of Sale (POS) system built with the Laravel framework. This system provides complete inventory management, transaction processing, user management, and reporting capabilities for businesses of all sizes.
 
 ## 🚀 Features
 
@@ -24,6 +24,7 @@ A comprehensive, multi-company Point of Sale (POS) system built with Laravel fra
 - **Unit Management**: Flexible product unit management
 
 ### Advanced Features
+- **Theme Support**: Premium Dark and Light modes with smooth transitions
 - **Temporary Product Approval**: Pending inventory changes require manager approval
 - **Stock Movement Tracking**: Complete audit trail for all inventory movements
 - **Order Code Generation**: Automatic order code generation with company prefixes
@@ -53,87 +54,42 @@ A comprehensive, multi-company Point of Sale (POS) system built with Laravel fra
 
 ## 🛠️ Installation
 
+This project is fully dockerized, providing a seamless setup experience.
+
 ### 1. Clone the Repository
 ```bash
 git clone https://github.com/ArRahmaan17/DPOS
 cd DPOS
 ```
 
-### 2. Install PHP Dependencies
+### 2. Environment Setup
+Create a `.env` file in the root directory (you can copy from `.env.example` if available) and configure your database and application variables.
+
+### 3. Start the Environment
 ```bash
-composer install
+docker-compose up -d --build
 ```
 
-### 3. Environment Setup
-```bash
-cp .env.example .env
-php artisan key:generate
-```
+This command will automatically:
+- Start the web server (FrankenPHP), queue workers, Reverb, MySQL, Redis, and Nginx.
+- Create the configured database if it doesn't exist.
+- Run database migrations on startup.
 
-### 4. Configure Database
-Edit `.env` file with your database credentials:
-```env
-DB_CONNECTION=
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=your_database
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-```
-
-### 5. Run Database Migrations
-```bash
-php artisan migrate
-```
-
-### 6. Seed Initial Data (Optional)
-```bash
-php artisan db:seed
-```
-
-### 7. Set Permissions
-```bash
-chmod -R 775 storage bootstrap/cache
-```
-
-### 8. Start Development Server
-```bash
-php artisan serve
-```
-or
-```bash
-frankenphp run --config CaddyFile
-```
+For more detailed information on managing the Docker environment and running artisan commands, please refer to the [Docker Management Manual (DOCKER_MAN.md)](DOCKER_MAN.md).
 ## 🏗️ Project Structure
 
-```
+```text
 DPOS/
-├── app/
-│   ├── Http/Controllers/
-│   │   ├── Auth/           # Authentication controllers
-│   │   ├── Man/            # Management controllers
-│   │   │   ├── CustomerProductTransactionController.php    # POS transactions
-│   │   │   ├── CustomerTemporaryProductController.php     # Pending products
-│   │   │   ├── CustomerCompanyGoodController.php          # Product management
-│   │   │   ├── CustomerCompanyController.php              # Company management
-│   │   │   ├── CustomerRoleController.php                 # Role management
-│   │   │   └── ...                                        # Other management
-│   │   ├── Dev/            # Development/admin controllers
-│   │   └── Api/            # API controllers
-│   ├── Models/             # Eloquent models
-│   ├── Helpers/            # Helper functions
-│   └── Providers/          # Service providers
-├── database/
-│   ├── migrations/         # Database migrations
-│   └── seeders/           # Database seeders
-├── resources/
-│   ├── views/             # Blade templates
-│   ├── js/               # JavaScript files
-│   └── css/              # Stylesheets
-├── routes/
-│   ├── web.php           # Web routes
-│   └── api.php           # API routes
-└── public/               # Public assets
+├── application/          # Laravel application source code
+│   ├── app/              # Application logic (Controllers, Models, etc.)
+│   ├── database/         # Migrations and seeders
+│   ├── resources/        # Views, CSS, and JS
+│   ├── routes/           # Web and API routes
+│   └── public/           # Public assets
+├── build/                # Docker configuration files and entrypoint scripts
+├── docker-compose.yml    # Docker services configuration
+├── DOCKER_MAN.md         # Detailed Docker documentation
+└── .env                  # Environment variables
 ```
 
 ## 🔧 Configuration
@@ -182,7 +138,7 @@ REDIS_TTL=
 - **Developer**: System development and maintenance
 
 ### User Permissions
-- Menu access control
+- Permission access control
 - Feature-level permissions
 - Data access restrictions
 - Action-based permissions
@@ -301,20 +257,17 @@ API documentation is available at `/api/documentation` when running in developme
 
 ## 🚀 Deployment
 
-### Production Deployment
-1. Set `APP_ENV=production` in `.env`
-2. Run `php artisan config:cache`
-3. Run `php artisan route:cache`
-4. Run `php artisan view:cache`
-5. Set up web server (Apache/Nginx/etc.)
-6. Configure SSL certificate
-7. Set up database backups
-8. Configure queue workers for background jobs
+The recommended deployment method for this application is using **Docker Compose**.
 
-### Docker Deployment (Optional)
+### Production Deployment
+1. Ensure `.env` is configured with `APP_ENV=production` and strong credentials.
+2. Run the Docker Compose stack:
 ```bash
-docker-compose up -d
+docker-compose up -d --build
 ```
+3. The Docker container automatically caches configuration, routes, and views on startup for optimal performance.
+4. For HTTPS, configure a reverse proxy (e.g., Nginx, Traefik, or Caddy) in front of the application to handle SSL certificates.
+5. Set up external database backups mapping from your Docker volume as needed.
 
 ### Server Requirements
 - **Minimum**: 2GB RAM, 1 CPU core

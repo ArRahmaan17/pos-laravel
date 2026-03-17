@@ -1,0 +1,18 @@
+{
+	log {
+		level INFO
+	}
+}
+:your_aweasome_application_port {
+	root public/
+	encode zstd br gzip
+	@blockPHP {
+        path_regexp blockphp .*\.php$
+    }
+    respond @blockPHP "Forbidden" 403
+	php_server {
+		try_files {path} index.php	
+	}
+	header /assets/* Cache-Control "public, max-age=604800, immutable"
+	header /resouces/default/* Cache-Control "public, max-age=86400, immutable"
+}
