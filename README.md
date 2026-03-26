@@ -402,6 +402,16 @@ tail -f storage/logs/laravel.log
 4. Include screenshots for UI changes
 5. Describe the changes in detail
 
+### 📝 Guideline commit message 
+- **`feat:`** A new feature
+- **`fix:`** A bug fix
+- **`docs:`** Documentation only changes
+- **`style:`** Changes that don't affect code meaning (formatting, missing semicolons, etc.)
+- **`refactor:`** Code change that neither fixes a bug nor adds a feature
+- **`perf:`** Code change that improves performance
+- **`test:`** Adding missing tests or correcting existing tests
+- **`chore:`** Changes to build process, dependencies, or tooling
+
 ## ⚖️ Licensing
 
 This software is licensed under the **Academic-Commercial Dual License**.
