@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\MasterTask;
-use App\Models\Task;
-use App\Models\TaskDetail;
+use App\Models\Company\MasterTask;
+use App\Models\Company\Task;
+use App\Models\Company\TaskDetail;
 use App\Models\UserCustomerRole;
 use App\Models\UserManagement\Role;
 use Exception;
@@ -14,8 +14,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
+use App\Traits\ImageHandler;
+
 class CustomerTaskController extends Controller
 {
+    use ImageHandler;
+
     /**
      * Display a listing of the resource.
      */
@@ -250,7 +254,7 @@ class CustomerTaskController extends Controller
     {
         $request->validate(['filepond' => 'required|image']);
         $filename = 'task-'.$id.'-'.$type.'-'.date('Y-m-d-His').rand(1, 100).'.'.$request->file('filepond')->getClientOriginalExtension();
-        Storage::disk('company-task-evidence')->putFileAs(md5(session('userLogged')['company']['id']).'/'.md5($id), $request->file('filepond'), $filename);
+        $this->uploadAndWatermark($request->file('filepond'), md5(session('userLogged')['company']['id']).'/'.md5($id), 'company-task-evidence', $filename);
         DB::beginTransaction();
         try {
             $data = TaskDetail::find($id);

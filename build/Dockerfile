@@ -1,7 +1,7 @@
 # ==============================================================================
 # Stage 1: Node — Build Vite / Tailwind CSS Assets
 # ==============================================================================
-FROM node:22-alpine AS node-builder
+FROM node:25-alpine AS node-builder
 
 WORKDIR /build
 
@@ -96,7 +96,6 @@ COPY --from=node-builder --chown=www-data:www-data /build/public/build ./public/
 
 # ── CaddyFile (FrankenPHP embedded Caddy config) ─────────────────────────────
 COPY --chown=www-data:www-data application/example.CaddyFile /etc/frankenphp/Caddyfile
-RUN sed -i 's/:your_awesome_application_port/:${APP_PORT}/g' /etc/frankenphp/Caddyfile
 
 # ── Storage & cache directories ───────────────────────────────────────────────
 RUN mkdir -p \

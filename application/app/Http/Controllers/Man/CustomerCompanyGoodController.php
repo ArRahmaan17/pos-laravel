@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerCompanyGood;
-use App\Models\CustomerProductType;
+use App\Models\Product\CustomerCompanyGood;
+use App\Models\Product\CustomerProductType;
 use App\Models\CustomerTemporaryProduct;
-use App\Models\ProductWeight;
+use App\Models\Product\ProductWeight;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+use App\Traits\ImageHandler;
+
 class CustomerCompanyGoodController extends Controller
 {
+    use ImageHandler;
+
     /**
      * Display a listing of the resource.
      */
@@ -123,10 +127,7 @@ class CustomerCompanyGoodController extends Controller
             if ($request->picture) {
                 $filename = md5($request->name.now()->format('Y-m-d h:i:s')).'.'.$request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
-                if (Storage::disk('public-asset')->directories('temp-customer-product')) {
-                    Storage::disk('public-asset')->makeDirectory('temp-customer-product');
-                }
-                $request->picture->storeAs('', $filename, 'temp-customer-product');
+                $this->uploadAndWatermark($request->file('picture'), '', 'temp-customer-product', $filename);
             }
             $data['orderCode'] = lastCompanyOrderCode('IN');
             CustomerTemporaryProduct::create($data);
@@ -279,7 +280,7 @@ class CustomerCompanyGoodController extends Controller
             if ($request->file('picture')) {
                 $filename = md5($request->name.now()->format('Y-m-d h:i:s')).'.'.$request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
-                $request->file('picture')->storeAs('', $filename, 'temp-customer-product');
+                $this->uploadAndWatermark($request->file('picture'), '', 'temp-customer-product', $filename);
             }
             $data['price'] = str_replace(',', '.', str_replace('.', '', $request->price));
             $data['buy_price'] = str_replace(',', '.', str_replace('.', '', $request->buy_price));

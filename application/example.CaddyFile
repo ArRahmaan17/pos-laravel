@@ -1,9 +1,7 @@
-{
+:your_awesome_application_port {
 	log {
 		level INFO
 	}
-}
-:your_aweasome_application_port {
 	root public/
 	encode zstd br gzip
 	@blockPHP {
