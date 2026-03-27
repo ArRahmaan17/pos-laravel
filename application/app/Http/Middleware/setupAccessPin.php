@@ -15,7 +15,6 @@ class setupAccessPin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        dd(session('userLogged'));
         if (! empty(session('userLogged')['user']['pin']) && ($request->getBasePath() !== 'privacy/request-access-pin' && $request->getBasePath() != 'privacy/access-pin')) {
             return $next($request);
         } else {

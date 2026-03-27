@@ -16,40 +16,14 @@ services:
       - APP_PORT=${APP_PORT:-80}
       - REVERB_PORT=${REVERB_PORT:-8001}
     volumes:
-      - app:/var/www/html
-      - app-storage:/var/www/html/storage
-      - app-bootstrap-cache:/var/www/html/bootstrap/cache
+      - ./application:/var/www/html
+      - ./application/storage:/var/www/html/storage
+      - ./application/bootstrap/cache:/var/www/html/bootstrap/cache
     networks:
       - pos-network
     depends_on:
       - mysql
       - redis
-
-  reverb:
-    build:
-      context: .
-      dockerfile: build/Dockerfile
-    container_name: pos-reverb
-    restart: unless-stopped
-    command: reverb
-    environment:
-      - DB_HOST=mysql
-      - DB_PORT=${DB_PORT:-3306}
-      - DB_DATABASE=${DB_DATABASE:-dpos}
-      - DB_USERNAME=${DB_USERNAME:-root}
-      - DB_PASSWORD=${DB_PASSWORD:-pospassword}
-      - REDIS_HOST=${REDIS_HOST:-redis}
-      - REVERB_SERVER_PORT=${REVERB_PORT:-8001}
-    volumes:
-      - app:/var/www/html
-      - app-storage:/var/www/html/storage
-      - app-bootstrap-cache:/var/www/html/bootstrap/cache
-    networks:
-      - pos-network
-    depends_on:
-      - mysql
-      - redis
-
 
   nginx:
     image: nginx:alpine
@@ -59,14 +33,11 @@ services:
       - "127.0.0.1:8000:80"
     volumes:
       - ./build/nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - app:/var/www/html
-      - nginx-logs:/var/log/nginx
+      - ./data/logs:/var/log/nginx
     networks:
       - pos-network
     depends_on:
       - app
-      - reverb
-
 
   mysql:
     image: mysql:8.0
@@ -81,7 +52,7 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - db-data:/var/lib/mysql
+      - ./data/database:/var/lib/mysql
     networks:
       - pos-network
 
@@ -91,49 +62,11 @@ services:
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
-      - redis-data:/data
+      - ./data/redis:/data
     depends_on:
       - mysql
     networks:
       - pos-network
-
-volumes:
-  app:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${APP_PATH}/application'
-  nginx-logs:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${APP_PATH}/data/logs'
-  app-storage:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${APP_PATH}/application/storage'
-  app-bootstrap-cache:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${APP_PATH}/application/bootstrap/cache'
-  db-data:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${APP_PATH}/data/database'
-  redis-data:
-    driver: local
-    driver_opts:
-      type: 'none'
-      o: 'bind'
-      device: '${APP_PATH}/data/redis'
 
 networks:
   pos-network:
