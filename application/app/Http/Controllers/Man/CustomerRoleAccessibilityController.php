@@ -21,7 +21,7 @@ class CustomerRoleAccessibilityController extends Controller
         $menus = buildTree($menus);
         $roles = Role::with(['role_users'])->where('user_id', session('userLogged')['company']['user_id'])->get();
 
-        return view('man.customer-role-accessibility', compact('menus', 'roles'));
+        return view('settings.role-accessibility', compact('menus', 'roles'));
     }
 
     public function dataTable(Request $request)

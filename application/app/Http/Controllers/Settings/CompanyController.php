@@ -102,7 +102,6 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        // session()->activity()
         $request->validate([
             'picture' => ['file', 'extensions:jpg,png'],
             'name' => ['required', 'min:6', 'max:30'],
@@ -135,10 +134,11 @@ class CompanyController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->except('address', '_token');
-            if ($request->has('picture')) {
-                $filename = md5(now()->format('Y-m-d H:i:s')).'.'.$request->file('picture')->getClientOriginalExtension();
-                $this->uploadAndWatermark($request->file('picture'), '', 'company-profile', $filename);
-                $data['picture'] = $filename;
+            if ($request->hasFile('picture')) {
+                $file = $request->file('picture');
+                $filename = md5(now()->format('Y-m-d H:i:s')).'.'.$file->getClientOriginalExtension();
+                $this->uploadAndWatermark($file, '', 'company-profile', $filename);
+                $data['picture'] = 'cp/' . $filename;
             } else {
                 $data['picture'] = 'default-picture.png';
             }
@@ -260,14 +260,20 @@ class CompanyController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->except('address', '_token');
-            if ($request->has('picture')) {
+            if ($request->hasFile('picture')) {
                 $company = Company::find($id);
-                $filename = md5(now()->format('Y-m-d H:i:s')).'.'.$request->file('picture')->getClientOriginalExtension();
-                if ($company->picture != 'default-picture.png') {
-                    Storage::disk('company-profile')->delete($company->picture);
+                $file = $request->file('picture');
+                $filename = md5(now()->format('Y-m-d H:i:s')).'.'.$file->getClientOriginalExtension();
+                
+                // Delete old picture if not default
+                if ($company->picture && $company->picture != 'default-picture.png') {
+                    // Extract filename from the 'cp/' prefix if present
+                    $oldFilename = str_replace('cp/', '', $company->picture);
+                    Storage::disk('company-profile')->delete($oldFilename);
                 }
-                $this->uploadAndWatermark($request->file('picture'), '', 'company-profile', $filename);
-                $data['picture'] = $filename;
+                
+                $this->uploadAndWatermark($file, '', 'company-profile', $filename);
+                $data['picture'] = 'cp/' . $filename;
             }
             $data['user_id'] = (getScope() === 'Developer' ? $request->user_id : session('userLogged')['user']['id']);
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);

@@ -1,64 +1,231 @@
 @extends('template.parent')
 @section('title', 'User Management')
 @push('css')
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .code-container {
+    :root {
+        --terminal-bg: #1e1e2e;
+        --accent-indigo: #696cff;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --font-display: 'Outfit', sans-serif;
+        --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+        font-family: var(--font-body);
+    }
+
+    .hero-section {
+        margin-bottom: 2.5rem;
+        background: radial-gradient(circle at top right, rgba(105, 108, 255, 0.15), transparent 40%),
+            radial-gradient(circle at bottom left, rgba(105, 108, 255, 0.05), transparent 30%);
+        padding: 2rem;
+        border-radius: 1.5rem;
+        border: 1px solid var(--glass-border);
+        backdrop-filter: blur(10px);
         position: relative;
-        display: block;
-        background-color: #292D3E;
-        /* padding: 10px; */
-        border-radius: 5px;
         overflow: hidden;
     }
 
-    .copy-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: #007bff5d;
+    .hero-title {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(to right, #fff, #a5a7ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1rem;
+        max-width: 600px;
+    }
+
+    .command-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(8px);
+        border-radius: 1.25rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .command-card:hover {
+        border-color: rgba(105, 108, 255, 0.3);
+        transform: translateY(-4px);
+    }
+
+    .action-group .btn {
+        border-radius: 0.75rem;
+        padding: 0.75rem 1.25rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+
+    .btn-glow-primary {
+        background: var(--accent-indigo);
         color: white;
         border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        border-radius: 3px;
+        box-shadow: 0 4px 15px rgba(105, 108, 255, 0.3);
     }
 
-    code {
-        position: relative;
-        margin: 0;
-        color: #ffffff;
+    .btn-glow-primary:hover {
+        background: #5f61e6;
+        box-shadow: 0 6px 20px rgba(105, 108, 255, 0.5);
+        transform: scale(1.02);
     }
 
-    .copy-btn:hover {
-        background-color: #0056b3;
+    .btn-outline-glass {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: #fff;
+    }
+
+    .btn-outline-glass:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: #fff;
+        color: #fff;
+    }
+
+    #table-customer-user thead th {
+        background: transparent;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.4);
+        border-bottom: 1px solid var(--glass-border);
+        padding: 1.25rem;
+    }
+
+    #table-customer-user tbody tr {
+        transition: all 0.2s ease;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    #table-customer-user tbody tr:hover {
+        background: rgba(105, 108, 255, 0.05);
+        transform: translateX(4px);
+    }
+
+    #table-customer-user td {
+        padding: 1.25rem;
+        vertical-align: middle;
+    }
+
+    .code-container {
+        background: #0d0d0d;
+        border: 1px solid #333;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    .copy-btn {
+        background: rgba(105, 108, 255, 0.2);
+        border: 1px solid var(--accent-indigo);
+        color: var(--accent-indigo);
+        font-size: 0.8rem;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-in {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .stagger-1 {
+        animation-delay: 0.1s;
+    }
+
+    .stagger-2 {
+        animation-delay: 0.2s;
+    }
+
+    .modal-content {
+        background: #161625;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        border-radius: 1.5rem;
+    }
+
+    .form-control,
+    .form-select {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        color: #fff;
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--accent-indigo);
+        box-shadow: 0 0 0 4px rgba(105, 108, 255, 0.1);
+        color: #fff;
+    }
+
+    .alert-info {
+        background: rgba(105, 108, 255, 0.1);
+        border: 1px solid rgba(105, 108, 255, 0.2);
+        color: #a5a7ff;
+        border-radius: 1rem;
     }
 </style>
 @endpush
+
 @section('content')
-<div class="row">
+<div class="row animate-in stagger-1">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header d-flex align-middle">
-                <div class="col-6">
-                    <h3>@yield('title')</h3>
+        <div class="hero-section">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <h1 class="hero-title">@yield('title')</h1>
+                    <p class="hero-subtitle">Meticulously manage system participants and control access parameters. Establish identity and secure company resources with precision.</p>
                 </div>
-                <div class="col-6 text-end">
-                    <button class="btn btn-outline-success" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">Add <i
-                            class='bx bxs-file-plus pb-1'></i></button>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-create-registration-link">Generate Registration Link <i
-                            class='bx bx-link-alt pb-1'></i></button>
+                <div class="col-lg-5 text-end action-group mt-3 mt-lg-0">
+                    <button class="btn btn-outline-glass me-2" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">
+                        <i class='bx bx-plus-circle me-1'></i> New User
+                    </button>
+                    <button class="btn btn-glow-primary px-4" data-bs-toggle="modal" data-bs-target="#modal-create-registration-link">
+                        <i class='bx bx-link-alt me-1'></i> Access Link
+                    </button>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="row animate-in stagger-2">
+    <div class="col-12">
+        <div class="card command-card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table" id="table-customer-user">
+                    <table class="table table-borderless" id="table-customer-user">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Username</th>
-                                <th scope="col">Phone Number</th>
-                                <th scope="col">Role</th>
-                                <th scope="col">Action</th>
+                                <th scope="col">Identity</th>
+                                <th scope="col">Contact</th>
+                                <th scope="col">Security Role</th>
+                                <th scope="col">Execution</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -204,7 +371,7 @@
     </div>
 </div>
 @endsection
-@push('js')
+@push('resource-js')
 <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
 <script src="{{ asset('assets/js/select2.min.js') }}"></script>
 
@@ -543,14 +710,6 @@
         });
         $('#managerIdLink').change(function(e) {
             let id = e.currentTarget.value;
-            $.ajax({
-                type: "get",
-                url: `{{ route('man.customer-role.role') }}/${(`{{ getScope() }}` === 'Developer' ) ? id : `{{ session('userLogged')['user']['id'] }}`}`,
-                dataType: "json",
-                success: function(response) {
-                    $('#customerRoleIdLink').html()
-                }
-            });
         });
         $('#time_limit').inputmask('9[9][9] [minutes]|[hours]|[days]');
         formattedInput();

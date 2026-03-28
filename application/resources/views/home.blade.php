@@ -1,748 +1,286 @@
-@extends('template.parent')
-@section('title', 'Dashboard')
-@push('resource-css')
-<link rel="stylesheet" href="{{ asset('assets/css/apex-charts.css') }}" />
-@endpush
+@extends('template.single')
+@section('title', 'Welcome')
 @section('content')
-<div id="container-swapy-home" class="row">
-    @session('error')
-    <div class="col-12">
-        <div class="alert alert-danger alert-dismissible fade show">
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            <strong>Errors! {!! session('error') !!}</strong>
-        </div>
-    </div>
-    @endsession
-    <div data-swapy-slot="test1" class="col-lg-12 mb-4 order-0">
-        <div data-swapy-item="test1" class="card">
-            <div class="d-flex align-items-end row">
-                <div class="col-sm-7">
-                    <div class="card-body">
-                        <h5 class="card-title text-primary">Congratulations John! 🎉</h5>
-                        <p class="mb-4">
-                            You have done <span class="fw-bold">72%</span> more sales today. Check your new badge in
-                            your profile.
-                        </p>
-
-                        <a href="javascript:;" class="btn btn-sm btn-outline-primary">View Badges</a>
-                    </div>
-                </div>
-                <div class="col-sm-5 text-center text-sm-left">
-                    <div class="card-body pb-0 px-0 px-md-4">
-                        <img draggable="false" src="../assets/img/illustrations/man-with-laptop-light.png" height="140" alt="View Badge User"
-                            data-app-dark-img="illustrations/man-with-laptop-dark.png" data-app-light-img="illustrations/man-with-laptop-light.png" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div data-swapy-slot="test2" class="col-12 col-lg-12 mb-4">
-        <div data-swapy-item="test2" class="card">
-            <div class="row row-bordered g-0">
-                <div class="col-md-8">
-                    <h5 class="card-header m-0 me-2 pb-3">Total Revenue</h5>
-                    <div id="totalRevenueChart" class="px-2"></div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card-body">
-                        <div class="text-center">
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="growthReportId" data-bs-toggle="dropdown"
-                                    aria-haspopup="true" aria-expanded="false">
-                                    2022
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
-                                    <a class="dropdown-item" href="javascript:void(0);">2021</a>
-                                    <a class="dropdown-item" href="javascript:void(0);">2020</a>
-                                    <a class="dropdown-item" href="javascript:void(0);">2019</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="growthChart"></div>
-                    <div class="text-center fw-semibold pt-3 mb-2">62% Company Growth</div>
-
-                    <div class="d-flex px-xxl-4 px-lg-2 p-4 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
-                        <div class="d-flex">
-                            <div class="me-2">
-                                <span class="badge bg-label-primary p-2"><i class="bx bx-dollar text-primary"></i></span>
-                            </div>
-                            <div class="d-flex flex-column">
-                                <small>2022</small>
-                                <h6 class="mb-0">$32.5k</h6>
-                            </div>
-                        </div>
-                        <div class="d-flex">
-                            <div class="me-2">
-                                <span class="badge bg-label-info p-2"><i class="bx bx-wallet text-info"></i></span>
-                            </div>
-                            <div class="d-flex flex-column">
-                                <small>2021</small>
-                                <h6 class="mb-0">$41.2k</h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="container-swapy-earning" class="col-12 row p-0 m-0 align-items-stretch">
-        <div data-swapy-slot="earning-1" class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
-            <div data-swapy-item="earning-1" class="card h-100 w-100">
-                <div class="card-body">
-                    <div class="card-title d-flex align-items-start justify-content-between">
-                        <div class="avatar flex-shrink-0">
-                            <img draggable="false" src="../assets/img/icons/unicons/chart-success.png" alt="chart success" class="rounded" />
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn p-0" type="button" id="cardOpt3" data-bs-toggle="dropdown">
-                                <i class="bx bx-dots-vertical-rounded"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">View More</a>
-                                <a class="dropdown-item" href="#">Delete</a>
-                            </div>
-                        </div>
-                    </div>
-                    <span class="fw-semibold d-block mb-1">Profit</span>
-                    <h3 class="card-title mb-2">$12,628</h3>
-                    <small class="text-success fw-semibold">
-                        <i class="bx bx-up-arrow-alt"></i> +72.80%
-                    </small>
-                </div>
-            </div>
-        </div>
-        <div data-swapy-slot="earning-2" class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
-            <div data-swapy-item="earning-2" class="card h-100 w-100">
-                <div class="card-body">
-                    <div class="card-title d-flex align-items-start justify-content-between">
-                        <div class="avatar flex-shrink-0">
-                            <img draggable="false" src="../assets/img/icons/unicons/wallet-info.png" alt="Credit Card" class="rounded" />
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn p-0" type="button" id="cardOpt6" data-bs-toggle="dropdown">
-                                <i class="bx bx-dots-vertical-rounded"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">View More</a>
-                                <a class="dropdown-item" href="#">Delete</a>
-                            </div>
-                        </div>
-                    </div>
-                    <span>Sales</span>
-                    <h3 class="card-title text-nowrap mb-1">$4,679</h3>
-                    <small class="text-success fw-semibold">
-                        <i class="bx bx-up-arrow-alt"></i> +28.42%
-                    </small>
-                </div>
-            </div>
-        </div>
-        <div data-swapy-slot="earning-3" class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
-            <div data-swapy-item="earning-3" class="card h-100 w-100">
-                <div class="card-body">
-                    <div class="card-title d-flex align-items-start justify-content-between">
-                        <div class="avatar flex-shrink-0">
-                            <img draggable="false" src="../assets/img/icons/unicons/paypal.png" alt="PayPal" class="rounded" />
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown">
-                                <i class="bx bx-dots-vertical-rounded"></i>
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="#">View More</a>
-                                <a class="dropdown-item" href="#">Delete</a>
-                            </div>
-                        </div>
-                    </div>
-                    <span class="d-block mb-1">Payments</span>
-                    <h3 class="card-title text-nowrap mb-2">$2,456</h3>
-                    <small class="text-danger fw-semibold">
-                        <i class="bx bx-down-arrow-alt"></i> -14.82%
-                    </small>
-                </div>
-            </div>
-        </div>
-        <div data-swapy-slot="earning-4" class="col-lg-4 col-md-6 col-6 mb-4 d-flex">
-            <div data-swapy-item="earning-4" class="card h-100 w-100">
-                <div class="card-body">
-                    <div class="card-title d-flex align-items-start justify-content-between">
-                        <div class="avatar flex-shrink-0">
-                            <img draggable="false" src="../assets/img/icons/unicons/cc-primary.png" alt="Credit Card" class="rounded" />
-                        </div>
-                        <div class="dropdown">
-                            <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown">
-                                <i class="bx bx-dots-vertical-rounded"></i>
-                            </button>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" href="#">View More</a>
-                                <a class="dropdown-item" href="#">Delete</a>
-                            </div>
-                        </div>
-                    </div>
-                    <span class="fw-semibold d-block mb-1">Transactions</span>
-                    <h3 class="card-title mb-2">$14,857</h3>
-                    <small class="text-success fw-semibold">
-                        <i class="bx bx-up-arrow-alt"></i> +28.14%
-                    </small>
-                </div>
-            </div>
-        </div>
-        <div data-swapy-slot="earning-5" class="col-12 col-md-8 col-lg-8 mb-4 d-flex">
-            <div data-swapy-item="earning-5" class="card h-100 w-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between flex-sm-row flex-column gap-3">
-                        <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
-                            <div class="card-title">
-                                <h5 class="text-nowrap mb-2">Profile Report</h5>
-                                <span class="badge bg-label-warning rounded-pill">Year 2021</span>
-                            </div>
-                            <div class="mt-sm-auto">
-                                <small class="text-success text-nowrap fw-semibold">
-                                    <i class="bx bx-chevron-up"></i> 68.2%
-                                </small>
-                                <h3 class="mb-0">$84,686k</h3>
-                            </div>
-                        </div>
-                        <div id="profileReportChart"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div data-swapy-slot="test4" class="col-lg-6 order-0 mb-4">
-        <div data-swapy-item="test4" class="card h-100">
-            <div class="card-header d-flex align-items-center justify-content-between pb-0">
-                <div class="card-title mb-0">
-                    <h5 class="m-0 me-2">Order Statistics</h5>
-                    <small class="text-muted">42.82k Total Sales</small>
-                </div>
-                <div class="dropdown">
-                    <button class="btn p-0" type="button" id="orederStatistics" data-bs-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="orederStatistics">
-                        <a class="dropdown-item" href="javascript:void(0);">Select All</a>
-                        <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
-                        <a class="dropdown-item" href="javascript:void(0);">Share</a>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="d-flex flex-column align-items-center gap-1">
-                        <h2 class="mb-2">8,258</h2>
-                        <span>Total Orders</span>
-                    </div>
-                    <div id="orderStatisticsChart"></div>
-                </div>
-                <ul class="p-0 m-0">
-                    <li class="d-flex mb-4 pb-1">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-primary"><i class="bx bx-mobile-alt"></i></span>
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <h6 class="mb-0">Electronic</h6>
-                                <small class="text-muted">Mobile, Earbuds, TV</small>
-                            </div>
-                            <div class="user-progress">
-                                <small class="fw-semibold">82.5k</small>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex mb-4 pb-1">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-success"><i class="bx bx-closet"></i></span>
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <h6 class="mb-0">Fashion</h6>
-                                <small class="text-muted">T-shirt, Jeans, Shoes</small>
-                            </div>
-                            <div class="user-progress">
-                                <small class="fw-semibold">23.8k</small>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex mb-4 pb-1">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-info"><i class="bx bx-home-alt"></i></span>
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <h6 class="mb-0">Decor</h6>
-                                <small class="text-muted">Fine Art, Dining</small>
-                            </div>
-                            <div class="user-progress">
-                                <small class="fw-semibold">849k</small>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-secondary"><i class="bx bx-football"></i></span>
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <h6 class="mb-0">Sports</h6>
-                                <small class="text-muted">Football, Cricket Kit</small>
-                            </div>
-                            <div class="user-progress">
-                                <small class="fw-semibold">99</small>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div data-swapy-slot="test5" class="col-lg-6 order-1 mb-4">
-        <div data-swapy-item="test5" class="card h-100">
-            <div class="card-header">
-                <ul class="nav nav-pills" role="tablist">
-                    <li class="nav-item">
-                        <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab"
-                            data-bs-target="#navs-tabs-line-card-income" aria-controls="navs-tabs-line-card-income" aria-selected="true">
-                            Income
-                        </button>
-                    </li>
-                    <li class="nav-item">
-                        <button type="button" class="nav-link" role="tab">Expenses</button>
-                    </li>
-                    <li class="nav-item">
-                        <button type="button" class="nav-link" role="tab">Profit</button>
-                    </li>
-                </ul>
-            </div>
-            <div class="card-body px-0">
-                <div class="tab-content p-0">
-                    <div class="tab-pane fade show active" id="navs-tabs-line-card-income" role="tabpanel">
-                        <div class="d-flex p-4 pt-3">
-                            <div class="avatar flex-shrink-0 me-3">
-                                <img draggable="false" src="../assets/img/icons/unicons/wallet.png" alt="User" />
-                            </div>
-                            <div>
-                                <small class="text-muted d-block">Total Balance</small>
-                                <div class="d-flex align-items-center">
-                                    <h6 class="mb-0 me-1">$459.10</h6>
-                                    <small class="text-success fw-semibold">
-                                        <i class="bx bx-chevron-up"></i>
-                                        42.9%
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="incomeChart"></div>
-                        <div class="d-flex justify-content-center pt-4 gap-2">
-                            <div class="flex-shrink-0">
-                                <div id="expensesOfWeek"></div>
-                            </div>
-                            <div>
-                                <p class="mb-n1 mt-1">Expenses This Week</p>
-                                <small class="text-muted">$39 less than last week</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div data-swapy-slot="test6" class="order-2 mb-4">
-        <div data-swapy-item="test6" class="card h-100">
-            <div class="card-header d-flex align-items-center justify-content-between">
-                <h5 class="card-title m-0 me-2">Transactions</h5>
-                <div class="dropdown">
-                    <button class="btn p-0" type="button" id="transactionID" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="bx bx-dots-vertical-rounded"></i>
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="transactionID">
-                        <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-                        <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-                        <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <ul class="p-0 m-0">
-                    <li class="d-flex mb-4 pb-1">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img draggable="false" src="../assets/img/icons/unicons/paypal.png" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="text-muted d-block mb-1">Paypal</small>
-                                <h6 class="mb-0">Send money</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-1">
-                                <h6 class="mb-0">+82.6</h6>
-                                <span class="text-muted">USD</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex mb-4 pb-1">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img draggable="false" src="../assets/img/icons/unicons/wallet.png" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="text-muted d-block mb-1">Wallet</small>
-                                <h6 class="mb-0">Mac'D</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-1">
-                                <h6 class="mb-0">+270.69</h6>
-                                <span class="text-muted">USD</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex mb-4 pb-1">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img draggable="false" src="../assets/img/icons/unicons/chart.png" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="text-muted d-block mb-1">Transfer</small>
-                                <h6 class="mb-0">Refund</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-1">
-                                <h6 class="mb-0">+637.91</h6>
-                                <span class="text-muted">USD</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex mb-4 pb-1">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img draggable="false" src="../assets/img/icons/unicons/cc-success.png" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="text-muted d-block mb-1">Credit Card</small>
-                                <h6 class="mb-0">Ordered Food</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-1">
-                                <h6 class="mb-0">-838.71</h6>
-                                <span class="text-muted">USD</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex mb-4 pb-1">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img draggable="false" src="../assets/img/icons/unicons/wallet.png" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="text-muted d-block mb-1">Wallet</small>
-                                <h6 class="mb-0">Starbucks</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-1">
-                                <h6 class="mb-0">+203.33</h6>
-                                <span class="text-muted">USD</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="d-flex">
-                        <div class="avatar flex-shrink-0 me-3">
-                            <img draggable="false" src="../assets/img/icons/unicons/cc-warning.png" alt="User" class="rounded" />
-                        </div>
-                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                            <div class="me-2">
-                                <small class="text-muted d-block mb-1">Mastercard</small>
-                                <h6 class="mb-0">Ordered Food</h6>
-                            </div>
-                            <div class="user-progress d-flex align-items-center gap-1">
-                                <h6 class="mb-0">-92.45</h6>
-                                <span class="text-muted">USD</span>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
-@endsection
-@push('resource-js')
-{{-- <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script> --}}
-<script src="{{ asset('assets/js/swappy.js') }}"></script>
-@endpush
-@push('js')
-<script>
-    let cardColor, headingColor, axisColor, shadeColor, borderColor;
-
-    cardColor = config.colors.white;
-    headingColor = config.colors.headingColor;
-    axisColor = config.colors.axisColor;
-    borderColor = config.colors.borderColor;
-    const totalRevenueChartEl = document.querySelector('#totalRevenueChart'),
-        totalRevenueChartOptions = {
-            series: [{
-                    name: '{{ env('
-                    TAHUN_APLIKASI ', 2024) }}',
-                    data: [parseInt(`{{ $countBaNow ?? 10 }}`)]
-                },
-                {
-                    name: '{{ intval(env('
-                    TAHUN_APLIKASI ', 2024)) - 1 }}',
-                    data: [parseInt(`{{ $countBaPast ?? 15 }}`)]
-                }
-            ],
-            chart: {
-                height: 300,
-                stacked: true,
-                type: 'bar',
-                toolbar: {
-                    show: false
-                }
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '33%',
-                    borderRadius: 12,
-                    startingShape: 'rounded',
-                    endingShape: 'rounded'
-                }
-            },
-            colors: [config.colors.primary, config.colors.info],
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                curve: 'smooth',
-                width: 6,
-                lineCap: 'round',
-                colors: [cardColor]
-            },
-            legend: {
-                show: true,
-                horizontalAlign: 'left',
-                position: 'top',
-                markers: {
-                    height: 8,
-                    width: 8,
-                    radius: 12,
-                    offsetX: -3
-                },
-                labels: {
-                    colors: axisColor
-                },
-                itemMargin: {
-                    horizontal: 10
-                }
-            },
-            grid: {
-                borderColor: borderColor,
-                padding: {
-                    top: 0,
-                    bottom: -8,
-                    left: 20,
-                    right: 20
-                }
-            },
-            xaxis: {
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-                labels: {
-                    style: {
-                        fontSize: '13px',
-                        colors: axisColor
-                    }
-                },
-                axisTicks: {
-                    show: false
-                },
-                axisBorder: {
-                    show: false
-                }
-            },
-            yaxis: {
-                labels: {
-                    style: {
-                        fontSize: '13px',
-                        colors: axisColor
-                    }
-                }
-            },
-            responsive: [{
-                    breakpoint: 1700,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '32%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 1580,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '35%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 1440,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '42%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 1300,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '48%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 1200,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '40%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 1040,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 11,
-                                columnWidth: '48%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 991,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '30%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 840,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '35%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 768,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '28%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 640,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '32%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 576,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '37%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 480,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '45%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 420,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '52%'
-                            }
-                        }
-                    }
-                },
-                {
-                    breakpoint: 380,
-                    options: {
-                        plotOptions: {
-                            bar: {
-                                borderRadius: 10,
-                                columnWidth: '60%'
-                            }
-                        }
-                    }
-                }
-            ],
-            states: {
-                hover: {
-                    filter: {
-                        type: 'none'
-                    }
-                },
-                active: {
-                    filter: {
-                        type: 'none'
-                    }
-                }
-            }
-        };
-    if (typeof totalRevenueChartEl !== undefined && totalRevenueChartEl !== null) {
-        const totalRevenueChart = new ApexCharts(totalRevenueChartEl, totalRevenueChartOptions);
-        totalRevenueChart.render();
+<style>
+    :root {
+        --primary-glow: conic-gradient(from 180deg at 50% 50%, #16abff33 0deg, #0885ff33 55deg, #54d6ff33 120deg, #0071ff33 160deg, transparent 360deg);
+        --secondary-glow: radial-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.1);
     }
-    const swapyHome = Swapy.createSwapy($('#container-swapy-home')[0], {
-        // animation: 'spring',
-        autoScrollOnDrag: true,
-        dragAxis: 'y'
-    });
-    const swapyEarning = Swapy.createSwapy($('#container-swapy-earning')[0], {
-        // animation: 'spring',
-        autoScrollOnDrag: false,
-        dragAxis: 'both'
-    })
-</script>
-@endpush
+
+    body {
+        background: #1e293b;
+        color: #fff;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .hero-section {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding-top: 80px;
+    }
+
+    .hero-glow {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: var(--primary-glow);
+        filter: blur(80px);
+        z-index: -1;
+        opacity: 0.5;
+        animation: float-glow 20s infinite alternate;
+    }
+
+    @keyframes float-glow {
+        from {
+            transform: translate(-10%, -10%);
+        }
+
+        to {
+            transform: translate(20%, 20%);
+        }
+    }
+
+    .navbar-glass {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--glass-border);
+        padding: 1rem 0;
+    }
+
+    .brand-text {
+        font-size: 1.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #fff 0%, #888 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -1px;
+    }
+
+    .hero-title {
+        font-size: clamp(2.5rem, 8vw, 4.5rem);
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(to right, #fff, #696cff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: #a1acb8;
+        max-width: 600px;
+        margin-bottom: 2.5rem;
+    }
+
+    .btn-premium {
+        background: #696cff;
+        color: #fff;
+        padding: 1rem 2.5rem;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        display: inline-block;
+        box-shadow: 0 10px 20px -5px rgba(105, 108, 255, 0.4);
+    }
+
+    .btn-premium:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px -5px rgba(105, 108, 255, 0.6);
+        color: #fff;
+        background: #5f61e6;
+    }
+
+    .btn-outline-premium {
+        background: transparent;
+        color: #fff;
+        padding: 1rem 2.5rem;
+        border-radius: 12px;
+        font-weight: 700;
+        border: 1px solid var(--glass-border);
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-left: 1rem;
+    }
+
+    .btn-outline-premium:hover {
+        background: var(--glass-bg);
+        border-color: #696cff;
+        color: #fff;
+    }
+
+    .hero-image-wrapper {
+        position: relative;
+        perspective: 1000px;
+    }
+
+    .hero-image {
+        width: 100%;
+        border-radius: 24px;
+        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--glass-border);
+        transform: rotateY(-5deg) rotateX(5deg);
+        transition: transform 0.5s ease;
+    }
+
+    .hero-image-wrapper:hover .hero-image {
+        transform: rotateY(0deg) rotateX(0deg);
+    }
+
+    .stats-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        padding: 2rem;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .stats-card:hover {
+        border-color: #696cff;
+        transform: translateY(-5px);
+    }
+
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(105, 108, 255, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #696cff;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Animation */
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: reveal 0.8s forwards;
+    }
+
+    @keyframes reveal {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .delay-1 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.4s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.6s;
+    }
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-glass fixed-top">
+    <div class="container">
+        <a class="navbar-brand brand-text" href="{{ route('home') }}">
+            {{ env('APP_NAME') }}
+        </a>
+        <div class="d-flex">
+            @if(session('userLogged'))
+            <a href="{{ route('dashboard.index') }}" class="btn btn-premium btn-sm px-4">Dashboard</a>
+            @else
+            <a href="{{ route('auth.login') }}" class="btn btn-premium btn-sm px-4">Login</a>
+            @endif
+        </div>
+    </div>
+</nav>
+
+<section class="hero-section">
+    <div class="hero-glow" style="top: 10%; left: -10%;"></div>
+    <div class="hero-glow" style="bottom: 10%; right: -10%; background: var(--secondary-glow); opacity: 0.2;"></div>
+
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 reveal">
+                <h1 class="hero-title">Elevate Your <br>Business Flow</h1>
+                <p class="hero-subtitle">The next generation Point of Sale system designed for clarity, speed, and growth. Manage everything from one sleek command center.</p>
+                <div class="d-flex">
+                    <a href="{{ route('auth.registration') }}" class="btn btn-premium">Get Started</a>
+                    <a href="#features" class="btn btn-outline-premium">Learn More</a>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-4">
+                        <h4 class="mb-0">10k+</h4>
+                        <small class="text-muted">Active Users</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="mb-0">99.9%</h4>
+                        <small class="text-muted">Uptime</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mt-5 mt-lg-0 reveal delay-1">
+                <div class="hero-image-wrapper">
+                    {{-- Note: User can see the image generated earlier embeded in the artifact --}}
+                    <img src="{{ asset('pos_hero_banner.png') }}" class="hero-image" alt="POS Dashboard Preview">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="features" class="py-5 mt-5">
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <h2 class="fw-bold fs-1">Powering Your Success</h2>
+            <p class="text-muted">Advanced features without the complexity.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4 reveal delay-1">
+                <div class="stats-card">
+                    <div class="feature-icon">
+                        <i class='bx bxs-bolt'></i>
+                    </div>
+                    <h4>Real-time Analytics</h4>
+                    <p class="text-muted mb-0">Monitor your sales and inventory changes as they happen with pinpoint accuracy.</p>
+                </div>
+            </div>
+            <div class="col-md-4 reveal delay-2">
+                <div class="stats-card">
+                    <div class="feature-icon">
+                        <i class='bx bxs-shield-alt'></i>
+                    </div>
+                    <h4>Enterprise Security</h4>
+                    <p class="text-muted mb-0">Role-based access control and high-level encryption for your sensitive data.</p>
+                </div>
+            </div>
+            <div class="col-md-4 reveal delay-3">
+                <div class="stats-card">
+                    <div class="feature-icon">
+                        <i class="bx bx-grid"></i>
+                    </div>
+                    <h4>Modular Design</h4>
+                    <p class="text-muted mb-0">Scale your business by adding more modules as your needs grow over time.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="py-5 mt-5 border-top border-dark">
+    <div class="container text-center">
+        <p class="text-muted">© {{ date('Y') }} {{ env('APP_NAME') }}. All rights reserved.</p>
+    </div>
+</footer>
+
+@endsection

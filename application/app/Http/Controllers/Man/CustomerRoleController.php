@@ -14,7 +14,7 @@ class CustomerRoleController extends Controller
      */
     public function index()
     {
-        return view('man.customer-role');
+        return view('settings.role');
     }
 
     public function role($id)
