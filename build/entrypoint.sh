@@ -28,8 +28,7 @@ if [ "$1" = "frankenphp" ]; then
 
     # Start FrankenPHP and Reverb server
     echo "Starting FrankenPHP & Reverb"
-    frankenphp php-cli artisan reverb:start --host=0.0.0.0 --port=8001 --no-interaction &
-    exec frankenphp run -c /etc/frankenphp/Caddyfile --adapter caddyfile
+    exec frankenphp run -c /etc/frankenphp/Caddyfile --adapter caddyfile & frankenphp php-cli artisan reverb:start --host=0.0.0.0 --port=8001 --no-interaction
 else
     exec "$@"
 fi
