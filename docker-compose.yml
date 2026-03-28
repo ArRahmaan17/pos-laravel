@@ -20,8 +20,10 @@ services:
       - ./application/storage:/var/www/html/storage
       - ./application/bootstrap/cache:/var/www/html/bootstrap/cache
     depends_on:
-      - mysql
-      - redis 
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - pos-network
     
@@ -37,28 +39,6 @@ services:
       - ./data/logs:/var/log/nginx
     depends_on:
       - app
-      - reverb
-    networks:
-      - pos-network
-
-  reverb:
-    build:
-      context: .
-      dockerfile: build/Dockerfile
-    container_name: pos-reverb
-    restart: unless-stopped
-    command: frankenphp php-cli artisan reverb:start --host=0.0.0.0 --port=8001 --no-interaction
-    environment:
-      - DB_HOST=mysql
-      - DB_PORT=${DB_PORT:-3306}
-      - DB_DATABASE=${DB_DATABASE:-dpos}
-      - DB_USERNAME=${DB_USERNAME:-root}
-      - DB_PASSWORD=${DB_PASSWORD:-pospassword}
-      - REDIS_HOST=${REDIS_HOST:-redis}
-    volumes:
-      - ./application:/var/www/html
-    depends_on:
-      - app
     networks:
       - pos-network
 
@@ -72,6 +52,12 @@ services:
       MYSQL_USER: ${DB_USERNAME:-root}
       MYSQL_PASSWORD: ${DB_PASSWORD:-pospassword}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-pospassword}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     ports:
       - "3307:3306"
     volumes:
@@ -84,10 +70,16 @@ services:
     container_name: pos-redis
     restart: unless-stopped
     command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     volumes:
       - ./data/redis:/data
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     networks:
       - pos-network
 

@@ -1,6 +1,6 @@
 # Docker Management Manual (Docker Man)
 
-This project is fully dockerized using **FrankenPHP** and **Docker Compose**.
+This project is fully dockerized using **FrankenPHP** and **Docker Compose**. It provides a high-performance, containerized environment for both development and production.
 
 ## 🚀 Getting Started
 
@@ -11,32 +11,35 @@ docker-compose up -d --build
 ```
 
 This will spin up:
-- **pos-app**: The Laravel application running on FrankenPHP.
-- **pos-worker**: A dedicated queue worker.
-- **pos-reverb**: Laravel Reverb for real-time capabilities.
+- **pos-app**: The Laravel application running on FrankenPHP (also hosts **Laravel Reverb**).
+- **pos-nginx**: Nginx acting as a high-performance reverse proxy.
 - **pos-mysql**: MySQL 8.0 database.
-- **pos-redis**: Redis for caching and queues.
-- **pos-nginx**: Nginx as a reverse proxy/static asset server.
+- **pos-redis**: Redis for caching, sessions, and real-time data.
 
 ## 🛠️ Automatic Features
 
-The Docker setup now includes **Auto-Initialization**:
-1.  **Database Creation**: On startup, the container checks if the database specified in `.env` exists. If not, it creates it.
-2.  **User Privileges**: If connected as root, it ensures the configured `DB_USERNAME` has full access to the database.
-3.  **Migrations**: `php artisan migrate --force` runs automatically on every app container start.
-4.  **Caching**: Configuration, routes, and views are automatically cached for production performance.
+The Docker setup includes **Auto-Initialization** logic in `build/entrypoint.sh`:
+1.  **Database Check**: On startup, it verifies if the database exists via `application/database/ensure_db.php`.
+2.  **Migrations & Seeding**: Runs `php artisan migrate:fresh --seed` automatically (wipes and re-seeds the database).
+3.  **Optimization**: Automatically runs `config:cache`, `route:cache`, `view:cache`, and `event:cache`.
+4.  **Integrated Services**: Starts **Laravel Reverb** on port 8001 within the app container.
 
 ## 📁 Key Files
 
-- `Dockerfile`: Multi-stage build (Node -> Composer -> FrankenPHP).
+- `build/Dockerfile`: Multi-stage build (Node -> Composer -> FrankenPHP).
 - `docker-compose.yml`: Service orchestration.
-- `buildentrypoint.sh`: Startup script logic.
-- `database/ensure_db.php`: Database existence helper.
+- `build/entrypoint.sh`: Startup script logic.
+- `application/database/ensure_db.php`: Database existence helper.
+- `build/nginx/default.conf`: Nginx reverse proxy configuration.
 
 ## 🔍 Commands
 
 ### Viewing Logs
 ```bash
+# All services
+docker-compose logs -f
+
+# App only
 docker-compose logs -f app
 ```
 
@@ -54,3 +57,4 @@ docker-compose exec mysql mysql -u root -p
 ```bash
 docker-compose up -d --build
 ```
+

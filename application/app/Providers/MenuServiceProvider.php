@@ -68,7 +68,7 @@ class MenuServiceProvider extends ServiceProvider
             return $menu;
         }, $menus), $parents);
         $menus = arrayTree($menus);
-        View::composer('template.parent', function ($view) use ($menus, $subscriptions) {
+        View::composer('*', function ($view) use ($menus, $subscriptions) {
             $view->with([
                 'menus' => $menus,
                 'subscriptions' => $subscriptions,

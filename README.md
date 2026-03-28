@@ -70,12 +70,13 @@ Create a `.env` file in the root directory (you can copy from `.env.example` if 
 docker-compose up -d --build
 ```
 
-This command will automatically:
-- Start the web server (FrankenPHP), queue workers, Reverb, MySQL, Redis, and Nginx.
-- Create the configured database if it doesn't exist.
-- Run database migrations on startup.
+This will automatically:
+- Start **FrankenPHP** (hosting both the app and **Laravel Reverb**).
+- Spin up **Nginx** as a high-performance reverse proxy.
+- Initialize **MySQL 8.0** and **Redis** services.
+- Run database checks (`ensure_db.php`) and migrations (`migrate:fresh --seed`).
+- Cache configuration and routes for optimal performance.
 
-For more detailed information on managing the Docker environment and running artisan commands, please refer to the [Docker Management Manual (DOCKER_MAN.md)](DOCKER_MAN.md).
 ## 🏗️ Project Structure
 
 ```text
@@ -108,7 +109,7 @@ APP_DEBUG=false
 APP_URL=http://localhost
 
 DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
+DB_HOST=mysql
 DB_PORT=3306
 DB_DATABASE=your_database
 DB_USERNAME=your_username
@@ -118,7 +119,7 @@ CACHE_DRIVER=file
 SESSION_DRIVER=file
 QUEUE_CONNECTION=sync
 
-REDIS_HOST=127.0.0.1
+REDIS_HOST=redis
 REDIS_USERNAME=
 REDIS_PASSWORD=
 REDIS_PREFIX=
@@ -255,19 +256,34 @@ REDIS_TTL=
 ### API Documentation
 API documentation is available at `/api/documentation` when running in development mode.
 
-## 🚀 Deployment
+## 🐳 Docker Management
 
-The recommended deployment method for this application is using **Docker Compose**.
+The project uses a unified Docker environment. Below are the most common management commands.
 
-### Production Deployment
-1. Ensure `.env` is configured with `APP_ENV=production` and strong credentials.
-2. Run the Docker Compose stack:
+### Viewing Logs
 ```bash
-docker-compose up -d --build
+# All services
+docker-compose logs -f
+
+# App-only log
+docker-compose logs -f app
 ```
-3. The Docker container automatically caches configuration, routes, and views on startup for optimal performance.
-4. For HTTPS, configure a reverse proxy (e.g., Nginx, Traefik, or Caddy) in front of the application to handle SSL certificates.
-5. Set up external database backups mapping from your Docker volume as needed.
+
+### Running Artisan Commands
+```bash
+docker-compose exec app php artisan [command]
+```
+
+### Accessing Database
+```bash
+docker-compose exec mysql mysql -u root -p
+```
+
+### Deployment
+The recommended deployment method is using the provided Docker Compose stack.
+1. Ensure `.env` is configured with `APP_ENV=production`.
+2. Run `docker-compose up -d --build`.
+3. The entrypoint script handles all necessary optimizations (caching, migrations) automatically.
 
 ### Server Requirements
 - **Minimum**: 2GB RAM, 1 CPU core
@@ -490,4 +506,4 @@ php artisan view:cache
 - **Website**: https://www.rahmaanms.my.id
 - **GitHub**: https://github.com/ArRahmaan17
 ---
-*Last updated: Nov 2025*
+*Last updated: Mar 2026*
