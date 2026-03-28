@@ -1,6 +1,14 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <link rel="icon" type="image/png" href="{{ asset('assets/favicon/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/favicon/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ asset('assets/favicon/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/favicon/apple-touch-icon.png') }}" />
+    <meta name="apple-mobile-web-app-title" content="{{ $app_name ?? 'Todos' }}" />
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}" />
+
     <meta property="og:title" content="@yield('title') - {{ env('OG_TITLE', env('APP_NAME')) }}">
     <meta property="og:description" content="{{ env('OG_DESCRIPTION') }}">
     <meta property="og:image" content="{{ asset(env('OG_IMAGE')) }}">
