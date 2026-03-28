@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Company\WarehouseController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Man\CustomerCompanyMasterTaskController;
@@ -34,11 +35,14 @@ use Illuminate\Support\Facades\Route;
 |
 | Here is where you can register web routes for your application. These
 | routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
+| be assigned to the 'web' middleware group. Make something great!
 |
 */
 
 Route::meta(['group' => 'web'], function () {
+    // Public Landing Page
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+
     Route::middleware([UnAuthorization::class])->name('auth.')->prefix('auth')->group(function () {
         Route::get('/login', [AuthController::class, 'index'])->name('login');
         Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1')->name('login.process');
@@ -46,10 +50,10 @@ Route::meta(['group' => 'web'], function () {
         Route::post('/registration', [AuthController::class, 'registration'])->middleware('throttle:3,1')->name('registration.process');
     });
     Route::middleware([unSelectCustomerCompany::class])->group(function () {
-        Route::get('/', function () {
+        Route::get('/select-company', function () {
             return view('select-company');
         })->name('select-company');
-        Route::post('/', [AuthController::class, 'selectCompany'])
+        Route::post('/select-company', [AuthController::class, 'selectCompany'])
             ->name('choosing-company');
         Route::get('/list-company', [AuthController::class, 'customerCompany'])->name('list-company');
     });
@@ -68,7 +72,7 @@ Route::meta(['group' => 'web'], function () {
             'module' => 'dashboard',
             'middleware' => [checkPageAuthorization::class],
         ], function () {
-            Route::get('/', [HomeController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
+            Route::get('/', [DashboardController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
         });
         Route::meta([
             'icon' => 'bx bx-user-check',
@@ -370,6 +374,7 @@ Route::meta(['group' => 'web'], function () {
                 Route::post('/', [RoleController::class, 'store'])->name('store');
                 Route::put('/{id?}', [RoleController::class, 'update'])->name('update');
                 Route::get('/data-table', [RoleController::class, 'dataTable'])->name('data-table');
+                Route::get('/role-option/{id?}', [RoleController::class, 'role'])->name('role-options');
                 Route::get('/{id?}', [RoleController::class, 'show'])->name('show');
                 Route::delete('/{id?}', [RoleController::class, 'destroy'])->name('delete');
             });

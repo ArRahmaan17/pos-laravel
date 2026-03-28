@@ -199,7 +199,7 @@ class AuthController extends Controller
                 $user_register = User::create($user);
                 $company['user_id'] = $user_register->id;
                 $company['created_by'] = $user_register->id;
-                $company['picture'] = str_replace(public_path('/'), '', getFilePathDisk('company/default-company.png', 'default'));
+                $company['picture'] = 'default-picture.png';
                 $data_company = Company::create($company);
                 $address['company_id'] = $data_company->id;
                 $address['created_by'] = $user_register->id;
