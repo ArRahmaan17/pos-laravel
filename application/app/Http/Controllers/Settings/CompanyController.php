@@ -11,8 +11,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+use App\Traits\ImageHandler;
+
 class CompanyController extends Controller
 {
+    use ImageHandler;
+
     /**
      * Display a listing of the resource.
      */
@@ -132,10 +136,9 @@ class CompanyController extends Controller
         try {
             $data = $request->except('address', '_token');
             if ($request->has('picture')) {
-                $profile_picture = md5(now()->format('Y-m-d H:i:s')).'.'.$request->file('picture')->getClientOriginalExtension();
-                $profile_picture = Storage::disk('company-profile')
-                    ->putFileAs('/', $request->picture, $profile_picture);
-                $data['picture'] = $profile_picture;
+                $filename = md5(now()->format('Y-m-d H:i:s')).'.'.$request->file('picture')->getClientOriginalExtension();
+                $this->uploadAndWatermark($request->file('picture'), '', 'company-profile', $filename);
+                $data['picture'] = $filename;
             } else {
                 $data['picture'] = 'default-picture.png';
             }
@@ -259,15 +262,12 @@ class CompanyController extends Controller
             $data = $request->except('address', '_token');
             if ($request->has('picture')) {
                 $company = Company::find($id);
-                $profile_picture = md5(now()->format('Y-m-d H:i:s')).'.'.$request->file('picture')
-                    ->getClientOriginalExtension();
+                $filename = md5(now()->format('Y-m-d H:i:s')).'.'.$request->file('picture')->getClientOriginalExtension();
                 if ($company->picture != 'default-picture.png') {
-                    Storage::disk('company-profile')
-                        ->delete($company->picture);
+                    Storage::disk('company-profile')->delete($company->picture);
                 }
-                $profile_picture = Storage::disk('company-profile')
-                    ->putFileAs('/', $request->picture, $profile_picture);
-                $data['picture'] = $profile_picture;
+                $this->uploadAndWatermark($request->file('picture'), '', 'company-profile', $filename);
+                $data['picture'] = $filename;
             }
             $data['user_id'] = (getScope() === 'Developer' ? $request->user_id : session('userLogged')['user']['id']);
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);

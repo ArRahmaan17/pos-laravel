@@ -3,18 +3,22 @@
 namespace App\Http\Controllers\Api\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
-use App\Models\CustomerCompanyGood;
-use App\Models\CustomerProductType;
+use App\Models\Company\Company;
+use App\Models\Product\CustomerCompanyGood;
+use App\Models\Product\CustomerProductType;
 use App\Models\CustomerTemporaryProduct;
-use App\Models\ProductWeight;
+use App\Models\Product\ProductWeight;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
+use App\Traits\ImageHandler;
+
 class CustomerTemporaryProductController extends Controller
 {
+    use ImageHandler;
+
     /**
      * Display a listing of the resource.
      */
@@ -243,10 +247,7 @@ class CustomerTemporaryProductController extends Controller
                     if ($indexDefault === 'picture') {
                         if (! empty($request->products[$key][$indexDefault])) {
                             $filename = md5($request->products[$key]['name'].now()->format('Y-m-d h:i:s')).'.'.$request->products[$key][$indexDefault]->extension();
-                            if (Storage::disk('public-asset')->directories('temp-customer-product')) {
-                                Storage::disk('public-asset')->makeDirectory('temp-customer-product');
-                            }
-                            Storage::putFileAs('temp-customer-product', $request->products[$key][$indexDefault], $filename);
+                            $this->uploadAndWatermark($request->products[$key][$indexDefault], '', 'temp-customer-product', $filename);
                             $resultTempProduct[$key][$indexDefault] = $filename;
                         } else {
                             $resultTempProduct[$key][$indexDefault] = ($resultTempProduct[$key]['customerCompanyGoodId']) ? collect($referenceProducts)->filter(function ($ref) use ($resultTempProduct, $key) {
@@ -526,10 +527,7 @@ class CustomerTemporaryProductController extends Controller
                     if ($indexDefault === 'picture') {
                         if (! empty($request->products[$key][$indexDefault])) {
                             $filename = md5($request->products[$key]['name'].now()->format('Y-m-d h:i:s')).'.'.$request->products[$key][$indexDefault]->extension();
-                            if (Storage::disk('public-asset')->directories('temp-customer-product')) {
-                                Storage::disk('public-asset')->makeDirectory('temp-customer-product');
-                            }
-                            Storage::putFileAs('temp-customer-product', $request->products[$key][$indexDefault], $filename);
+                            $this->uploadAndWatermark($request->products[$key][$indexDefault], '', 'temp-customer-product', $filename);
                             $resultTempProduct[$key][$indexDefault] = $filename;
                         } else {
                             $resultTempProduct[$key][$indexDefault] = ($resultTempProduct[$key]['customerCompanyGoodId']) ? collect($referenceProducts)->filter(function ($ref) use ($resultTempProduct, $key) {

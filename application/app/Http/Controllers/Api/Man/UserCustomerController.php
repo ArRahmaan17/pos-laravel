@@ -3,15 +3,19 @@
 namespace App\Http\Controllers\Api\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\UserManagement\User;
 use App\Models\UserCustomerRole;
 use App\Models\UserManagement\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class UserCustomerController extends Controller
+use App\Traits\ImageHandler;
+
+class UserController extends Controller
 {
+    use ImageHandler;
+
     /**
      * Display a listing of the resource.
      */
@@ -265,12 +269,9 @@ class UserCustomerController extends Controller
         try {
             $data = $request->except('_token');
             if ($request->profile_picture) {
-                if (Storage::disk('public-asset')->directories('customer-profile-picture')) {
-                    Storage::disk('public-asset')->makeDirectory('customer-profile-picture');
-                }
                 $filename = md5($request->name.now()->format('Y-m-d h:i:s')).'.'.$request->file('profile_picture')->clientExtension();
                 $data['profile_picture'] = $filename;
-                $request->profile_picture->storeAs('', $filename, 'customer-profile-picture');
+                $this->uploadAndWatermark($request->file('profile_picture'), '', 'customer-profile-picture', $filename);
             }
             $response = ['message' => 'Failed updating resource'];
             $code = 422;
