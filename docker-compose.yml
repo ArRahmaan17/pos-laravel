@@ -26,6 +26,11 @@ services:
         condition: service_healthy
     networks:
       - pos-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
     
 
   nginx:
@@ -41,6 +46,11 @@ services:
       - app
     networks:
       - pos-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
 
   mysql:
     image: mysql:8.0
@@ -64,6 +74,11 @@ services:
       - ./data/database:/var/lib/mysql
     networks:
       - pos-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
 
   redis:
     image: redis:alpine
@@ -82,6 +97,11 @@ services:
         condition: service_healthy
     networks:
       - pos-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1G
 
 networks:
   pos-network:
