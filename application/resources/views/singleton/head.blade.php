@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon/favicon-16x16.png') }}" sizes="16x16" />
     <link rel="shortcut icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/favicon/apple-touch-icon.png') }}" />
-    <meta name="apple-mobile-web-app-title" content="{{ $app_name ?? 'Todos' }}" />
+    <meta name="apple-mobile-web-app-title" content="{{ env('APP_NAME') }}" />
     <link rel="manifest" href="{{ asset('assets/img/favicon/site.webmanifest') }}" />
 
     <meta property="og:title" content="@yield('title') - {{ env('OG_TITLE', env('APP_NAME')) }}">
