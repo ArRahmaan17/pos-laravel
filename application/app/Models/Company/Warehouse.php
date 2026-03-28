@@ -2,6 +2,7 @@
 
 namespace App\Models\Company;
 
+use App\Models\Inventory\Shelf;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,9 +16,9 @@ class Warehouse extends Model
 
     protected $fillable = ['company_id', 'name', 'description'];
 
-    public function racks(): HasMany
+    public function shelves(): HasMany
     {
-        return $this->hasMany(CustomerWarehouseRack::class, 'warehouse_id', 'id');
+        return $this->hasMany(Shelf::class, 'warehouse_id', 'id');
     }
 
     public function company(): HasOne

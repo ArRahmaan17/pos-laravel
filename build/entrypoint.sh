@@ -3,7 +3,6 @@ set -e
 
 if [ "$1" = "frankenphp" ]; then
     sed -i "s/your_awesome_application_port/${APP_PORT}/" /etc/frankenphp/Caddyfile
-    cat /etc/frankenphp/Caddyfile
     # Ensure database exists
     echo "Checking database status..."
     frankenphp php-cli /var/www/html/database/ensure_db.php
@@ -23,9 +22,6 @@ if [ "$1" = "frankenphp" ]; then
     # Start FrankenPHP server
     echo "Starting FrankenPHP..."
     exec frankenphp run -c /etc/frankenphp/Caddyfile
-    # Start reverb server
-    echo "Starting Reverb..."
-    exec frankenphp php-cli artisan reverb:start --host=0.0.0.0 --port=${REVERB_SERVER_PORT:-8001} --no-interaction
 else
     # Run arbitrary commands like reverb or queue:work
     exec "$@"

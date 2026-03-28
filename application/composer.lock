@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e39162d2c40c1a9726ec45c801ecdb92",
+    "content-hash": "b10d310e7b6cb65109ab287e7992a9f2",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -4420,26 +4420,26 @@
         },
         {
             "name": "rap2hpoutre/fast-excel",
-            "version": "v5.6.0",
+            "version": "v5.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rap2hpoutre/fast-excel.git",
-                "reference": "a460ac5b78f01162eadcae49053017686c53e102"
+                "reference": "c5c2118c4e1b20395cab3d7ad32648ea9331c5cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rap2hpoutre/fast-excel/zipball/a460ac5b78f01162eadcae49053017686c53e102",
-                "reference": "a460ac5b78f01162eadcae49053017686c53e102",
+                "url": "https://api.github.com/repos/rap2hpoutre/fast-excel/zipball/c5c2118c4e1b20395cab3d7ad32648ea9331c5cc",
+                "reference": "c5c2118c4e1b20395cab3d7ad32648ea9331c5cc",
                 "shasum": ""
             },
             "require": {
-                "illuminate/support": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
+                "illuminate/support": "^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
                 "openspout/openspout": "^4.24",
                 "php": "^8.0"
             },
             "require-dev": {
-                "illuminate/database": "^6.20.12 || ^7.30.4 || ^8.24.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
-                "phpunit/phpunit": "^9.5 || ^10.1",
+                "illuminate/database": "^6.20.12 || ^7.30.4 || ^8.24.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0 || ^13.0",
+                "phpunit/phpunit": "^9.5 || ^10.1 || ^11.0 || ^12.0 || ^13.0",
                 "squizlabs/php_codesniffer": "3.*"
             },
             "type": "library",
@@ -4478,7 +4478,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rap2hpoutre/fast-excel/issues",
-                "source": "https://github.com/rap2hpoutre/fast-excel/tree/v5.6.0"
+                "source": "https://github.com/rap2hpoutre/fast-excel/tree/v5.7.0"
             },
             "funding": [
                 {
@@ -4486,7 +4486,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-18T12:50:31+00:00"
+            "time": "2026-03-24T09:13:16+00:00"
         },
         {
             "name": "ratchet/rfc6455",

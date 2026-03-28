@@ -11,23 +11,36 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Schema::create('customer_warehouse_rack_goods', function (Blueprint $table) {
-        //     $table->id();
-        //     $table->bigInteger('rackId')->unsigned();
-        //     $table->bigInteger('goodId')->unsigned();
-        //     $table->foreign('rackId')
-        //         ->references('id')
-        //         ->on('warehouse_inventories')
-        //         ->cascadeOnDelete()
-        //         ->cascadeOnUpdate();
-        //     $table->foreign('goodId')
-        //         ->references('id')
-        //         ->on('products')
-        //         ->cascadeOnDelete()
-        //         ->cascadeOnUpdate();
-        //     $table->timestamps();
-        //     $table->softDeletes();
-        // });
+        Schema::create('shelves', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('warehouse_id')->unsigned();
+            $table->string('name');
+            $table->string('description');
+            $table->foreign('warehouse_id')
+                ->references('id')
+                ->on('warehouses')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->bigInteger('company_id')->unsigned();
+            $table->foreign('company_id')
+                ->on('companies')
+                ->references('id')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->bigInteger('created_by')
+                ->unsigned();
+            $table->foreign('created_by')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
+            $table->bigInteger('deleted_by')->unsigned()->nullable();
+            $table->foreign('deleted_by')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete();
+        });
     }
 
     /**
@@ -35,6 +48,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Schema::dropIfExists('customer_warehouse_rack_goods');
+        Schema::dropIfExists('shelves');
     }
 };

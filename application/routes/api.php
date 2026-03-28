@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\Dev\SubscriptionController;
 use App\Http\Controllers\Api\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Api\Man\CustomerProductTypeController;
 use App\Http\Controllers\Api\Man\CustomerTemporaryProductController;
-use App\Http\Controllers\Api\Man\UserCustomerController;
+use App\Http\Controllers\Api\Man\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,15 +50,15 @@ use Illuminate\Support\Facades\Route;
 //     });
 //     Route::prefix('man')->name('man.')->group(function () {
 //         Route::prefix('customer-user')->name('customer-user.')->group(function () {
-//             Route::get('/', [UserCustomerController::class, 'index'])->name('index');
-//             Route::post('/', [UserCustomerController::class, 'store'])->name('store');
-//             Route::post('/update-profile', [UserCustomerController::class, 'updateProfile'])->name('update-profile');
-//             Route::patch('/generate-affiliate-code', [UserCustomerController::class, 'generateAffiliateCode'])->name('generate-affiliate-code');
-//             Route::post('/generate-link', [UserCustomerController::class, 'generateRegistrationLink'])->name('registration-link');
-//             Route::put('/{id?}', [UserCustomerController::class, 'update'])->name('update');
-//             Route::get('/data-table', [UserCustomerController::class, 'dataTable'])->name('data-table');
-//             Route::get('/{id?}', [UserCustomerController::class, 'show'])->name('show');
-//             Route::delete('/{id?}', [UserCustomerController::class, 'destroy'])->name('delete');
+//             Route::get('/', [UserController::class, 'index'])->name('index');
+//             Route::post('/', [UserController::class, 'store'])->name('store');
+//             Route::post('/update-profile', [UserController::class, 'updateProfile'])->name('update-profile');
+//             Route::patch('/generate-affiliate-code', [UserController::class, 'generateAffiliateCode'])->name('generate-affiliate-code');
+//             Route::post('/generate-link', [UserController::class, 'generateRegistrationLink'])->name('registration-link');
+//             Route::put('/{id?}', [UserController::class, 'update'])->name('update');
+//             Route::get('/data-table', [UserController::class, 'dataTable'])->name('data-table');
+//             Route::get('/{id?}', [UserController::class, 'show'])->name('show');
+//             Route::delete('/{id?}', [UserController::class, 'destroy'])->name('delete');
 //         });
 //         Route::prefix('customer-company-good')->name('customer-company-good.')->group(function () {
 //             Route::post('/', [CustomerCompanyGoodController::class, 'store'])->name('store');

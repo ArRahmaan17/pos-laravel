@@ -252,12 +252,12 @@ class AuthController extends Controller
 
     public function requestChangePassword()
     {
-        return view('auth.change-password');
+        return view('auth.privacy.change-password');
     }
 
     public function requestActivateAccessPin()
     {
-        return view('auth.activate-access-pin');
+        return view('auth.privacy.activate-access-pin');
     }
 
     public function activateAccessPin(Request $request)

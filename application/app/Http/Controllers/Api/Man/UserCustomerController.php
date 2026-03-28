@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Traits\ImageHandler;
 
-class UserCustomerController extends Controller
+class UserController extends Controller
 {
     use ImageHandler;
 
