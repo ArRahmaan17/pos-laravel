@@ -22,6 +22,8 @@ if [ "$1" = "frankenphp" ]; then
     # Start FrankenPHP server
     echo "Starting FrankenPHP..."
     exec frankenphp run -c /etc/frankenphp/Caddyfile
+else if [ "$1" = "reverb" ]; then
+    echo "starting reverb"
 else
     # Run arbitrary commands like reverb or queue:work
     exec "$@"
