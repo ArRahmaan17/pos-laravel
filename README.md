@@ -393,6 +393,15 @@ tail -f storage/logs/laravel.log
 ```
 
 ## 📝 Contributing
+### Guideline commit message 
+- **`feat:`** A new feature
+- **`fix:`** A bug fix
+- **`docs:`** Documentation only changes
+- **`style:`** Changes that don't affect code meaning (formatting, missing semicolons, etc.)
+- **`refactor:`** Code change that neither fixes a bug nor adds a feature
+- **`perf:`** Code change that improves performance
+- **`test:`** Adding missing tests or correcting existing tests
+- **`chore:`** Changes to build process, dependencies, or tooling
 
 ### Development Guidelines
 1. Fork the repository
@@ -400,7 +409,7 @@ tail -f storage/logs/laravel.log
 3. Follow PSR-12 coding standards
 4. Add tests for new features
 5. Update documentation
-6. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
 7. Push to the branch (`git push origin feature/amazing-feature`)
 8. Open a Pull Request
 
@@ -418,15 +427,6 @@ tail -f storage/logs/laravel.log
 4. Include screenshots for UI changes
 5. Describe the changes in detail
 
-### 📝 Guideline commit message 
-- **`feat:`** A new feature
-- **`fix:`** A bug fix
-- **`docs:`** Documentation only changes
-- **`style:`** Changes that don't affect code meaning (formatting, missing semicolons, etc.)
-- **`refactor:`** Code change that neither fixes a bug nor adds a feature
-- **`perf:`** Code change that improves performance
-- **`test:`** Adding missing tests or correcting existing tests
-- **`chore:`** Changes to build process, dependencies, or tooling
 
 ## ⚖️ Licensing
 
