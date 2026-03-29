@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Api\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserManagement\User;
 use App\Models\UserCustomerRole;
 use App\Models\UserManagement\Role;
+use App\Models\UserManagement\User;
+use App\Traits\ImageHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
-use App\Traits\ImageHandler;
 
 class UserController extends Controller
 {

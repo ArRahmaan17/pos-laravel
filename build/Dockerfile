@@ -1,26 +1,39 @@
-# ==============================================================================
 # Stage 1: Node — Build Vite / Tailwind CSS Assets
 # ==============================================================================
-FROM node:25-alpine AS node-builder
+FROM node:22-alpine AS node-builder
 
 WORKDIR /build
 
-# Install JS dependencies
-COPY application/package.json application/package-lock.json ./
+# Copy manifest files specifically for caching
+COPY application/package*.json ./
 RUN npm ci --prefer-offline
 
-# Copy source files needed by Vite
-COPY application/vite.config.js ./
-COPY application/resources/ ./resources/
-COPY application/public/ ./public/
+# Copy full application source needed by Vite/Tailwind scanning
+COPY application/ .
 
 # Build production assets
-RUN npm run build
+RUN npm run build && \
+    if [ ! -f public/build/manifest.json ]; then \
+        echo "Error: manifest.json not found in public/build/"; \
+        ls -R public/build; \
+        exit 1; \
+    fi
+
+
 
 # ==============================================================================
 # Stage 2: Composer — Install PHP Dependencies
 # ==============================================================================
 FROM composer:2 AS composer-builder
+
+WORKDIR /app
+
+# Copy dependency files
+COPY application/composer.json application/composer.lock ./
+
+# Install PHP dependencies
+RUN composer install --no-interaction --no-scripts --optimize-autoloader --prefer-dist
+
 
 # ==============================================================================
 # Stage 3: FrankenPHP — Production Image
@@ -77,13 +90,12 @@ COPY --chown=www-data:www-data application/ .
 
 # ── Remove stale cache files and vendor ──────────────────────────────────────────────────
 RUN rm -f bootstrap/cache/*.php
-RUN mkdir -p public/build
-
 # ── Bring in vendor from composer stage ──────────────────────────────────────
-COPY --from=composer-builder --chown=www-data:www-data /usr/bin/composer /usr/bin/composer
+COPY --from=composer-builder --chown=www-data:www-data /app/vendor ./vendor
+COPY --from=composer-builder /usr/bin/composer /usr/bin/composer
 
 # ── Bring in compiled assets from node stage ─────────────────────────────────
-COPY --from=node-builder --chown=www-data:www-data /build/public/build ./public/build
+COPY --from=node-builder --chown=www-data:www-data /build/public/build/ ./public/build/
 
 # ── CaddyFile (FrankenPHP embedded Caddy config) ─────────────────────────────
 COPY --chown=www-data:www-data application/example.CaddyFile /etc/frankenphp/Caddyfile

@@ -28,7 +28,7 @@ if [ "$1" = "frankenphp" ]; then
         frankenphp php-cli artisan migrate --force
     else
         echo "Running development migrations (migrate:fresh --seed)..."
-        frankenphp php-cli artisan migrate:fresh --seed
+        # frankenphp php-cli artisan migrate:fresh --seed
     fi
 
     # Discover packages and cache configuration for production

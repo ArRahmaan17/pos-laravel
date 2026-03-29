@@ -3,16 +3,15 @@
 namespace App\Http\Controllers\Man;
 
 use App\Http\Controllers\Controller;
+use App\Models\CustomerTemporaryProduct;
 use App\Models\Product\CustomerCompanyGood;
 use App\Models\Product\CustomerProductType;
-use App\Models\CustomerTemporaryProduct;
 use App\Models\Product\ProductWeight;
+use App\Traits\ImageHandler;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
-use App\Traits\ImageHandler;
 
 class CustomerTemporaryProductController extends Controller
 {

@@ -1,0 +1,16 @@
+**/.git
+**/node_modules
+**/vendor
+**/storage
+**/public/build
+**/.env
+**/.phpunit.result.cache
+**/tests
+**/artisan
+**/phpunit.xml
+
+**/README.md
+**/LICENSE
+**/.editorconfig
+**/.gitattributes
+**/.gitignore

@@ -18,10 +18,9 @@ services:
       - NGINX_APP_PORT=${NGINX_APP_PORT:-80}
       - REVERB_PORT=${REVERB_PORT:-8001}
     volumes:
+      - /var/www/html/vendor
+      - /var/www/html/public/build
       - ./application:/var/www/html
-      - ./application/vendor:/var/www/html/vendor
-      - ./application/storage:/var/www/html/storage
-      - ./application/bootstrap/cache:/var/www/html/bootstrap/cache
     depends_on:
       mysql:
         condition: service_healthy

@@ -16,45 +16,46 @@ class RoleController extends Controller
     {
         return view('settings.role');
     }
+
     public function role($id = null)
     {
         $companyIdScope = $id ?? session('userLogged')['company']['id'];
-        
-        $data = Role::where(function($q) use ($companyIdScope) {
-                // Ensure they can only see roles for the targeted company OR their own if none provided
-                $q->where('company_id', $companyIdScope)->orWhereNull('company_id');
-            })->get();
+
+        $data = Role::where(function ($q) use ($companyIdScope) {
+            // Ensure they can only see roles for the targeted company OR their own if none provided
+            $q->where('company_id', $companyIdScope)->orWhereNull('company_id');
+        })->get();
 
         if ($data->isEmpty()) {
             return response()->json([
-                'message' => 'Failed showing resource', 
-                'data' => dataToOption($data)
+                'message' => 'Failed showing resource',
+                'data' => dataToOption($data),
             ], 404);
         }
 
         return response()->json([
-            'message' => 'Showing resource successfully', 
-            'data' => dataToOption($data)
+            'message' => 'Showing resource successfully',
+            'data' => dataToOption($data),
         ], 200);
     }
 
     public function dataTable(Request $request)
     {
         $companyId = session('userLogged')['company']['id'] ?? null;
-        
+
         $query = Role::query()
-            ->where(function($q) use ($companyId) {
+            ->where(function ($q) use ($companyId) {
                 $q->whereNull('company_id')->orWhere('company_id', $companyId);
             });
 
         $totalData = $query->count();
         $totalFiltered = $totalData;
 
-        if (!empty($request->input('search.value'))) {
+        if (! empty($request->input('search.value'))) {
             $searchValue = $request->input('search.value');
-            $query->where(function($q) use ($searchValue) {
+            $query->where(function ($q) use ($searchValue) {
                 $q->where('name', 'like', "%{$searchValue}%")
-                  ->orWhere('description', 'like', "%{$searchValue}%");
+                    ->orWhere('description', 'like', "%{$searchValue}%");
             });
             $totalFiltered = $query->count();
         }
@@ -78,21 +79,21 @@ class RoleController extends Controller
         $dataFiltered = $assets->map(function ($item, $index) use ($request) {
             return [
                 'order_number' => $request->input('start') + ($index + 1),
-                'name'         => $item->name,
-                'description'  => $item->description,
-                'company'      => $item->company->name ?? 'System',
-                'action'       => $item->company_id === null 
+                'name' => $item->name,
+                'description' => $item->description,
+                'company' => $item->company->name ?? 'System',
+                'action' => $item->company_id === null
                     ? "<button class='btn btn-icon btn-outline-success copy' data-role='{$item->id}'><i class='bx bx-copy'></i></button>"
-                    : "<button class='btn btn-icon btn-outline-warning edit' data-role='{$item->id}'><i class='bx bx-pencil'></i></button>" .
+                    : "<button class='btn btn-icon btn-outline-warning edit' data-role='{$item->id}'><i class='bx bx-pencil'></i></button>".
                       "<button data-role='{$item->id}' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt'></i></button>",
             ];
         });
 
         return response()->json([
-            'draw'            => (int) $request->input('draw'),
+            'draw' => (int) $request->input('draw'),
             'recordsFiltered' => $totalFiltered,
-            'recordsTotal'    => $totalData,
-            'aaData'          => $dataFiltered,
+            'recordsTotal' => $totalData,
+            'aaData' => $dataFiltered,
         ], 200);
     }
 
@@ -122,11 +123,11 @@ class RoleController extends Controller
     public function show(string $id)
     {
         $companyId = session('userLogged')['company']['id'] ?? null;
-        $data = Role::where(function($q) use ($companyId) {
-                $q->whereNull('company_id')->orWhere('company_id', $companyId);
-            })->find($id);
+        $data = Role::where(function ($q) use ($companyId) {
+            $q->whereNull('company_id')->orWhere('company_id', $companyId);
+        })->find($id);
 
-        if (!$data) {
+        if (! $data) {
             return response()->json(['message' => 'Failed showing resource: Not Found or Unauthorized'], 404);
         }
 
@@ -149,6 +150,7 @@ class RoleController extends Controller
         return DB::transaction(function () use ($role, $validated) {
             try {
                 $role->update($validated);
+
                 return response()->json(['message' => 'Updating resource successfully'], 200);
             } catch (\Throwable $th) {
                 return response()->json(['message' => 'Failed updating resource'], 422);
@@ -168,11 +170,12 @@ class RoleController extends Controller
             try {
                 if ($role->role_users()->exists()) {
                     return response()->json([
-                        'message' => "Failed deleting resource. This role is assigned to users and cannot be deleted."
+                        'message' => 'Failed deleting resource. This role is assigned to users and cannot be deleted.',
                     ], 422);
                 }
 
                 $role->delete();
+
                 return response()->json(['message' => 'Deleting resource successfully'], 200);
             } catch (\Throwable $th) {
                 return response()->json(['message' => 'Failed deleting resource'], 422);

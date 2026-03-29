@@ -55,7 +55,7 @@ while ($tries < $maxTries) {
         }
 
         $tries++;
-        echo "Attempt $tries/$maxTries: Could not connect to MySQL. Error: " . $e->getMessage() . "\n";
+        echo "Attempt $tries/$maxTries: Could not connect to MySQL. Error: ".$e->getMessage()."\n";
         if ($tries < $maxTries) {
             echo "Waiting 5 seconds before next attempt...\n";
             sleep(5);

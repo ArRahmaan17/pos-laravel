@@ -181,4 +181,6 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'translate_url' => env('APP_TRANSLATE_URL'),
+
 ];

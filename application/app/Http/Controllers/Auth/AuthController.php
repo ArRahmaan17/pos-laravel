@@ -31,7 +31,7 @@ class AuthController extends Controller
             ->orWhere('email', $request->username)
             ->first();
         if (! empty($user) && Hash::check($request->password, $user->password)) {
-            $roleUser = UserRole::with('role', 'user', 'role.company', 'role.scope', 'role.company.address')->where('user_id', $user->id)->first();
+            $roleUser = UserRole::with('role', 'user', 'user.companies', 'role.scope')->where('user_id', $user->id)->first();
             $access = collect($roleUser)->toArray();
             if ($roleUser->role->scope->code !== 'user_created') {
                 unset($access['company']);
@@ -303,7 +303,8 @@ class AuthController extends Controller
             DB::rollBack();
             $message = ['error', 'Unexpected error in our system, try again later.'];
         }
-        $roleUser = UserRole::with('role', 'user', 'role.company', 'role.scope', 'role.company.address')->where('user_id', session('userLogged')['user']['id'])->first();
+        $roleUser = UserRole::with('role', 'user', 'user.companies', 'role.scope')->where('user_id', session('userLogged')['user']['id'])->first();
+        // $company = Company::with('company', 'address')->where('user')
         $roleUser['company'] = $roleUser->role->company;
         $roleUser['company']['address'] = $roleUser->role->company->address;
         $access = collect($roleUser)->toArray();

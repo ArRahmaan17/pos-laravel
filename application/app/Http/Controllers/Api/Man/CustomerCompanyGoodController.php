@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Api\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product\CustomerCompanyGood;
 use App\Models\CustomerTemporaryProduct;
+use App\Models\Product\CustomerCompanyGood;
+use App\Traits\ImageHandler;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
-use App\Traits\ImageHandler;
 
 class CustomerCompanyGoodController extends Controller
 {

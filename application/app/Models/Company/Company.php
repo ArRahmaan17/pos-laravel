@@ -5,7 +5,6 @@ namespace App\Models\Company;
 use App\Models\UserManagement\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -30,9 +29,4 @@ class Company extends Model
     {
         return $this->hasOne(User::class, 'id', 'user_id');
     }
-
-    // public function racks(): HasMany
-    // {
-    //     return $this->hasMany(CustomerWarehouseRack::class, 'id', 'warehouse_id');
-    // }
 }
