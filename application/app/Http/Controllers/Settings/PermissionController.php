@@ -144,7 +144,6 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
         DB::beginTransaction();
         $request->validate([
             'name' => 'required|min:2|max:20|unique:permissions,name',
