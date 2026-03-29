@@ -2,6 +2,13 @@
 set -e
 
 if [ "$1" = "frankenphp" ]; then
+    if [ ! -d "/var/www/html/vendor" ] || [ ! -f "/var/www/html/vendor/autoload.php" ]; then
+        echo "--- 📦 Vendor folder missing. Installing... ---"
+        # Note: Ensure 'composer' binary is available in the app image
+        composer install --no-interaction --no-scripts --optimize-autoloader --prefer-dist
+    else
+        echo "--- ✅ Vendor folder exists. ---"
+    fi
     sed -i "s/your_awesome_application_port/${APP_PORT}/" /etc/frankenphp/Caddyfile
     # Ensure database exists
     echo "Checking database status..."
