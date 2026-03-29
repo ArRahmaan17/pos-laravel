@@ -2,12 +2,7 @@
 set -e
 
 if [ "$1" = "frankenphp" ]; then
-    if [ ! -d "vendor" ]; then
-        echo "--- Vendor folder not found. Installing dependencies... ---"
-        composer install --no-interaction --no-scripts --optimize-autoloader
-    else
-        echo "--- Vendor folder found. Skipping composer install. ---"
-    fi
+
     sed -i "s/your_awesome_application_port/${APP_PORT}/" /etc/frankenphp/Caddyfile
     # Ensure database exists
     echo "Checking database status..."
