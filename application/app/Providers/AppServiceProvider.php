@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,10 +24,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Route::macro('meta', function (array $attributes, \Closure $callback) {
-            $attributes = array_merge([
-            ], $attributes);
+            $attributes = array_merge([], $attributes);
 
             return Route::group($attributes, $callback);
         });
+        if (config('app.env') !== 'local') {
+            URL::forceScheme('https');
+        }
     }
 }
