@@ -9,7 +9,7 @@ if [ "$1" = "frankenphp" ]; then
     else
         echo "--- ✅ Vendor folder exists. ---"
     fi
-    sed -i "s/your_awesome_application_port/${APP_PORT}/" /etc/frankenphp/Caddyfile
+    sed -i "s/your_awesome_application_port/${NGINX_APP_PORT}/" /etc/frankenphp/Caddyfile
     # Ensure database exists
     echo "Checking database status..."
     frankenphp php-cli /var/www/html/database/ensure_db.php
