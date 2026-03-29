@@ -35,10 +35,6 @@ if [ "$1" = "frankenphp" ]; then
     if [ "${APP_ENV}" = "production" ]; then
         echo "Optimizing Laravel for production..."
         frankenphp php-cli artisan package:discover
-        frankenphp php-cli artisan config:cache
-        frankenphp php-cli artisan event:cache
-        frankenphp php-cli artisan route:cache
-        frankenphp php-cli artisan view:cache || true
     fi
 
     # Start FrankenPHP and Reverb server
