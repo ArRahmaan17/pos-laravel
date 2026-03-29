@@ -38,8 +38,7 @@ if [ "$1" = "frankenphp" ]; then
         frankenphp php-cli artisan config:cache
         frankenphp php-cli artisan event:cache
         frankenphp php-cli artisan route:cache
-        frankenphp php-cli artisan view:cache
-        frankenphp php-cli artisan icons:cache || true
+        frankenphp php-cli artisan view:cache || true
     fi
 
     # Start FrankenPHP and Reverb server

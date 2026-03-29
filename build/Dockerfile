@@ -77,6 +77,7 @@ COPY --chown=www-data:www-data application/ .
 
 # ── Remove stale cache files and vendor ──────────────────────────────────────────────────
 RUN rm -f bootstrap/cache/*.php
+RUN mkdir -p public/build
 
 # ── Bring in vendor from composer stage ──────────────────────────────────────
 COPY --from=composer-builder --chown=www-data:www-data /usr/bin/composer /usr/bin/composer
