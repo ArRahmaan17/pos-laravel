@@ -69,8 +69,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    ports:
-      - "3307:3306"
     volumes:
       - ./data/database:/var/lib/mysql
     networks:

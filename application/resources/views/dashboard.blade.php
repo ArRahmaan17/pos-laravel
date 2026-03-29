@@ -476,13 +476,11 @@
     const totalRevenueChartEl = document.querySelector('#totalRevenueChart'),
         totalRevenueChartOptions = {
             series: [{
-                    name: '{{ env('
-                    TAHUN_APLIKASI ', 2024) }}',
+                    name: `{{ env('TAHUN_APLIKASI', 2024) }}`,
                     data: [parseInt(`{{ $countBaNow ?? 10 }}`)]
                 },
                 {
-                    name: '{{ intval(env('
-                    TAHUN_APLIKASI ', 2024)) - 1 }}',
+                    name: `{{ intval(env('TAHUN_APLIKASI', 2024)) - 1 }}`,
                     data: [parseInt(`{{ $countBaPast ?? 15 }}`)]
                 }
             ],
