@@ -268,6 +268,9 @@ docker-compose logs -f
 # App-only log
 docker-compose logs -f app
 ```
+3. The Docker container automatically caches configuration, routes, and views on startup for optimal performance.
+4. For HTTPS, configure a reverse proxy (e.g., Nginx, Traefik, or Caddy) in front of the application to handle SSL certificates.
+5. Set up external database backups mapping from your Docker volume as needed.
 
 ### Running Artisan Commands
 ```bash
