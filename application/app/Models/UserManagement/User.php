@@ -3,7 +3,11 @@
 namespace App\Models\UserManagement;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\Company\Company;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -54,5 +58,10 @@ class User extends Authenticatable
             ->join('user_roles as ur', 'users.id', '=', 'ur.user_id')
             ->join('permissions as ap', 'ur.role_id', '=', 'ap.id')
             ->whereIn('ap.id', [1, 2])->where(($id === null) ? [['users.id', '<>', $id]] : [['users.id', '=', $id]])->get();
+    }
+
+    public function companies(): HasManyThrough
+    {
+        return $this->hasManyThrough(UserCompany::class, Company::class, 'user_id', 'id', 'test', 'id');
     }
 }

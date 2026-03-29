@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\Company\WarehouseController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Man\CustomerCompanyMasterTaskController;
@@ -13,7 +14,6 @@ use App\Http\Controllers\Man\CustomerProductTypeController;
 use App\Http\Controllers\Man\CustomerTaskController;
 use App\Http\Controllers\Man\CustomerTemporaryProductController;
 use App\Http\Controllers\Man\CustomerWareHouseRackGoodController;
-use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\CompanyController;
 use App\Http\Controllers\Settings\PermissionController;

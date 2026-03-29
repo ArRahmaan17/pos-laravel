@@ -8,13 +8,12 @@ use App\Models\Company\Task;
 use App\Models\Company\TaskDetail;
 use App\Models\UserCustomerRole;
 use App\Models\UserManagement\Role;
+use App\Traits\ImageHandler;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-
-use App\Traits\ImageHandler;
 
 class CustomerTaskController extends Controller
 {

@@ -6,6 +6,7 @@ use App\Models\Company\Company;
 use App\Models\Developer\Scope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -40,13 +41,8 @@ class Role extends Model
         );
     }
 
-    public function scope(): HasOne
+    public function scope(): BelongsTo
     {
-        return $this->hasOne(Scope::class, 'id', 'scope_id');
-    }
-
-    public function company(): HasOne
-    {
-        return $this->hasOne(Company::class, 'id', 'company_id');
+        return $this->belongsTo(Scope::class, 'scope_id', 'id');
     }
 }

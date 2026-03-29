@@ -7,11 +7,10 @@ use App\Models\Company\BusinessType;
 use App\Models\Company\Company;
 use App\Models\Company\CompanyAddress;
 use App\Models\UserManagement\User;
+use App\Traits\ImageHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
-use App\Traits\ImageHandler;
 
 class CompanyController extends Controller
 {
@@ -138,7 +137,7 @@ class CompanyController extends Controller
                 $file = $request->file('picture');
                 $filename = md5(now()->format('Y-m-d H:i:s')).'.'.$file->getClientOriginalExtension();
                 $this->uploadAndWatermark($file, '', 'company-profile', $filename);
-                $data['picture'] = 'cp/' . $filename;
+                $data['picture'] = 'cp/'.$filename;
             } else {
                 $data['picture'] = 'default-picture.png';
             }
@@ -264,16 +263,16 @@ class CompanyController extends Controller
                 $company = Company::find($id);
                 $file = $request->file('picture');
                 $filename = md5(now()->format('Y-m-d H:i:s')).'.'.$file->getClientOriginalExtension();
-                
+
                 // Delete old picture if not default
                 if ($company->picture && $company->picture != 'default-picture.png') {
                     // Extract filename from the 'cp/' prefix if present
                     $oldFilename = str_replace('cp/', '', $company->picture);
                     Storage::disk('company-profile')->delete($oldFilename);
                 }
-                
+
                 $this->uploadAndWatermark($file, '', 'company-profile', $filename);
-                $data['picture'] = 'cp/' . $filename;
+                $data['picture'] = 'cp/'.$filename;
             }
             $data['user_id'] = (getScope() === 'Developer' ? $request->user_id : session('userLogged')['user']['id']);
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);

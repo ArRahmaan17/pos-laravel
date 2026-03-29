@@ -9,22 +9,15 @@ trait ImageHandler
 {
     /**
      * Handle image upload and apply watermark.
-     *
-     * @param  UploadedFile  $file
-     * @param  string  $path
-     * @param  string  $disk
-     * @param  string|null  $filename
-     * @param  string|null  $watermarkPath
-     * @return string
      */
     public function uploadAndWatermark(UploadedFile $file, string $path, string $disk = 'public', ?string $filename = null, ?string $watermarkPath = null): string
     {
-        $filename = $filename ?? time() . '_' . $file->getClientOriginalName();
+        $filename = $filename ?? time().'_'.$file->getClientOriginalName();
         $tempPath = $file->getRealPath();
 
         // Load original image
         $image = $this->createImageFromPath($tempPath);
-        if (!$image) {
+        if (! $image) {
             // Fallback to normal upload if GD fails or file type not supported for watermarking
             return $file->storeAs($path, $filename, $disk);
         }
@@ -40,7 +33,7 @@ trait ImageHandler
         // Save to temporary buffer
         ob_start();
         $extension = strtolower($file->getClientOriginalExtension());
-        
+
         switch ($extension) {
             case 'png':
                 imagepng($image);
@@ -59,12 +52,12 @@ trait ImageHandler
                 imagejpeg($image, null, 90);
                 break;
         }
-        
+
         $imageData = ob_get_clean();
         imagedestroy($image);
 
         // Store using Laravel Storage
-        $filePath = ($path ? $path . '/' : '') . $filename;
+        $filePath = ($path ? $path.'/' : '').$filename;
         Storage::disk($disk)->put($filePath, $imageData);
 
         return $filePath;
@@ -76,7 +69,9 @@ trait ImageHandler
     protected function createImageFromPath($path)
     {
         $info = @getimagesize($path);
-        if (!$info) return null;
+        if (! $info) {
+            return null;
+        }
 
         return match ($info[2]) {
             IMAGETYPE_JPEG => imagecreatefromjpeg($path),
@@ -93,7 +88,9 @@ trait ImageHandler
     protected function applyWatermark(&$image, string $watermarkPath)
     {
         $watermarkInfo = @getimagesize($watermarkPath);
-        if (!$watermarkInfo) return;
+        if (! $watermarkInfo) {
+            return;
+        }
 
         $watermark = match ($watermarkInfo[2]) {
             IMAGETYPE_JPEG => imagecreatefromjpeg($watermarkPath),
@@ -102,7 +99,9 @@ trait ImageHandler
             default => null,
         };
 
-        if (!$watermark) return;
+        if (! $watermark) {
+            return;
+        }
 
         $imgW = imagesx($image);
         $imgH = imagesy($image);
@@ -115,11 +114,11 @@ trait ImageHandler
             $newWtW = $maxWtW;
             $newWtH = $wtH * ($newWtW / $wtW);
             $newWatermark = imagecreatetruecolor($newWtW, $newWtH);
-            
+
             // Handle transparency for PNG/WebP
             imagealphablending($newWatermark, false);
             imagesavealpha($newWatermark, true);
-            
+
             imagecopyresampled($newWatermark, $watermark, 0, 0, 0, 0, $newWtW, $newWtH, $wtW, $wtH);
             imagedestroy($watermark);
             $watermark = $newWatermark;
@@ -134,7 +133,7 @@ trait ImageHandler
         // Set transparency if it's a PNG/WebP watermark
         imagealphablending($image, true);
         imagecopy($image, $watermark, $posX, $posY, 0, 0, $wtW, $wtH);
-        
+
         imagedestroy($watermark);
     }
 
@@ -145,10 +144,10 @@ trait ImageHandler
     {
         $imgW = imagesx($image);
         $imgH = imagesy($image);
-        
+
         $fontSize = max(10, $imgW / 30);
         $color = imagecolorallocatealpha($image, 255, 255, 255, 60); // Semi-transparent white
-        
+
         // Simple text watermark (bottom right)
         // Note: For better text we'd use imagettftext, but that requires a font file path.
         // imagestring is built-in but limited.

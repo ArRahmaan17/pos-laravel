@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
             'email' => 'settings.doglex@app.com',
             'phone_number' => '081234567890',
             'password' => Hash::make('password'),
+            'pin' => Hash::make('111111'),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
