@@ -13,7 +13,7 @@
     <meta property="og:description" content="{{ env('OG_DESCRIPTION') }}">
     <meta property="og:image" content="{{ asset(env('OG_IMAGE')) }}">
     <meta property="og:url" content="{{ env('OG_URL', url()->current()) }}">
-    <meta property="og:logo" content="your value" />
+    <meta property="og:logo" content="{{ asset(env('OG_LOGO')) }}" />
     <meta property="og:type" content="{{ env('OG_TYPE', 'website') }}">
 
     <!-- Twitter -->
