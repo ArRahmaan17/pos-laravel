@@ -20,6 +20,7 @@ if [ "$1" = "frankenphp" ]; then
     frankenphp php-cli artisan event:clear
     frankenphp php-cli artisan route:clear
     frankenphp php-cli artisan view:clear
+    frankenphp php-cli artisan key:generate
 
     # Run migrations safely
     if [ "${APP_ENV}" = "production" ]; then
