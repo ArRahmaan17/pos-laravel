@@ -2,6 +2,7 @@
 set -e
 
 if [ "$1" = "frankenphp" ]; then
+
     sed -i "s/your_awesome_application_port/${APP_PORT}/" /etc/frankenphp/Caddyfile
     # Ensure database exists
     echo "Checking database status..."
