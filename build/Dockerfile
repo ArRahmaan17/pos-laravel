@@ -22,16 +22,6 @@ RUN npm run build
 # ==============================================================================
 FROM composer:2 AS composer-builder
 
-WORKDIR /app
-
-COPY application/composer.json application/composer.lock ./
-RUN composer install \
-    --no-dev \
-    --no-interaction \
-    --no-scripts \
-    --optimize-autoloader \
-    --prefer-dist
-
 # ==============================================================================
 # Stage 3: FrankenPHP — Production Image
 # ==============================================================================
@@ -85,11 +75,11 @@ WORKDIR /var/www/html
 # ── Copy application source ───────────────────────────────────────────────────
 COPY --chown=www-data:www-data application/ .
 
-# ── Remove stale cache files ──────────────────────────────────────────────────
+# ── Remove stale cache files and vendor ──────────────────────────────────────────────────
 RUN rm -f bootstrap/cache/*.php
 
 # ── Bring in vendor from composer stage ──────────────────────────────────────
-COPY --from=composer-builder --chown=www-data:www-data /app/vendor ./vendor
+COPY --from=composer-builder --chown=www-data:www-data /usr/bin/composer /usr/bin/composer
 
 # ── Bring in compiled assets from node stage ─────────────────────────────────
 COPY --from=node-builder --chown=www-data:www-data /build/public/build ./public/build
