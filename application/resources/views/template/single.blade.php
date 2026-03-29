@@ -3,7 +3,6 @@
     data-template="vertical-menu-template">
 
 <head>
-    <meta charset="utf-8" />
     <!-- Favicon -->
     @include('singleton.head')
 
