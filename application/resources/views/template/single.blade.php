@@ -5,7 +5,7 @@
 <head>
     <!-- Favicon -->
     @include('singleton.head')
-    @vite(['resources/js/app.js', 'resources/css/app.css'])
+    {{-- @vite(['resources/js/app.js', 'resources/css/app.css']) --}}
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

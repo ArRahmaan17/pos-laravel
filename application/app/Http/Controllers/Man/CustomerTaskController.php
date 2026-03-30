@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company\MasterTask;
 use App\Models\Company\Task;
 use App\Models\Company\TaskDetail;
-use App\Models\UserCustomerRole;
+use App\Models\UserRole;
 use App\Models\UserManagement\Role;
 use App\Traits\ImageHandler;
 use Exception;
@@ -25,9 +25,9 @@ class CustomerTaskController extends Controller
     public function index()
     {
         $customer_roles = Role::where('user_id', session('userLogged')['company']['user_id'])->get();
-        $employees = UserCustomerRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
-            ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
-            ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')
+        $employees = UserRole::join('customer_roles as cr', 'cr.id', '=', 'user_roles.role_id')
+            ->join('companies as cc', 'user_roles.company_id', '=', 'cc.id')
+            ->join('users as u', 'user_roles.user_id', '=', 'u.id')
             ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'cr.id as role_id', 'u.username', 'u.id')
             ->where('cc.id', session('userLogged')['company']['id'])
             ->orderBy('id', 'asc')->get();

@@ -192,33 +192,28 @@
 @endpush
 
 @section('content')
-<div class="row animate-in stagger-1">
-    <div class="col-12">
-        <div class="hero-section">
-            <div class="row align-items-center">
-                <div class="col-lg-7">
-                    <h1 class="hero-title">@yield('title')</h1>
-                    <p class="hero-subtitle">Meticulously manage system participants and control access parameters. Establish identity and secure company resources with precision.</p>
-                </div>
-                <div class="col-lg-5 text-end action-group mt-3 mt-lg-0">
-                    <button class="btn btn-outline-glass me-2" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">
-                        <i class='bx bx-plus-circle me-1'></i> New User
-                    </button>
-                    <button class="btn btn-glow-primary px-4" data-bs-toggle="modal" data-bs-target="#modal-create-registration-link">
-                        <i class='bx bx-link-alt me-1'></i> Access Link
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="row animate-in stagger-2">
     <div class="col-12">
         <div class="card command-card">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col-lg-7">
+                        <h1 class="hero-title">@yield('title')</h1>
+                        <p class="hero-subtitle">Meticulously manage system participants and control access parameters. Establish identity and secure company resources with precision.</p>
+                    </div>
+                    <div class="col-lg-5 text-end action-group mt-3 mt-lg-0">
+                        <button class="btn btn-outline-info me-2" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">
+                            <i class='bx bx-plus-circle mt-1'></i> New User
+                        </button>
+                        <button class="btn btn-primary px-4" data-bs-toggle="modal" data-bs-target="#modal-create-registration-link">
+                            <i class='bx bx-link-alt mt-1'></i> Access Link
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-borderless" id="table-customer-user">
+                    <table class="table" id="table-customer-user">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>

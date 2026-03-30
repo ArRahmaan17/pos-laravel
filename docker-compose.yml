@@ -20,6 +20,7 @@ services:
     volumes:
       - /var/www/html/vendor
       - /var/www/html/public/build
+      - /var/www/html/node_modules
       - ./application:/var/www/html
     depends_on:
       mysql:
@@ -33,6 +34,21 @@ services:
         limits:
           cpus: '1.0'
           memory: 1G
+    develop:
+      watch:
+        - path: ./application
+          action: sync
+          target: /var/www/html
+          ignore:
+            - vendor/
+            - node_modules/
+            - public/build/
+        - path: ./application/composer.json
+          action: rebuild
+        - path: ./application/package.json
+          action: rebuild
+        - path: ./application/.env
+          action: rebuild
     
 
   nginx:
@@ -74,6 +90,8 @@ services:
       - ./data/database:/var/lib/mysql
     networks:
       - pos-network
+    ports:
+      - "3307:3306" 
     deploy:
       resources:
         limits:

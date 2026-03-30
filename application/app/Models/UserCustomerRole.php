@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\UserManagement\Role;
+use App\Models\UserManagement\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -16,12 +18,12 @@ class UserCustomerRole extends Model
 
     public static function employeeCompany($user_id)
     {
-        return self::join('companies as cp', 'cp.id', '=', 'user_customer_roles.company_id')->where('user_customer_roles.user_id', $user_id)->first();
+        return self::join('companies as cp', 'cp.id', '=', 'user_roles.company_id')->where('user_roles.user_id', $user_id)->first();
     }
 
     public static function employeeMenu($user_id)
     {
-        return self::join('customer_role_accessibilities as cra', 'cra.role_id', '=', 'user_customer_roles.role_id')->where('user_customer_roles.user_id', $user_id)->count();
+        return self::join('customer_role_accessibilities as cra', 'cra.role_id', '=', 'user_roles.role_id')->where('user_roles.user_id', $user_id)->count();
     }
 
     public function user(): HasOne

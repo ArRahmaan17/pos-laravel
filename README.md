@@ -396,7 +396,7 @@ tail -f storage/logs/laravel.log
 ```
 
 ## 📝 Contributing
-### Guideline commit message 
+### Guidelines commit message 
 - **`feat:`** A new feature
 - **`fix:`** A bug fix
 - **`docs:`** Documentation only changes

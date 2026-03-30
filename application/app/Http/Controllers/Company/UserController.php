@@ -49,18 +49,20 @@ class UserController extends Controller
 
     public function dataTable(Request $request)
     {
-        $totalData = UserRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
-            ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
-            ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')
-            ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id'])
+        $totalData = UserRole::join('roles as r', 'r.id', '=', 'user_roles.role_id')
+            ->join('user_companies as uc', 'user_roles.user_id', '=', 'uc.user_id')
+            ->join('companies as cc', 'uc.company_id', '=', 'cc.id')
+            ->join('users as u', 'user_roles.user_id', '=', 'u.id')
+            ->select('u.name', 'u.phone_number', 'r.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id'])
             ->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = UserRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
-                ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
-                ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')
-                ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id']);
+            $assets = UserRole::join('roles as r', 'r.id', '=', 'user_roles.role_id')
+                ->join('user_companies as uc', 'user_roles.user_id', '=', 'uc.user_id')
+                ->join('companies as cc', 'uc.company_id', '=', 'cc.id')
+                ->join('users as u', 'user_roles.user_id', '=', 'u.id')
+                ->select('u.name', 'u.phone_number', 'r.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id']);
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -71,13 +73,14 @@ class UserController extends Controller
             }
             $assets = $assets->get();
         } else {
-            $assets = UserRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
-                ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
-                ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')
+            $assets = UserRole::join('roles as r', 'r.id', '=', 'user_roles.role_id')
+                ->join('user_companies as uc', 'user_roles.user_id', '=', 'uc.user_id')
+                ->join('companies as cc', 'uc.company_id', '=', 'cc.id')
+                ->join('users as u', 'user_roles.user_id', '=', 'u.id')
                 ->where('cc.name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('cr.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('r.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('cc.phone_number', 'like', '%'.$request['search']['value'].'%')
-                ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id']);
+                ->select('u.name', 'u.phone_number', 'r.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id']);
 
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
@@ -88,12 +91,13 @@ class UserController extends Controller
             }
             $assets = $assets->get();
 
-            $totalFiltered = UserRole::join('customer_roles as cr', 'cr.id', '=', 'user_customer_roles.role_id')
-                ->join('companies as cc', 'user_customer_roles.company_id', '=', 'cc.id')
-                ->join('users as u', 'user_customer_roles.user_id', '=', 'u.id')
+            $totalFiltered = UserRole::join('roles as r', 'r.id', '=', 'user_roles.role_id')
+                ->join('user_companies as uc', 'user_roles.user_id', '=', 'uc.user_id')
+                ->join('companies as cc', 'uc.company_id', '=', 'cc.id')
+                ->join('users as u', 'user_roles.user_id', '=', 'u.id')
                 ->select('u.name', 'u.phone_number', 'cr.name as role_name', 'u.username', 'u.id')->where('cc.id', session('userLogged')['company']['id'])
                 ->where('cc.name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('cr.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('r.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('cc.phone_number', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
@@ -108,7 +112,7 @@ class UserController extends Controller
             $row['name'] = $item->name.'<br><small>('.$item->username.')</small>';
             $row['phone_number'] = formatIndonesianPhoneNumber($item->phone_number);
             $row['role'] = $item->role_name;
-            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-user='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-user='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>".(getScope() !== 'user_created' ? '<button class="btn btn-icon btn-info login-as" data-customer-user="'.$item->id.'"><i class="bx bx-log-in"></i></button>' : '');
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-user='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-user='" . $item->id . "' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>" . (getScope() !== 'user_created' ? '<button class="btn btn-icon btn-outline-info login-as" data-customer-user="' . $item->id . '"><i class="bx bx-arrow-to-right" /></button>' : '');
             $dataFiltered[] = $row;
         }
         $response = [
@@ -183,7 +187,7 @@ class UserController extends Controller
             'username' => 'required|unique:users,username,'.$id,
             'email' => 'required|unique:users,email,'.$id,
             'phone_number' => 'required|unique:users,phone_number,'.$id,
-            'role_id' => 'required|exists:user_customer_roles,id',
+            'role_id' => 'required|exists:user_roles,id',
         ]);
         DB::beginTransaction();
         try {
