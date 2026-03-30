@@ -120,11 +120,11 @@ Route::meta(['group' => 'web'], function () {
             });
             Route::meta([
                 'icon' => 'bx bxs-list-square',
-                'prefix' => 'master-task',
-                'as' => 'master-task.',
+                'prefix' => 'task-template',
+                'as' => 'task-template.',
                 'parent' => 'company',
-                'name' => 'master-task',
-                'module' => 'master-task',
+                'name' => 'task-template',
+                'module' => 'task-template',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
                 Route::get('/', [CustomerCompanyMasterTaskController::class, 'index'])->name('index');

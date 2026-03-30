@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'Master Tasks')
+@section('title', 'Tasks Template')
 @push('css')
 <style>
     .code-container {
