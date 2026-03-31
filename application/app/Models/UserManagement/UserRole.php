@@ -25,9 +25,10 @@ class UserRole extends Model
     {
         return $this->hasOne(Role::class, 'id', 'role_id');
     }
+
     public function companies(): HasManyThrough
     {
-        return $this->hasManyThrough(Company::class, UserCompany::class, 'user_id', 'user_id',  'id', 'user_id');
+        return $this->hasManyThrough(Company::class, UserCompany::class, 'user_id', 'user_id', 'id', 'user_id');
     }
 
     public static function employeeCompany($user_id)

@@ -49,7 +49,7 @@
                     <input type="hidden" name="id">
                     <p class="mb-4">Please provide all required details to register your business with us.</p>
                     <div class="mb-3">
-                        @if (getScope() === 'Developer')
+                        @if (getScope() === 'global')
                         <label for="user_id" class="form-label">Customer *</label>
                         <select id="user_id" name="user_id" class="form-control select2">
                             <option value="" disabled selected>Please Select</option>

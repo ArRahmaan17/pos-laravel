@@ -331,6 +331,7 @@ Route::meta(['group' => 'web'], function () {
             'name' => 'report',
         ], function () {
             Route::get('/', [ReportController::class, 'index'])->name('index');
+            Route::get('/debug-print', [ReportController::class, 'debugPrint'])->name('debug-print');
             Route::post('/', [ReportController::class, 'generateReport'])->name('generate-report');
         });
         Route::meta([

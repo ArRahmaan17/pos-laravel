@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserRole;
 use App\Models\UserManagement\Role;
 use App\Models\UserManagement\User;
+use App\Models\UserRole;
 use App\Traits\ImageHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +52,7 @@ class UserController extends Controller
 
         $user = $request->user();
 
-        if (getScope() === 'Developer') {
+        if (getScope() === 'global') {
             $id = $request->managerId;
         } else {
             $id = $user->id;

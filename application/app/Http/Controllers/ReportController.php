@@ -95,16 +95,41 @@ class ReportController extends Controller
         return view('report.index', compact('reportTemplates', 'cashiers'));
     }
 
+    public function debugPrint()
+    {
+        return response()->view('report.debug-thermal', [
+            'companyName' => session('userLogged')['company']['name'],
+            'generatedAt' => now(),
+            'printerWidth' => '58mm',
+            'sampleLines' => [
+                ['label' => 'Alignment', 'value' => 'LEFT / RIGHT OK'],
+                ['label' => 'Feed', 'value' => 'NORMAL'],
+                ['label' => 'Density', 'value' => 'CHECK DARKNESS'],
+                ['label' => 'Paper', 'value' => 'CUT AFTER PRINT'],
+            ],
+        ]);
+    }
+
     public function generateReport(Request $request)
     {
         $startDate = now()->createFromFormat('Y-m-d', $request->start)->startOfDay();
         $endDate = now()->createFromFormat('Y-m-d', $request->end)->endOfDay();
+        $reportData = $this->reportData($request->template, $request->cashier, $startDate, $endDate);
         $data = [
             'customer_company' => session('userLogged')['company']['name'],
             'generated_date' => now(),
             'report_period' => Carbon::createFromFormat('Y-m-d', $request->start)->startOfDay().' -> '.Carbon::createFromFormat('Y-m-d', $request->end)->endOfDay(),
-            'data' => $this->reportData($request->template, $request->cashier, $startDate, $endDate),
+            'data' => $reportData,
+            'report_title' => $this->reportTitle($request->template),
         ];
+
+        if ($request->report === 'thermal') {
+            return response()->view('report.thermal', [
+                ...$data,
+                'sections' => $this->thermalReportSections($request->template, $reportData),
+            ]);
+        }
+
         $pdf = App::make('dompdf.wrapper');
         $pdf = $pdf->loadView('report.'.$request->template, ($data) ? $data : []);
         $pdf->render();
@@ -123,6 +148,411 @@ class ReportController extends Controller
         $pdf->add_info('Author', env('APP_NAME').' Report Service');
 
         return $pdf->stream($request->template.'_'.session('userLogged')['company']['name'].'.pdf');
+    }
+
+    private function reportTitle(string $template): string
+    {
+        return match ($template) {
+            'sales.sales-summary' => 'Sales Summary',
+            'sales.sales-by-product' => 'Sales by Product',
+            'sales.sales-by-category' => 'Sales by Category',
+            'sales.sales-by-cashier' => 'Sales by Cashier',
+            'product.stock-on-hand' => 'Stock On Hand',
+            'product.stock-movements' => 'Stock Movement Report',
+            'product.stocktaking' => 'Stocktaking Report',
+            'product.product-performance' => 'Product Performance Report',
+            'sales.transaction-list' => 'Complete Transaction List',
+            'sales.discount-usage' => 'Discount Usage Report',
+            'finance.cash-flow-summary' => 'Cash Flow Summary',
+            'finance.income-vs-expense' => 'Income vs Expense Report',
+            default => 'Report',
+        };
+    }
+
+    private function thermalReportSections(string $template, array $reportData): array
+    {
+        return match ($template) {
+            'sales.sales-summary' => $this->thermalSalesSummarySections($reportData),
+            'sales.sales-by-product' => $this->thermalSalesByProductSections($reportData),
+            'sales.sales-by-category' => $this->thermalSalesByCategorySections($reportData),
+            'sales.sales-by-cashier' => $this->thermalSalesByCashierSections($reportData),
+            'product.stock-on-hand' => $this->thermalStockOnHandSections($reportData),
+            'product.stock-movements' => $this->thermalStockMovementSections($reportData),
+            'product.stocktaking' => $this->thermalStocktakingSections($reportData),
+            'product.product-performance' => $this->thermalProductPerformanceSections($reportData),
+            'sales.transaction-list' => $this->thermalTransactionListSections($reportData),
+            'sales.discount-usage' => $this->thermalDiscountUsageSections($reportData),
+            'finance.cash-flow-summary' => $this->thermalCashFlowSections($reportData),
+            'finance.income-vs-expense' => $this->thermalIncomeVsExpenseSections($reportData),
+            default => [],
+        };
+    }
+
+    private function thermalSalesSummarySections(array $reportData): array
+    {
+        return [
+            [
+                'title' => 'Overview',
+                'rows' => [
+                    ['label' => 'Total Sales', 'value' => $this->currency($reportData['salesOverview']->total_sales ?? 0)],
+                    ['label' => 'Total Orders', 'value' => number_format($reportData['salesOverview']->total_orders ?? 0)],
+                    ['label' => 'Avg Order', 'value' => $this->currency($reportData['salesOverview']->avg_order_value ?? 0)],
+                ],
+            ],
+            [
+                'title' => 'Top Categories',
+                'entries' => collect($reportData['salesByCategory'] ?? [])->map(function ($category) {
+                    return [
+                        'title' => $category->category,
+                        'value' => number_format($category->total_quantity).' qty',
+                        'meta' => trim(number_format($category->total_orders).' orders | Top: '.$category->top_product, ' |'),
+                    ];
+                })->all(),
+            ],
+            [
+                'title' => 'Top Products',
+                'entries' => collect($reportData['salesTopProduct'] ?? [])->map(function ($product) {
+                    return [
+                        'title' => $product->name,
+                        'value' => $this->currency($product->total_amount),
+                        'meta' => number_format($product->total_quantity).' sold | Avg '.$this->currency($product->average_amount),
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalSalesByProductSections(array $reportData): array
+    {
+        $products = collect($reportData['salesProduct'] ?? []);
+
+        return [
+            [
+                'title' => 'Summary',
+                'rows' => [
+                    ['label' => 'Products', 'value' => number_format($products->count())],
+                    ['label' => 'Total Revenue', 'value' => $this->currency($products->sum('total_revenue'))],
+                ],
+            ],
+            [
+                'title' => 'Products',
+                'entries' => $products->map(function ($product) {
+                    return [
+                        'title' => $product->product_name,
+                        'value' => $this->currency($product->total_revenue),
+                        'meta' => $product->category.' | '.number_format($product->total_quantity).' qty x '.$this->currency($product->price),
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalSalesByCategorySections(array $reportData): array
+    {
+        $categories = collect($reportData['salesByCategory'] ?? []);
+
+        return [
+            [
+                'title' => 'Summary',
+                'rows' => [
+                    ['label' => 'Categories', 'value' => number_format($categories->count())],
+                    ['label' => 'Orders', 'value' => number_format($categories->sum('total_orders'))],
+                ],
+            ],
+            [
+                'title' => 'Categories',
+                'entries' => $categories->map(function ($category) {
+                    return [
+                        'title' => $category->category,
+                        'value' => number_format($category->total_quantity).' qty',
+                        'meta' => number_format($category->total_orders).' orders | Top: '.$category->top_product,
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalSalesByCashierSections(array $reportData): array
+    {
+        $salesByStaff = collect($reportData['salesByStaff'] ?? []);
+
+        return [
+            [
+                'title' => 'Summary',
+                'rows' => [
+                    ['label' => 'Cashiers', 'value' => number_format($salesByStaff->count())],
+                    ['label' => 'Total Sales', 'value' => $this->currency($salesByStaff->sum('total_sales'))],
+                ],
+            ],
+            [
+                'title' => 'Cashiers',
+                'entries' => $salesByStaff->map(function ($sales) {
+                    return [
+                        'title' => $sales->staff_name,
+                        'value' => $this->currency($sales->total_sales),
+                        'meta' => number_format($sales->total_orders).' orders | Avg '.$this->currency($sales->avg_order_value),
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalStockOnHandSections(array $reportData): array
+    {
+        $stockOnHand = collect($reportData['stockOnHand'] ?? []);
+
+        return [
+            [
+                'title' => 'Summary',
+                'rows' => [
+                    ['label' => 'Products', 'value' => number_format($stockOnHand->count())],
+                    ['label' => 'Stock Value', 'value' => $this->currency($stockOnHand->sum('total_value'))],
+                ],
+            ],
+            [
+                'title' => 'Items',
+                'entries' => $stockOnHand->map(function ($stock) {
+                    return [
+                        'title' => $stock->name,
+                        'value' => $this->currency($stock->total_value),
+                        'meta' => $stock->category.' | '.number_format($stock->stock).' '.$stock->unit.' x '.$this->currency($stock->price),
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalStockMovementSections(array $reportData): array
+    {
+        $stockMovement = collect($reportData['stockMovement'] ?? []);
+        $counts = [
+            'in' => 0,
+            'out' => 0,
+            'adj' => 0,
+        ];
+
+        foreach ($stockMovement as $stock) {
+            $status = $stock->orderCode === null ? 'adj' : strtolower(statusTransaction($stock->orderCode));
+            if (array_key_exists($status, $counts)) {
+                $counts[$status] += $stock->quantity;
+            }
+        }
+
+        return [
+            [
+                'title' => 'Summary',
+                'rows' => [
+                    ['label' => 'Stock In', 'value' => number_format($counts['in'])],
+                    ['label' => 'Stock Out', 'value' => number_format($counts['out'])],
+                    ['label' => 'Adjustments', 'value' => number_format($counts['adj'])],
+                ],
+            ],
+            [
+                'title' => 'Movements',
+                'entries' => $stockMovement->map(function ($stock) {
+                    $status = $stock->orderCode === null ? 'ADJ' : strtoupper(statusTransaction($stock->orderCode));
+
+                    return [
+                        'title' => $stock->name,
+                        'value' => $status.' '.number_format($stock->quantity),
+                        'meta' => $stock->created_at.' | Ref '.($stock->orderCode ?? lastCompanyOrderCode('STOCKTAKING', $stock->created_at)).' | Bal '.number_format($stock->balance),
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalStocktakingSections(array $reportData): array
+    {
+        $stockTaking = collect($reportData['stockTaking'] ?? []);
+        [$totalGain, $totalLoss, $netAdjustment] = [0, 0, 0];
+
+        foreach ($stockTaking as $stock) {
+            if ($stock->system_stock < $stock->physical_stock) {
+                $totalLoss += $stock->difference * $stock->cost;
+            } else {
+                $totalGain += $stock->difference * $stock->cost;
+            }
+            $netAdjustment += $stock->difference * $stock->cost;
+        }
+
+        return [
+            [
+                'title' => 'Summary',
+                'rows' => [
+                    ['label' => 'Positive Adj', 'value' => $this->currency($totalGain)],
+                    ['label' => 'Negative Adj', 'value' => $this->currency($totalLoss)],
+                    ['label' => 'Net Adj', 'value' => $this->currency($netAdjustment)],
+                ],
+            ],
+            [
+                'title' => 'Items',
+                'entries' => $stockTaking->map(function ($stock) {
+                    return [
+                        'title' => $stock->name,
+                        'value' => number_format($stock->difference),
+                        'meta' => $stock->unit_name.' | System '.number_format($stock->system_stock).' | Physical '.number_format($stock->physical_stock).' | '.$this->currency($stock->value_diff),
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalProductPerformanceSections(array $reportData): array
+    {
+        return [
+            [
+                'title' => 'Fast Moving',
+                'entries' => collect($reportData['productPerformance']['fastMoving'] ?? [])->map(function ($product) {
+                    return [
+                        'title' => $product->product_name,
+                        'value' => number_format($product->sold).' sold',
+                        'meta' => $product->category.' | '.$this->currency($product->sales).' | '.$product->sales_per_day.'/day',
+                    ];
+                })->all(),
+            ],
+            [
+                'title' => 'Slow Moving',
+                'entries' => collect($reportData['productPerformance']['slowMoving'] ?? [])->map(function ($product) {
+                    return [
+                        'title' => $product->product_name,
+                        'value' => number_format($product->sold).' sold',
+                        'meta' => $product->category.' | '.$this->currency($product->sales).' | '.$product->sales_per_day.' days',
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalTransactionListSections(array $reportData): array
+    {
+        $transactions = collect($reportData['transactionComplete'] ?? []);
+
+        return [
+            [
+                'title' => 'Summary',
+                'rows' => [
+                    ['label' => 'Transactions', 'value' => number_format($transactions->count())],
+                    ['label' => 'Revenue', 'value' => $this->currency($transactions->sum('price'))],
+                ],
+            ],
+            [
+                'title' => 'Transactions',
+                'entries' => $transactions->map(function ($transaction) {
+                    return [
+                        'title' => $transaction->orderCode,
+                        'value' => $this->currency($transaction->price),
+                        'meta' => $transaction->transaction_create.' | '.$transaction->name.' | '.number_format($transaction->product_quantity).' items / '.number_format($transaction->quantity).' qty',
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalDiscountUsageSections(array $reportData): array
+    {
+        $discountUsage = collect($reportData['discountUsage'] ?? []);
+
+        return [
+            [
+                'title' => 'Summary',
+                'rows' => [
+                    ['label' => 'Transactions', 'value' => number_format($discountUsage->count())],
+                    ['label' => 'Discount Total', 'value' => $this->currency($discountUsage->sum('discount'))],
+                ],
+            ],
+            [
+                'title' => 'Discounts',
+                'entries' => $discountUsage->map(function ($discount) {
+                    return [
+                        'title' => $discount->orderCode.' / '.$discount->code,
+                        'value' => $this->currency($discount->discount),
+                        'meta' => $discount->transaction_create.' | '.$discount->name.' | Final '.$this->currency($discount->total_after_discount),
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalCashFlowSections(array $reportData): array
+    {
+        $cashFlow = collect($reportData['cashFlow'] ?? []);
+        $inflows = $cashFlow->filter(fn ($flow) => statusTransaction($flow->orderCode) === 'OUT');
+        $outflows = $cashFlow->filter(fn ($flow) => statusTransaction($flow->orderCode) === 'IN');
+
+        return [
+            [
+                'title' => 'Summary',
+                'rows' => [
+                    ['label' => 'Inflows', 'value' => $this->currency($inflows->sum('amount'))],
+                    ['label' => 'Outflows', 'value' => $this->currency($outflows->sum('amount'))],
+                    ['label' => 'Net', 'value' => $this->currency($inflows->sum('amount') - $outflows->sum('amount'))],
+                ],
+            ],
+            [
+                'title' => 'Inflows',
+                'entries' => $inflows->map(function ($flow) {
+                    return [
+                        'title' => $flow->orderCode,
+                        'value' => $this->currency($flow->amount),
+                        'meta' => $flow->created_at,
+                    ];
+                })->all(),
+            ],
+            [
+                'title' => 'Outflows',
+                'entries' => $outflows->map(function ($flow) {
+                    return [
+                        'title' => $flow->orderCode,
+                        'value' => $this->currency($flow->amount),
+                        'meta' => $flow->created_at,
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function thermalIncomeVsExpenseSections(array $reportData): array
+    {
+        $flows = collect($reportData['incomeVsExpense'] ?? []);
+        $income = $flows->filter(fn ($flow) => statusTransaction($flow->orderCode) === 'OUT');
+        $expense = $flows->filter(fn ($flow) => statusTransaction($flow->orderCode) === 'IN');
+
+        return [
+            [
+                'title' => 'Summary',
+                'rows' => [
+                    ['label' => 'Income', 'value' => $this->currency($income->sum('amount'))],
+                    ['label' => 'Expense', 'value' => $this->currency($expense->sum('amount'))],
+                    ['label' => 'Net', 'value' => $this->currency($income->sum('amount') - $expense->sum('amount'))],
+                ],
+            ],
+            [
+                'title' => 'Income',
+                'entries' => $income->map(function ($flow) {
+                    return [
+                        'title' => $flow->orderCode,
+                        'value' => $this->currency($flow->amount),
+                        'meta' => $flow->created_at,
+                    ];
+                })->all(),
+            ],
+            [
+                'title' => 'Expense',
+                'entries' => $expense->map(function ($flow) {
+                    return [
+                        'title' => $flow->orderCode,
+                        'value' => $this->currency($flow->amount),
+                        'meta' => $flow->created_at,
+                    ];
+                })->all(),
+            ],
+        ];
+    }
+
+    private function currency($amount): string
+    {
+        return 'Rp '.numberFormat((float) $amount);
     }
 
     private function reportData(string $template, $cashiers, $startDate, $endDate)

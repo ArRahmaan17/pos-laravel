@@ -5,3 +5,4 @@ data/logs/*
 data/redis/*
 data/app/*
 .skill
+.codex

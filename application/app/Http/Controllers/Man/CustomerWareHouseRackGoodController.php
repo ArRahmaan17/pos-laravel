@@ -25,7 +25,7 @@ class CustomerWareHouseRackGoodController extends Controller
     public function racks($id)
     {
         $where = [['company_id', '=', session('userLogged')['company']['id']]];
-        if (getScope() === 'Developer') {
+        if (getScope() === 'global') {
             $where = [['company_id', '<>', 0]];
         }
         $data = CustomerCompanyWarehouse::with(['racks.products.product'])->where($where)->get();

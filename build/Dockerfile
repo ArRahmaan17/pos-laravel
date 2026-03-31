@@ -32,7 +32,7 @@ WORKDIR /app
 COPY application/composer.json application/composer.lock ./
 
 # Install PHP dependencies
-RUN composer install --no-interaction --no-scripts --optimize-autoloader --prefer-dist
+RUN composer install --no-interaction --no-scripts --optimize-autoloader --prefer-dist --ignore-platform-req=*
 
 
 # ==============================================================================

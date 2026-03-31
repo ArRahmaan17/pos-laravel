@@ -378,9 +378,10 @@
                 $(this).parents('tr').addClass('selected')
             }
             var data = window.dataTableCustomerProductTransaction.rows('.selected').data()[0];
+            const format = $(this).data('format') || 'pdf';
             $('#table-customer-product-transaction tbody').find('tr').removeClass('selected');
             $('#modal-customer-company-transaction').modal('hide');
-            loadTransactionReceipt(data.orderCode)
+            loadTransactionReceipt(data.orderCode, format)
         });
     }
 
@@ -521,9 +522,11 @@
         });
     }
 
-    function loadTransactionReceipt(orderCode) {
-        $('#transaction-receipt-container').prop('src', "{{ url('/man/customer-product-transaction/transaction-receipt') }}/" + orderCode + "/print");
-        $('#modal-customer-transaction-receipt').find('.modal-title').html(`Modal Transaction Receipt ${orderCode}`)
+    function loadTransactionReceipt(orderCode, format = 'pdf') {
+        const query = format === 'escpos' ? '?format=escpos' : '';
+        $('#transaction-receipt-container').prop('src', "{{ url('/man/customer-product-transaction/transaction-receipt') }}/" + orderCode + "/print" + query);
+        const modeTitle = format === 'escpos' ? 'ESC/POS' : 'PDF';
+        $('#modal-customer-transaction-receipt').find('.modal-title').html(`Modal Transaction Receipt ${orderCode} (${modeTitle})`)
         $('#modal-customer-transaction-receipt').modal('show');
     }
 

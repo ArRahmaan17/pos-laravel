@@ -29,7 +29,7 @@ class CustomerRoleAccessibilityController extends Controller
         $where = [
             ['customer_roles.user_id', '=', session('userLogged')['user']['id']],
         ];
-        if (getScope() === 'Developer') {
+        if (getScope() === 'global') {
             $where = [
                 ['customer_roles.user_id', '=', session('userLogged')['company']['user_id']],
             ];
