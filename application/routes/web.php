@@ -1,13 +1,13 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Company\MasterTaskController;
 use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\Company\WarehouseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
-use App\Http\Controllers\Man\CustomerCompanyMasterTaskController;
 use App\Http\Controllers\Man\CustomerCompanyStocktakingController;
 use App\Http\Controllers\Man\CustomerProductTransactionController;
 use App\Http\Controllers\Man\CustomerProductTypeController;
@@ -127,12 +127,12 @@ Route::meta(['group' => 'web'], function () {
                 'module' => 'task-template',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
-                Route::get('/', [CustomerCompanyMasterTaskController::class, 'index'])->name('index');
-                Route::post('/', [CustomerCompanyMasterTaskController::class, 'store'])->name('store');
-                Route::put('/{id?}', [CustomerCompanyMasterTaskController::class, 'update'])->name('update');
-                Route::get('/data-table', [CustomerCompanyMasterTaskController::class, 'dataTable'])->name('data-table');
-                Route::get('/{id?}', [CustomerCompanyMasterTaskController::class, 'show'])->name('show');
-                Route::delete('/{id?}', [CustomerCompanyMasterTaskController::class, 'destroy'])->name('delete');
+                Route::get('/', [MasterTaskController::class, 'index'])->name('index');
+                Route::post('/', [MasterTaskController::class, 'store'])->name('store');
+                Route::put('/{id?}', [MasterTaskController::class, 'update'])->name('update');
+                Route::get('/data-table', [MasterTaskController::class, 'dataTable'])->name('data-table');
+                Route::get('/{id?}', [MasterTaskController::class, 'show'])->name('show');
+                Route::delete('/{id?}', [MasterTaskController::class, 'destroy'])->name('delete');
             });
             Route::meta([
                 'icon' => 'bx bx-checklist',
