@@ -13,7 +13,7 @@ use App\Http\Controllers\Man\CustomerProductTransactionController;
 use App\Http\Controllers\Man\CustomerProductTypeController;
 use App\Http\Controllers\Company\TaskController;
 use App\Http\Controllers\Man\CustomerTemporaryProductController;
-use App\Http\Controllers\Man\CustomerWareHouseRackGoodController;
+use App\Http\Controllers\Product\WarehouseShelveController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\CompanyController;
 use App\Http\Controllers\Settings\PermissionController;
@@ -191,10 +191,10 @@ Route::meta(['group' => 'web'], function () {
                 'module' => 'warehouse-shelve',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
-                Route::get('/', [CustomerWareHouseRackGoodController::class, 'index'])->name('index');
-                Route::post('/', [CustomerWareHouseRackGoodController::class, 'store'])->name('store');
-                Route::put('/{rackId?}/{id?}', [CustomerWareHouseRackGoodController::class, 'update'])->name('update');
-                Route::get('/{id?}', [CustomerWareHouseRackGoodController::class, 'racks'])->name('show');
+                Route::get('/', [WarehouseShelveController::class, 'index'])->name('index');
+                Route::post('/', [WarehouseShelveController::class, 'store'])->name('store');
+                Route::put('/{rackId?}/{id?}', [WarehouseShelveController::class, 'update'])->name('update');
+                Route::get('/{id?}', [WarehouseShelveController::class, 'shelves'])->name('show');
             });
             Route::meta([
                 'icon' => 'bx bxs-cog',

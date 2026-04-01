@@ -75,7 +75,7 @@
                     'X-CSRF-TOKEN': `{{ csrf_token() }}`
                 },
                 type: "put",
-                url: `{{ route('man.customer-warehouse-rack-good.update') }}/${container.id.split('shelve-').join('')}/${el.id.split('product-').join('')}`,
+                url: `{{ route('product.warehouse-shelve.update') }}/${container.id.split('shelve-').join('')}/${el.id.split('product-').join('')}`,
                 dataType: "json",
                 success: function(response) {
                     iziToast.success({
@@ -103,7 +103,7 @@
     $(function() {
         $.ajax({
             type: "GET",
-            url: `{{ route('man.customer-warehouse-rack-good.show', session('userLogged')['company']['id']) }}`,
+            url: `{{ route('product.warehouse-shelve.show', session('userLogged')['company']['id']) }}`,
             dataType: "json",
             beforeSend: function() {
                 $('.warehouse-container').html(`<div class="col-12 border shadow rounded py-1">

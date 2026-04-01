@@ -33,6 +33,12 @@ return new class extends Migration
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete();
+            $table->bigInteger('updated_by')
+                ->unsigned();
+            $table->foreign('updated_by')
+                ->references('id')
+                ->on('users')
+                ->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
             $table->bigInteger('deleted_by')->unsigned()->nullable();

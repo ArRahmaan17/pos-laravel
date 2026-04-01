@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Man;
+namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
-use App\Models\Company;
+use App\Models\Company\Company;
+use App\Models\Company\Warehouse;
 use App\Models\CustomerCompanyGood;
-use App\Models\CustomerCompanyWarehouse;
 use App\Models\CustomerWarehouseRackGood;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
-class CustomerWareHouseRackGoodController extends Controller
+class WarehouseShelveController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,14 +22,14 @@ class CustomerWareHouseRackGoodController extends Controller
         return view('man.customer-good-rack', compact('companies'));
     }
 
-    public function racks($id)
+    public function shelves($id)
     {
         $where = [['company_id', '=', session('userLogged')['company']['id']]];
         if (getScope() === 'global') {
             $where = [['company_id', '<>', 0]];
         }
-        $data = CustomerCompanyWarehouse::with(['racks.products.product'])->where($where)->get();
-        $warehouse_company = CustomerCompanyWarehouse::with('company')->first();
+        $data = Warehouse::with(['shelves.products.product'])->where($where)->get();
+        $warehouse_company = Warehouse::with('company')->first();
         $shelf_less = CustomerCompanyGood::shelf_less(isset($warehouse_company->company) ? $warehouse_company->company->id : 0);
         $response = ['message' => 'showing resource successfully', 'data' => $data, 'shelf_less' => $shelf_less];
         $code = 200;
