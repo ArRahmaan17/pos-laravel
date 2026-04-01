@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'Shelf Product')
+@section('title', 'Shelve Product')
 @push('css')
 <link rel="stylesheet" href="{{ asset('assets/css/dragula.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
@@ -23,7 +23,7 @@
 <script src="{{ asset('assets/js/dragula.min.js') }}"></script>
 <script src="{{ asset('assets/js/select2.min.js') }}"></script>
 <script>
-    function generateShelf(data) {
+    function generateShelve(data) {
         let childHtml = ``;
         data.products.forEach(element => {
             childHtml +=
@@ -31,9 +31,9 @@
         });
         let html = `<div class="${data.id ? 'col-4' : 'col-12'} border rounded mx-1">
                             <div class="col-12 border-bottom text-capitalize fs-3">
-                                ${data.name != null ? `Shelf ${data.name}` : 'without shelf'}
+                                ${data.name != null ? `Shelve ${data.name}` : 'without shelve'}
                             </div>
-                            <div id="${data.id ? 'shelf-'+data.id : 'shelfless'}" class="col-12 product-container ${data.id ? '': 'row'}" style="min-height:100px;">
+                            <div id="${data.id ? 'shelve-'+data.id : 'shelveless'}" class="col-12 product-container ${data.id ? '': 'row'}" style="min-height:100px;">
                                 ${childHtml}
                             </div>
                         </div>`;
@@ -41,13 +41,13 @@
     }
 
     function generateWarehouse(data) {
-        let htmlShelf = ``;
+        let htmlShelve = ``;
         data.racks.forEach(element => {
-            htmlShelf += generateShelf(element);
+            htmlShelve += generateShelve(element);
         });
         let html = `<div class="col-12 border shadow rounded py-1">
                     <p>Warehouse 1</p>
-                    <div class="row row-cols-3 g-1 shelf-container">${htmlShelf}</div></div>`;
+                    <div class="row row-cols-3 g-1 shelve-container">${htmlShelve}</div></div>`;
         $('.warehouse-container').append(html)
     }
 
@@ -75,7 +75,7 @@
                     'X-CSRF-TOKEN': `{{ csrf_token() }}`
                 },
                 type: "put",
-                url: `{{ route('man.customer-warehouse-rack-good.update') }}/${container.id.split('shelf-').join('')}/${el.id.split('product-').join('')}`,
+                url: `{{ route('man.customer-warehouse-rack-good.update') }}/${container.id.split('shelve-').join('')}/${el.id.split('product-').join('')}`,
                 dataType: "json",
                 success: function(response) {
                     iziToast.success({
@@ -108,7 +108,7 @@
             beforeSend: function() {
                 $('.warehouse-container').html(`<div class="col-12 border shadow rounded py-1">
                                 <p class="col-3 placeholder"></p> 
-                                <div class="row row-cols-3 g-1 shelf-container">
+                                <div class="row row-cols-3 g-1 shelve-container">
                                     <div class="card" aria-hidden="true">
                                         <div class="card-body">
                                             <h5 class="card-title placeholder-glow">
@@ -160,8 +160,8 @@
             },
             success: function(response) {
                 $('.warehouse-container').html('');
-                $('.warehouse-container').append(generateShelf({
-                    products: [...response.shelf_less],
+                $('.warehouse-container').append(generateShelve({
+                    products: [...response.shelve_less],
                     name: null
                 }));
                 response.data.forEach(element => {

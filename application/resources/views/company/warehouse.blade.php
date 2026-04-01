@@ -259,12 +259,12 @@
                 }
             }, {
                 target: 3,
-                name: 'racks',
-                data: 'racks',
+                name: 'shelves',
+                data: 'shelves',
                 orderable: false,
                 searchable: false,
                 render: (data, type, row, meta) => {
-                    return `<div class='text-wrap'>${data.map((element)=>{
+                    return `<div class='text-wrap'>${data?.map((element)=>{
                             return `<span>${element.name}</span>`
                         })}</div>`
                 }

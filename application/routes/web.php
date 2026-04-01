@@ -184,11 +184,11 @@ Route::meta(['group' => 'web'], function () {
         ], function () {
             Route::meta([
                 'icon' => 'bx bxs-cupboard-alt',
-                'prefix' => 'warehouse-shelf',
-                'as' => 'warehouse-shelf.',
+                'prefix' => 'warehouse-shelve',
+                'as' => 'warehouse-shelve.',
                 'parent' => 'product',
-                'name' => 'warehouse-shelf',
-                'module' => 'warehouse-shelf',
+                'name' => 'warehouse-shelve',
+                'module' => 'warehouse-shelve',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
                 Route::get('/', [CustomerWareHouseRackGoodController::class, 'index'])->name('index');

@@ -1,512 +1,283 @@
-# DPOS - Point of Sale System 
-A comprehensive, multi-company Point of Sale (POS) system built with the Laravel framework. This system provides complete inventory management, transaction processing, user management, and reporting capabilities for businesses of all sizes.
+# DPOS - Point of Sale System
 
-## 🚀 Features
+DPOS is a multi-company POS application built with Laravel, FrankenPHP, MySQL, Redis, and Vite. The repository is structured to run primarily through Docker Compose for both development and production-style deployments.
 
-### Core POS Features
-- **Multi-Company Support**: Manage multiple companies/outlets within a single system
-- **Inventory Management**: Complete product and stock management with real-time tracking
-- **Transaction Processing**: Sales, returns, and payment processing with detailed tracking
-- **Warehouse Management**: Multi-warehouse support with rack management and location tracking
-- **User Management**: Role-based access control with customizable permissions
-- **Reporting**: Comprehensive sales and inventory reports with PDF export
-- **Discount Management**: Flexible discount system for products and transactions
-- **Temporary Product Management**: Pending product approval system for inventory changes
+## Features
 
-### Business Management
-- **Company Management**: Multi-company setup with individual configurations
-- **Role-Based Access**: Granular permission system for different user roles
-- **Subscription Management**: Subscription-based feature access
-- **Task Management**: Internal task tracking and management with detailed workflows
-- **Stocktaking**: Inventory counting and reconciliation with approval workflows
-- **Payment Methods**: Multiple payment method support
-- **Product Categories**: Hierarchical product categorization system
-- **Unit Management**: Flexible product unit management
+- Multi-company POS workflow
+- Product, warehouse, and stock management
+- Sales, discounts, payments, and receipts
+- Role and permission management
+- Reporting and export support
+- Realtime features through Laravel Reverb
 
-### Advanced Features
-- **Theme Support**: Premium Dark and Light modes with smooth transitions
-- **Temporary Product Approval**: Pending inventory changes require manager approval
-- **Stock Movement Tracking**: Complete audit trail for all inventory movements
-- **Order Code Generation**: Automatic order code generation with company prefixes
-- **Real-time Stock Validation**: Prevents overselling with real-time stock checks
-- **PDF Receipt Generation**: Automatic receipt generation for transactions
-- **Data Export**: Multiple export formats (PDF, Excel, CSV)
-- **Search and Filter**: Advanced search and filtering capabilities
-- **Bulk Operations**: Support for bulk product and inventory operations
+## Current Stack
 
-### Technical Features
-- **Laravel 10**: Built on the latest Laravel framework
-- **RESTful API**: Complete API for mobile and third-party integrations
-- **PDF Generation**: Built-in PDF report generation using DomPDF
-- **Real-time Updates**: Live data updates and notifications
-- **Responsive Design**: Mobile-friendly interface
-- **Security**: Advanced authentication and authorization
-- **Database Optimization**: Optimized queries and indexing
-- **Caching**: Built-in caching for improved performance
+- Laravel 11
+- PHP 8.2+ at the application level
+- FrankenPHP `php8.4-alpine` in Docker
+- MySQL 8.0
+- Redis 7
+- Vite 7
+- Tailwind via Vite
 
-## 📋 Requirements
+## Requirements
 
-- PHP >= 8.1
+### Recommended
+
+- Docker Engine
+- Docker Compose plugin (`docker compose`)
+
+### Without Docker
+
+- PHP 8.2+
 - Composer
-- MySQL/PostgreSQL
-- Node.js & NPM (for frontend assets)
-- Web server (Apache/Nginx/FrankenPHP)
+- Node.js 22+
+- MySQL 8.0+
+- Redis 7+
 
-## 🛠️ Installation
-
-This project is fully dockerized, providing a seamless setup experience.
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/ArRahmaan17/DPOS
-cd DPOS
-```
-
-### 2. Environment Setup
-Create a `.env` file in the root directory (you can copy from `.env.example` if available) and configure your database and application variables.
-
-### 3. Start the Environment
-```bash
-docker-compose up -d --build
-```
-
-This will automatically:
-- Start **FrankenPHP** (hosting both the app and **Laravel Reverb**).
-- Spin up **Nginx** as a high-performance reverse proxy.
-- Initialize **MySQL 8.0** and **Redis** services.
-- Run database checks (`ensure_db.php`) and migrations (`migrate:fresh --seed`).
-- Cache configuration and routes for optimal performance.
-
-## 🏗️ Project Structure
+## Repository Layout
 
 ```text
-DPOS/
-├── application/          # Laravel application source code
-│   ├── app/              # Application logic (Controllers, Models, etc.)
-│   ├── database/         # Migrations and seeders
-│   ├── resources/        # Views, CSS, and JS
-│   ├── routes/           # Web and API routes
-│   └── public/           # Public assets
-├── build/                # Docker configuration files and entrypoint scripts
-├── docker-compose.yml    # Docker services configuration
-├── DOCKER_MAN.md         # Detailed Docker documentation
-└── .env                  # Environment variables
+.
+├── application/              # Laravel application
+├── build/
+│   ├── Dockerfile            # Default app image build
+│   ├── Dockerfile.multi-pm   # App image build with npm/yarn/pnpm lockfile support
+│   ├── entrypoint.sh         # Container startup logic
+│   ├── nginx/default.conf    # Nginx reverse proxy config
+│   └── php/
+│       ├── opcache.dev.ini   # Dev PHP cache settings
+│       └── opcache.ini       # Production PHP cache settings
+├── docker-compose.yml        # Development stack
+├── docker-compose.prod.yml   # Production-oriented stack
+├── .env.example              # Root compose environment template
+└── README.md
 ```
 
-## 🔧 Configuration
+## Environment Variables
 
-### Key Configuration Files
-- `.env` - Environment variables
-- `config/app.php` - Application configuration
-- `config/database.php` - Database configuration
-- `config/auth.php` - Authentication configuration
+The root `.env` file is consumed by Docker Compose.
 
-### Important Environment Variables
+Create it from `.env.example`:
+
+```bash
+cp .env.example .env
+```
+
+Example local values:
+
 ```env
-APP_NAME="DPOS"
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=http://localhost
-
 DB_CONNECTION=mysql
-DB_HOST=mysql
 DB_PORT=3306
-DB_DATABASE=your_database
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-
-CACHE_DRIVER=file
-SESSION_DRIVER=file
-QUEUE_CONNECTION=sync
-
-REDIS_HOST=redis
-REDIS_USERNAME=
-REDIS_PASSWORD=
-REDIS_PREFIX=
-REDIS_DB=
-REDIS_PORT=
-REDIS_TTL=
+DB_FORWARD_PORT=3307
+DB_DATABASE=dpos
+DB_USERNAME=dpos
+DB_PASSWORD=devDatabase17@
+APP_PATH=/home/mann/Development/pos-laravel
+NGINX_APP_PORT=80
+APP_PORT=80
+REDIS_FORWARD_PORT=6380
+REVERB_CONNECTION=app
+REVERB_PORT=8001
+APP_ENV=local
 ```
 
-## 👥 User Management
+Important variables:
 
-### Default Roles
-- **Super Admin**: Full system access
-- **Company Admin**: Company-level management
-- **Manager**: Store/outlet management with approval rights
-- **Cashier**: Basic POS operations
-- **Stock Clerk**: Inventory management
-- **Developer**: System development and maintenance
+- `APP_PORT`: host port exposed by Nginx
+- `DB_FORWARD_PORT`: host port exposed by MySQL in development
+- `REDIS_FORWARD_PORT`: host port exposed by Redis in development
+- `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`: database credentials used by both app and MySQL services
 
-### User Permissions
-- Permission access control
-- Feature-level permissions
-- Data access restrictions
-- Action-based permissions
-- Approval workflows
+## Development
 
-## 🏢 Multi-Company Setup
+Start the local stack:
 
-### Company Configuration
-- Company profile management
-- Address and contact information
-- Business type classification
-- Subscription plan assignment
-- Custom order code prefixes
-
-### Warehouse Management
-- Multiple warehouse support
-- Rack and shelf management
-- Stock location tracking
-- Inventory movement tracking
-- Warehouse-specific permissions
-
-## 📦 Inventory Management
-
-### Product Management
-- Product creation and categorization
-- Unit management (pieces, kg, liters, etc.)
-- Stock level tracking
-- Product variants and attributes
-- Bulk product operations
-
-### Stock Operations
-- **Stock In**: New product arrivals
-- **Restock**: Replenishing existing stock
-- **Stock Out**: Sales and consumption
-- **Stock Removal**: Damaged/expired products
-- **Stock Transfer**: Between warehouses
-
-### Temporary Product System
-- Pending product approval workflow
-- Manager approval for inventory changes
-- Transaction grouping by date
-- Approval status tracking
-- Automatic order code generation
-
-## 💰 Transaction Processing
-
-### Sales Operations
-- Real-time product search
-- Discount application
-- Payment method selection
-- Receipt generation
-- Transaction history
-
-### Order Management
-- Automatic order code generation
-- Transaction validation
-- Stock availability checking
-- Discount code validation
-- Payment processing
-
-## 📊 Reporting
-
-### Available Reports
-
-#### Sales Reports
-- **Sales Summary**: Summary of sales grouped by day, week, or month with total sales, orders, and average order value
-- **Sales by Product**: Detailed report of sales per product with quantities and revenue
-- **Sales by Category**: Sales report grouped by product categories with top products
-- **Sales by Cashier**: Displays sales made by each cashier or staff member
-- **Complete Transaction List**: A complete list of all transactions made in the system
-- **Discount Usage Report**: Report showing how and when discounts are applied by cashiers or customers
-- **Transaction Receipt**: Individual transaction receipt for specific orders
-
-#### Product Reports
-- **Stock On Hand**: Current available stock quantities for each product
-- **Stock Movement Report**: Report of all stock movements: stock in, stock out, and adjustments
-- **Stock Opname**: Comparison between physical stock count and system stock records
-- **Product Performance Report**: Analysis of fast and slow moving products based on sales trends
-
-#### Finance Reports
-- **Cash Flow Summary**: Summary of all incoming and outgoing cash transactions
-- **Income vs Expense Report**: Comparison report between total income and total expenses over a period
-
-### Report Features
-- **Date Range Selection**: Custom date ranges with preset options (Today, Week, Month)
-- **Cashier Filtering**: Filter reports by specific cashiers or staff members
-- **Real-time Data**: Reports generated with current system data
-- **Company-specific**: All reports are filtered by the logged-in company
-- **Export Options**: PDF and Excel export formats available
-
-### Export Options
-- **PDF Export**: Professional PDF reports with custom templates
-- **Excel Export**: Data analysis ready Excel files
-- **Print-friendly Formats**: Optimized for printing
-- **Custom Styling**: Company branding and watermarks
-
-## 🔌 API Integration
-
-### RESTful API Endpoints
-- Authentication endpoints
-- Product management
-- Transaction processing
-- Inventory operations
-- User management
-- Company management
-
-### API Features
-- Rate limiting (100 requests per minute)
-- User availability checking
-- Company type retrieval
-- Company availability validation
-- Registration endpoints
-
-### API Documentation
-API documentation is available at `/api/documentation` when running in development mode.
-
-## 🐳 Docker Management
-
-The project uses a unified Docker environment. Below are the most common management commands.
-
-### Viewing Logs
 ```bash
-# All services
-docker-compose logs -f
-
-# App-only log
-docker-compose logs -f app
+docker compose up -d --build
 ```
-3. The Docker container automatically caches configuration, routes, and views on startup for optimal performance.
-4. For HTTPS, configure a reverse proxy (e.g., Nginx, Traefik, or Caddy) in front of the application to handle SSL certificates.
-5. Set up external database backups mapping from your Docker volume as needed.
 
-### Running Artisan Commands
+Open:
+
+```text
+http://127.0.0.1
+```
+
+Development stack behavior in [`docker-compose.yml`](/home/mann/Development/pos-laravel/docker-compose.yml):
+
+- `app` is built from [`build/Dockerfile`](/home/mann/Development/pos-laravel/build/Dockerfile)
+- `application/` is bind-mounted into the container
+- `vendor`, `node_modules`, and `public/build` are stored in named volumes
+- PHP opcache is overridden with [`build/php/opcache.dev.ini`](/home/mann/Development/pos-laravel/build/php/opcache.dev.ini) so PHP file changes are revalidated
+- MySQL is exposed on `DB_FORWARD_PORT`
+- Redis is exposed on `REDIS_FORWARD_PORT`
+
+### Important Development Behavior
+
+The app entrypoint in [`build/entrypoint.sh`](/home/mann/Development/pos-laravel/build/entrypoint.sh) currently does the following on container start:
+
+- ensures the database exists
+- clears Laravel caches
+- runs `php artisan migrate:fresh --seed` when `APP_ENV` is not `production`
+- starts FrankenPHP and Laravel Reverb
+
+This means restarting the `app` container in development resets the database.
+
+### Live Code Changes
+
+PHP file changes should be reflected without rebuilding because development opcache timestamp validation is enabled.
+
+If changes are not visible:
+
 ```bash
-docker-compose exec app php artisan [command]
+docker compose up -d --force-recreate app nginx
+docker compose exec app frankenphp php-cli artisan optimize:clear
 ```
 
-### Accessing Database
+### Frontend Assets
+
+Vite assets are expected at `application/public/build`.
+
+Current Docker behavior:
+
+- assets are built into the image during Docker build
+- the development stack keeps `public/build` in a named volume
+- the app container itself is not a Node runtime for day-to-day asset compilation
+
+If the Vite manifest is missing, rebuild the app image:
+
 ```bash
-docker-compose exec mysql mysql -u root -p
+docker compose up -d --build app
 ```
 
-### Deployment
-The recommended deployment method is using the provided Docker Compose stack.
-1. Ensure `.env` is configured with `APP_ENV=production`.
-2. Run `docker-compose up -d --build`.
-3. The entrypoint script handles all necessary optimizations (caching, migrations) automatically.
+## Production
 
-### Server Requirements
-- **Minimum**: 2GB RAM, 1 CPU core
-- **Recommended**: 4GB RAM, 2 CPU cores
-- **Storage**: 20GB minimum
-- **OS**: Ubuntu 20.04+, CentOS 8+, or similar
+The production-oriented stack is defined in [`docker-compose.prod.yml`](/home/mann/Development/pos-laravel/docker-compose.prod.yml).
 
-## 🧪 Testing
+Start it with a dedicated production env file:
 
-### Run Tests
 ```bash
-php artisan test
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
 ```
 
-### Code Quality
+Production stack behavior:
+
+- `app` is built from [`build/Dockerfile.multi-pm`](/home/mann/Development/pos-laravel/build/Dockerfile.multi-pm)
+- no application source bind mount is used
+- MySQL and Redis use named volumes only
+- only the web port is published
+- `APP_ENV=production` and `APP_DEBUG=false` are forced in Compose
+- entrypoint runs `php artisan migrate --force` in production
+
+Do not reuse the local `.env` for production. Use a separate file such as `.env.production`.
+
+## Common Commands
+
+View service status:
+
 ```bash
-composer pint
+docker compose ps
 ```
 
-### Performance Testing
+View logs:
+
 ```bash
-php artisan test --filter=PerformanceTest
+docker compose logs -f
+docker compose logs -f app
+docker compose logs -f nginx
 ```
 
-## 🔒 Security
+Run Artisan commands:
 
-### Security Features
-- **Authentication**: Multi-factor authentication support
-- **Authorization**: Role-based access control
-- **Data Encryption**: Sensitive data encryption
-- **SQL Injection Protection**: Laravel's built-in protection
-- **XSS Protection**: Cross-site scripting prevention
-- **CSRF Protection**: Cross-site request forgery protection
-
-### Security Best Practices
-- Regular security updates
-- Strong password policies
-- Session management
-- Input validation
-- Output sanitization
-- HTTPS enforcement
-
-## ⚡ Performance Optimization
-
-### Database Optimization
-- Indexed queries for faster searches
-- Query optimization for large datasets
-- Database connection pooling
-- Caching frequently accessed data
-
-### Application Optimization
-- Route caching for faster routing
-- View caching for compiled templates
-- Configuration caching
-- Asset minification and compression
-
-### Monitoring
-- Application performance monitoring
-- Database query monitoring
-- Error tracking and logging
-- Resource usage monitoring
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### Database Connection Issues
 ```bash
-# Check database connection
-php artisan tinker
-DB::connection()->getPdo();
+docker compose exec app frankenphp php-cli artisan about
+docker compose exec app frankenphp php-cli artisan optimize:clear
 ```
 
-#### Permission Issues
+Open a shell in the app container:
+
 ```bash
-# Fix storage permissions
-chmod -R 775 storage bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache
+docker compose exec app sh
 ```
 
-#### Cache Issues
+Open MySQL:
+
 ```bash
-# Clear all caches
-php artisan cache:clear
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
+docker compose exec mysql mysql -u root -p
 ```
 
-#### Asset Issues
+## Testing
+
+Run tests inside the app container:
+
 ```bash
-# Rebuild assets
-npm run build
-php artisan vendor:publish --tag=laravel-assets
+docker compose exec app frankenphp php-cli artisan test
 ```
 
-### Debug Mode
-Enable debug mode in `.env`:
-```env
-APP_DEBUG=true
-```
+Run Pint:
 
-### Log Files
-Check log files for errors:
 ```bash
-tail -f storage/logs/laravel.log
+docker compose exec app ./vendor/bin/pint
 ```
 
-## 📝 Contributing
-### Guidelines commit message 
-- **`feat:`** A new feature
-- **`fix:`** A bug fix
-- **`docs:`** Documentation only changes
-- **`style:`** Changes that don't affect code meaning (formatting, missing semicolons, etc.)
-- **`refactor:`** Code change that neither fixes a bug nor adds a feature
-- **`perf:`** Code change that improves performance
-- **`test:`** Adding missing tests or correcting existing tests
-- **`chore:`** Changes to build process, dependencies, or tooling
+## Troubleshooting
 
-### Development Guidelines
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Follow PSR-12 coding standards
-4. Add tests for new features
-5. Update documentation
-6. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
-7. Push to the branch (`git push origin feature/amazing-feature`)
-8. Open a Pull Request
+### `/auth/login` or other pages return `500`
 
-### Code Standards
-- Follow PSR-12 coding standards
-- Use meaningful variable and function names
-- Add comments for complex logic
-- Write unit tests for new features
-- Update documentation when needed
+Check that the Vite manifest exists:
 
-### Pull Request Process
-1. Ensure all tests pass
-2. Update documentation if needed
-3. Provide clear commit messages
-4. Include screenshots for UI changes
-5. Describe the changes in detail
-
-
-## ⚖️ Licensing
-
-This software is licensed under the **Academic-Commercial Dual License**.
-
-* **Free Use:** You may use, copy, and modify this software **free of charge** for **Educational, Research, or Personal Learning purposes only.**
-* **Commercial Use:** **Commercial use is strictly prohibited** unless a separate commercial license is purchased from the Copyright Owner.
-
-For the full terms and conditions, please see the [LICENSE](LICENSE) file in this repository.
-
-For Commercial Licensing inquiries, please contact: <a href="mailto:ardrah17@gmail.com">ardrah17@gmail.com</a>
-
-## 🆘 Support
-
-### Getting Help
-- **Documentation**: Check this README and Laravel docs
-- **Issues**: Create an issue in the repository
-- **Discussions**: Use GitHub Discussions for questions
-- **Email**: Contact the development team
-
-### Community
-- **GitHub Issues**: Bug reports and feature requests
-- **GitHub Discussions**: General questions and discussions
-- **Contributing**: See contributing guidelines above
-
-## 🔄 Updates
-
-### Updating the Application
 ```bash
-# Backup your database first
-php artisan backup:run
-
-# Update code
-git pull origin education
-
-# Update dependencies
-composer install --no-dev --optimize-autoloader
-npm install
-npm run build
-
-# Run migrations
-php artisan migrate
-
-# Clear caches
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+docker compose exec app sh -lc 'ls -la /var/www/html/public/build && test -f /var/www/html/public/build/manifest.json && echo ok'
 ```
 
-### Version Compatibility
-- **Laravel**: 10.x
-- **PHP**: 8.1+
-- **MySQL**: 8.0+ or PostgreSQL 12+
-- **Redis**: 7.2+
+If it is missing, rebuild the app image:
 
-## 📚 Additional Resources
+```bash
+docker compose up -d --build app
+```
 
-### Documentation
-- [Laravel Documentation](https://laravel.com/docs)
-- [Bootstrap Documentation](https://getbootstrap.com/docs/)
-- [DomPDF Documentation](https://github.com/barryvdh/laravel-dompdf)
+### Code changes do not appear
 
-### Learning Resources
-- [Laravel Bootcamp](https://bootcamp.laravel.com)
-- [Laracasts](https://laracasts.com)
-- [Laravel News](https://laravel-news.com)
+Recreate the app and clear Laravel caches:
 
-### Tools
-- [Laravel Telescope](https://laravel.com/docs/telescope) - Debugging
-- [Laravel Horizon](https://laravel.com/docs/horizon) - Queue monitoring
-- [Laravel Sanctum](https://laravel.com/docs/sanctum) - API authentication
+```bash
+docker compose up -d --force-recreate app nginx
+docker compose exec app frankenphp php-cli artisan optimize:clear
+```
 
-## 📞 Contact
+### Database was unexpectedly reset
 
-- **Project Maintainer**: Ardhi Rahmaan MS
-- **Email**: ardrah17@gmail.com
-- **Website**: https://www.rahmaanms.my.id
-- **GitHub**: https://github.com/ArRahmaan17
----
-*Last updated: Mar 2026*
+This is current development behavior. The app entrypoint runs:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+when `APP_ENV` is not `production`.
+
+### Check Laravel logs
+
+```bash
+docker compose exec app sh -lc 'tail -f storage/logs/laravel.log'
+```
+
+## Notes
+
+- Use `docker compose`, not the legacy `docker-compose` command.
+- The development and production compose files are intentionally different.
+- The production stack should use a separate env file and deployment-specific secrets.
+
+## License
+
+This software is licensed under the Academic-Commercial Dual License. See [LICENSE](LICENSE) for the full terms.
+
+For commercial licensing:
+
+- Email: `ardrah17@gmail.com`
+
+## Contact
+
+- Maintainer: Ardhi Rahmaan MS
+- GitHub: <https://github.com/ArRahmaan17>
+- Website: <https://www.rahmaanms.my.id>
