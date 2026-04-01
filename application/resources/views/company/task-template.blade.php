@@ -93,25 +93,11 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-12 mb-3">
-                                <label for="role_id" class="form-label">Role</label>
-                                <select class="form-control select2" name="role_id" id="role_id">
-                                    <option value="">Select Role</option>
-                                    @foreach ($customer_roles as $role)
-                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
-                                </select>
+                            <div class="col mb-3">
+                                <label for="time_limit" class="form-label">LifeTime Link</label>
+                                <input type="text" id="time_limit" name="time_limit" placeholder="60 minutes / 1 hours / 1 days"
+                                    class="form-control" />
                             </div>
-                            @if (getScope() === 'global')
-                                <div class="row mb-3 justify-content-end">
-                                    <div class="col-2 float-end p-0 m-0">
-                                        <div class="form-check form-check-inline p-0 m-0">
-                                            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                                            <label class="form-check-label" for="inlineCheckbox1">Make Global</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
                         </div>
                         <div class="row">
                             <div class="col mb-3">

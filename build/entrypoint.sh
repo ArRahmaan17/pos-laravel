@@ -2,12 +2,21 @@
 set -e
 
 if [ "$1" = "frankenphp" ]; then
+# Check if vendor folder exists, if not run composer install
     if [ ! -d "/var/www/html/vendor" ] || [ ! -f "/var/www/html/vendor/autoload.php" ]; then
         echo "--- 📦 Vendor folder missing. Installing... ---"
         # Note: Ensure 'composer' binary is available in the app image
         composer install --no-interaction --no-scripts --optimize-autoloader --prefer-dist
     else
         echo "--- ✅ Vendor folder exists. ---"
+    fi
+# 
+if [ ! -d "/var/www/html/public/build" ] || [ ! -f "/var/www/html/public/build/manifest.json" ]; then
+        echo "--- 📦 Build assets missing. Installing... ---"
+        # Note: Ensure 'npm' binary is available in the app image
+        npm install --prefer-offline && npm run build
+    else
+        echo "--- ✅ Build assets exist. ---"
     fi
     sed -i "s/your_awesome_application_port/${NGINX_APP_PORT}/" /etc/frankenphp/Caddyfile
     # Ensure database exists
@@ -28,7 +37,7 @@ if [ "$1" = "frankenphp" ]; then
         frankenphp php-cli artisan migrate --force
     else
         echo "Running development migrations (migrate:fresh --seed)..."
-        # frankenphp php-cli artisan migrate:fresh --seed
+        frankenphp php-cli artisan migrate:fresh --seed
     fi
 
     # Discover packages and cache configuration for production

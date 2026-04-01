@@ -4,13 +4,13 @@ services:
       context: .
       dockerfile: build/Dockerfile
       target: app
-    restart: unless-stopped
+    restart: always
     init: true
     env_file:
       - .env
     environment:
-      APP_ENV: local
-      APP_DEBUG: "true"
+      APP_ENV: production
+      APP_DEBUG: "false"
       DB_HOST: mysql
       DB_PORT: ${DB_PORT:-3306}
       DB_DATABASE: ${DB_DATABASE:-dpos}
@@ -20,11 +20,6 @@ services:
       APP_PORT: ${APP_PORT:-80}
       NGINX_APP_PORT: ${NGINX_APP_PORT:-80}
       REVERB_PORT: ${REVERB_PORT:-8001}
-    volumes:
-      - ./application:/var/www/html
-      - vendor_data:/var/www/html/vendor
-      - node_modules_data:/var/www/html/node_modules
-      - build_data:/var/www/html/public/build
     depends_on:
       mysql:
         condition: service_healthy
@@ -32,32 +27,10 @@ services:
         condition: service_healthy
     networks:
       - pos-network
-    develop:
-      watch:
-        - path: ./application
-          action: sync
-          target: /var/www/html
-          ignore:
-            - vendor/
-            - node_modules/
-            - public/build/
-            - storage/
-        - path: ./application/composer.json
-          action: rebuild
-        - path: ./application/composer.lock
-          action: rebuild
-        - path: ./application/package.json
-          action: rebuild
-        - path: ./application/package-lock.json
-          action: rebuild
-        - path: build/Dockerfile
-          action: rebuild
-        - path: build/entrypoint.sh
-          action: rebuild
 
   nginx:
     image: nginx:1.27-alpine
-    restart: unless-stopped
+    restart: always
     depends_on:
       - app
     ports:
@@ -70,7 +43,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    restart: unless-stopped
+    restart: always
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-dpos}
       MYSQL_USER: ${DB_USERNAME:-dpos}
@@ -82,8 +55,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    ports:
-      - "${DB_FORWARD_PORT:-3307}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -91,15 +62,13 @@ services:
 
   redis:
     image: redis:7-alpine
-    restart: unless-stopped
+    restart: always
     command: redis-server --appendonly yes
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
-    ports:
-      - "${REDIS_FORWARD_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -110,9 +79,6 @@ networks:
     driver: bridge
 
 volumes:
-  vendor_data:
-  node_modules_data:
-  build_data:
   mysql_data:
   redis_data:
   nginx_logs:

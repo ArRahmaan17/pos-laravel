@@ -10,7 +10,20 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MasterTask extends Model
 {
-    protected $fillable = ['company_id', 'name', 'description', 'role_id', 'priority', 'repeateable'];
+    protected $fillable = [
+        'name',
+        'description',
+        'recurrence_type',
+        'recurrence_interval',
+        'next_run_at',
+        'last_run_at',
+        'is_active',
+        'role_id',
+        'scope_id',
+        'company_id',
+        'created_by',
+        'deleted_by',
+    ];
 
     use HasFactory;
     use SoftDeletes;

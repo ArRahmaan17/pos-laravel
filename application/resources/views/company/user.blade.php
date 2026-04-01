@@ -200,8 +200,6 @@
                     <div class="row align-items-center">
                         <div class="col-lg-7">
                             <h1 class="hero-title">@yield('title')</h1>
-                            <p class="hero-subtitle">Meticulously manage system participants and control access parameters. Establish identity and secure
-                                company resources with precision.</p>
                         </div>
                         <div class="col-lg-5 text-end action-group mt-3 mt-lg-0">
                             <button class="btn btn-outline-info me-2" id="add-customer-user" data-bs-toggle="modal" data-bs-target="#modal-customer-user">

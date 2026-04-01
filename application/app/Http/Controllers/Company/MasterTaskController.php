@@ -96,7 +96,7 @@ class MasterTaskController extends Controller
         $request->validate([
             'name' => ['required', 'min:4', 'max:30', Rule::unique('master_tasks', 'name')->where('company_id', session('userLogged')['company']['id'])],
             'description' => 'required|min:4',
-            'role_id' => 'required|exists:customer_roles,id',
+            'role_id' => 'required|exists:roles,id',
             'priority' => 'required|in:P1,P2,P3,P4',
             'repeateable' => 'required|in:1,0',
         ]);
@@ -111,6 +111,7 @@ class MasterTaskController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             $status = 422;
+dd($th);
             $message = ['message' => 'failed creating resources'];
         }
 
