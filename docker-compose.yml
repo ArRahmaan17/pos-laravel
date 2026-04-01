@@ -22,9 +22,10 @@ services:
       REVERB_PORT: ${REVERB_PORT:-8001}
     volumes:
       - ./application:/var/www/html
+      - ./build/php/opcache.dev.ini:/usr/local/etc/php/conf.d/zz-opcache.dev.ini:ro
       - vendor_data:/var/www/html/vendor
-      - node_modules_data:/var/www/html/node_modules
       - build_data:/var/www/html/public/build
+      - node_modules_data:/var/www/html/node_modules
     depends_on:
       mysql:
         condition: service_healthy

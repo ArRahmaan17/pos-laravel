@@ -11,7 +11,7 @@ use App\Http\Controllers\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Man\CustomerCompanyStocktakingController;
 use App\Http\Controllers\Man\CustomerProductTransactionController;
 use App\Http\Controllers\Man\CustomerProductTypeController;
-use App\Http\Controllers\Man\CustomerTaskController;
+use App\Http\Controllers\Company\TaskController;
 use App\Http\Controllers\Man\CustomerTemporaryProductController;
 use App\Http\Controllers\Man\CustomerWareHouseRackGoodController;
 use App\Http\Controllers\ReportController;
@@ -143,18 +143,18 @@ Route::meta(['group' => 'web'], function () {
                 'module' => 'task-management',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
-                Route::get('/', [CustomerTaskController::class, 'index'])->name('index');
-                Route::get('/new-task', [CustomerTaskController::class, 'newTask'])->name('new-task');
-                Route::get('/unfinish-task', [CustomerTaskController::class, 'unfinishTask'])->name('unfinish-task');
-                Route::post('/', [CustomerTaskController::class, 'store'])->name('store');
-                Route::get('/get-evidence/{id?}', [CustomerTaskController::class, 'getEvidence'])->name('get-evidence');
-                Route::post('/finish-task/{id?}/{type?}', [CustomerTaskController::class, 'finishTask'])->name('finish-task');
-                Route::put('/{id?}', [CustomerTaskController::class, 'update'])->name('update');
-                Route::put('/start-task/{id?}/{type?}', [CustomerTaskController::class, 'startTask'])->name('start-task');
-                Route::get('/data-table', [CustomerTaskController::class, 'dataTable'])->name('data-table');
-                Route::get('/{id?}', [CustomerTaskController::class, 'show'])->name('show');
-                Route::delete('/detail/{id?}', [CustomerTaskController::class, 'destroyDetail'])->name('delete-detail');
-                Route::delete('/{id?}', [CustomerTaskController::class, 'destroy'])->name('delete');
+                Route::get('/', [TaskController::class, 'index'])->name('index');
+                Route::get('/new-task', [TaskController::class, 'newTask'])->name('new-task');
+                Route::get('/unfinish-task', [TaskController::class, 'unfinishTask'])->name('unfinish-task');
+                Route::post('/', [TaskController::class, 'store'])->name('store');
+                Route::get('/get-evidence/{id?}', [TaskController::class, 'getEvidence'])->name('get-evidence');
+                Route::post('/finish-task/{id?}/{type?}', [TaskController::class, 'finishTask'])->name('finish-task');
+                Route::put('/{id?}', [TaskController::class, 'update'])->name('update');
+                Route::put('/start-task/{id?}/{type?}', [TaskController::class, 'startTask'])->name('start-task');
+                Route::get('/data-table', [TaskController::class, 'dataTable'])->name('data-table');
+                Route::get('/{id?}', [TaskController::class, 'show'])->name('show');
+                Route::delete('/detail/{id?}', [TaskController::class, 'destroyDetail'])->name('delete-detail');
+                Route::delete('/{id?}', [TaskController::class, 'destroy'])->name('delete');
             });
             Route::meta([
                 'icon' => 'bx bxs-warehouse',

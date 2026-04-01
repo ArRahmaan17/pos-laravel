@@ -94,7 +94,7 @@
                         </div>
                         <div class="row">
                             <div class="col mb-3">
-                                <label for="time_limit" class="form-label">LifeTime Link</label>
+                                <label for="time_limit" class="form-label">Repeate task every</label>
                                 <input type="text" id="time_limit" name="time_limit" placeholder="60 minutes / 1 hours / 1 days"
                                     class="form-control" />
                             </div>

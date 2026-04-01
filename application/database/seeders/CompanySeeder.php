@@ -15,7 +15,7 @@ class CompanySeeder extends Seeder
                 'name' => 'Default Company',
                 'phone_number' => '081234567890',
                 'email' => 'admin@default.com',
-                'picture' => 'company/default-company.png',
+                'picture' => 'resources/default/company/default-company.png',
                 'user_id' => 1,
                 'business_id' => 1,
                 'created_by' => 1,

@@ -75,13 +75,7 @@ RUN install-php-extensions \
     fileinfo
 
 # ── OPcache tuning ────────────────────────────────────────────────────────────
-RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.interned_strings_buffer=8" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.max_accelerated_files=10000" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.save_comments=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.fast_shutdown=1" >> /usr/local/etc/php/conf.d/opcache.ini
+COPY ./build/php/opcache.dev.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # ── Working directory ─────────────────────────────────────────────────────────
 WORKDIR /var/www/html
