@@ -3,13 +3,6 @@ set -e
 
 if [ "$1" = "frankenphp" ]; then
 # Check if vendor folder exists, if not run composer install
-    if [ ! -d "/var/www/html/vendor" ] || [ ! -f "/var/www/html/vendor/autoload.php" ]; then
-        echo "--- 📦 Vendor folder missing. Installing... ---"
-        # Note: Ensure 'composer' binary is available in the app image
-        composer install --no-interaction --no-scripts --optimize-autoloader --prefer-dist
-    else
-        echo "--- ✅ Vendor folder exists. ---"
-    fi
 # 
 if [ ! -d "/var/www/html/public/build" ] || [ ! -f "/var/www/html/public/build/manifest.json" ]; then
         echo "--- 📦 Build assets missing. Installing... ---"

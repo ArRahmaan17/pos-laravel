@@ -92,7 +92,6 @@ COPY --chown=www-data:www-data application/ .
 RUN rm -f bootstrap/cache/*.php
 # ── Bring in vendor from composer stage ──────────────────────────────────────
 COPY --from=composer-builder --chown=www-data:www-data /app/vendor ./vendor
-COPY --from=composer-builder /usr/bin/composer /usr/bin/composer
 
 # ── Bring in compiled assets from node stage ─────────────────────────────────
 COPY --from=node-builder --chown=www-data:www-data /build/public/build ./public/build/
