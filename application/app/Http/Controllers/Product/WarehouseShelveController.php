@@ -28,7 +28,7 @@ class WarehouseShelveController extends Controller
         if (getScope() === 'global') {
             $where = [['company_id', '<>', 0]];
         }
-        $data = Warehouse::with(['shelves.products.product'])->where($where)->get();
+        $data = Warehouse::with(['products.product'])->where($where)->get();
         $warehouse_company = Warehouse::with('company')->first();
         $shelf_less = CustomerCompanyGood::shelf_less(isset($warehouse_company->company) ? $warehouse_company->company->id : 0);
         $response = ['message' => 'showing resource successfully', 'data' => $data, 'shelf_less' => $shelf_less];

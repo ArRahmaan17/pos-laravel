@@ -3,6 +3,7 @@
 namespace App\Models\Company;
 
 use App\Models\Inventory\Shelve;
+use App\Models\Inventory\WarehouseInventory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,6 +20,14 @@ class Warehouse extends Model
     public function shelves(): HasMany
     {
         return $this->hasMany(Shelve::class, 'warehouse_id', 'id');
+    }
+    public function products(): HasMany
+    {
+        return $this->hasMany(
+            WarehouseInventory::class,
+            'warehouse_id',
+            'id'
+        );
     }
 
     public function company(): HasOne

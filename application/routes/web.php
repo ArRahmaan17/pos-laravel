@@ -10,7 +10,7 @@ use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
 use App\Http\Controllers\Man\CustomerCompanyStocktakingController;
 use App\Http\Controllers\Man\CustomerProductTransactionController;
-use App\Http\Controllers\Man\CustomerProductTypeController;
+use App\Http\Controllers\Product\CategoryController;
 use App\Http\Controllers\Company\TaskController;
 use App\Http\Controllers\Man\CustomerTemporaryProductController;
 use App\Http\Controllers\Product\WarehouseShelveController;
@@ -183,20 +183,6 @@ Route::meta(['group' => 'web'], function () {
             'middleware' => [checkPageAuthorization::class],
         ], function () {
             Route::meta([
-                'icon' => 'bx bxs-cupboard-alt',
-                'prefix' => 'warehouse-shelve',
-                'as' => 'warehouse-shelve.',
-                'parent' => 'product',
-                'name' => 'warehouse-shelve',
-                'module' => 'warehouse-shelve',
-                'middleware' => [checkPageAuthorization::class],
-            ], function () {
-                Route::get('/', [WarehouseShelveController::class, 'index'])->name('index');
-                Route::post('/', [WarehouseShelveController::class, 'store'])->name('store');
-                Route::put('/{rackId?}/{id?}', [WarehouseShelveController::class, 'update'])->name('update');
-                Route::get('/{id?}', [WarehouseShelveController::class, 'shelves'])->name('show');
-            });
-            Route::meta([
                 'icon' => 'bx bxs-cog',
                 'prefix' => 'weight',
                 'as' => 'weight.',
@@ -221,20 +207,20 @@ Route::meta(['group' => 'web'], function () {
                 'module' => 'category',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
-                Route::get('/', [CustomerProductTypeController::class, 'index'])->name('index');
-                Route::post('/', [CustomerProductTypeController::class, 'store'])->name('store');
-                Route::put('/{id?}', [CustomerProductTypeController::class, 'update'])->name('update');
-                Route::get('/data-table', [CustomerProductTypeController::class, 'dataTable'])->name('data-table');
-                Route::get('/{id?}', [CustomerProductTypeController::class, 'show'])->name('show');
-                Route::delete('/{id?}', [CustomerProductTypeController::class, 'destroy'])->name('delete');
+                Route::get('/', [CategoryController::class, 'index'])->name('index');
+                Route::post('/', [CategoryController::class, 'store'])->name('store');
+                Route::put('/{id?}', [CategoryController::class, 'update'])->name('update');
+                Route::get('/data-table', [CategoryController::class, 'dataTable'])->name('data-table');
+                Route::get('/{id?}', [CategoryController::class, 'show'])->name('show');
+                Route::delete('/{id?}', [CategoryController::class, 'destroy'])->name('delete');
             });
             Route::meta([
                 'icon' => 'bx bxs-box-alt',
-                'prefix' => 'temp product',
-                'as' => 'temp product.',
+                'prefix' => 'temp-product',
+                'as' => 'temp-product.',
                 'parent' => 'product',
-                'name' => 'temp product',
-                'module' => 'temp product',
+                'name' => 'temp-product',
+                'module' => 'temp-product',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
                 Route::get('/', [CustomerTemporaryProductController::class, 'index'])->name('index');

@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\Dev\ProductUnitController;
 use App\Http\Controllers\Api\Dev\RoleController;
 use App\Http\Controllers\Api\Dev\SubscriptionController;
 use App\Http\Controllers\Api\Man\CustomerCompanyGoodController;
-use App\Http\Controllers\Api\Man\CustomerProductTypeController;
+use App\Http\Controllers\Api\Man\CategoryController;
 use App\Http\Controllers\Api\Man\CustomerTemporaryProductController;
 use App\Http\Controllers\Api\Man\UserController;
 use Illuminate\Support\Facades\Route;
@@ -79,12 +79,12 @@ use Illuminate\Support\Facades\Route;
 //             Route::delete('/{id?}', [CustomerTemporaryProductController::class, 'destroy'])->name('delete');
 //         });
 //         Route::prefix('customer-product-type')->name('customer-product-type.')->group(function () {
-//             Route::get('/', [CustomerProductTypeController::class, 'index'])->name('index');
-//             Route::post('/', [CustomerProductTypeController::class, 'store'])->name('store');
-//             Route::put('/{id?}', [CustomerProductTypeController::class, 'update'])->name('update');
-//             Route::get('/data-table', [CustomerProductTypeController::class, 'dataTable'])->name('data-table');
-//             Route::get('/{id?}', [CustomerProductTypeController::class, 'show'])->name('show');
-//             Route::delete('/{id?}', [CustomerProductTypeController::class, 'destroy'])->name('delete');
+//             Route::get('/', [CategoryController::class, 'index'])->name('index');
+//             Route::post('/', [CategoryController::class, 'store'])->name('store');
+//             Route::put('/{id?}', [CategoryController::class, 'update'])->name('update');
+//             Route::get('/data-table', [CategoryController::class, 'dataTable'])->name('data-table');
+//             Route::get('/{id?}', [CategoryController::class, 'show'])->name('show');
+//             Route::delete('/{id?}', [CategoryController::class, 'destroy'])->name('delete');
 //         });
 //     });
 

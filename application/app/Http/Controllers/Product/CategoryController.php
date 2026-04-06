@@ -1,45 +1,45 @@
 <?php
 
-namespace App\Http\Controllers\Man;
+namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerProductType;
+use App\Models\Product\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CustomerProductTypeController extends Controller
+class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('man.customer-product-type');
+        return view('product.category');
     }
 
     public function dataTable(Request $request)
     {
-        $totalData = CustomerProductType::orderBy('id', 'asc')
+        $totalData = ProductCategory::orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerProductType::select('*');
+            $assets = ProductCategory::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             $assets = $assets->get();
         } else {
-            $assets = CustomerProductType::select('*')
-                ->where('name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
+            $assets = ProductCategory::select('*')
+                ->where('name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -47,12 +47,12 @@ class CustomerProductTypeController extends Controller
             }
             $assets = $assets->get();
 
-            $totalFiltered = CustomerProductType::select('*')
-                ->where('name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
+            $totalFiltered = ProductCategory::select('*')
+                ->where('name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->count();
         }
@@ -62,7 +62,7 @@ class CustomerProductTypeController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['description'] = $item->description;
-            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-role='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-role='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-role='" . $item->id . "' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -86,7 +86,7 @@ class CustomerProductTypeController extends Controller
             'description' => 'required|min:6|max:100',
         ]);
         try {
-            CustomerProductType::create($request->except('_token', 'id'));
+            ProductCategory::create($request->except('_token', 'id'));
             DB::commit();
             $response = ['message' => 'Customer Product Type create successfully'];
             $code = 200;
@@ -104,7 +104,7 @@ class CustomerProductTypeController extends Controller
      */
     public function show(string $id)
     {
-        $data = CustomerProductType::find($id);
+        $data = ProductCategory::find($id);
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -122,7 +122,7 @@ class CustomerProductTypeController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'name' => 'required|unique:product_categories,name,'.$id,
+            'name' => 'required|unique:product_categories,name,' . $id,
             'description' => 'required|min:6|max:100',
         ]);
         DB::beginTransaction();

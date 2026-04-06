@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CustomerProductType extends Model
+class ProductCategory extends Model
 {
     use HasFactory;
     use SoftDeletes;

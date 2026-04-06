@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company\Company;
 use App\Models\CustomerTemporaryProduct;
 use App\Models\Product\CustomerCompanyGood;
-use App\Models\Product\CustomerProductType;
+use App\Models\Product\ProductCategory;
 use App\Models\Product\ProductWeight;
 use App\Traits\ImageHandler;
 use Exception;
@@ -27,7 +27,7 @@ class CustomerTemporaryProductController extends Controller
         $company = $request->header('x-customer-company-id');
 
         $units = ProductWeight::get();
-        $categories = CustomerProductType::with('category')->where('business_id', $company->business_id)->get();
+        $categories = ProductCategory::with('category')->where('business_id', $company->business_id)->get();
 
         return response()->json([
             'message' => 'Data retrieved successfully',

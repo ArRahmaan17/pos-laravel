@@ -1,5 +1,5 @@
 @extends('template.parent')
-@section('title', 'App Good Unit')
+@section('title', 'Product Category')
 @section('content')
 <div class="row">
     <div class="col-12">
@@ -9,13 +9,13 @@
                     <h3>@yield('title')</h3>
                 </div>
                 <div class="col-6 text-end">
-                    <button class="btn btn-outline-success" id="add-product-unit" data-bs-toggle="modal" data-bs-target="#modal-product-unit">Add <i
+                    <button class="btn btn-outline-success" id="add-product-category" data-bs-toggle="modal" data-bs-target="#modal-product-category">Add <i
                             class='bx bxs-file-plus pb-1'></i></button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table" id="table-product-unit">
+                    <table class="table" id="table-product-category">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
@@ -32,7 +32,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modal-product-unit" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="modal-product-category" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -40,7 +40,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="#" id="form-product-unit">
+                <form action="#" id="form-product-category">
                     @csrf
                     <input type="hidden" name="id">
                     <div class="row">
@@ -61,9 +61,9 @@
                 <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                     Close
                 </button>
-                <button type="button" id="save-product-unit" class="btn btn-outline-success">Save
+                <button type="button" id="save-product-category" class="btn btn-outline-success">Save
                     changes</button>
-                <button type="button" id="edit-product-unit" class="btn btn-warning d-none">Update
+                <button type="button" id="edit-product-category" class="btn btn-warning d-none">Update
                     changes</button>
             </div>
         </div>
@@ -80,26 +80,26 @@
     function actionData() {
         $('.edit').click(function() {
             window.state = 'update';
-            let idAppUnit = $(this).data("product-unit");
-            $("#edit-product-unit").data("product-unit", idAppUnit);
+            let idAppUnit = $(this).data("product-category");
+            $("#edit-product-category").data("product-category", idAppUnit);
             if (window.dataTableAppUnit.rows('.selected').data().length === 0) {
-                $('#table-product-unit tbody').find('tr').removeClass('selected');
+                $('#table-product-category tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
 
             var data = window.dataTableAppUnit.rows('.selected').data()[0];
 
-            $('#modal-product-unit').modal('show');
-            $('#modal-product-unit').find('.modal-title').html(`Edit @yield('title')`);
-            $('#save-product-unit').addClass('d-none');
-            $('#edit-product-unit').removeClass('d-none');
+            $('#modal-product-category').modal('show');
+            $('#modal-product-category').find('.modal-title').html(`Edit @yield('title')`);
+            $('#save-product-category').addClass('d-none');
+            $('#edit-product-category').removeClass('d-none');
 
             $.ajax({
                 type: "GET",
-                url: "{{ route('settings.product-unit.show') }}/" + idAppUnit,
+                url: "{{ route('product.category.show') }}/" + idAppUnit,
                 dataType: "json",
                 success: function(response) {
-                    $('#modal-product-unit').find("form")
+                    $('#modal-product-category').find("form")
                         .find('input, textarea').map(function(index, element) {
                             if (response.data[element.name]) {
                                 $(`[name=${element.name}]`).val(response.data[element
@@ -109,7 +109,7 @@
                 },
                 error: function(error) {
                     iziToast.error({
-                        id: 'alert-product-unit-action',
+                        id: 'alert-product-category-action',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -122,10 +122,10 @@
 
         $('.delete').click(function() {
             if (window.dataTableAppUnit.rows('.selected').data().length === 0) {
-                $('#table-product-unit tbody').find('tr').removeClass('selected');
+                $('#table-product-category tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
-            let idAppUnit = $(this).data("product-unit");
+            let idAppUnit = $(this).data("product-category");
             var data = window.dataTableAppUnit.rows('.selected').data()[0];
             iziToast.question({
                 timeout: 5000,
@@ -147,7 +147,7 @@
                         }, toast, 'button');
                         $.ajax({
                             type: "DELETE",
-                            url: "{{ route('settings.product-unit.delete') }}/" +
+                            url: "{{ route('product.category.delete') }}/" +
                                 idAppUnit,
                             data: {
 
@@ -155,7 +155,7 @@
                             dataType: "json",
                             success: function(response) {
                                 iziToast.success({
-                                    id: 'alert-product-unit-form',
+                                    id: 'alert-product-category-form',
                                     title: 'Success',
                                     message: response.message,
                                     position: 'topRight',
@@ -166,7 +166,7 @@
                             },
                             error: function(error) {
                                 iziToast.error({
-                                    id: 'alert-product-unit-action',
+                                    id: 'alert-product-category-action',
                                     title: 'Error',
                                     message: error.responseJSON.message,
                                     position: 'topRight',
@@ -186,8 +186,8 @@
         });
     }
     $(function() {
-        window.dataTableAppUnit = $("#table-product-unit").DataTable({
-            ajax: "{{ route('settings.product-unit.data-table') }}",
+        window.dataTableAppUnit = $("#table-product-category").DataTable({
+            ajax: "{{ route('product.category.data-table') }}",
             processing: true,
             serverSide: true,
             order: [
@@ -234,17 +234,17 @@
         window.dataTableAppUnit.on('draw.dt', function() {
             actionData();
         });
-        $('#save-product-unit').click(function() {
-            let data = serializeObject($('#form-product-unit'));
+        $('#save-product-category').click(function() {
+            let data = serializeObject($('#form-product-category'));
             $.ajax({
                 type: "POST",
-                url: `{{ route('settings.product-unit.store') }}`,
+                url: `{{ route('product.category.store') }}`,
                 data: data,
                 dataType: "json",
                 success: function(response) {
-                    $('#modal-product-unit').modal('hide')
+                    $('#modal-product-category').modal('hide')
                     iziToast.success({
-                        id: 'alert-product-unit-form',
+                        id: 'alert-product-category-form',
                         title: 'Success',
                         message: response.message,
                         position: 'topRight',
@@ -255,14 +255,14 @@
 
                 },
                 error: function(error) {
-                    $('#modal-product-unit .is-invalid').removeClass('is-invalid')
+                    $('#modal-product-category .is-invalid').removeClass('is-invalid')
                     $.each(error.responseJSON.errors, function(indexInArray,
                         valueOfElement) {
-                        $('#modal-product-unit').find('[name=' + indexInArray +
+                        $('#modal-product-category').find('[name=' + indexInArray +
                             ']').addClass('is-invalid')
                     });
                     iziToast.error({
-                        id: 'alert-product-unit-form',
+                        id: 'alert-product-category-form',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -272,17 +272,17 @@
                 }
             });
         });
-        $('#edit-product-unit').click(function() {
-            let data = serializeObject($('#form-product-unit'));
+        $('#edit-product-category').click(function() {
+            let data = serializeObject($('#form-product-category'));
             $.ajax({
                 type: "PUT",
-                url: `{{ route('settings.product-unit.update') }}/${data.id}`,
+                url: `{{ route('product.category.update') }}/${data.id}`,
                 data: data,
                 dataType: "json",
                 success: function(response) {
-                    $('#modal-product-unit').modal('hide')
+                    $('#modal-product-category').modal('hide')
                     iziToast.success({
-                        id: 'alert-product-unit-form',
+                        id: 'alert-product-category-form',
                         title: 'Success',
                         message: response.message,
                         position: 'topRight',
@@ -292,14 +292,14 @@
                     window.dataTableAppUnit.ajax.reload()
                 },
                 error: function(error) {
-                    $('#modal-product-unit .is-invalid').removeClass('is-invalid')
+                    $('#modal-product-category .is-invalid').removeClass('is-invalid')
                     $.each(error.responseJSON.errors, function(indexInArray,
                         valueOfElement) {
-                        $('#modal-product-unit').find('[name=' + indexInArray +
+                        $('#modal-product-category').find('[name=' + indexInArray +
                             ']').addClass('is-invalid')
                     });
                     iziToast.error({
-                        id: 'alert-product-unit-form',
+                        id: 'alert-product-category-form',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -309,13 +309,13 @@
                 }
             });
         });
-        $('#modal-product-unit').on('hidden.bs.modal', function() {
+        $('#modal-product-category').on('hidden.bs.modal', function() {
             $(this).find('form')[0].reset();
             $(this).find('.modal-title').html(`Add New @yield('title')`);
-            $('#save-product-unit').removeClass('d-none');
-            $('#edit-product-unit').addClass('d-none');
-            $('#modal-product-unit .is-invalid').removeClass('is-invalid')
-            $('#table-product-unit tbody').find('tr').removeClass('selected');
+            $('#save-product-category').removeClass('d-none');
+            $('#edit-product-category').addClass('d-none');
+            $('#modal-product-category .is-invalid').removeClass('is-invalid')
+            $('#table-product-category tbody').find('tr').removeClass('selected');
         });
     });
 </script>

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Man;
 use App\Http\Controllers\Controller;
 use App\Models\CustomerTemporaryProduct;
 use App\Models\Product\CustomerCompanyGood;
-use App\Models\Product\CustomerProductType;
+use App\Models\Product\ProductCategory;
 use App\Models\Product\ProductWeight;
 use App\Traits\ImageHandler;
 use Exception;
@@ -23,7 +23,7 @@ class CustomerTemporaryProductController extends Controller
     public function index()
     {
         $units = ProductWeight::get();
-        $categories = CustomerProductType::with('category')->where('business_id', session('userLogged')['company']['business_id'])->get();
+        $categories = ProductCategory::with('category')->where('business_id', session('userLogged')['company']['business_id'])->get();
 
         return view('man.customer-temp-product', compact('units', 'categories'));
     }

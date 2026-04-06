@@ -26,7 +26,7 @@ class Shelve extends Model
     public function products(): HasMany
     {
         return $this->hasMany(
-            CustomerWarehouseRackGood::class,
+            WarehouseInventory::class,
             'rackId',
             'id'
         );
