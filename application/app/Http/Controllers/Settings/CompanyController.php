@@ -30,7 +30,7 @@ class CompanyController extends Controller
     public function dataTable(Request $request)
     {
         $where = [['user_id', '=', session('userLogged')['user']['id']]];
-        if (getScope() === 'Developer') {
+        if (getScope() === 'global') {
             $where = [['user_id', '<>', null]];
         }
         $totalData = Company::with('address', 'type', 'manager')
@@ -141,7 +141,7 @@ class CompanyController extends Controller
             } else {
                 $data['picture'] = 'default-picture.png';
             }
-            $data['user_id'] = (getScope() === 'Developer' ? $request->user_id : session('userLogged')['user']['id']);
+            $data['user_id'] = (getScope() === 'global' ? $request->user_id : session('userLogged')['user']['id']);
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);
             $company = Company::create($data);
             $address = $request->only('address')['address'];
@@ -185,7 +185,7 @@ class CompanyController extends Controller
     public function company()
     {
         $where = [['user_id', '=', session('userLogged')['company']['user_id']]];
-        if (getScope() === 'Developer') {
+        if (getScope() === 'global') {
             $where = [['user_id', '<>', null]];
         }
         $data = Company::with('address', 'type')->where($where)->get()->map(function ($company) {
@@ -274,7 +274,7 @@ class CompanyController extends Controller
                 $this->uploadAndWatermark($file, '', 'company-profile', $filename);
                 $data['picture'] = 'cp/'.$filename;
             }
-            $data['user_id'] = (getScope() === 'Developer' ? $request->user_id : session('userLogged')['user']['id']);
+            $data['user_id'] = (getScope() === 'global' ? $request->user_id : session('userLogged')['user']['id']);
             $data['phone_number'] = unFormattedPhoneNumber($data['phone_number']);
             Company::find($id)->update($data);
             $address = $request->only('address')['address'];

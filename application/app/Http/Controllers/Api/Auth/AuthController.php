@@ -7,8 +7,8 @@ use App\Models\BusinessType;
 use App\Models\Company;
 use App\Models\CompanyAddress;
 use App\Models\User;
-use App\Models\UserCustomerRole;
 use App\Models\UserManagement\Role;
+use App\Models\UserRole;
 use App\Models\UserRole;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -33,7 +33,7 @@ class AuthController extends Controller
         if (! empty($user) && Hash::check($request->password, $user->password)) {
             $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
             if (empty($role) || empty($role->user) || empty($role->role)) {
-                $role = UserCustomerRole::with('user', 'role')->where('user_id', $user->id)->first();
+                $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
             }
 
             if (! $role) {
@@ -49,7 +49,7 @@ class AuthController extends Controller
             ];
 
             if (! in_array($role->role->name, ['Developer', 'Manager'])) {
-                $company = UserCustomerRole::employeeCompany($role->user_id);
+                $company = UserRole::employeeCompany($role->user_id);
                 if ($company) {
                     $company['address'] = CompanyAddress::where('company_id', $company['id'])->first()?->toArray();
                     $userData['company'] = $company;
@@ -98,7 +98,7 @@ class AuthController extends Controller
         $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
 
         if (empty($role) || empty($role->user) || empty($role->role)) {
-            $role = UserCustomerRole::with('user', 'role')->where('user_id', $user->id)->first();
+            $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
         }
 
         if (! $role) {
@@ -114,7 +114,7 @@ class AuthController extends Controller
         ];
 
         if (! in_array($role->role->name, ['Developer', 'Manager'])) {
-            $company = UserCustomerRole::employeeCompany($role->user_id);
+            $company = UserRole::employeeCompany($role->user_id);
             if ($company) {
                 $company['address'] = CompanyAddress::where('company_id', $company['id'])->first()?->toArray();
                 $userData['company'] = $company;
@@ -137,7 +137,7 @@ class AuthController extends Controller
         $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
 
         if (empty($role) || empty($role->user) || empty($role->role)) {
-            $role = UserCustomerRole::with('user', 'role')->where('user_id', $user->id)->first();
+            $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
         }
 
         if (! $role) {
@@ -182,7 +182,7 @@ class AuthController extends Controller
             'company_id' => $request->company_id,
         ];
 
-        $targetUser = UserCustomerRole::with('user', 'role')
+        $targetUser = UserRole::with('user', 'role')
             ->where($where)
             ->first();
 
@@ -194,9 +194,9 @@ class AuthController extends Controller
 
         $hasPrivileges = true;
         $targetUserData = $targetUser->toArray();
-        $targetUserData['company'] = UserCustomerRole::employeeCompany($targetUser->user_id);
+        $targetUserData['company'] = UserRole::employeeCompany($targetUser->user_id);
 
-        if (UserCustomerRole::employeeMenu($targetUser->user_id) === 0) {
+        if (UserRole::employeeMenu($targetUser->user_id) === 0) {
             $hasPrivileges = false;
         }
 
@@ -260,7 +260,7 @@ class AuthController extends Controller
                         'message' => 'Unauthorized registration attempt',
                     ], 401);
                 } else {
-                    UserCustomerRole::create([
+                    UserRole::create([
                         'user_id' => $user_register->id,
                         'role_id' => $dataCustomerRole[0]->id,
                     ]);
@@ -371,7 +371,7 @@ class AuthController extends Controller
 
         $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
         if (empty($role) || empty($role->user) || empty($role->role)) {
-            $role = UserCustomerRole::with('user', 'role')->where('user_id', $user->id)->first();
+            $role = UserRole::with('user', 'role')->where('user_id', $user->id)->first();
         }
 
         if ($role && $role->role->name === 'Developer') {

@@ -32,7 +32,7 @@ class CustomerCompanyGood extends Model
 
     public function type(): HasOne
     {
-        return $this->hasOne(CustomerProductType::class, 'id', 'category_id');
+        return $this->hasOne(ProductCategory::class, 'id', 'category_id');
     }
 
     public static function shelf_less($company_id)

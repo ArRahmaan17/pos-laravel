@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Models\ProductWeight;
+use App\Models\Product\ProductWeight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +14,7 @@ class ProductUnitController extends Controller
      */
     public function index()
     {
-        return view('settings.product-unit');
+        return view('product.weight');
     }
 
     public function dataTable(Request $request)

@@ -22,11 +22,11 @@ class WarehouseController extends Controller
     public function dataTable(Request $request)
     {
         $where = [['company_id', '=', session('userLogged')['company']['id']]];
-        $totalData = Warehouse::with(['racks'])->where($where)->orderBy('id', 'asc')
+        $totalData = Warehouse::with(['shelves'])->where($where)->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = Warehouse::with(['racks'])->select('*');
+            $assets = Warehouse::with(['shelves'])->select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -37,7 +37,7 @@ class WarehouseController extends Controller
             }
             $assets = $assets->where($where)->get();
         } else {
-            $assets = Warehouse::with(['racks'])->select('*')
+            $assets = Warehouse::with(['shelves'])->select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -50,7 +50,7 @@ class WarehouseController extends Controller
             }
             $assets = $assets->where($where)->get();
 
-            $totalFiltered = Warehouse::with(['racks'])->select('*')
+            $totalFiltered = Warehouse::with(['shelves'])->select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -65,7 +65,7 @@ class WarehouseController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['description'] = $item->description;
-            $row['racks'] = $item->racks;
+            $row['shelves'] = $item->company->shelves;
             $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-company-warehouse='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-warehouse='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }

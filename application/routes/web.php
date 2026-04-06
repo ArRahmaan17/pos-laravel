@@ -1,19 +1,19 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Company\MasterTaskController;
 use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\Company\WarehouseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Man\CustomerCompanyDiscountController;
 use App\Http\Controllers\Man\CustomerCompanyGoodController;
-use App\Http\Controllers\Man\CustomerCompanyMasterTaskController;
 use App\Http\Controllers\Man\CustomerCompanyStocktakingController;
 use App\Http\Controllers\Man\CustomerProductTransactionController;
-use App\Http\Controllers\Man\CustomerProductTypeController;
-use App\Http\Controllers\Man\CustomerTaskController;
+use App\Http\Controllers\Product\CategoryController;
+use App\Http\Controllers\Company\TaskController;
 use App\Http\Controllers\Man\CustomerTemporaryProductController;
-use App\Http\Controllers\Man\CustomerWareHouseRackGoodController;
+use App\Http\Controllers\Product\WarehouseShelveController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\CompanyController;
 use App\Http\Controllers\Settings\PermissionController;
@@ -120,19 +120,19 @@ Route::meta(['group' => 'web'], function () {
             });
             Route::meta([
                 'icon' => 'bx bxs-list-square',
-                'prefix' => 'master-task',
-                'as' => 'master-task.',
+                'prefix' => 'task-template',
+                'as' => 'task-template.',
                 'parent' => 'company',
-                'name' => 'master-task',
-                'module' => 'master-task',
+                'name' => 'task-template',
+                'module' => 'task-template',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
-                Route::get('/', [CustomerCompanyMasterTaskController::class, 'index'])->name('index');
-                Route::post('/', [CustomerCompanyMasterTaskController::class, 'store'])->name('store');
-                Route::put('/{id?}', [CustomerCompanyMasterTaskController::class, 'update'])->name('update');
-                Route::get('/data-table', [CustomerCompanyMasterTaskController::class, 'dataTable'])->name('data-table');
-                Route::get('/{id?}', [CustomerCompanyMasterTaskController::class, 'show'])->name('show');
-                Route::delete('/{id?}', [CustomerCompanyMasterTaskController::class, 'destroy'])->name('delete');
+                Route::get('/', [MasterTaskController::class, 'index'])->name('index');
+                Route::post('/', [MasterTaskController::class, 'store'])->name('store');
+                Route::put('/{id?}', [MasterTaskController::class, 'update'])->name('update');
+                Route::get('/data-table', [MasterTaskController::class, 'dataTable'])->name('data-table');
+                Route::get('/{id?}', [MasterTaskController::class, 'show'])->name('show');
+                Route::delete('/{id?}', [MasterTaskController::class, 'destroy'])->name('delete');
             });
             Route::meta([
                 'icon' => 'bx bx-checklist',
@@ -143,18 +143,18 @@ Route::meta(['group' => 'web'], function () {
                 'module' => 'task-management',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
-                Route::get('/', [CustomerTaskController::class, 'index'])->name('index');
-                Route::get('/new-task', [CustomerTaskController::class, 'newTask'])->name('new-task');
-                Route::get('/unfinish-task', [CustomerTaskController::class, 'unfinishTask'])->name('unfinish-task');
-                Route::post('/', [CustomerTaskController::class, 'store'])->name('store');
-                Route::get('/get-evidence/{id?}', [CustomerTaskController::class, 'getEvidence'])->name('get-evidence');
-                Route::post('/finish-task/{id?}/{type?}', [CustomerTaskController::class, 'finishTask'])->name('finish-task');
-                Route::put('/{id?}', [CustomerTaskController::class, 'update'])->name('update');
-                Route::put('/start-task/{id?}/{type?}', [CustomerTaskController::class, 'startTask'])->name('start-task');
-                Route::get('/data-table', [CustomerTaskController::class, 'dataTable'])->name('data-table');
-                Route::get('/{id?}', [CustomerTaskController::class, 'show'])->name('show');
-                Route::delete('/detail/{id?}', [CustomerTaskController::class, 'destroyDetail'])->name('delete-detail');
-                Route::delete('/{id?}', [CustomerTaskController::class, 'destroy'])->name('delete');
+                Route::get('/', [TaskController::class, 'index'])->name('index');
+                Route::get('/new-task', [TaskController::class, 'newTask'])->name('new-task');
+                Route::get('/unfinish-task', [TaskController::class, 'unfinishTask'])->name('unfinish-task');
+                Route::post('/', [TaskController::class, 'store'])->name('store');
+                Route::get('/get-evidence/{id?}', [TaskController::class, 'getEvidence'])->name('get-evidence');
+                Route::post('/finish-task/{id?}/{type?}', [TaskController::class, 'finishTask'])->name('finish-task');
+                Route::put('/{id?}', [TaskController::class, 'update'])->name('update');
+                Route::put('/start-task/{id?}/{type?}', [TaskController::class, 'startTask'])->name('start-task');
+                Route::get('/data-table', [TaskController::class, 'dataTable'])->name('data-table');
+                Route::get('/{id?}', [TaskController::class, 'show'])->name('show');
+                Route::delete('/detail/{id?}', [TaskController::class, 'destroyDetail'])->name('delete-detail');
+                Route::delete('/{id?}', [TaskController::class, 'destroy'])->name('delete');
             });
             Route::meta([
                 'icon' => 'bx bxs-warehouse',
@@ -183,20 +183,6 @@ Route::meta(['group' => 'web'], function () {
             'middleware' => [checkPageAuthorization::class],
         ], function () {
             Route::meta([
-                'icon' => 'bx bxs-cupboard-alt',
-                'prefix' => 'warehouse-shelf',
-                'as' => 'warehouse-shelf.',
-                'parent' => 'product',
-                'name' => 'warehouse-shelf',
-                'module' => 'warehouse-shelf',
-                'middleware' => [checkPageAuthorization::class],
-            ], function () {
-                Route::get('/', [CustomerWareHouseRackGoodController::class, 'index'])->name('index');
-                Route::post('/', [CustomerWareHouseRackGoodController::class, 'store'])->name('store');
-                Route::put('/{rackId?}/{id?}', [CustomerWareHouseRackGoodController::class, 'update'])->name('update');
-                Route::get('/{id?}', [CustomerWareHouseRackGoodController::class, 'racks'])->name('show');
-            });
-            Route::meta([
                 'icon' => 'bx bxs-cog',
                 'prefix' => 'weight',
                 'as' => 'weight.',
@@ -221,20 +207,20 @@ Route::meta(['group' => 'web'], function () {
                 'module' => 'category',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
-                Route::get('/', [CustomerProductTypeController::class, 'index'])->name('index');
-                Route::post('/', [CustomerProductTypeController::class, 'store'])->name('store');
-                Route::put('/{id?}', [CustomerProductTypeController::class, 'update'])->name('update');
-                Route::get('/data-table', [CustomerProductTypeController::class, 'dataTable'])->name('data-table');
-                Route::get('/{id?}', [CustomerProductTypeController::class, 'show'])->name('show');
-                Route::delete('/{id?}', [CustomerProductTypeController::class, 'destroy'])->name('delete');
+                Route::get('/', [CategoryController::class, 'index'])->name('index');
+                Route::post('/', [CategoryController::class, 'store'])->name('store');
+                Route::put('/{id?}', [CategoryController::class, 'update'])->name('update');
+                Route::get('/data-table', [CategoryController::class, 'dataTable'])->name('data-table');
+                Route::get('/{id?}', [CategoryController::class, 'show'])->name('show');
+                Route::delete('/{id?}', [CategoryController::class, 'destroy'])->name('delete');
             });
             Route::meta([
                 'icon' => 'bx bxs-box-alt',
-                'prefix' => 'temp product',
-                'as' => 'temp product.',
+                'prefix' => 'temp-product',
+                'as' => 'temp-product.',
                 'parent' => 'product',
-                'name' => 'temp product',
-                'module' => 'temp product',
+                'name' => 'temp-product',
+                'module' => 'temp-product',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
                 Route::get('/', [CustomerTemporaryProductController::class, 'index'])->name('index');
@@ -331,6 +317,7 @@ Route::meta(['group' => 'web'], function () {
             'name' => 'report',
         ], function () {
             Route::get('/', [ReportController::class, 'index'])->name('index');
+            Route::get('/debug-print', [ReportController::class, 'debugPrint'])->name('debug-print');
             Route::post('/', [ReportController::class, 'generateReport'])->name('generate-report');
         });
         Route::meta([

@@ -7,10 +7,12 @@ use App\Models\CustomerCompanyDiscount;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerDetailProductTransaction;
 use App\Models\CustomerProductTransaction;
+use App\Services\TransactionReceiptEscposPrinter;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Mike42\Escpos\Printer;
 
 class CustomerProductTransactionController extends Controller
 {
@@ -82,7 +84,8 @@ class CustomerProductTransactionController extends Controller
             $row['discount'] = $item->discount;
             $row['name'] = $item->name;
             $row['details'] = $item->details;
-            $row['action'] = "<button class='btn btn-icon btn-outline-success print-transaction' data-customer-product-transaction='".$item->orderCode."' ><i class='bx bxs-printer' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-success print-transaction' data-format='pdf' data-customer-product-transaction='".$item->orderCode."' title='PDF receipt'><i class='bx bxs-file-pdf' ></i></button>
+            <button class='btn btn-icon btn-outline-dark print-transaction' data-format='escpos' data-customer-product-transaction='".$item->orderCode."' title='ESC/POS receipt'><i class='bx bxs-printer' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -419,19 +422,53 @@ class CustomerProductTransactionController extends Controller
         return response()->json($response, $code);
     }
 
-    public function viewPdf(string $orderCode)
+    public function viewPdf(Request $request, string $orderCode)
     {
         $data = CustomerProductTransaction::with('details.good')
             ->where('orderCode', $orderCode)
             ->where('company_id', session('userLogged')['company']['id'])
             ->first();
         if ($data) {
+            if ($request->query('format') === 'escpos') {
+                return $this->printEscposReceipt($data);
+            }
+
             $pdf = App::make('dompdf.wrapper');
             $pdf = $pdf->loadView('report.sales.transaction-receipt', ($data) ? $data->toArray() : [])->setPaper([0, 0, 300, 280], 'portrait');
 
             return $pdf->stream('Transaction-'.$orderCode.'.pdf');
         } else {
             return redirect()->route('dashboard.index')->with('error', 'Transaction not found <b>'.$orderCode.'</b>');
+        }
+    }
+
+    private function printEscposReceipt(CustomerProductTransaction $transaction)
+    {
+        if (! class_exists(Printer::class)) {
+            return response()->view('report.sales.transaction-receipt-print-status', [
+                'success' => false,
+                'orderCode' => $transaction->orderCode,
+                'message' => 'mike42/escpos-php is declared in composer, but the package is not installed in vendor yet.',
+                'details' => 'Run composer install after fixing write permissions on application/vendor.',
+            ], 500);
+        }
+
+        try {
+            app(TransactionReceiptEscposPrinter::class)->print($transaction);
+
+            return response()->view('report.sales.transaction-receipt-print-status', [
+                'success' => true,
+                'orderCode' => $transaction->orderCode,
+                'message' => 'The receipt was sent to the configured ESC/POS printer connector.',
+                'details' => null,
+            ]);
+        } catch (\Throwable $th) {
+            return response()->view('report.sales.transaction-receipt-print-status', [
+                'success' => false,
+                'orderCode' => $transaction->orderCode,
+                'message' => 'The ESC/POS transaction receipt could not be printed.',
+                'details' => $th->getMessage(),
+            ], 500);
         }
     }
 

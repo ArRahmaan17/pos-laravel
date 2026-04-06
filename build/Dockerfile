@@ -5,15 +5,15 @@ FROM node:22-alpine AS node-builder
 WORKDIR /build
 
 # Copy manifest files specifically for caching
-COPY application/package*.json ./
-RUN npm ci --prefer-offline
-
-# Copy full application source needed by Vite/Tailwind scanning
 COPY application/ .
+RUN if [ -f build/package-lock.json ]; then \
+        npm ci --prefer-offline && npm run build; \
+    else \
+        npm install --prefer-offline && npm run build; \
+    fi
 
 # Build production assets
-RUN npm run build && \
-    if [ ! -f public/build/manifest.json ]; then \
+RUN if [ ! -f public/build/manifest.json ]; then \
         echo "Error: manifest.json not found in public/build/"; \
         ls -R public/build; \
         exit 1; \
@@ -29,10 +29,10 @@ FROM composer:2 AS composer-builder
 WORKDIR /app
 
 # Copy dependency files
-COPY application/composer.json application/composer.lock ./
+COPY application/composer.* ./
 
 # Install PHP dependencies
-RUN composer install --no-interaction --no-scripts --optimize-autoloader --prefer-dist
+RUN composer install --no-interaction --no-scripts --optimize-autoloader --prefer-dist --ignore-platform-req=*
 
 
 # ==============================================================================
@@ -75,13 +75,7 @@ RUN install-php-extensions \
     fileinfo
 
 # ── OPcache tuning ────────────────────────────────────────────────────────────
-RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.interned_strings_buffer=8" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.max_accelerated_files=10000" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.save_comments=1" >> /usr/local/etc/php/conf.d/opcache.ini && \
-    echo "opcache.fast_shutdown=1" >> /usr/local/etc/php/conf.d/opcache.ini
+COPY ./build/php/opcache.dev.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # ── Working directory ─────────────────────────────────────────────────────────
 WORKDIR /var/www/html
@@ -92,10 +86,9 @@ COPY --chown=www-data:www-data application/ .
 RUN rm -f bootstrap/cache/*.php
 # ── Bring in vendor from composer stage ──────────────────────────────────────
 COPY --from=composer-builder --chown=www-data:www-data /app/vendor ./vendor
-COPY --from=composer-builder /usr/bin/composer /usr/bin/composer
 
 # ── Bring in compiled assets from node stage ─────────────────────────────────
-COPY --from=node-builder --chown=www-data:www-data /build/public/build/ ./public/build/
+COPY --from=node-builder --chown=www-data:www-data /build/public/build ./public/build/
 
 # ── CaddyFile (FrankenPHP embedded Caddy config) ─────────────────────────────
 COPY --chown=www-data:www-data application/example.CaddyFile /etc/frankenphp/Caddyfile

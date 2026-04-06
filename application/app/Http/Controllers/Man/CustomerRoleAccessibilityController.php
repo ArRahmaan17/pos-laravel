@@ -29,7 +29,7 @@ class CustomerRoleAccessibilityController extends Controller
         $where = [
             ['customer_roles.user_id', '=', session('userLogged')['user']['id']],
         ];
-        if (getScope() === 'Developer') {
+        if (getScope() === 'global') {
             $where = [
                 ['customer_roles.user_id', '=', session('userLogged')['company']['user_id']],
             ];
@@ -37,7 +37,7 @@ class CustomerRoleAccessibilityController extends Controller
         $totalData = Role::with('role_menus')
             ->select('customer_roles.name', 'customer_roles.id')
             ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.role_id')
-            ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
+            ->leftJoin('user_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
             ->leftJoin('companies as cc', 'ucr.company_id', '=', 'cc.id')
             ->where($where)
             ->orderBy('customer_roles.id', 'asc')
@@ -47,7 +47,7 @@ class CustomerRoleAccessibilityController extends Controller
         if (empty($request['search']['value'])) {
             $assets = Role::with('role_menus')
                 ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.role_id')
-                ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
+                ->leftJoin('user_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
                 ->leftJoin('companies as cc', 'ucr.company_id', '=', 'cc.id')
                 ->select('customer_roles.name', 'customer_roles.id');
 
@@ -62,7 +62,7 @@ class CustomerRoleAccessibilityController extends Controller
         } else {
             $assets = Role::with('role_menus')
                 ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.role_id')
-                ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
+                ->leftJoin('user_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
                 ->leftJoin('companies as cc', 'ucr.company_id', '=', 'cc.id')
                 ->select('customer_roles.name', 'customer_roles.id')
                 ->where('customer_roles.name', 'like', '%'.$request['search']['value'].'%')
@@ -79,7 +79,7 @@ class CustomerRoleAccessibilityController extends Controller
 
             $totalFiltered = Role::select('customer_roles.name', 'customer_roles.id')
                 ->join('customer_role_accessibilities as cra', 'customer_roles.id', '=', 'cra.role_id')
-                ->leftJoin('user_customer_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
+                ->leftJoin('user_roles as ucr', 'customer_roles.id', '=', 'ucr.role_id')
                 ->leftJoin('companies as cc', 'ucr.company_id', '=', 'cc.id')
                 ->where('customer_roles.name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('customer_roles.description', 'like', '%'.$request['search']['value'].'%');

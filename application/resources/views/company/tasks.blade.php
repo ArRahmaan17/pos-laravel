@@ -43,13 +43,13 @@
                     <h3>@yield('title')</h3>
                 </div>
                 <div class="col-6 text-end">
-                    <button class="btn btn-outline-success" id="add-customer-task-management" data-bs-toggle="modal"
-                        data-bs-target="#modal-customer-task-management">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                    <button class="btn btn-outline-success" id="add-task-management" data-bs-toggle="modal"
+                        data-bs-target="#modal-task-management">Add <i class='bx bxs-file-plus pb-1'></i></button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table" id="table-customer-task-management">
+                    <table class="table" id="table-task-management">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
@@ -69,7 +69,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modal-customer-task-management" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="modal-task-management" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -77,7 +77,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="#" id="form-customer-task-management">
+                <form action="#" id="form-task-management">
                     @csrf
                     <input type="hidden" name="id">
                     <div class="row">
@@ -145,9 +145,9 @@
                 <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                     Close
                 </button>
-                <button type="button" id="save-customer-task-management" class="btn btn-outline-success">Save
+                <button type="button" id="save-task-management" class="btn btn-outline-success">Save
                     changes</button>
-                <button type="button" id="edit-customer-task-management" class="btn btn-warning d-none">Update
+                <button type="button" id="edit-task-management" class="btn btn-warning d-none">Update
                     changes</button>
             </div>
         </div>
@@ -195,23 +195,23 @@
         });
         $('.edit').click(function() {
             window.state = 'update';
-            let idCustomerTask = $(this).data("customer-task-management");
-            $("#edit-customer-task-management").data("customer-task-management", idCustomerTask);
+            let idCustomerTask = $(this).data("task-management");
+            $("#edit-task-management").data("task-management", idCustomerTask);
             if (window.dataTableCustomerTaskManagement.rows('.selected').data().length === 0) {
-                $('#table-customer-task-management tbody').find('tr').removeClass('selected');
+                $('#table-task-management tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
 
             var data = window.dataTableCustomerTaskManagement.rows('.selected').data()[0];
 
-            $('#modal-customer-task-management').modal('show');
-            $('#modal-customer-task-management').find('.modal-title').html(`Edit @yield('title')`);
-            $('#save-customer-task-management').addClass('d-none');
-            $('#edit-customer-task-management').removeClass('d-none');
+            $('#modal-task-management').modal('show');
+            $('#modal-task-management').find('.modal-title').html(`Edit @yield('title')`);
+            $('#save-task-management').addClass('d-none');
+            $('#edit-task-management').removeClass('d-none');
 
             $.ajax({
                 type: "GET",
-                url: "{{ route('man.customer-task-management.show') }}/" + idCustomerTask,
+                url: "{{ route('company.task-management.show') }}/" + idCustomerTask,
                 dataType: "json",
                 success: function(response) {
                     $('#user_id').find('option').removeAttr('disabled');
@@ -221,7 +221,7 @@
                     $('.container-progress-task .progress-bar').css({
                         "width": `${response.data.percentage}%`
                     });
-                    let formElement = $('#modal-customer-task-management').find("form");
+                    let formElement = $('#modal-task-management').find("form");
                     $.each(response.data, function(indexInArray, valueOfElement) {
                         if (indexInArray === 'time_limit') {
                             formElement.find(`[name=${indexInArray}]`).data('daterangepicker').setStartDate(valueOfElement);
@@ -237,7 +237,7 @@
                 },
                 error: function(error) {
                     iziToast.error({
-                        id: 'alert-customer-task-management-action',
+                        id: 'alert-task-management-action',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -249,10 +249,10 @@
         })
         $('.delete').click(function() {
             if (window.dataTableCustomerTaskManagement.rows('.selected').data().length === 0) {
-                $('#table-customer-task-management tbody').find('tr').removeClass('selected');
+                $('#table-task-management tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
-            let idCustomerTask = $(this).data("customer-task-management");
+            let idCustomerTask = $(this).data("task-management");
             var data = window.dataTableCustomerTaskManagement.rows('.selected').data()[0];
             iziToast.question({
                 timeout: 5000,
@@ -274,7 +274,7 @@
                         }, toast, 'button');
                         $.ajax({
                             type: "DELETE",
-                            url: "{{ route('man.customer-task-management.delete') }}/" +
+                            url: "{{ route('company.task-management.delete') }}/" +
                                 idCustomerTask,
                             data: {
 
@@ -282,7 +282,7 @@
                             dataType: "json",
                             success: function(response) {
                                 iziToast.success({
-                                    id: 'alert-customer-task-management-action',
+                                    id: 'alert-task-management-action',
                                     title: 'Success',
                                     message: response.message,
                                     position: 'topRight',
@@ -293,7 +293,7 @@
                             },
                             error: function(error) {
                                 iziToast.error({
-                                    id: 'alert-customer-task-management-action',
+                                    id: 'alert-task-management-action',
                                     title: 'Error',
                                     message: error.responseJSON.message,
                                     position: 'topRight',
@@ -349,7 +349,7 @@
                     }, toast, 'button');
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ route('man.customer-task-management.delete-detail') }}/" +
+                        url: "{{ route('company.task-management.delete-detail') }}/" +
                             idDetailTask,
                         data: {
 
@@ -357,7 +357,7 @@
                         dataType: "json",
                         success: function(response) {
                             iziToast.success({
-                                id: 'alert-customer-task-management-action',
+                                id: 'alert-task-management-action',
                                 title: 'Success',
                                 message: response.message,
                                 position: 'topRight',
@@ -368,7 +368,7 @@
                         },
                         error: function(error) {
                             iziToast.error({
-                                id: 'alert-customer-task-management-action',
+                                id: 'alert-task-management-action',
                                 title: 'Error',
                                 message: error.responseJSON.message,
                                 position: 'topRight',
@@ -401,7 +401,7 @@
     function startTask(e) {
         $.ajax({
             type: "PUT",
-            url: `{{ route('man.customer-task-management.start-task') }}/${$(e.currentTarget).data('customer-task-detail')??$(e.currentTarget).data('customer-task-management')}/${$(e.currentTarget).data('customer-task-status')}`,
+            url: `{{ route('company.task-management.start-task') }}/${$(e.currentTarget).data('customer-task-detail')??$(e.currentTarget).data('task-management')}/${$(e.currentTarget).data('customer-task-status')}`,
             data: {
 
             },
@@ -437,7 +437,7 @@
     const unfinishTask = () => {
         $.ajax({
             type: "GET",
-            url: `{{ route('man.customer-task-management.unfinish-task') }}`,
+            url: `{{ route('company.task-management.unfinish-task') }}`,
             dataType: "json",
             success: function(response) {
                 iziToast.success({
@@ -471,7 +471,7 @@
     const newTask = () => {
         $.ajax({
             type: "GET",
-            url: `{{ route('man.customer-task-management.new-task') }}`,
+            url: `{{ route('company.task-management.new-task') }}`,
             data: {
                 role_id: $('#role_id').val()
             },
@@ -524,7 +524,7 @@
                                         ${detail.master.description}
                                     </div>
                                     <div class="flex-fill align-self-center d-flex gap-1 justify-content-end">
-                                        ${detail.start_at !== null && detail.end_at !== null  ? `<button class="btn btn-icon btn-outline-success evidence" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.task_id}' data-task-evidence='${detail.evidence}'><i class='bx bxs-file-find'></i></button>`: (detail.start_at != null && detail.end_at === null)?`<button type="button" data-customer-task-detail='${detail.id}' data-customer-task-management='${detail.task_id}' class="btn btn-icon btn-info end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-outline-warning start" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.task_id}'><i class='bx bx-play'></i></button><button type="button" class="btn btn-icon btn-outline-danger trash" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-customer-task-management='${detail.task_id}'><i class='bx bxs-trash-alt'></i></button>`}
+                                        ${detail.start_at !== null && detail.end_at !== null  ? `<button class="btn btn-icon btn-outline-success evidence" data-customer-task-detail='${detail.id}' data-task-management='${detail.task_id}' data-task-evidence='${detail.evidence}'><i class='bx bxs-file-find'></i></button>`: (detail.start_at != null && detail.end_at === null)?`<button type="button" data-customer-task-detail='${detail.id}' data-task-management='${detail.task_id}' class="btn btn-icon btn-info end"><i class='bx bx-check-double'></i></button>`:`<button type="button" class="btn btn-icon btn-outline-warning start" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-task-management='${detail.task_id}'><i class='bx bx-play'></i></button><button type="button" class="btn btn-icon btn-outline-danger trash" data-customer-task-detail='${detail.id}' data-customer-task-status='unfinish' data-task-management='${detail.task_id}'><i class='bx bxs-trash-alt'></i></button>`}
                                     </div>
                                 </div>
                             </div>
@@ -538,8 +538,8 @@
                     </div>`)
     }
     $(function() {
-        window.dataTableCustomerTaskManagement = $("#table-customer-task-management").DataTable({
-            ajax: "{{ route('man.customer-task-management.data-table') }}",
+        window.dataTableCustomerTaskManagement = $("#table-task-management").DataTable({
+            ajax: "{{ route('company.task-management.data-table') }}",
             processing: true,
             serverSide: true,
             order: [
@@ -634,17 +634,17 @@
                 })
             }
         });
-        $('#save-customer-task-management').click(function() {
-            let data = serializeObject($('#form-customer-task-management'));
+        $('#save-task-management').click(function() {
+            let data = serializeObject($('#form-task-management'));
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-task-management.store') }}`,
+                url: `{{ route('company.task-management.store') }}`,
                 data: data,
                 dataType: "json",
                 success: function(response) {
-                    $('#modal-customer-task-management').modal('hide')
+                    $('#modal-task-management').modal('hide')
                     iziToast.success({
-                        id: 'alert-customer-task-management-form',
+                        id: 'alert-task-management-form',
                         title: 'Success',
                         message: response.message,
                         position: 'topRight',
@@ -654,14 +654,14 @@
                     window.dataTableCustomerTaskManagement.ajax.reload();
                 },
                 error: function(error) {
-                    $('#modal-customer-task-management .is-invalid').removeClass('is-invalid')
+                    $('#modal-task-management .is-invalid').removeClass('is-invalid')
                     $.each(error.responseJSON.errors, function(indexInArray,
                         valueOfElement) {
-                        $('#modal-customer-task-management').find('[name=' + indexInArray +
+                        $('#modal-task-management').find('[name=' + indexInArray +
                             ']').addClass('is-invalid')
                     });
                     iziToast.error({
-                        id: 'alert-customer-task-management-form',
+                        id: 'alert-task-management-form',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -673,17 +673,17 @@
         });
         $('#new').on('click', () => newTask());
         $('#unfinish').on('click', () => unfinishTask());
-        $('#edit-customer-task-management').click(function() {
-            let data = serializeObject($('#form-customer-task-management'));
+        $('#edit-task-management').click(function() {
+            let data = serializeObject($('#form-task-management'));
             $.ajax({
                 type: "PUT",
-                url: `{{ route('man.customer-task-management.update') }}/${data.id}`,
+                url: `{{ route('company.task-management.update') }}/${data.id}`,
                 data: data,
                 dataType: "json",
                 success: function(response) {
-                    $('#modal-customer-task-management').modal('hide')
+                    $('#modal-task-management').modal('hide')
                     iziToast.success({
-                        id: 'alert-customer-task-management-form',
+                        id: 'alert-task-management-form',
                         title: 'Success',
                         message: response.message,
                         position: 'topRight',
@@ -693,14 +693,14 @@
                     window.dataTableCustomerTaskManagement.ajax.reload()
                 },
                 error: function(error) {
-                    $('#modal-customer-task-management .is-invalid').removeClass('is-invalid')
+                    $('#modal-task-management .is-invalid').removeClass('is-invalid')
                     $.each(error.responseJSON.errors, function(indexInArray,
                         valueOfElement) {
-                        $('#modal-customer-task-management').find('[name=' + indexInArray +
+                        $('#modal-task-management').find('[name=' + indexInArray +
                             ']').addClass('is-invalid')
                     });
                     iziToast.error({
-                        id: 'alert-customer-task-management-form',
+                        id: 'alert-task-management-form',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -714,15 +714,15 @@
             $('#user_id').find(`option[data-role=${this.value}]`).removeAttr('disabled');
             $('#user_id').find(`option:not([data-role=${this.value}])`).attr('disabled', 'disabled');
         })
-        $('#modal-customer-task-management').on('hidden.bs.modal', function() {
+        $('#modal-task-management').on('hidden.bs.modal', function() {
             $(this).find('form')[0].reset();
             $(this).find('.modal-title').html(`Add New @yield('title')`);
-            $('#save-customer-task-management').removeClass('d-none');
-            $('#edit-customer-task-management').addClass('d-none');
+            $('#save-task-management').removeClass('d-none');
+            $('#edit-task-management').addClass('d-none');
             $('#role').removeAttr('disabled');
             $('#role').parents('.mb-3').removeClass('d-none');
-            $('#modal-customer-task-management .is-invalid').removeClass('is-invalid')
-            $('#table-customer-task-management tbody').find('tr').removeClass('selected');
+            $('#modal-task-management .is-invalid').removeClass('is-invalid')
+            $('#table-task-management tbody').find('tr').removeClass('selected');
             $('.container-detail-task').html(``);
             if ($('#unfinish').hasClass('disabled')) {
                 $('#unfinish').removeClass('disabled')
@@ -734,10 +734,10 @@
             }
             $('.container-progress-task').addClass('d-none');
         });
-        $('#modal-customer-task-management').on('shown.bs.modal', function() {
+        $('#modal-task-management').on('shown.bs.modal', function() {
             setTimeout(() => {
                 $('.select2').select2({
-                    dropdownParent: $('#modal-customer-task-management'),
+                    dropdownParent: $('#modal-task-management'),
                 });
             }, 140);
         });
@@ -753,7 +753,7 @@
                         server: {
                             timeout: 7000,
                             process: {
-                                url: `{{ route('man.customer-task-management.finish-task') }}/${id}/upload`,
+                                url: `{{ route('company.task-management.finish-task') }}/${id}/upload`,
                                 method: 'POST',
                                 headers: {
                                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -778,7 +778,7 @@
                 format: 'YYYY-MM-DD'
             },
             minDate: moment(),
-            parentEl: '#modal-customer-task-management .modal-body'
+            parentEl: '#modal-task-management .modal-body'
         });
         formattedInput();
         FilePond.registerPlugin(

@@ -16,6 +16,9 @@
         <button type="button" data-end="{{ now() }}" data-start="{{ now()->sub(30, 'days') }}"
             class="btn btn-sm rounded-pill btn-outline-primary">A Month</button>
         <input type="text" id="time_limit" name="time_limit" placeholder="Custom" class="datepicker btn btn-sm rounded-pill btn-outline-primary" />
+        <a href="{{ route('man.report.debug-print') }}" target="_blank" class="btn btn-sm rounded-pill btn-outline-dark">
+            <i class='bx bx-test-tube'></i> Debug Print
+        </a>
     </div>
 </div>
 <div class="d-flex flex-wrap gap-1 mt-2 align-items-stretch align-content-stretch">
@@ -42,6 +45,7 @@
                 </div>
                 <div class="card-footer align-self-end">
                     <button type="submit" class="btn btn-info btn-sm" name="report" value="pdf"><i class='bx bxs-file-export'></i> pdf</button>
+                    <button type="submit" class="btn btn-outline-dark btn-sm" name="report" value="thermal"><i class='bx bxs-printer'></i> thermal</button>
                     <button type="submit" class="btn btn-outline-success btn-sm" name="report" value="xlxs"><i class='bx bxs-file-export'></i>
                         xlxs</button>
                 </div>

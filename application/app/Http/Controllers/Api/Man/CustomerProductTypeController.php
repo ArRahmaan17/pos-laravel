@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Api\Man;
 use App\Helpers\RedisHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
-use App\Models\CustomerProductType;
+use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CustomerProductTypeController extends Controller
+class CategoryController extends Controller
 {
     protected $company_id;
 
@@ -27,7 +27,7 @@ class CustomerProductTypeController extends Controller
             $data = json_decode(RedisHelper::get("cutomer_product_categories:{$this->company_id}"));
         } else {
             $company = Company::find($request->header('x-customer-company-id'));
-            $data = CustomerProductType::orderBy('id', 'asc')->where('business_id', $company->business_id)->get();
+            $data = ProductCategory::orderBy('id', 'asc')->where('business_id', $company->business_id)->get();
             RedisHelper::set("cutomer_product_categories:{$this->company_id}", json_encode($data));
         }
         $response = ['message' => 'showing resource successfully', 'data' => $data];
@@ -40,11 +40,11 @@ class CustomerProductTypeController extends Controller
     {
         $company = Company::find($request->header('x-customer-company-id'));
         try {
-            $totalData = CustomerProductType::orderBy('id', 'asc')->where('business_id', $company->business_id)
+            $totalData = ProductCategory::orderBy('id', 'asc')->where('business_id', $company->business_id)
                 ->count();
             $totalFiltered = $totalData;
             if (empty($request['search']['value'])) {
-                $assets = CustomerProductType::select('*')->where('business_id', $company->business_id);
+                $assets = ProductCategory::select('*')->where('business_id', $company->business_id);
 
                 if ($request['length'] != '-1') {
                     $assets->limit($request['length']);
@@ -57,7 +57,7 @@ class CustomerProductTypeController extends Controller
                 }
                 $assets = $assets->get();
             } else {
-                $assets = CustomerProductType::select('*')->where('business_id', $company->business_id)
+                $assets = ProductCategory::select('*')->where('business_id', $company->business_id)
                     ->where('name', 'like', '%'.$request['search']['value'].'%')
                     ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -72,7 +72,7 @@ class CustomerProductTypeController extends Controller
                 }
                 $assets = $assets->get();
 
-                $totalFiltered = CustomerProductType::select('*')->where('business_id', $company->business_id)
+                $totalFiltered = ProductCategory::select('*')->where('business_id', $company->business_id)
                     ->where('name', 'like', '%'.$request['search']['value'].'%')
                     ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -116,7 +116,7 @@ class CustomerProductTypeController extends Controller
         try {
             $company = Company::find($this->company_id);
             $request->merge(['business_id' => $this->company_id]);
-            CustomerProductType::create($request->except('_token', 'id'));
+            ProductCategory::create($request->except('_token', 'id'));
             DB::commit();
             RedisHelper::del("cutomer_product_categories:{$this->company_id}");
             $response = ['message' => 'Customer Product Type create successfully'];
@@ -135,7 +135,7 @@ class CustomerProductTypeController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $data = CustomerProductType::find($id)->where('business_id', $this->company_id);
+        $data = ProductCategory::find($id)->where('business_id', $this->company_id);
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -158,7 +158,7 @@ class CustomerProductTypeController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            CustomerProductType::find($id)->update($request->except('_token', 'id'));
+            ProductCategory::find($id)->update($request->except('_token', 'id'));
             RedisHelper::del("cutomer_product_categories:{$this->company_id}");
             DB::commit();
             $response = ['message' => 'Updating resource successfully'];
@@ -179,7 +179,7 @@ class CustomerProductTypeController extends Controller
     {
         DB::beginTransaction();
         try {
-            CustomerProductType::find($id)->where('business_id', $this->company_id)->destroy($id);
+            ProductCategory::find($id)->where('business_id', $this->company_id)->destroy($id);
             DB::commit();
             RedisHelper::del("cutomer_product_categories:{$this->company_id}");
             $response = ['message' => 'deleting resource successfully'];

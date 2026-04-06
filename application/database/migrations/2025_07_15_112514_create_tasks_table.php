@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('master_task_id')->unsigned()->nullable();
-            $table->string('title');
+            $table->string('name');
             $table->string('description');
             $table->bigInteger('assigned_to_user_id')->unsigned()->nullable();
             $table->foreign('assigned_to_user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();

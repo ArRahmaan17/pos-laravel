@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Company\BusinessType;
 use App\Models\Company\Company;
 use App\Models\Company\CompanyAddress;
-use App\Models\UserCustomerRole;
 use App\Models\UserManagement\Role;
 use App\Models\UserManagement\User;
 use App\Models\UserManagement\UserRole;
@@ -31,10 +30,10 @@ class AuthController extends Controller
             ->orWhere('email', $request->username)
             ->first();
         if (! empty($user) && Hash::check($request->password, $user->password)) {
-            $roleUser = UserRole::with('role', 'user', 'user.companies', 'role.scope')->where('user_id', $user->id)->first();
+            $roleUser = UserRole::with('role', 'user', 'companies', 'role.scope')->where('user_id', $user->id)->first();
             $access = collect($roleUser)->toArray();
-            if ($roleUser->role->scope->code !== 'user_created') {
-                unset($access['company']);
+            if ($roleUser->role->scope->is_system) {
+                unset($access['companies']);
             }
             session()->flush();
             session(['userLogged' => $access, 'lifetime' => now()->addMinutes((int) env('SESSION_LIFETIME', 120))]);
@@ -66,28 +65,27 @@ class AuthController extends Controller
     {
         $where = [
             'user_id' => $id,
-            'company_id' => session('userLogged')['company']['id'],
         ];
-        $user = UserCustomerRole::with('user', 'role')
+        $user = UserRole::with('user', 'role', 'companies', 'role.scope')
             ->where($where)
-            ->first()->toArray();
+            ->first();
         if (! empty($user)) {
             $hasPrivileges = true;
-            $user['company'] = UserCustomerRole::employeeCompany($user['user_id']);
-            if (UserCustomerRole::employeeMenu($user['user_id']) === 0) {
-                $hasPrivileges = false;
+            if ($user->role->scope->is_system) {
+                $user = collect($user)->toArray();
+                unset($user['companies']);
             }
             if ($hasPrivileges) {
                 session()->flush();
-                session(['userLogged' => collect($user)->toArray(), 'lifetime' => now()->addMinutes(env('SESSION_LIFETIME', 120))]);
-                $response = ['message' => 'successfully login as '.$user['user']['username']];
+                session(['userLogged' => $user, 'lifetime' => now()->addMinutes(intval(env('SESSION_LIFETIME', '120')))]);
+                $response = ['message' => 'successfully login as ' . $user['user']['username']];
                 $status = 200;
             } else {
-                $response = ['message' => 'failed login as '.$user['user']['username'].', please set menu for the role'];
+                $response = ['message' => 'failed login as ' . $user['user']['username'] . ', please set menu for the role'];
                 $status = 404;
             }
         } else {
-            $response = ['message' => 'failed login as '.$user['user']['username'].', unexpected error on process login as'];
+            $response = ['message' => 'failed login as ' . $user['user']['username'] . ', unexpected error on process login as'];
             $status = 404;
         }
 
@@ -190,7 +188,7 @@ class AuthController extends Controller
                     DB::rollBack();
                     abort(401, 'Unauthorized');
                 } else {
-                    UserCustomerRole::create([
+                    UserRole::create([
                         'user_id' => $user_register->id,
                         'role_id' => $dataCustomerRole[0]->id,
                     ]);
@@ -207,7 +205,7 @@ class AuthController extends Controller
                 $data_role = Role::where('code', 'root')->first()->toArray();
                 unset($data_role['id']);
                 $data_role['name'] = 'Your Default Manager Role';
-                $data_role['code'] = 'root-'.str(buatSingkatan($data_company->name))->lower();
+                $data_role['code'] = 'root-' . str(buatSingkatan($data_company->name))->lower();
                 $data_role['company_id'] = $data_company->id;
                 $data_role['created_by'] = $user_register->id;
                 $create_role = Role::create($data_role);
@@ -236,7 +234,7 @@ class AuthController extends Controller
     public function customerCompany()
     {
         $where = [['user_id', '=', session('userLogged')['user']['id']]];
-        if (getScope() === 'Developer') {
+        if (getScope() === 'global') {
             $where = [['user_id', '<>', null]];
         }
         $data = Company::with('address', 'type')->where($where)->get();
@@ -303,7 +301,7 @@ class AuthController extends Controller
             DB::rollBack();
             $message = ['error', 'Unexpected error in our system, try again later.'];
         }
-        $roleUser = UserRole::with('role', 'user', 'user.companies', 'role.scope')->where('user_id', session('userLogged')['user']['id'])->first();
+        $roleUser = UserRole::with('role', 'user', 'companies', 'role.scope')->where('user_id', session('userLogged')['user']['id'])->first();
         // $company = Company::with('company', 'address')->where('user')
         $roleUser['company'] = $roleUser->role->company;
         $roleUser['company']['address'] = $roleUser->role->company->address;

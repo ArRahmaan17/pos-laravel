@@ -19,5 +19,34 @@ class WarehouseSeeder extends Seeder
                 'created_at' => now(),
             ],
         ]);
+        DB::table('shelves')->insert([
+            [
+                'id' => 1,
+                'warehouse_id' => 1,
+                'name' => fake('id')->word(),
+                'description' => fake('id')->address(),
+                'company_id' => 1,
+                'created_by' => 1,
+                'created_at' => now(),
+            ],
+            [
+                'id' => 2,
+                'warehouse_id' => 1,
+                'name' => fake('id')->word(),
+                'description' => fake('id')->address(),
+                'company_id' => 1,
+                'created_by' => 1,
+                'created_at' => now(),
+            ],
+            [
+                'id' => 3,
+                'warehouse_id' => 1,
+                'name' => fake('id')->word(),
+                'description' => fake('id')->address(),
+                'company_id' => 1,
+                'created_by' => 1,
+                'created_at' => now(),
+            ],
+        ]);
     }
 }

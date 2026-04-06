@@ -1,25 +1,29 @@
 <?php
 
-namespace App\Http\Controllers\Man;
+namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\Controller;
-use App\Models\MasterTask;
+use App\Models\Company\MasterTask;
 use App\Models\TaskDetail;
 use App\Models\UserManagement\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-class CustomerCompanyMasterTaskController extends Controller
+class MasterTaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $customer_roles = Role::where('user_id', session('userLogged')['user']['id'])->get();
+        $where = [];
+        if (getScope() !== 'global') {
+            $where = [['company_id', '=', session('userLogged')['company']['id']]];
+        }
+        $customer_roles = Role::where($where)->get();
 
-        return view('man.customer-master-tasks', compact('customer_roles'));
+        return view('company.task-template', compact('customer_roles'));
     }
 
     public function dataTable(Request $request)
@@ -36,16 +40,16 @@ class CustomerCompanyMasterTaskController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             $assets = $assets->where($where)->get();
         } else {
             $assets = MasterTask::with('role')->select('*')
-                ->where('name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
+                ->where('name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -54,11 +58,11 @@ class CustomerCompanyMasterTaskController extends Controller
             $assets = $assets->where($where)->get();
 
             $totalFiltered = MasterTask::with('role')->select('*')
-                ->where('name', 'like', '%'.$request['search']['value'].'%')
-                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
+                ->where('name', 'like', '%' . $request['search']['value'] . '%')
+                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where($where)->count();
         }
@@ -68,10 +72,10 @@ class CustomerCompanyMasterTaskController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['description'] = $item->description;
-            $row['role'] = $item->role->name;
+            $row['role'] = $item->role->name ?? 'Example Template Task';
             $row['priority'] = $item->priority;
             $row['repeateable'] = $item->repeateable === 0 ? 'No' : 'Yes';
-            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-master-tasks='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-master-tasks='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = getScope() === 'global' ? "<button data-task-template='" . $item->id . "' class='btn btn-icon btn-outline-info copy'><i class='bx bx-copy'></i></button><button class='btn btn-icon btn-outline-warning edit' data-task-template='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-task-template='" . $item->id . "' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>" : "<button data-task-template='" . $item->id . "' class='btn btn-icon btn-outline-info copy'><i class='bx bx-copy'></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -92,7 +96,7 @@ class CustomerCompanyMasterTaskController extends Controller
         $request->validate([
             'name' => ['required', 'min:4', 'max:30', Rule::unique('master_tasks', 'name')->where('company_id', session('userLogged')['company']['id'])],
             'description' => 'required|min:4',
-            'role_id' => 'required|exists:customer_roles,id',
+            'role_id' => 'required|exists:roles,id',
             'priority' => 'required|in:P1,P2,P3,P4',
             'repeateable' => 'required|in:1,0',
         ]);
@@ -107,6 +111,7 @@ class CustomerCompanyMasterTaskController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             $status = 422;
+dd($th);
             $message = ['message' => 'failed creating resources'];
         }
 
