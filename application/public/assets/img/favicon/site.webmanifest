@@ -13,6 +13,36 @@
             "type": "image/png"
         }
     ],
+    "screenshots": [
+        {
+            "src": "/previews/homepage.png",
+            "sizes": "1200x630",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Homepage – DOGLEXABLE Point of Sale"
+        },
+        {
+            "src": "/previews/dashboard.png",
+            "sizes": "1200x630",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Dashboard – DOGLEXABLE Point of Sale"
+        },
+        {
+            "src": "/previews/category.png",
+            "sizes": "1200x630",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Category Management – DOGLEXABLE Point of Sale"
+        },
+        {
+            "src": "/previews/your-company.png",
+            "sizes": "1200x630",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Company Settings – DOGLEXABLE Point of Sale"
+        }
+    ],
     "theme_color": "#6366f1",
     "background_color": "#1e293b",
     "display": "standalone",
