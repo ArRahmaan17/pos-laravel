@@ -104,18 +104,18 @@ Open:
 http://127.0.0.1
 ```
 
-Development stack behavior in [`docker-compose.yml`](/home/mann/Development/pos-laravel/docker-compose.yml):
+Development stack behavior in [`docker-compose.yml`](docker-compose.yml):
 
-- `app` is built from [`build/Dockerfile`](/home/mann/Development/pos-laravel/build/Dockerfile)
+- `app` is built from [`build/Dockerfile`](build/Dockerfile)
 - `application/` is bind-mounted into the container
 - `vendor`, `node_modules`, and `public/build` are stored in named volumes
-- PHP opcache is overridden with [`build/php/opcache.dev.ini`](/home/mann/Development/pos-laravel/build/php/opcache.dev.ini) so PHP file changes are revalidated
+- PHP opcache is overridden with [`build/php/opcache.dev.ini`](build/php/opcache.dev.ini) so PHP file changes are revalidated
 - MySQL is exposed on `DB_FORWARD_PORT`
 - Redis is exposed on `REDIS_FORWARD_PORT`
 
 ### Important Development Behavior
 
-The app entrypoint in [`build/entrypoint.sh`](/home/mann/Development/pos-laravel/build/entrypoint.sh) currently does the following on container start:
+The app entrypoint in [`build/entrypoint.sh`](build/entrypoint.sh) currently does the following on container start:
 
 - ensures the database exists
 - clears Laravel caches
@@ -153,7 +153,7 @@ docker compose up -d --build app
 
 ## Production
 
-The production-oriented stack is defined in [`docker-compose.prod.yml`](/home/mann/Development/pos-laravel/docker-compose.prod.yml).
+The production-oriented stack is defined in [`docker-compose.prod.yml`](docker-compose.prod.yml).
 
 Start it with a dedicated production env file:
 
@@ -163,7 +163,7 @@ docker compose --env-file .env.production -f docker-compose.prod.yml up -d --bui
 
 Production stack behavior:
 
-- `app` is built from [`build/Dockerfile.multi-pm`](/home/mann/Development/pos-laravel/build/Dockerfile.multi-pm)
+- `app` is built from [`build/Dockerfile.multi-pm`](build/Dockerfile.multi-pm)
 - no application source bind mount is used
 - MySQL and Redis use named volumes only
 - only the web port is published
