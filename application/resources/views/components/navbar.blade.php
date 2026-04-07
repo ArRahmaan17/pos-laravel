@@ -18,19 +18,19 @@
                 <div class="spinner-border spinner-border-sm"></div>
             </li>
             @if (env('APP_SUBS') === 'ON' && getScope() !== 'user_created')
-                <li class="nav-item me-4">
-                    <div>
-                        <button data-bs-toggle="modal" data-bs-target="#AppSubscriptionModal"
-                            class="{{ isset(session('userLogged')['subscription']['name']) ? 'btn btn-outline-success' : 'btn btn-warning' }} buy-now">
-                            {!! session('userLogged')['subscription']['name'] ??
-                                '<i class="bx bxs-layer-plus mb-1" ></i><span class="d-none d-md-inline-block">Choose Subscription</span>' !!}
-                        </button>
-                    </div>
-                </li>
+            <li class="nav-item me-4">
+                <div>
+                    <button data-bs-toggle="modal" data-bs-target="#AppSubscriptionModal"
+                        class="{{ isset(session('userLogged')['subscription']['name']) ? 'btn btn-outline-success' : 'btn btn-warning' }} buy-now">
+                        {!! session('userLogged')['subscription']['name'] ??
+                        '<i class="bx bxs-layer-plus mb-1"></i><span class="d-none d-md-inline-block">Choose Subscription</span>' !!}
+                    </button>
+                </div>
+            </li>
             @endif
             <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                    <i class="bx theme-switcher-icon bx-sm"></i>
+                    <i class="mt-2 bx theme-switcher-icon bx-sm"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
                     <li>
@@ -75,12 +75,12 @@
                         <div class="dropdown-divider"></div>
                     </li>
                     @if (getScope() !== 'user_created')
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="{{ route('auth.change-company') }}">
-                                <i class='bx bxs-door-open bx-sm me-2'></i>
-                                <span>Change Company</span>
-                            </a>
-                        </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center" href="{{ route('auth.change-company') }}">
+                            <i class='bx bxs-door-open bx-sm me-2'></i>
+                            <span>Change Company</span>
+                        </a>
+                    </li>
                     @endif
                     <li>
                         <a class="dropdown-item d-flex align-items-center" onclick="lockscreenTrigger()">

@@ -71,10 +71,10 @@ Example local values:
 DB_CONNECTION=mysql
 DB_PORT=3306
 DB_FORWARD_PORT=3307
-DB_DATABASE=dpos
-DB_USERNAME=dpos
-DB_PASSWORD=devDatabase17@
-APP_PATH=/home/mann/Development/pos-laravel
+DB_DATABASE=
+DB_USERNAME=
+DB_PASSWORD=
+APP_PATH=
 NGINX_APP_PORT=80
 APP_PORT=80
 REDIS_FORWARD_PORT=6380
@@ -104,18 +104,18 @@ Open:
 http://127.0.0.1
 ```
 
-Development stack behavior in [`docker-compose.yml`](/home/mann/Development/pos-laravel/docker-compose.yml):
+Development stack behavior in [`docker-compose.yml`](/home/pos-laravel/docker-compose.yml):
 
-- `app` is built from [`build/Dockerfile`](/home/mann/Development/pos-laravel/build/Dockerfile)
+- `app` is built from [`build/Dockerfile`](build/Dockerfile)
 - `application/` is bind-mounted into the container
 - `vendor`, `node_modules`, and `public/build` are stored in named volumes
-- PHP opcache is overridden with [`build/php/opcache.dev.ini`](/home/mann/Development/pos-laravel/build/php/opcache.dev.ini) so PHP file changes are revalidated
+- PHP opcache is overridden with [`build/php/opcache.dev.ini`](build/php/opcache.dev.ini) so PHP file changes are revalidated
 - MySQL is exposed on `DB_FORWARD_PORT`
 - Redis is exposed on `REDIS_FORWARD_PORT`
 
 ### Important Development Behavior
 
-The app entrypoint in [`build/entrypoint.sh`](/home/mann/Development/pos-laravel/build/entrypoint.sh) currently does the following on container start:
+The app entrypoint in [`build/entrypoint.sh`](build/entrypoint.sh) currently does the following on container start:
 
 - ensures the database exists
 - clears Laravel caches
