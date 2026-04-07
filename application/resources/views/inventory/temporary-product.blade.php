@@ -9,13 +9,13 @@
                     <h3>@yield('title')</h3>
                 </div>
                 <div class="col-6 text-end">
-                    <button class="btn btn-outline-success" id="add-customer-temp-product" data-bs-toggle="modal" data-bs-target="#modal-customer-temp-product">
+                    <button class="btn btn-outline-success" id="add-temporary-product" data-bs-toggle="modal" data-bs-target="#modal-temporary-product">
                         Add <i class='bx bxs-file-plus pb-1'></i></button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table" id="table-customer-temp-product">
+                    <table class="table" id="table-temporary-product">
                         <thead>
                             <tr>
                                 <th scope="col" rowspan="2">#</th>
@@ -40,7 +40,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modal-customer-temp-product" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="modal-temporary-product" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-fullscreen" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -81,9 +81,9 @@
                 <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                     Close
                 </button>
-                <button type="button" id="save-customer-temp-product" class="btn btn-outline-success">Save
+                <button type="button" id="save-temporary-product" class="btn btn-outline-success">Save
                     changes</button>
-                <button type="button" id="edit-customer-temp-product" class="btn btn-warning d-none">Update
+                <button type="button" id="edit-temporary-product" class="btn btn-warning d-none">Update
                     changes</button>
             </div>
         </div>
@@ -206,22 +206,22 @@
         $('.edit').click(function() {
             window.state = 'update';
             let transactionDate = $(this).data("customer-temporary-product");
-            $("#edit-customer-temp-product").data("customer-temporary-product", transactionDate)
+            $("#edit-temporary-product").data("customer-temporary-product", transactionDate)
             if (window.dataTableCustomerTemporaryProduct.rows('.selected').data().length === 0) {
-                $('#table-customer-temp-product tbody').find('tr').removeClass('selected');
+                $('#table-temporary-product tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
 
             var data = window.dataTableCustomerTemporaryProduct.rows('.selected').data()[0];
 
-            $('#modal-customer-temp-product').modal('show');
-            $('#modal-customer-temp-product').find('.modal-title').html(`Edit @yield('title')`);
-            $('#save-customer-temp-product').addClass('d-none');
-            $('#edit-customer-temp-product').removeClass('d-none');
+            $('#modal-temporary-product').modal('show');
+            $('#modal-temporary-product').find('.modal-title').html(`Edit @yield('title')`);
+            $('#save-temporary-product').addClass('d-none');
+            $('#edit-temporary-product').removeClass('d-none');
 
             $.ajax({
                 type: "GET",
-                url: "{{ route('man.customer-temp-product.show') }}/" + transactionDate,
+                url: "{{ route('inventory.temporary-product.show') }}/" + transactionDate,
                 dataType: "json",
                 success: function({
                     data
@@ -232,7 +232,7 @@
                 },
                 error: function(error) {
                     iziToast.error({
-                        id: 'alert-customer-temp-product-action',
+                        id: 'alert-temporary-product-action',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -244,7 +244,7 @@
         });
         $('.delete').click(function() {
             if (window.dataTableCustomerTemporaryProduct.rows('.selected').data().length === 0) {
-                $('#table-customer-temp-product tbody').find('tr').removeClass('selected');
+                $('#table-temporary-product tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
             let transactionDate = $(this).data("customer-temporary-product");
@@ -269,7 +269,7 @@
                         }, toast, 'button');
                         $.ajax({
                             type: "DELETE",
-                            url: "{{ route('man.customer-temp-product.delete') }}/" +
+                            url: "{{ route('inventory.temporary-product.delete') }}/" +
                                 transactionDate,
                             data: {
 
@@ -277,7 +277,7 @@
                             dataType: "json",
                             success: function(response) {
                                 iziToast.success({
-                                    id: 'alert-customer-temp-product-action',
+                                    id: 'alert-temporary-product-action',
                                     title: 'Success',
                                     message: response.message,
                                     position: 'topRight',
@@ -288,7 +288,7 @@
                             },
                             error: function(error) {
                                 iziToast.error({
-                                    id: 'alert-customer-temp-product-action',
+                                    id: 'alert-temporary-product-action',
                                     title: 'Error',
                                     message: error.responseJSON.message,
                                     position: 'topRight',
@@ -302,14 +302,14 @@
                         instance.hide({
                             transitionOut: 'fadeOut'
                         }, toast, 'button');
-                        $('#table-customer-temp-product tbody').find('tr').removeClass('selected')
+                        $('#table-temporary-product tbody').find('tr').removeClass('selected')
                     }],
                 ],
             });
         });
         $('.accept').click(function() {
             if (window.dataTableCustomerTemporaryProduct.rows('.selected').data().length === 0) {
-                $('#table-customer-temp-product tbody').find('tr').removeClass('selected');
+                $('#table-temporary-product tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
             let transactionDate = $(this).data("customer-temporary-product");
@@ -334,7 +334,7 @@
                         }, toast, 'button');
                         $.ajax({
                             type: "POST",
-                            url: "{{ route('man.customer-temp-product.store-temp-product') }}/" +
+                            url: "{{ route('inventory.temporary-product.store-temporary-product') }}/" +
                                 transactionDate,
                             data: {
 
@@ -342,7 +342,7 @@
                             dataType: "json",
                             success: function(response) {
                                 iziToast.success({
-                                    id: 'alert-customer-temp-product-action',
+                                    id: 'alert-temporary-product-action',
                                     title: 'Success',
                                     message: response.message,
                                     position: 'topRight',
@@ -353,7 +353,7 @@
                             },
                             error: function(error) {
                                 iziToast.error({
-                                    id: 'alert-customer-temp-product-action',
+                                    id: 'alert-temporary-product-action',
                                     title: 'Error',
                                     message: error.responseJSON.message,
                                     position: 'topRight',
@@ -367,7 +367,7 @@
                         instance.hide({
                             transitionOut: 'fadeOut'
                         }, toast, 'button');
-                        $('#table-customer-temp-product tbody').find('tr').removeClass('selected')
+                        $('#table-temporary-product tbody').find('tr').removeClass('selected')
                     }],
                 ],
             });
@@ -402,7 +402,7 @@
         }, 500));
     }
 
-    function initializeDataTable(context = $('#modal-customer-temp-product')) {
+    function initializeDataTable(context = $('#modal-temporary-product')) {
         if (context.hasClass('show')) {
             if ($.fn.dataTable.isDataTable('#table-customer-company-good')) {
                 window.dataTableCustomerCompanyGood.off('draw');
@@ -411,7 +411,7 @@
                 $('#table-customer-company-good').find('tbody').html('');
             }
             window.dataTableCustomerCompanyGood = $("#table-customer-company-good").DataTable({
-                ajax: "{{ route('man.customer-company-good.data-table') }}",
+                ajax: "{{ route('inventory.your-products.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -482,15 +482,15 @@
                 actionData();
             });
         } else {
-            if ($.fn.dataTable.isDataTable('#table-customer-temp-product')) {
+            if ($.fn.dataTable.isDataTable('#table-temporary-product')) {
                 window.dataTableCustomerTemporaryProduct.off('draw');
                 window.dataTableCustomerTemporaryProduct.off('click', 'tbody td.dt-control');
                 window.dataTableCustomerTemporaryProduct.clear().destroy();
                 window.dataTableCustomerTemporaryProduct = undefined;
-                $('#table-customer-temp-product').find('tbody').html('');
+                $('#table-temporary-product').find('tbody').html('');
             }
-            window.dataTableCustomerTemporaryProduct = $("#table-customer-temp-product").DataTable({
-                ajax: "{{ route('man.customer-temp-product.data-table') }}",
+            window.dataTableCustomerTemporaryProduct = $("#table-temporary-product").DataTable({
+                ajax: "{{ route('inventory.temporary-product.data-table') }}",
                 processing: true,
                 serverSide: true,
                 order: [
@@ -653,7 +653,7 @@
                     container.find(`.select2`).select2('destroy');
                 }
                 container.find(`.select2`).select2({
-                    dropdownParent: $('#modal-customer-temp-product'),
+                    dropdownParent: $('#modal-temporary-product'),
                 });
             }, 140);
             window.productImageSelection.push({
@@ -723,7 +723,7 @@
         $('#add-temporary-product').click(debounce(function() {
             generateProductAccordion()
         }, 500));
-        $('#save-customer-temp-product').click(function() {
+        $('#save-temporary-product').click(function() {
             let data = new FormData();
             let products = [];
             data.append('_token', `{{ csrf_token() }}`);
@@ -746,15 +746,15 @@
             });
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-temp-product.store') }}`,
+                url: `{{ route('inventory.temporary-product.store') }}`,
                 data: data,
                 dataType: "json",
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    $('#modal-customer-temp-product').modal('hide');
+                    $('#modal-temporary-product').modal('hide');
                     iziToast.success({
-                        id: 'alert-customer-temp-product-form',
+                        id: 'alert-temporary-product-form',
                         title: 'Success',
                         message: response.message,
                         position: 'topRight',
@@ -763,18 +763,18 @@
                     });
                 },
                 error: function(error) {
-                    $('#modal-customer-temp-product .is-invalid').removeClass('is-invalid')
-                    $('#modal-customer-temp-product .border.border-danger').removeClass('border border-danger')
+                    $('#modal-temporary-product .is-invalid').removeClass('is-invalid')
+                    $('#modal-temporary-product .border.border-danger').removeClass('border border-danger')
                     if (error.responseJSON.errors.length > 0) {
                         $.each(error.responseJSON.errors, function(indexInArray, valueOfProduct) {
                             let formContainer = $(
-                                `#modal-customer-temp-product #collapse${parseInt(indexInArray.split('.')[1])+1}`);
+                                `#modal-temporary-product #collapse${parseInt(indexInArray.split('.')[1])+1}`);
                             formContainer.parents('.accordion-item.shadow-sm').addClass('border border-danger')
                             formContainer.find(`[name=${indexInArray.split('.')[2]}]`).addClass('is-invalid')
                         });
                     }
                     iziToast.error({
-                        id: 'alert-customer-temp-product-form',
+                        id: 'alert-temporary-product-form',
                         title: 'Error',
                         message: error.responseJSON.message.replace(/\./g, ' '),
                         position: 'topRight',
@@ -784,7 +784,7 @@
                 }
             });
         });
-        $('#edit-customer-temp-product').click(function() {
+        $('#edit-temporary-product').click(function() {
             let data = new FormData();
             let products = [];
             data.append('_token', `{{ csrf_token() }}`);
@@ -807,16 +807,16 @@
             });
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-temp-product.update') }}/${$("#edit-customer-temp-product").data("customer-temporary-product")}`,
+                url: `{{ route('inventory.temporary-product.update') }}/${$("#edit-temporary-product").data("customer-temporary-product")}`,
                 data: data,
                 dataType: "json",
                 cache: false,
                 contentType: false,
                 processData: false,
                 success: function(response) {
-                    $('#modal-customer-temp-product').modal('hide');
+                    $('#modal-temporary-product').modal('hide');
                     iziToast.success({
-                        id: 'alert-customer-temp-product-form',
+                        id: 'alert-temporary-product-form',
                         title: 'Success',
                         message: response.message,
                         position: 'topRight',
@@ -825,18 +825,18 @@
                     });
                 },
                 error: function(error) {
-                    $('#modal-customer-temp-product .is-invalid').removeClass('is-invalid')
-                    $('#modal-customer-temp-product .border.border-danger').removeClass('border border-danger')
+                    $('#modal-temporary-product .is-invalid').removeClass('is-invalid')
+                    $('#modal-temporary-product .border.border-danger').removeClass('border border-danger')
                     if (error.responseJSON.errors.length > 0) {
                         $.each(error.responseJSON.errors, function(indexInArray, valueOfProduct) {
                             let formContainer = $(
-                                `#modal-customer-temp-product #collapse${parseInt(indexInArray.split('.')[1])+1}`);
+                                `#modal-temporary-product #collapse${parseInt(indexInArray.split('.')[1])+1}`);
                             formContainer.parents('.accordion-item.shadow-sm').addClass('border border-danger')
                             formContainer.find(`[name=${indexInArray.split('.')[2]}]`).addClass('is-invalid')
                         });
                     }
                     iziToast.error({
-                        id: 'alert-customer-temp-product-form',
+                        id: 'alert-temporary-product-form',
                         title: 'Error',
                         message: error.responseJSON.message.replace(/\./g, ' '),
                         position: 'topRight',
@@ -846,19 +846,19 @@
                 }
             });
         });
-        $('#modal-customer-temp-product').on('hidden.bs.modal', function() {
+        $('#modal-temporary-product').on('hidden.bs.modal', function() {
             $(this).find('.modal-title').html(`Add New @yield('title')`);
             $('#accordion-temporary-product').html('');
-            $('#save-customer-temp-product').removeClass('d-none');
-            $('#edit-customer-temp-product').addClass('d-none');
-            $('#modal-customer-temp-product .is-invalid').removeClass('is-invalid')
-            $('#table-customer-temp-product tbody').find('tr').removeClass('selected');
+            $('#save-temporary-product').removeClass('d-none');
+            $('#edit-temporary-product').addClass('d-none');
+            $('#modal-temporary-product .is-invalid').removeClass('is-invalid')
+            $('#table-temporary-product tbody').find('tr').removeClass('selected');
             initializeDataTable()
         });
-        $('#modal-customer-temp-product').on('shown.bs.modal', function() {
+        $('#modal-temporary-product').on('shown.bs.modal', function() {
             setTimeout(() => {
                 $('.select2').select2({
-                    dropdownParent: $('#modal-customer-temp-product'),
+                    dropdownParent: $('#modal-temporary-product'),
                 });
                 initializeDataTable();
             }, 140);

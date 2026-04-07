@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Man;
+namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerTemporaryProduct;
 use App\Models\Product\CustomerCompanyGood;
 use App\Models\Product\ProductCategory;
 use App\Models\Product\ProductWeight;
+use App\Models\Inventory\InventoryMovement;
 use App\Traits\ImageHandler;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class CustomerTemporaryProductController extends Controller
+class TemporaryProductController extends Controller
 {
     use ImageHandler;
 
@@ -23,19 +23,19 @@ class CustomerTemporaryProductController extends Controller
     public function index()
     {
         $units = ProductWeight::get();
-        $categories = ProductCategory::with('category')->where('business_id', session('userLogged')['company']['business_id'])->get();
+        $categories = ProductCategory::with('category')->where('company_id', session('userLogged')['company']['id'])->get();
 
-        return view('man.customer-temp-product', compact('units', 'categories'));
+        return view('inventory.temporary-product', compact('units', 'categories'));
     }
 
     public function dataTable(Request $request)
     {
-        $totalData = CustomerTemporaryProduct::select(DB::raw('DATE(created_at) as created_at'))->orderBy('created_at', 'desc')->where('company_id', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->count();
+        $totalData = InventoryMovement::select(DB::raw('DATE(created_at) as created_at'))->orderBy('created_at', 'desc')->where('company_id', session('userLogged')['company']['id'])->groupBy('created_at')->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerTemporaryProduct::with('changedProduct', 'changedProduct.unit', 'changedProduct.reference', 'changedProduct.creater', 'changedProduct.reference.unit', 'changedProduct.accepter')
+            $assets = InventoryMovement::with('changedProduct', 'changedProduct.unit', 'changedProduct.reference', 'changedProduct.creater', 'changedProduct.reference.unit', 'changedProduct.accepter')
                 ->select(
-                    'transaction_created',
+                    'created_at',
                     DB::raw('sum(accepted = 1) as sum_accepted'),
                     DB::raw('sum(accepted = 0) as sum_not_accepted'),
                     DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-IN-%') as sum_product_in"),
@@ -49,10 +49,10 @@ class CustomerTemporaryProductController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $assets = $assets->where('company_id', session('userLogged')['company']['id'])->groupByRaw('transaction_created, company_id')->get();
+            $assets = $assets->where('company_id', session('userLogged')['company']['id'])->groupByRaw('created_at, company_id')->get();
         } else {
-            $assets = CustomerTemporaryProduct::with('changedProduct', 'changedProduct.unit', 'changedProduct.reference', 'changedProduct.creater', 'changedProduct.reference.unit', 'changedProduct.accepter')->select(
-                'transaction_created',
+            $assets = InventoryMovement::with('changedProduct', 'changedProduct.unit', 'changedProduct.reference', 'changedProduct.creater', 'changedProduct.reference.unit', 'changedProduct.accepter')->select(
+                'created_at',
                 DB::raw('sum(accepted = 1) as sum_accepted'),
                 DB::raw('sum(accepted = 0) as sum_not_accepted'),
                 DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-IN-%') as sum_product_in"),
@@ -67,10 +67,10 @@ class CustomerTemporaryProductController extends Controller
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->where('company_id', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->get();
+            $assets = $assets->where('company_id', session('userLogged')['company']['id'])->groupByRaw('created_at')->get();
 
-            $totalFiltered = CustomerTemporaryProduct::select(
-                'transaction_created',
+            $totalFiltered = InventoryMovement::select(
+                'created_at',
                 DB::raw('sum(accepted = 1) as sum_accepted'),
                 DB::raw('sum(accepted = 0) as sum_not_accepted'),
                 DB::raw("sum(orderCode like '" . buatSingkatan(session('userLogged')['company']['name']) . "-IN-%') as sum_product_in"),
@@ -83,13 +83,13 @@ class CustomerTemporaryProductController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->where('company_id', session('userLogged')['company']['id'])->groupByRaw('transaction_created')->count();
+            $totalFiltered = $totalFiltered->where('company_id', session('userLogged')['company']['id'])->groupByRaw('created_at')->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
-            $row['transaction_created'] = $item->transaction_created;
+            $row['transaction_created'] = $item->created_at;
             $row['sum_not_accepted'] = $item->sum_not_accepted;
             $row['sum_accepted'] = $item->sum_accepted;
             $row['sum_product_in'] = $item->sum_product_in;
@@ -218,7 +218,7 @@ class CustomerTemporaryProductController extends Controller
                     }
                 }
             }
-            CustomerTemporaryProduct::insert($resultTempProduct);
+            TemporaryProduct::insert($resultTempProduct);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -239,7 +239,7 @@ class CustomerTemporaryProductController extends Controller
             if (! getScope() !== 'user_created') {
                 throw new Exception('Not Authorize');
             }
-            $data = CustomerTemporaryProduct::with('reference')->whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
+            $data = TemporaryProduct::with('reference')->whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
             $dataUpdate = [];
             $dataDelete = [];
             $dataInsert = [];
@@ -299,7 +299,7 @@ class CustomerTemporaryProductController extends Controller
                     }, $dataDelete)
                 )->delete();
             }
-            CustomerTemporaryProduct::whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1, 'accepted_by' => session('userLogged')['user']['id']]);
+            TemporaryProduct::whereDate('created_at', $date ?? now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1, 'accepted_by' => session('userLogged')['user']['id']]);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -314,7 +314,7 @@ class CustomerTemporaryProductController extends Controller
 
     public function show(string $date)
     {
-        $data = CustomerTemporaryProduct::with('reference')->where('transaction_created', $date)->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get()->map(function ($temp) {
+        $data = TemporaryProduct::with('reference')->where('transaction_created', $date)->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get()->map(function ($temp) {
             $temp['status'] = statusTransaction($temp['orderCode']);
 
             return $temp;
@@ -405,7 +405,7 @@ class CustomerTemporaryProductController extends Controller
             })->map(function ($del) {
                 return $del['id'];
             })->all();
-            $referenceTemporaryProducts = CustomerTemporaryProduct::whereIn('id', $referenceTempProducts)->get()->toArray();
+            $referenceTemporaryProducts = TemporaryProduct::whereIn('id', $referenceTempProducts)->get()->toArray();
             $orderCode = ['in' => lastCompanyOrderCode('IN', $id), 'restock' => lastCompanyOrderCode('RESTOCK', $id), 'remove' => lastCompanyOrderCode('REMOVE', $id)];
             $default_data = [
                 'id' => null,
@@ -458,8 +458,8 @@ class CustomerTemporaryProductController extends Controller
                     }
                 }
             }
-            CustomerTemporaryProduct::whereNotIn('id', $updatedTempId)->where(['transaction_created' => $id, 'accepted' => 0])->delete();
-            CustomerTemporaryProduct::upsert($resultTempProduct, ['id'], ['orderCode', 'transaction_created',  'user_id', 'company_id', 'customerCompanyGoodId', 'name', 'picture', 'stock', 'price', 'buy_price', 'weight_id', 'accepted', 'accepted_by', 'status']);
+            TemporaryProduct::whereNotIn('id', $updatedTempId)->where(['transaction_created' => $id, 'accepted' => 0])->delete();
+            TemporaryProduct::upsert($resultTempProduct, ['id'], ['orderCode', 'transaction_created',  'user_id', 'company_id', 'customerCompanyGoodId', 'name', 'picture', 'stock', 'price', 'buy_price', 'weight_id', 'accepted', 'accepted_by', 'status']);
             $response = ['message' => 'updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -487,7 +487,7 @@ class CustomerTemporaryProductController extends Controller
             if (! in_array(session('userLogged')['role']['scope']['code'], ['Manager', 'Developer'])) {
                 $where[] = ['user_id' => session('userLogged')['user']['id']];
             }
-            $builder = CustomerTemporaryProduct::where($where);
+            $builder = TemporaryProduct::where($where);
             $data = $builder->get();
             $builder->delete();
             foreach ($data as $key => $value) {

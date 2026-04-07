@@ -20,6 +20,7 @@ class PermissionController extends Controller
     {
         $result = [];
         $routes = collect(Route::getRoutes())->toArray();
+
         foreach ($routes as $route) {
             $route = collect($route)->toArray();
             if (isset($route['action']['group']) && $route['action']['group'] === 'web') {
@@ -69,7 +70,12 @@ class PermissionController extends Controller
             }
         }
         $result = removeDuplicate($result, 'as');
-        $routes = arrayTree($result, 'parent');
+        $result = array_merge([[
+            'id' => null,
+            'parent' => null,
+            'as' => '#homepage',
+        ]], $result);
+        $routes = arrayTree($result, 'parent', 'as');
         $score_role_id = session('userLogged')['role']['scope_id'];
         $where = [];
         if (session('userLogged')['role']['scope_id'] !== $this->develope_app_scope_id) {

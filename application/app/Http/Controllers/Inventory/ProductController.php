@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Man;
+namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerTemporaryProduct;
 use App\Models\Product\CustomerCompanyGood;
 use App\Models\Product\ProductCategory;
 use App\Models\Product\ProductWeight;
@@ -13,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class CustomerCompanyGoodController extends Controller
+class ProductController extends Controller
 {
     use ImageHandler;
 
@@ -23,9 +22,9 @@ class CustomerCompanyGoodController extends Controller
     public function index()
     {
         $units = ProductWeight::get();
-        $categories = ProductCategory::with('category')->where('business_id', session('userLogged')['company']['business_id'])->get();
+        $categories = ProductCategory::with('category')->where('company_id', session('userLogged')['company']['id'])->get();
 
-        return view('man.customer-company-good', compact('units', 'categories'));
+        return view('inventory.your-products', compact('units', 'categories'));
     }
 
     public function dataTable(Request $request)
@@ -129,7 +128,7 @@ class CustomerCompanyGoodController extends Controller
                 $this->uploadAndWatermark($request->file('picture'), '', 'temp-customer-product', $filename);
             }
             $data['orderCode'] = lastCompanyOrderCode('IN');
-            CustomerTemporaryProduct::create($data);
+            TemporaryProduct::create($data);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -149,7 +148,7 @@ class CustomerCompanyGoodController extends Controller
             if (! getScope() !== 'user_created') {
                 throw new Exception('Not Authorize');
             }
-            $data = CustomerTemporaryProduct::with('reference')->whereDate('created_at', now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
+            $data = TemporaryProduct::with('reference')->whereDate('created_at', now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
             $dataUpdate = [];
             $dataDelete = [];
             $dataInsert = [];
@@ -208,7 +207,7 @@ class CustomerCompanyGoodController extends Controller
                     }, $dataDelete)
                 )->delete();
             }
-            CustomerTemporaryProduct::whereDate('created_at', now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1, 'accepted_by' => session('userLogged')['user']['id']]);
+            TemporaryProduct::whereDate('created_at', now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->update(['accepted' => 1, 'accepted_by' => session('userLogged')['user']['id']]);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -223,7 +222,7 @@ class CustomerCompanyGoodController extends Controller
 
     public function tempProduct()
     {
-        $data = CustomerTemporaryProduct::with('unit', 'reference')->whereDate('created_at', now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
+        $data = TemporaryProduct::with('unit', 'reference')->whereDate('created_at', now()->format('Y-m-d'))->where(['company_id' => session('userLogged')['company']['id'], 'accepted' => 0])->get();
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -290,7 +289,7 @@ class CustomerCompanyGoodController extends Controller
             $data['customerCompanyGoodId'] = $id;
             $data['transaction_created'] = now()->format('Y-m-d');
             $data['orderCode'] = lastCompanyOrderCode('ADJ');
-            CustomerTemporaryProduct::create($data);
+            TemporaryProduct::create($data);
             $response = ['message' => 'updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -317,7 +316,7 @@ class CustomerCompanyGoodController extends Controller
                 'company_id' => session('userLogged')['company']['id'],
                 'user_id' => session('userLogged')['user']['id'],
             ];
-            CustomerTemporaryProduct::create($data);
+            TemporaryProduct::create($data);
             $response = ['message' => 'deleting resource successfully'];
             $code = 200;
             DB::commit();

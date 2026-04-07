@@ -1,20 +1,20 @@
 <?php
 
-namespace App\Http\Controllers\Man;
+namespace App\Http\Controllers\Promo;
 
 use App\Http\Controllers\Controller;
 use App\Models\CustomerCompanyDiscount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CustomerCompanyDiscountController extends Controller
+class DiscountController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('man.customer-company-discount');
+        return view('product.discount');
     }
 
     public function dataTable(Request $request)

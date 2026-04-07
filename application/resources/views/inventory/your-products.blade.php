@@ -198,7 +198,7 @@
 
             $.ajax({
                 type: "GET",
-                url: "{{ route('man.customer-company-good.show') }}/" + idAppRole,
+                url: "{{ route('inventory.your-products.show') }}/" + idAppRole,
                 dataType: "json",
                 success: function(response) {
                     let formElement = $('#modal-customer-company-good').find("form");
@@ -276,7 +276,7 @@
                         }, toast, 'button');
                         $.ajax({
                             type: "DELETE",
-                            url: "{{ route('man.customer-company-good.delete') }}/" +
+                            url: "{{ route('inventory.your-products.delete') }}/" +
                                 idAppRole,
                             data: {
 
@@ -334,7 +334,7 @@
     function getAllTempProduct() {
         $.ajax({
             type: "GET",
-            url: "{{ route('man.customer-company-good.temp-product') }}",
+            url: "{{ route('inventory.your-products.temp-product') }}",
             dataType: "JSON",
             success: function({
                 data
@@ -356,7 +356,7 @@
 
     $(function() {
         window.dataTableCustomerCompanyGood = $("#table-customer-company-good").DataTable({
-            ajax: "{{ route('man.customer-company-good.data-table') }}",
+            ajax: "{{ route('inventory.your-products.data-table') }}",
             processing: true,
             serverSide: true,
             order: [
@@ -430,7 +430,7 @@
             let data = serializeFiles($('#form-customer-company-good'));
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-company-good.store') }}`,
+                url: `{{ route('inventory.your-products.store') }}`,
                 data: data,
                 dataType: "json",
                 cache: false,
@@ -470,7 +470,7 @@
         $('#save-temporary-product').click(function() {
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-company-good.store-temp-product', ['date' => now()->format('Y-m-d')]) }}`,
+                url: `{{ route('inventory.your-products.store-temporary-product', ['date' => now()->format('Y-m-d')]) }}`,
                 data: {
 
                 },
@@ -503,7 +503,7 @@
             let data = serializeFiles($('#form-customer-company-good'));
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-company-good.update') }}/${$('#form-customer-company-good').find('input[name=id]').val()}`,
+                url: `{{ route('inventory.your-products.update') }}/${$('#form-customer-company-good').find('input[name=id]').val()}`,
                 data: data,
                 dataType: "json",
                 cache: false,

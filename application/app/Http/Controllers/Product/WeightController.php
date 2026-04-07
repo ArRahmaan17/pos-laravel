@@ -1,43 +1,29 @@
 <?php
 
-namespace App\Http\Controllers\Man;
+namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
-use App\Models\UserManagement\Role;
+use App\Models\Product\ProductWeight;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CustomerRoleController extends Controller
+class WeightController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('settings.role');
-    }
-
-    public function role($id)
-    {
-        $data = Role::where('user_id', $id)->get();
-        $response = ['message' => 'Showing resource successfully', 'data' => dataToOption($data)];
-        $code = 200;
-        if (empty($data)) {
-            $response = ['message' => 'Failed showing resource', 'data' => dataToOption($data)];
-            $code = 404;
-        }
-
-        return response()->json($response, $code);
+        return view('product.weight');
     }
 
     public function dataTable(Request $request)
     {
-        $where = [['user_id', '=', session('userLogged')['company']['user_id']]];
-        $totalData = Role::where($where)->orderBy('id', 'asc')
+        $totalData = ProductWeight::orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = Role::select('*');
+            $assets = ProductWeight::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -46,9 +32,9 @@ class CustomerRoleController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
-            $assets = $assets->where($where)->get();
+            $assets = $assets->get();
         } else {
-            $assets = Role::select('*')
+            $assets = ProductWeight::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -59,16 +45,16 @@ class CustomerRoleController extends Controller
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->where($where)->get();
+            $assets = $assets->get();
 
-            $totalFiltered = Role::select('*')
+            $totalFiltered = ProductWeight::select('*')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->where($where)->count();
+            $totalFiltered = $totalFiltered->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
@@ -76,7 +62,7 @@ class CustomerRoleController extends Controller
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
             $row['description'] = $item->description;
-            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-role='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-role='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-role='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -94,22 +80,20 @@ class CustomerRoleController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'name' => 'required|min:2|max:30|unique:customer_roles,name',
-            'description' => 'required|min:6|max:100',
-            'as_role' => 'required|in:cashier,sales,admin,warehouse',
-        ], ['user_id.required' => 'The customer user field is required']);
         DB::beginTransaction();
+        $request->validate([
+            'name' => 'required|min:2|max:10|unique:product_weights,name',
+            'description' => 'required|min:6|max:100',
+        ]);
         try {
-            Role::create($request->except('_token'));
-            $response = ['message' => 'Creating resources successfully'];
-            $code = 200;
+            ProductWeight::create($request->except('_token', 'id'));
             DB::commit();
+            $response = ['message' => 'App Good Unit create successfully'];
+            $code = 200;
         } catch (\Throwable $th) {
             DB::rollBack();
-            $response = ['message' => 'Failed creating resources'];
             $code = 422;
+            $response = ['message' => 'Failed creating App Good Unit'];
         }
 
         return response()->json($response, $code);
@@ -120,11 +104,11 @@ class CustomerRoleController extends Controller
      */
     public function show(string $id)
     {
-        $data = Role::where('id', $id)->first();
-        $response = ['message' => 'Showing resource successfully', 'data' => $data];
+        $data = ProductWeight::find($id);
+        $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
-            $response = ['message' => 'Failed showing resource', 'data' => $data];
+            $response = ['message' => 'failed showing resource', 'data' => $data];
             $code = 404;
         }
 
@@ -138,14 +122,12 @@ class CustomerRoleController extends Controller
     {
         $request->validate([
             'id' => 'required',
-            'user_id' => 'required|exists:users,id',
-            'name' => 'required|unique:permissions,name,'.$id,
+            'name' => 'required|unique:product_weights,name,'.$id,
             'description' => 'required|min:6|max:100',
-            'as_role' => 'required|in:cashier,sales,admin,warehouse',
         ]);
         DB::beginTransaction();
         try {
-            Role::find($id)->update($request->except('_token', 'id'));
+            ProductWeight::find($id)->update($request->except('_token', 'id'));
             $response = ['message' => 'Updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -165,8 +147,8 @@ class CustomerRoleController extends Controller
     {
         DB::beginTransaction();
         try {
-            if (empty(collect(Role::with('role_users')->find($id)->role_users)->toArray())) {
-                Role::destroy($id);
+            if (empty(collect(ProductWeight::with('role_users')->find($id)->role_users)->toArray())) {
+                ProductWeight::destroy($id);
                 DB::commit();
                 $response = ['message' => 'deleting resource successfully'];
                 $code = 200;

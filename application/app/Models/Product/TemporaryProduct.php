@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Product;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CustomerTemporaryProduct extends Model
+class TemporaryProduct extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -39,7 +39,7 @@ class CustomerTemporaryProduct extends Model
 
     public function changedProduct(): HasMany
     {
-        return $this->hasMany(CustomerTemporaryProduct::class, 'transaction_created', 'transaction_created');
+        return $this->hasMany(TemporaryProduct::class, 'transaction_created', 'transaction_created');
     }
 
     public function getStatusTransactionAttribute()

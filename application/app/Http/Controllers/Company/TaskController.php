@@ -53,16 +53,16 @@ class TaskController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where($where)->get();
         } else {
             $assets = Task::join('users', 'users.id', '=', 'tasks.assigned_to_user_id')->with('user', 'details', 'details.master')->select('tasks.*', 'users.name as user_name')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -71,11 +71,11 @@ class TaskController extends Controller
             $assets = $assets->where($where)->get();
 
             $totalFiltered = Task::join('users', 'users.id', '=', 'tasks.assigned_to_user_id')->with('user', 'details', 'details.master')->select('tasks.*', 'users.name as user_name')
-                ->where('name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('description', 'like', '%' . $request['search']['value'] . '%');
+                ->where('name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where($where)->count();
         }
@@ -87,10 +87,10 @@ class TaskController extends Controller
             $row['name'] = $item['name'];
             $row['details'] = $item['details'];
             $row['user_name'] = $item['user']['name'];
-            $row['activity'] = (($item['start_at'] && $item['end_at']) ? now()->createFromTimeString($item['start_at'])->diffForHumans(now()->createFromTimeString($item['end_at']), true) : (($item['start_at'] && $item['end_at'] === null) ? 'Started ' . now()->createFromTimeString($item['start_at'])->diffForHumans(now()) : 'Not Started Yet'));
-            $row['percentage'] = $item['percentage'] . ' %';
-            $row['time_limit'] = now()->createFromTimeString(now()->format('Y-m-d H:i:s'))->diffInDays($item['time_limit'], false) . ' days left';
-            $row['action'] = ((! $item['start_at']) ? "<button class='btn btn-outline-success btn-icon start' data-customer-task-status='new' data-customer-task-management='" . $item['id'] . "'><i class='bx bx-play'></i></button>" : '') . ((! $item['end_at']) ? "<button class='btn btn-icon btn-outline-warning edit' data-customer-task-management='" . $item['id'] . "' ><i class='bx bx-pencil' ></i></button><button data-customer-task-management='" . $item['id'] . "' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>" : '');
+            $row['activity'] = (($item['start_at'] && $item['end_at']) ? now()->createFromTimeString($item['start_at'])->diffForHumans(now()->createFromTimeString($item['end_at']), true) : (($item['start_at'] && $item['end_at'] === null) ? 'Started '.now()->createFromTimeString($item['start_at'])->diffForHumans(now()) : 'Not Started Yet'));
+            $row['percentage'] = $item['percentage'].' %';
+            $row['time_limit'] = now()->createFromTimeString(now()->format('Y-m-d H:i:s'))->diffInDays($item['time_limit'], false).' days left';
+            $row['action'] = ((! $item['start_at']) ? "<button class='btn btn-outline-success btn-icon start' data-customer-task-status='new' data-customer-task-management='".$item['id']."'><i class='bx bx-play'></i></button>" : '').((! $item['end_at']) ? "<button class='btn btn-icon btn-outline-warning edit' data-customer-task-management='".$item['id']."' ><i class='bx bx-pencil' ></i></button><button data-customer-task-management='".$item['id']."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>" : '');
             $dataFiltered[] = $row;
         }
         $response = [
@@ -242,7 +242,7 @@ class TaskController extends Controller
         $message = ['message' => 'tasks found', 'data' => $dataTask];
         if (empty($dataTask)) {
             $status = 404;
-            $message = ['message' => 'tasks not found, please contact manager to create new task for ' . session('userLogged')['role']['scope']['code'], 'data' => $dataTask];
+            $message = ['message' => 'tasks not found, please contact manager to create new task for '.session('userLogged')['role']['scope']['code'], 'data' => $dataTask];
         }
 
         return response()->json($message, $status);
@@ -251,8 +251,8 @@ class TaskController extends Controller
     public function finishTask(Request $request, $id, $type)
     {
         $request->validate(['filepond' => 'required|image']);
-        $filename = 'task-' . $id . '-' . $type . '-' . date('Y-m-d-His') . rand(1, 100) . '.' . $request->file('filepond')->getClientOriginalExtension();
-        $this->uploadAndWatermark($request->file('filepond'), md5(session('userLogged')['company']['id']) . '/' . md5($id), 'company-task-evidence', $filename);
+        $filename = 'task-'.$id.'-'.$type.'-'.date('Y-m-d-His').rand(1, 100).'.'.$request->file('filepond')->getClientOriginalExtension();
+        $this->uploadAndWatermark($request->file('filepond'), md5(session('userLogged')['company']['id']).'/'.md5($id), 'company-task-evidence', $filename);
         DB::beginTransaction();
         try {
             $data = TaskDetail::find($id);
@@ -366,7 +366,7 @@ class TaskController extends Controller
             $builder = TaskDetail::where(['task_id' => $taskDetailData->task_id]);
             [$countDetail, $countFinish] = [$builder->count(), $builder->where('status', 1)->count()];
             Task::find($taskDetailData->task_id)->update(['percentage' => (($countFinish / $countDetail) * 100)]);
-            Storage::disk('company-task-evidence')->deleteDirectory(md5(session('userLogged')['company']['id']) . '/' . md5($id));
+            Storage::disk('company-task-evidence')->deleteDirectory(md5(session('userLogged')['company']['id']).'/'.md5($id));
             $status = 200;
             $message = ['message' => 'detail resources destroy successfully'];
             DB::commit();

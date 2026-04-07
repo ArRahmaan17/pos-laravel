@@ -1,0 +1,39 @@
+
+   INFO  Running migrations.  
+
+  2026_04_08_023603_create_task_item_logs_table ................. 63.79ms FAIL
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[HY000]: General error: 1419 You do not have the SUPER privilege and binary logging is enabled (you *might* want to use the less safe log_bin_trust_function_creators variable) (Connection: mysql, SQL: 
+            CREATE TRIGGER trg_task_items_after_insert
+            AFTER INSERT ON task_items
+            FOR EACH ROW
+            BEGIN
+                INSERT INTO task_item_logs (task_item_id, action, new_data)
+                VALUES (NEW.id, 'INSERT', JSON_OBJECT(
+                    'id', NEW.id, 'task_id', NEW.task_id, 'title', NEW.title, 'description', NEW.description, 'is_done', NEW.is_done, 'completed_at', NEW.completed_at, 'evidence', NEW.evidence, 'assigned_to_user_id', NEW.assigned_to_user_id, 'assigned_to_role_id', NEW.assigned_to_role_id, 'company_id', NEW.company_id, 'created_by', NEW.created_by, 'deleted_by', NEW.deleted_by, 'created_at', NEW.created_at, 'updated_at', NEW.updated_at, 'deleted_at', NEW.deleted_at
+                ));
+            END
+        )
+
+  at vendor/laravel/framework/src/Illuminate/Database/Connection.php:825
+    821▕                     $this->getName(), $query, $this->prepareBindings($bindings), $e
+    822▕                 );
+    823▕             }
+    824▕ 
+  ➜ 825▕             throw new QueryException(
+    826▕                 $this->getName(), $query, $this->prepareBindings($bindings), $e
+    827▕             );
+    828▕         }
+    829▕     }
+
+      [2m+7 vendor frames [22m
+
+  8   database/migrations/2026_04_08_023603_create_task_item_logs_table.php:24
+      Illuminate\Support\Facades\Facade::__callStatic("unprepared")
+      [2m+25 vendor frames [22m
+
+  34  artisan:35
+      Illuminate\Foundation\Console\Kernel::handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+

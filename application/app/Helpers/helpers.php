@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\CustomerProductTransaction;
-use App\Models\CustomerTemporaryProduct;
+use App\Models\Product\TemporaryProduct;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -60,7 +60,7 @@ if (! function_exists('lastCompanyOrderCode')) {
                 ->orderBy('id', 'DESC')
                 ->first();
         } else {
-            $data = CustomerTemporaryProduct::where('orderCode', 'like', '%'.$transaction_status.'%')
+            $data = TemporaryProduct::where('orderCode', 'like', '%'.$transaction_status.'%')
                 ->where('company_id', session('userLogged')['company']['id'])->where('transaction_created', $date)
                 ->orderBy('id', 'DESC')
                 ->first();
@@ -334,7 +334,7 @@ if (! function_exists('arrayTree')) {
         foreach ($elements as $element) {
             $element = (array) $element;
             if ($element[$keyparent] === $idParent) {
-                $children = buildTreeMenu($elements, $element[$key]);
+                $children = arrayTree($elements, 'parent', 'id', $element[$key]);
                 if ($children) {
                     $element['children'] = $children;
                 }

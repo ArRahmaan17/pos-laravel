@@ -78,14 +78,14 @@ class AuthController extends Controller
             if ($hasPrivileges) {
                 session()->flush();
                 session(['userLogged' => $user, 'lifetime' => now()->addMinutes(intval(env('SESSION_LIFETIME', '120')))]);
-                $response = ['message' => 'successfully login as ' . $user['user']['username']];
+                $response = ['message' => 'successfully login as '.$user['user']['username']];
                 $status = 200;
             } else {
-                $response = ['message' => 'failed login as ' . $user['user']['username'] . ', please set menu for the role'];
+                $response = ['message' => 'failed login as '.$user['user']['username'].', please set menu for the role'];
                 $status = 404;
             }
         } else {
-            $response = ['message' => 'failed login as ' . $user['user']['username'] . ', unexpected error on process login as'];
+            $response = ['message' => 'failed login as '.$user['user']['username'].', unexpected error on process login as'];
             $status = 404;
         }
 
@@ -205,7 +205,7 @@ class AuthController extends Controller
                 $data_role = Role::where('code', 'root')->first()->toArray();
                 unset($data_role['id']);
                 $data_role['name'] = 'Your Default Manager Role';
-                $data_role['code'] = 'root-' . str(buatSingkatan($data_company->name))->lower();
+                $data_role['code'] = 'root-'.str(buatSingkatan($data_company->name))->lower();
                 $data_role['company_id'] = $data_company->id;
                 $data_role['created_by'] = $user_register->id;
                 $create_role = Role::create($data_role);

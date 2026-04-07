@@ -106,7 +106,7 @@
 
             $.ajax({
                 type: "GET",
-                url: "{{ route('man.customer-product-stocktaking.show') }}/" + idStocktaking,
+                url: "{{ route('inventory.stocktaking.show') }}/" + idStocktaking,
                 dataType: "json",
                 success: function(response) {
                     generateProductAccordion({
@@ -157,7 +157,7 @@
 
             $.ajax({
                 type: "GET",
-                url: "{{ route('man.customer-product-stocktaking.show') }}/" + idStocktaking,
+                url: "{{ route('inventory.stocktaking.show') }}/" + idStocktaking,
                 dataType: "json",
                 success: function(response) {
                     let data = response.data;
@@ -208,7 +208,7 @@
             var data = window.dataTableCustomerCompany.rows('.selected').data()[0];
             $.ajax({
                 type: "POST",
-                url: "{{ route('man.customer-product-stocktaking.approve') }}/" + idStocktaking,
+                url: "{{ route('inventory.stocktaking.approve') }}/" + idStocktaking,
                 data: {
                     _token: `{{ csrf_token() }}`
                 },
@@ -256,7 +256,7 @@
                         }, toast, 'button');
                         $.ajax({
                             type: "DELETE",
-                            url: "{{ route('man.customer-product-stocktaking.delete') }}/" +
+                            url: "{{ route('inventory.stocktaking.delete') }}/" +
                                 idStocktaking,
                             data: {
 
@@ -331,7 +331,7 @@
 
     function initialTableCompanyStocktaking() {
         window.dataTableCustomerCompany = $("#table-customer-product-stocktaking").DataTable({
-            ajax: "{{ route('man.customer-product-stocktaking.data-table') }}",
+            ajax: "{{ route('inventory.stocktaking.data-table') }}",
             processing: true,
             serverSide: true,
             order: [
@@ -400,7 +400,7 @@
 
     function initialTableCompanyGood() {
         window.dataTableCustomerCompanyGood = $("#table-customer-company-good").DataTable({
-            ajax: "{{ route('man.customer-company-good.data-table') }}",
+            ajax: "{{ route('inventory.your-products.data-table') }}",
             processing: true,
             serverSide: true,
             order: [
@@ -478,7 +478,7 @@
             let data = serializeObject($('#form-customer-product-stocktaking'));
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-product-stocktaking.store') }}`,
+                url: `{{ route('inventory.stocktaking.store') }}`,
                 data: {
                     ...data
                 },
@@ -524,7 +524,7 @@
             let data = serializeObject($('#form-customer-product-stocktaking'));
             $.ajax({
                 type: "PUT",
-                url: `{{ route('man.customer-product-stocktaking.update') }}/${$('#form-customer-product-stocktaking .accordion-item').find('[id=id]').val()}`,
+                url: `{{ route('inventory.stocktaking.update') }}/${$('#form-customer-product-stocktaking .accordion-item').find('[id=id]').val()}`,
                 data: {
                     ...data
                 },

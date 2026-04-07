@@ -30,13 +30,17 @@ if [ ! -d "/var/www/html/public/build" ] || [ ! -f "/var/www/html/public/build/m
         frankenphp php-cli artisan migrate --force
     else
         echo "Running development migrations (migrate:fresh --seed)..."
-        # frankenphp php-cli artisan migrate:fresh --seed
+        frankenphp php-cli artisan migrate:fresh --seed
     fi
 
     # Discover packages and cache configuration for production
     if [ "${APP_ENV}" = "production" ]; then
         echo "Optimizing Laravel for production..."
         frankenphp php-cli artisan package:discover
+        frankenphp php-cli artisan config:cache
+        frankenphp php-cli artisan event:cache
+        frankenphp php-cli artisan route:cache
+        frankenphp php-cli artisan view:cache
     fi
 
     # Start FrankenPHP and Reverb server
