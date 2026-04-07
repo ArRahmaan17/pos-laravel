@@ -104,7 +104,7 @@ Open:
 http://127.0.0.1
 ```
 
-Development stack behavior in [`docker-compose.yml`](/home/pos-laravel/docker-compose.yml):
+Development stack behavior in [`docker-compose.yml`](docker-compose.yml):
 
 - `app` is built from [`build/Dockerfile`](build/Dockerfile)
 - `application/` is bind-mounted into the container
