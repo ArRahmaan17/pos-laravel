@@ -21,7 +21,9 @@
     <meta name="twitter:title" content="@yield('title') - {{ env('OG_TITLE', env('APP_NAME')) }}">
     <meta name="twitter:description" content="{{ env('OG_DESCRIPTION') }}">
     <meta name="twitter:image" content="{{ asset(env('OG_IMAGE')) }}">
-
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6e85739b51c640d1ab285d19463b8dde"}'></script>
+    <!-- End Cloudflare Web Analytics -->
     <title>@yield('title') - {{ env('APP_NAME') }}</title>
     <style>
         *::-webkit-scrollbar {
