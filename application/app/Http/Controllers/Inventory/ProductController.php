@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product\CustomerCompanyGood;
+use App\Models\Inventory\Product;
 use App\Models\Product\ProductCategory;
 use App\Models\Product\ProductWeight;
 use App\Traits\ImageHandler;
@@ -29,11 +29,11 @@ class ProductController extends Controller
 
     public function dataTable(Request $request)
     {
-        $totalData = CustomerCompanyGood::orderBy('products.id', 'asc')->where('company_id', session('userLogged')['company']['id'])
+        $totalData = Product::orderBy('products.id', 'asc')->where('status', 'publish')->where('company_id', session('userLogged')['company']['id'])
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompanyGood::with('unit')->select('*');
+            $assets = Product::with('weight', 'category')->select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -42,9 +42,9 @@ class ProductController extends Controller
             if (isset($request['order'][0]['column'])) {
                 $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $assets = $assets->where('company_id', session('userLogged')['company']['id'])->get();
+            $assets = $assets->where('status', 'publish')->where('company_id', session('userLogged')['company']['id'])->get();
         } else {
-            $assets = CustomerCompanyGood::with('unit')->select('*')
+            $assets = Product::with('weight', 'category')->select('*')
                 ->where('products.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('products.price', 'like', '%' . $request['search']['value'] . '%');
 
@@ -55,29 +55,27 @@ class ProductController extends Controller
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
-            $assets = $assets->where('company_id', session('userLogged')['company']['id'])->get();
+            $assets = $assets->where('status', 'publish')->where('company_id', session('userLogged')['company']['id'])->get();
 
-            $totalFiltered = CustomerCompanyGood::select('*')
+            $totalFiltered = Product::select('*')
                 ->where('products.name', 'like', '%' . $request['search']['value'] . '%')
                 ->orWhere('products.price', 'like', '%' . $request['search']['value'] . '%');
 
             if (isset($request['order'][0]['column'])) {
                 $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
             }
-            $totalFiltered = $totalFiltered->count();
+            $totalFiltered = $totalFiltered->where('status', 'publish')->count();
         }
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
             $row = [];
             $row['order_number'] = $request['start'] + ($index + 1);
             $row['name'] = $item->name;
+            $row['code'] = $item->code;
             $row['price'] = $item->price;
             $row['buy_price'] = $item->buy_price;
-            $row['stock'] = $item->stock;
-            $row['unit'] = $item->unit->name;
-            $row['weight_id'] = $item->unit->id;
-            $row['weight_id'] = $item->unit->id;
-            $row['picture'] = $item->picture;
+            $row['weight_id'] = $item->weight->id;
+            $row['category_id'] = $item->weight->id;
             $row['status'] = ($item->status === 'archive') ? '<span class="badge bg-label-danger">' . $item->status . '</span>' : (($item->status === 'draft') ? '<span class="badge bg-label-warning">' . $item->status . '</span>' : '<span class="badge bg-label-success">' . $item->status . '</span>');
             $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $row['action_temp'] = "<button class='btn btn-icon btn-outline-warning edit-temp' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-outline-danger delete-temp'><i class='bx bxs-trash-alt' ></i></button>";
@@ -167,8 +165,8 @@ class ProductController extends Controller
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
-                if ($value->customerCompanyGoodId) {
-                    $record['id'] = $value->customerCompanyGoodId;
+                if ($value->ProductId) {
+                    $record['id'] = $value->ProductId;
                     if (count(explode('REMOVE', $value->orderCode)) > 1) {
                         $record['product'] = $value->product;
                         $dataDelete[] = $record;
@@ -180,13 +178,13 @@ class ProductController extends Controller
                 }
             }
             if (! empty($dataInsert)) {
-                CustomerCompanyGood::insert($dataInsert);
+                Product::insert($dataInsert);
                 foreach ($dataInsert as $index => $value) {
                     Storage::disk('public-asset')->move('temp-customer-product/' . $value['picture'], 'customer-product/' . $value['picture']);
                 }
             }
             if (! empty($dataUpdate)) {
-                CustomerCompanyGood::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buy_price', 'weight_id']);
+                Product::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buy_price', 'weight_id']);
                 foreach ($dataUpdate as $index => $value) {
                     if (Storage::disk('public-asset')->exists('temp-customer-product/' . $value['picture'])) {
                         Storage::disk('public-asset')->move('temp-customer-product/' . $value['picture'], 'customer-product/' . $value['picture']);
@@ -200,7 +198,7 @@ class ProductController extends Controller
                         Storage::disk('customer-product')->delete($value['product']['picture']);
                     }
                 }
-                CustomerCompanyGood::whereIn(
+                Product::whereIn(
                     'id',
                     array_map(function ($data) {
                         return $data['id'];
@@ -238,7 +236,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        $data = CustomerCompanyGood::where([['id', $id], ['company_id', session('userLogged')['company']['id']]])->first();
+        $data = Product::where([['id', $id], ['company_id', session('userLogged')['company']['id']]])->first();
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -273,7 +271,7 @@ class ProductController extends Controller
         DB::beginTransaction();
         try {
             $data = $request->except('_token', 'id');
-            $referenceProduct = CustomerCompanyGood::find($id);
+            $referenceProduct = Product::find($id);
             $data['picture'] = $referenceProduct->picture;
             if ($request->file('picture')) {
                 $filename = md5($request->name . now()->format('Y-m-d h:i:s')) . '.' . $request->file('picture')->clientExtension();
@@ -286,7 +284,7 @@ class ProductController extends Controller
             $data['stock_reference'] = str_replace(',', '.', str_replace('.', '', $referenceProduct->stock));
             $data['company_id'] = session('userLogged')['company']['id'];
             $data['user_id'] = session('userLogged')['user']['id'];
-            $data['customerCompanyGoodId'] = $id;
+            $data['ProductId'] = $id;
             $data['transaction_created'] = now()->format('Y-m-d');
             $data['orderCode'] = lastCompanyOrderCode('ADJ');
             TemporaryProduct::create($data);
@@ -312,7 +310,7 @@ class ProductController extends Controller
         try {
             $data = [
                 'orderCode' => lastCompanyOrderCode('REMOVE'),
-                'customerCompanyGoodId' => $id,
+                'ProductId' => $id,
                 'company_id' => session('userLogged')['company']['id'],
                 'user_id' => session('userLogged')['user']['id'],
             ];

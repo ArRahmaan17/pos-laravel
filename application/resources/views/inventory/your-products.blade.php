@@ -117,7 +117,7 @@
                     <div class="row">
                         <div class="col mb-3">
                             <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                <img draggable="false" src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded" height="100"
+                                <img draggable="false" src="{{ asset('resources/default/product/default-product.png') }}" alt="user-avatar" class="d-block rounded" height="100"
                                     width="100" id="uploadedAvatar" />
                                 <div class="button-wrapper">
                                     <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
@@ -553,7 +553,7 @@
             $('#edit-customer-company-good').addClass('d-none');
             $('#modal-customer-company-good .is-invalid').removeClass('is-invalid')
             $('#table-customer-company-good tbody').find('tr').removeClass('selected');
-            $('#uploadedAvatar').prop('src', `{{ asset('customer-product/default-product.png') }}`);
+            $('#uploadedAvatar').prop('src', `{{ asset('resources/default/product/default-product.png') }}`);
         });
         $('#modal-customer-company-good').on('shown.bs.modal', function() {
             setTimeout(() => {

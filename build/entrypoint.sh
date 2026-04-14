@@ -3,14 +3,6 @@ set -e
 
 if [ "$1" = "frankenphp" ]; then
 # Check if vendor folder exists, if not run composer install
-# 
-if [ ! -d "/var/www/html/public/build" ] || [ ! -f "/var/www/html/public/build/manifest.json" ]; then
-        echo "--- 📦 Build assets missing. Installing... ---"
-        # Note: Ensure 'npm' binary is available in the app image
-        npm install --prefer-offline && npm run build
-    else
-        echo "--- ✅ Build assets exist. ---"
-    fi
     sed -i "s/your_awesome_application_port/${NGINX_APP_PORT}/" /etc/frankenphp/Caddyfile
     # Ensure database exists
     echo "Checking database status..."
