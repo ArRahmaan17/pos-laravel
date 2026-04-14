@@ -40,8 +40,8 @@ RUN composer install --no-interaction --no-scripts --optimize-autoloader --prefe
 # ==============================================================================
 FROM dunglas/frankenphp:php8.4-alpine AS app
 
-LABEL maintainer="pos-laravel"
-LABEL description="POS Laravel — FrankenPHP + Caddy"
+LABEL maintainer="Doglex"
+LABEL description="Laravel — FrankenPHP + Caddy"
 
 # ── System dependencies ──────────────────────────────────────────────────────
 RUN apk add --no-cache \

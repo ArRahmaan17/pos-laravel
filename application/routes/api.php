@@ -2,12 +2,12 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Dev\PermissionController;
-use App\Http\Controllers\Api\Dev\ProductUnitController;
 use App\Http\Controllers\Api\Dev\RoleController;
 use App\Http\Controllers\Api\Dev\SubscriptionController;
-use App\Http\Controllers\Api\Man\CustomerCompanyGoodController;
+use App\Http\Controllers\Api\Dev\WeightController;
 use App\Http\Controllers\Api\Man\CategoryController;
-use App\Http\Controllers\Api\Man\CustomerTemporaryProductController;
+use App\Http\Controllers\Api\Man\ProductController;
+use App\Http\Controllers\Api\Man\TemporaryProductController;
 use App\Http\Controllers\Api\Man\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -61,22 +61,22 @@ use Illuminate\Support\Facades\Route;
 //             Route::delete('/{id?}', [UserController::class, 'destroy'])->name('delete');
 //         });
 //         Route::prefix('customer-company-good')->name('customer-company-good.')->group(function () {
-//             Route::post('/', [CustomerCompanyGoodController::class, 'store'])->name('store');
-//             Route::post('/store-temp-product/{date?}', [CustomerTemporaryProductController::class, 'storeTempProduct'])->name('store-temp-product');
-//             Route::get('/data-table', [CustomerCompanyGoodController::class, 'dataTable'])->name('data-table');
-//             Route::get('/temp-product', [CustomerCompanyGoodController::class, 'tempProduct'])->name('temp-product');
-//             Route::post('/{id?}', [CustomerCompanyGoodController::class, 'update'])->name('update');
-//             Route::get('/{id?}', [CustomerCompanyGoodController::class, 'show'])->name('show');
-//             Route::delete('/{id?}', [CustomerCompanyGoodController::class, 'destroy'])->name('delete');
+//             Route::post('/', [ProductController::class, 'store'])->name('store');
+//             Route::post('/store-temporary-product/{date?}', [TemporaryProductController::class, 'storeTempProduct'])->name('store-temporary-product');
+//             Route::get('/data-table', [ProductController::class, 'dataTable'])->name('data-table');
+//             Route::get('/temp-product', [ProductController::class, 'tempProduct'])->name('temp-product');
+//             Route::post('/{id?}', [ProductController::class, 'update'])->name('update');
+//             Route::get('/{id?}', [ProductController::class, 'show'])->name('show');
+//             Route::delete('/{id?}', [ProductController::class, 'destroy'])->name('delete');
 //         });
 //         Route::prefix('customer-temporary-product')->name('customer-temporary-product.')->group(function () {
-//             Route::post('/', [CustomerTemporaryProductController::class, 'store'])->name('store');
-//             Route::post('/store-temp-product/{date?}', [CustomerTemporaryProductController::class, 'storeTempProduct'])->name('store-temp-product');
-//             Route::put('/{id?}', [CustomerTemporaryProductController::class, 'update'])->name('update');
-//             Route::get('/data-table', [CustomerTemporaryProductController::class, 'dataTable'])->name('data-table');
-//             Route::get('/{date?}', [CustomerTemporaryProductController::class, 'show'])->name('show');
-//             Route::get('/temp/{id?}', [CustomerTemporaryProductController::class, 'showTemp'])->name('show-temp');
-//             Route::delete('/{id?}', [CustomerTemporaryProductController::class, 'destroy'])->name('delete');
+//             Route::post('/', [TemporaryProductController::class, 'store'])->name('store');
+//             Route::post('/store-temporary-product/{date?}', [TemporaryProductController::class, 'storeTempProduct'])->name('store-temporary-product');
+//             Route::put('/{id?}', [TemporaryProductController::class, 'update'])->name('update');
+//             Route::get('/data-table', [TemporaryProductController::class, 'dataTable'])->name('data-table');
+//             Route::get('/{date?}', [TemporaryProductController::class, 'show'])->name('show');
+//             Route::get('/temp/{id?}', [TemporaryProductController::class, 'showTemp'])->name('show-temp');
+//             Route::delete('/{id?}', [TemporaryProductController::class, 'destroy'])->name('delete');
 //         });
 //         Route::prefix('customer-product-type')->name('customer-product-type.')->group(function () {
 //             Route::get('/', [CategoryController::class, 'index'])->name('index');
@@ -106,12 +106,12 @@ use Illuminate\Support\Facades\Route;
 //             Route::delete('/{id?}', [PermissionController::class, 'destroy'])->name('delete');
 //         });
 //         Route::prefix('product-unit')->name('product-unit.')->group(function () {
-//             Route::get('/', [ProductUnitController::class, 'index'])->name('index');
-//             Route::post('/', [ProductUnitController::class, 'store'])->name('store');
-//             Route::put('/{id?}', [ProductUnitController::class, 'update'])->name('update');
-//             Route::get('/data-table', [ProductUnitController::class, 'dataTable'])->name('data-table');
-//             Route::get('/{id?}', [ProductUnitController::class, 'show'])->name('show');
-//             Route::delete('/{id?}', [ProductUnitController::class, 'destroy'])->name('delete');
+//             Route::get('/', [WeightController::class, 'index'])->name('index');
+//             Route::post('/', [WeightController::class, 'store'])->name('store');
+//             Route::put('/{id?}', [WeightController::class, 'update'])->name('update');
+//             Route::get('/data-table', [WeightController::class, 'dataTable'])->name('data-table');
+//             Route::get('/{id?}', [WeightController::class, 'show'])->name('show');
+//             Route::delete('/{id?}', [WeightController::class, 'destroy'])->name('delete');
 //         });
 //         Route::prefix('subscription')->name('subscription.')->group(function () {
 //             Route::get('/', [SubscriptionController::class, 'index'])->name('index');

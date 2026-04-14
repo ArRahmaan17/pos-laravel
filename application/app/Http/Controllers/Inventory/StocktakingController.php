@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Man;
+namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Models\CustomerCompanyGood;
@@ -8,14 +8,14 @@ use App\Models\CustomerCompanyStocktaking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CustomerCompanyStocktakingController extends Controller
+class StocktakingController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('man.customer-company-stocktaking');
+        return view('inventory.stocktaking');
     }
 
     public function dataTable(Request $request)

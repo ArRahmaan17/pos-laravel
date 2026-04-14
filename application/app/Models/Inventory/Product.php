@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Models\Product;
+namespace App\Models\Inventory;
 
+use App\Models\Product\ProductCategory;
+use App\Models\Product\ProductWeight;
 use App\Traits\HasDefaultSearch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 
-class CustomerCompanyGood extends Model
+class Product extends Model
 {
     use HasDefaultSearch;
     use HasFactory;
@@ -25,12 +27,12 @@ class CustomerCompanyGood extends Model
 
     protected $defaultCategoryId = 'all';
 
-    public function unit(): HasOne
+    public function weight(): HasOne
     {
         return $this->hasOne(ProductWeight::class, 'id', 'weight_id');
     }
 
-    public function type(): HasOne
+    public function category(): HasOne
     {
         return $this->hasOne(ProductCategory::class, 'id', 'category_id');
     }

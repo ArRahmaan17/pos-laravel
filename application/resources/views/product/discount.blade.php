@@ -138,7 +138,7 @@
 
             $.ajax({
                 type: "GET",
-                url: "{{ route('man.customer-company-discount.show') }}/" + idCustomerCompany,
+                url: "{{ route('promo.discount.show') }}/" + idCustomerCompany,
                 dataType: "json",
                 success: function(response) {
                     let formElement = $('#modal-customer-company-discount').find("form");
@@ -201,7 +201,7 @@
                         }, toast, 'button');
                         $.ajax({
                             type: "DELETE",
-                            url: "{{ route('man.customer-company-discount.delete') }}/" +
+                            url: "{{ route('promo.discount.delete') }}/" +
                                 idCustomerCompany,
                             data: {
 
@@ -243,7 +243,7 @@
 
     $(function() {
         window.dataTableCustomerCompanyDiscount = $("#table-customer-company-discount").DataTable({
-            ajax: "{{ route('man.customer-company-discount.data-table') }}",
+            ajax: "{{ route('promo.discount.data-table') }}",
             processing: true,
             serverSide: true,
             order: [
@@ -337,7 +337,7 @@
             let data = serializeObject($('#form-customer-company-discount'));
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-company-discount.store') }}`,
+                url: `{{ route('promo.discount.store') }}`,
                 data: data,
                 dataType: "json",
                 success: function(response) {
@@ -384,7 +384,7 @@
             let data = serializeObject($('#form-customer-company-discount'));
             $.ajax({
                 type: "PUT",
-                url: `{{ route('man.customer-company-discount.update') }}/${data.id}`,
+                url: `{{ route('promo.discount.update') }}/${data.id}`,
                 data: {
 
                     ...data

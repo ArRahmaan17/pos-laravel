@@ -2,22 +2,21 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Company\MasterTaskController;
+use App\Http\Controllers\Company\TaskController;
 use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\Company\WarehouseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Man\CustomerCompanyDiscountController;
-use App\Http\Controllers\Man\CustomerCompanyGoodController;
-use App\Http\Controllers\Man\CustomerCompanyStocktakingController;
+use App\Http\Controllers\Inventory\StocktakingController;
+use App\Http\Controllers\Inventory\TemporaryProductController;
+use App\Http\Controllers\Inventory\ProductController;
 use App\Http\Controllers\Man\CustomerProductTransactionController;
 use App\Http\Controllers\Product\CategoryController;
-use App\Http\Controllers\Company\TaskController;
-use App\Http\Controllers\Man\CustomerTemporaryProductController;
-use App\Http\Controllers\Product\WarehouseShelveController;
+use App\Http\Controllers\Product\WeightController;
+use App\Http\Controllers\Promo\DiscountController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Settings\CompanyController;
 use App\Http\Controllers\Settings\PermissionController;
-use App\Http\Controllers\Settings\ProductUnitController;
 use App\Http\Controllers\Settings\RoleController;
 use App\Http\Controllers\Settings\SubscriptionController;
 use App\Http\Middleware\Authorization;
@@ -72,7 +71,7 @@ Route::meta(['group' => 'web'], function () {
             'module' => 'dashboard',
             'middleware' => [checkPageAuthorization::class],
         ], function () {
-            Route::get('/', [DashboardController::class, 'index'])->name('index')->middleware([checkPageAuthorization::class]);
+            Route::get('/', [DashboardController::class, 'index'])->name('index');
         });
         Route::meta([
             'icon' => 'bx bx-user-check',
@@ -191,12 +190,12 @@ Route::meta(['group' => 'web'], function () {
                 'module' => 'weight',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
-                Route::get('/', [ProductUnitController::class, 'index'])->name('index')->defaults('module', 'settings');
-                Route::post('/', [ProductUnitController::class, 'store'])->name('store');
-                Route::put('/{id?}', [ProductUnitController::class, 'update'])->name('update');
-                Route::get('/data-table', [ProductUnitController::class, 'dataTable'])->name('data-table');
-                Route::get('/{id?}', [ProductUnitController::class, 'show'])->name('show');
-                Route::delete('/{id?}', [ProductUnitController::class, 'destroy'])->name('delete');
+                Route::get('/', [WeightController::class, 'index'])->name('index')->defaults('module', 'settings');
+                Route::post('/', [WeightController::class, 'store'])->name('store');
+                Route::put('/{id?}', [WeightController::class, 'update'])->name('update');
+                Route::get('/data-table', [WeightController::class, 'dataTable'])->name('data-table');
+                Route::get('/{id?}', [WeightController::class, 'show'])->name('show');
+                Route::delete('/{id?}', [WeightController::class, 'destroy'])->name('delete');
             });
             Route::meta([
                 'icon' => 'bx bxs-box',
@@ -214,67 +213,54 @@ Route::meta(['group' => 'web'], function () {
                 Route::get('/{id?}', [CategoryController::class, 'show'])->name('show');
                 Route::delete('/{id?}', [CategoryController::class, 'destroy'])->name('delete');
             });
-            Route::meta([
-                'icon' => 'bx bxs-box-alt',
-                'prefix' => 'temp-product',
-                'as' => 'temp-product.',
-                'parent' => 'product',
-                'name' => 'temp-product',
-                'module' => 'temp-product',
-                'middleware' => [checkPageAuthorization::class],
-            ], function () {
-                Route::get('/', [CustomerTemporaryProductController::class, 'index'])->name('index');
-                Route::post('/', [CustomerTemporaryProductController::class, 'store'])->name('store');
-                Route::post('/store-temp-product/{date?}', [CustomerTemporaryProductController::class, 'storeTempProduct'])->name('store-temp-product');
-                Route::post('/{id?}', [CustomerTemporaryProductController::class, 'update'])->name('update');
-                Route::get('/data-table', [CustomerTemporaryProductController::class, 'dataTable'])->name('data-table');
-                Route::get('/temp-product', [CustomerTemporaryProductController::class, 'tempProduct'])->name('temp-product');
-                Route::get('/{id?}', [CustomerTemporaryProductController::class, 'show'])->name('show');
-                Route::delete('/{id?}', [CustomerTemporaryProductController::class, 'destroy'])->name('delete');
-            });
-            Route::meta([
-                'icon' => 'bx bxs-package',
-                'prefix' => 'products',
-                'as' => 'products.',
-                'parent' => 'product',
-                'name' => 'products',
-                'module' => 'products',
-                'middleware' => [checkPageAuthorization::class],
-            ], function () {
-                Route::get('/', [CustomerCompanyGoodController::class, 'index'])->name('index');
-                Route::post('/', [CustomerCompanyGoodController::class, 'store'])->name('store');
-                Route::post('/store-temp-product/{date?}', [CustomerTemporaryProductController::class, 'storeTempProduct'])->name('store-temp-product');
-                Route::post('/{id?}', [CustomerCompanyGoodController::class, 'update'])->name('update');
-                Route::get('/data-table', [CustomerCompanyGoodController::class, 'dataTable'])->name('data-table');
-                Route::get('/temp-product', [CustomerCompanyGoodController::class, 'tempProduct'])->name('temp-product');
-                Route::get('/{id?}', [CustomerCompanyGoodController::class, 'show'])->name('show');
-                Route::delete('/{id?}', [CustomerCompanyGoodController::class, 'destroy'])->name('delete');
-            });
-            Route::meta([
-                'icon' => 'bx bxs-discount',
-                'prefix' => 'discount',
-                'as' => 'discount.',
-                'parent' => 'product',
-                'name' => 'discount',
-                'module' => 'discount',
-                'middleware' => [checkPageAuthorization::class],
-            ], function () {
-                Route::get('/', [CustomerCompanyDiscountController::class, 'index'])->name('index');
-                Route::post('/', [CustomerCompanyDiscountController::class, 'store'])->name('store');
-                Route::put('/{id?}', [CustomerCompanyDiscountController::class, 'update'])->name('update');
-                Route::get('/data-table', [CustomerCompanyDiscountController::class, 'dataTable'])->name('data-table');
-                Route::get('/{id?}', [CustomerCompanyDiscountController::class, 'show'])->name('show');
-                Route::delete('/{id?}', [CustomerCompanyDiscountController::class, 'destroy'])->name('delete');
-            });
         });
+
         Route::meta([
-            'icon' => 'bx bx-folder-zip',
+            'parent-icon' => 'bx bx-folder-zip',
             'prefix' => 'inventory',
             'as' => 'inventory.',
             'parent' => null,
-            'module' => 'inventory',
             'name' => 'inventory',
+            'module' => 'inventory',
+            'middleware' => [checkPageAuthorization::class],
         ], function () {
+            Route::meta([
+                'icon' => 'bx bxs-box-alt',
+                'prefix' => 'temporary-product',
+                'as' => 'temporary-product.',
+                'parent' => 'inventory',
+                'name' => 'temporary-product',
+                'module' => 'temporary-product',
+                'middleware' => [checkPageAuthorization::class],
+            ], function () {
+                Route::get('/', [TemporaryProductController::class, 'index'])->name('index');
+                Route::post('/', [TemporaryProductController::class, 'store'])->name('store');
+                Route::post('/store-temporary-product/{date?}', [TemporaryProductController::class, 'storeTempProduct'])->name('store-temporary-product');
+                Route::post('/{id?}', [TemporaryProductController::class, 'update'])->name('update');
+                Route::get('/data-table', [TemporaryProductController::class, 'dataTable'])->name('data-table');
+                Route::get('/temporary-product', [TemporaryProductController::class, 'tempProduct'])->name('temporary-product');
+                Route::get('/{id?}', [TemporaryProductController::class, 'show'])->name('show');
+                Route::delete('/{id?}', [TemporaryProductController::class, 'destroy'])->name('delete');
+            });
+            Route::meta([
+                'icon' => 'bx bxs-package',
+                'prefix' => 'your-products',
+                'as' => 'your-products.',
+                'parent' => 'inventory',
+                'name' => 'your-products',
+                'module' => 'your-products',
+                'middleware' => [checkPageAuthorization::class],
+            ], function () {
+                Route::get('/', [ProductController::class, 'index'])->name('index');
+                Route::post('/', [ProductController::class, 'store'])->name('store');
+                Route::post('/store-temporary-product/{date?}', [TemporaryProductController::class, 'storeTempProduct'])->name('store-temporary-product');
+                Route::post('/{id?}', [ProductController::class, 'update'])->name('update');
+                Route::get('/data-table', [ProductController::class, 'dataTable'])->name('data-table');
+                Route::get('/temporary-product', [ProductController::class, 'tempProduct'])->name('temporary-product');
+                Route::get('/{id?}', [ProductController::class, 'show'])->name('show');
+                Route::delete('/{id?}', [ProductController::class, 'destroy'])->name('delete');
+            });
+
             Route::meta([
                 'icon' => 'bx bxs-monitor-wide',
                 'prefix' => 'transaction',
@@ -282,6 +268,7 @@ Route::meta(['group' => 'web'], function () {
                 'parent' => 'inventory',
                 'module' => 'transaction',
                 'name' => 'transaction',
+                'middleware' => [checkPageAuthorization::class],
             ], function () {
                 Route::get('/', [CustomerProductTransactionController::class, 'index'])->name('index');
                 Route::post('/', [CustomerProductTransactionController::class, 'store'])->name('store');
@@ -299,26 +286,42 @@ Route::meta(['group' => 'web'], function () {
                 'parent' => 'inventory',
                 'module' => 'stocktaking',
                 'name' => 'stocktaking',
+                'middleware' => [checkPageAuthorization::class],
             ], function () {
-                Route::get('/', [CustomerCompanyStocktakingController::class, 'index'])->name('index');
-                Route::post('/', [CustomerCompanyStocktakingController::class, 'store'])->name('store');
-                Route::put('/{id?}', [CustomerCompanyStocktakingController::class, 'update'])->name('update');
-                Route::get('/data-table', [CustomerCompanyStocktakingController::class, 'dataTable'])->name('data-table');
-                Route::get('/{id?}', [CustomerCompanyStocktakingController::class, 'show'])->name('show');
-                Route::post('/{id?}', [CustomerCompanyStocktakingController::class, 'approveStocktaking'])->name('approve');
-                Route::delete('/{id?}', [CustomerCompanyStocktakingController::class, 'destroy'])->name('delete');
+                Route::get('/', [StocktakingController::class, 'index'])->name('index');
+                Route::post('/', [StocktakingController::class, 'store'])->name('store');
+                Route::put('/{id?}', [StocktakingController::class, 'update'])->name('update');
+                Route::get('/data-table', [StocktakingController::class, 'dataTable'])->name('data-table');
+                Route::get('/{id?}', [StocktakingController::class, 'show'])->name('show');
+                Route::post('/{id?}', [StocktakingController::class, 'approveStocktaking'])->name('approve');
+                Route::delete('/{id?}', [StocktakingController::class, 'destroy'])->name('delete');
             });
         });
         Route::meta([
-            'icon' => 'bx bxs-printer',
-            'prefix' => 'report',
-            'as' => 'report.',
+            'parent-icon' => 'bx bx-ticket',
+            'prefix' => 'promo',
+            'as' => 'promo.',
             'parent' => null,
-            'name' => 'report',
+            'name' => 'promo',
+            'module' => 'promo',
+            'middleware' => [checkPageAuthorization::class],
         ], function () {
-            Route::get('/', [ReportController::class, 'index'])->name('index');
-            Route::get('/debug-print', [ReportController::class, 'debugPrint'])->name('debug-print');
-            Route::post('/', [ReportController::class, 'generateReport'])->name('generate-report');
+            Route::meta([
+                'icon' => 'bx bxs-discount',
+                'prefix' => 'discount',
+                'as' => 'discount.',
+                'parent' => 'promo',
+                'name' => 'discount',
+                'module' => 'discount',
+                'middleware' => [checkPageAuthorization::class],
+            ], function () {
+                Route::get('/', [DiscountController::class, 'index'])->name('index');
+                Route::post('/', [DiscountController::class, 'store'])->name('store');
+                Route::put('/{id?}', [DiscountController::class, 'update'])->name('update');
+                Route::get('/data-table', [DiscountController::class, 'dataTable'])->name('data-table');
+                Route::get('/{id?}', [DiscountController::class, 'show'])->name('show');
+                Route::delete('/{id?}', [DiscountController::class, 'destroy'])->name('delete');
+            });
         });
         Route::meta([
             'parent-icon' => 'bx bx-cog',
@@ -389,6 +392,18 @@ Route::meta(['group' => 'web'], function () {
                 Route::get('/{id?}', [SubscriptionController::class, 'show'])->name('show');
                 Route::delete('/{id?}', [SubscriptionController::class, 'destroy'])->name('delete');
             });
+        });
+        Route::meta([
+            'icon' => 'bx bxs-printer',
+            'prefix' => 'report',
+            'as' => 'report.',
+            'parent' => null,
+            'name' => 'report',
+            'middleware' => [checkPageAuthorization::class],
+        ], function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
+            Route::get('/debug-print', [ReportController::class, 'debugPrint'])->name('debug-print');
+            Route::post('/', [ReportController::class, 'generateReport'])->name('generate-report');
         });
     });
 });

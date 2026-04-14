@@ -17,6 +17,7 @@ class checkPageAuthorization
     public function handle(Request $request, Closure $next): Response
     {
         return $next($request);
+
         // if (getLevel() === 3) {
         // } elseif (getLevel() === 2) {
         //     if (Permission::where('route', $request->route()->action['as'])->where('dev_only', 0)->count() === 1) {

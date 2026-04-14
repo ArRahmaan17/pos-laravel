@@ -95,7 +95,7 @@
                     <div class="row">
                         <div class="col mb-3">
                             <label for="date" class="form-label">Date</label>
-                            <input type="text" readonly value="{{ now()->createFromTimeString($serverTime)->format('Y-m-d') }}" id="date"
+                            <input type="text" readonly id="date"
                                 name="date" class="form-control" />
                         </div>
                     </div>
@@ -418,7 +418,7 @@
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${type}${kebabCase(data.name??data.master.name)}"
                                 aria-expanded="false" aria-controls="${type}${kebabCase(data.name??data.master.name)}">
-                                <span class="badge bg-label-primary mx-1">${data.priority?? data.master.priority}</span> ${data.status?'Finish':type !== 'new' ? 'Unfinish Task' : 'New Task'} ${data.name??data.master.name} ${(type !== 'new') ? moment(data.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
+                                <span class="badge bg-label-primary mx-1">${data.priority?? data.master.priority}</span> ${data.status?'Finish':type !== 'new' ? 'Unfinish Task' : 'New Task'} ${data.name??data.master.name} ${(type !== 'new') ? moment(data.created_at).format('YYYY-MM-DD') : moment(window.serverTime).format('YYYY-MM-DD')} 
                             </button>
                         </h2>
                         <div id="${type}${kebabCase(data.name??data.master.name)}" class="accordion-collapse collapse" data-bs-parent="#accordionTaskDetail">
@@ -514,7 +514,7 @@
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${kebabCase(detail.master.name)}${detail.id}"
                                 aria-expanded="false" aria-controls="${kebabCase(detail.master.name)}${detail.id}">
-                                <span class="badge bg-label-primary mx-1">${detail.master.priority}</span> ${detail.end_at !== null && detail.start_at != null ? 'Finish Task' : (detail.start_at !== null && detail.end_at === null)?'Unfinish Task' : 'New Task'} ${detail.master.name} ${(detail.end_at !== null) ? moment(detail?.created_at).format('YYYY-MM-DD') : moment(`{{ $serverTime }}`).format('YYYY-MM-DD')} 
+                                <span class="badge bg-label-primary mx-1">${detail.master.priority}</span> ${detail.end_at !== null && detail.start_at != null ? 'Finish Task' : (detail.start_at !== null && detail.end_at === null)?'Unfinish Task' : 'New Task'} ${detail.master.name} ${(detail.end_at !== null) ? moment(detail?.created_at).format('YYYY-MM-DD') : moment(window.serverTime).format('YYYY-MM-DD')} 
                             </button>
                         </h2>
                         <div id="${kebabCase(detail.master.name)}${detail.id}" class="accordion-collapse collapse" data-bs-parent="#accordionDetailTable">

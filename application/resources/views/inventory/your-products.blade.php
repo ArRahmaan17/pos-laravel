@@ -117,7 +117,7 @@
                     <div class="row">
                         <div class="col mb-3">
                             <div class="d-flex align-items-start align-items-sm-center gap-4">
-                                <img draggable="false" src="{{ asset('customer-product/default-product.png') }}" alt="user-avatar" class="d-block rounded" height="100"
+                                <img draggable="false" src="{{ asset('resources/default/product/default-product.png') }}" alt="user-avatar" class="d-block rounded" height="100"
                                     width="100" id="uploadedAvatar" />
                                 <div class="button-wrapper">
                                     <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
@@ -198,7 +198,7 @@
 
             $.ajax({
                 type: "GET",
-                url: "{{ route('man.customer-company-good.show') }}/" + idAppRole,
+                url: "{{ route('inventory.your-products.show') }}/" + idAppRole,
                 dataType: "json",
                 success: function(response) {
                     let formElement = $('#modal-customer-company-good').find("form");
@@ -276,7 +276,7 @@
                         }, toast, 'button');
                         $.ajax({
                             type: "DELETE",
-                            url: "{{ route('man.customer-company-good.delete') }}/" +
+                            url: "{{ route('inventory.your-products.delete') }}/" +
                                 idAppRole,
                             data: {
 
@@ -334,7 +334,7 @@
     function getAllTempProduct() {
         $.ajax({
             type: "GET",
-            url: "{{ route('man.customer-company-good.temp-product') }}",
+            url: "{{ route('inventory.your-products.temp-product') }}",
             dataType: "JSON",
             success: function({
                 data
@@ -356,7 +356,7 @@
 
     $(function() {
         window.dataTableCustomerCompanyGood = $("#table-customer-company-good").DataTable({
-            ajax: "{{ route('man.customer-company-good.data-table') }}",
+            ajax: "{{ route('inventory.your-products.data-table') }}",
             processing: true,
             serverSide: true,
             order: [
@@ -430,7 +430,7 @@
             let data = serializeFiles($('#form-customer-company-good'));
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-company-good.store') }}`,
+                url: `{{ route('inventory.your-products.store') }}`,
                 data: data,
                 dataType: "json",
                 cache: false,
@@ -470,7 +470,7 @@
         $('#save-temporary-product').click(function() {
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-company-good.store-temp-product', ['date' => now()->format('Y-m-d')]) }}`,
+                url: `{{ route('inventory.your-products.store-temporary-product', ['date' => now()->format('Y-m-d')]) }}`,
                 data: {
 
                 },
@@ -503,7 +503,7 @@
             let data = serializeFiles($('#form-customer-company-good'));
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-company-good.update') }}/${$('#form-customer-company-good').find('input[name=id]').val()}`,
+                url: `{{ route('inventory.your-products.update') }}/${$('#form-customer-company-good').find('input[name=id]').val()}`,
                 data: data,
                 dataType: "json",
                 cache: false,
@@ -553,7 +553,7 @@
             $('#edit-customer-company-good').addClass('d-none');
             $('#modal-customer-company-good .is-invalid').removeClass('is-invalid')
             $('#table-customer-company-good tbody').find('tr').removeClass('selected');
-            $('#uploadedAvatar').prop('src', `{{ asset('customer-product/default-product.png') }}`);
+            $('#uploadedAvatar').prop('src', `{{ asset('resources/default/product/default-product.png') }}`);
         });
         $('#modal-customer-company-good').on('shown.bs.modal', function() {
             setTimeout(() => {

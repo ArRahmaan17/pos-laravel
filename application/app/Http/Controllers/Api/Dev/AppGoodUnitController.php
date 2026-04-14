@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-class ProductUnitController extends Controller
+class WeightController extends Controller
 {
     /**
      * Display a listing of the resource.

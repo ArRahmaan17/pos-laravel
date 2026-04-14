@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\Api\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerTemporaryProduct;
-use App\Models\Product\CustomerCompanyGood;
+use App\Models\Inventory\Product;
 use App\Traits\ImageHandler;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class CustomerCompanyGoodController extends Controller
+class ProductController extends Controller
 {
     use ImageHandler;
 
@@ -132,7 +131,7 @@ class CustomerCompanyGoodController extends Controller
                 $this->uploadAndWatermark($request->file('picture'), '', 'temp-customer-product', $filename);
             }
             $data['orderCode'] = lastCompanyOrderCode('IN');
-            CustomerTemporaryProduct::create($data);
+            TemporaryProduct::create($data);
             $response = ['message' => 'creating resource successfully'];
             $code = 200;
             DB::commit();
@@ -150,7 +149,7 @@ class CustomerCompanyGoodController extends Controller
         $user = $request->user();
         $company = $request->header('x-customer-company-id');
 
-        $data = CustomerTemporaryProduct::with('unit', 'reference')->whereDate('created_at', now()->format('Y-m-d'))->where(['company_id' => $company, 'accepted' => 0])->get();
+        $data = TemporaryProduct::with('unit', 'reference')->whereDate('created_at', now()->format('Y-m-d'))->where(['company_id' => $company, 'accepted' => 0])->get();
         $response = ['message' => 'showing resource successfully', 'data' => $data];
         $code = 200;
         if (empty($data)) {
@@ -222,7 +221,7 @@ class CustomerCompanyGoodController extends Controller
             $data['customerCompanyGoodId'] = $id;
             $data['transaction_created'] = now()->format('Y-m-d');
             $data['orderCode'] = lastCompanyOrderCode('ADJ');
-            CustomerTemporaryProduct::create($data);
+            TemporaryProduct::create($data);
             $response = ['message' => 'updating resource successfully'];
             $code = 200;
             DB::commit();
@@ -252,7 +251,7 @@ class CustomerCompanyGoodController extends Controller
                 'company_id' => $company,
                 'user_id' => $user->id,
             ];
-            CustomerTemporaryProduct::create($data);
+            TemporaryProduct::create($data);
             $response = ['message' => 'deleting resource successfully'];
             $code = 200;
             DB::commit();

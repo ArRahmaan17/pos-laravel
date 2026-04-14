@@ -21,8 +21,13 @@
     <meta name="twitter:title" content="@yield('title') - {{ env('OG_TITLE', env('APP_NAME')) }}">
     <meta name="twitter:description" content="{{ env('OG_DESCRIPTION') }}">
     <meta name="twitter:image" content="{{ asset(env('OG_IMAGE')) }}">
-
+    @if(env('APP_ENV') === 'production')
+        <!-- Cloudflare Web Analytics -->
+        <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "6e85739b51c640d1ab285d19463b8dde"}'></script>
+        <!-- End Cloudflare Web Analytics -->
+    @endif    
     <title>@yield('title') - {{ env('APP_NAME') }}</title>
+    @vite(['resources/js/app.js', 'resources/css/app.css'])
     <style>
         *::-webkit-scrollbar {
             width: 1px;
@@ -69,8 +74,6 @@
     @include('singleton.favico')
     <link href="{{ asset('assets/css/datatables.min.css') }}" rel="stylesheet">
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="{{ asset('assets/css/googleapis.css') }}" rel="stylesheet" />
     <!-- Icons. Uncomment required icon fonts -->
     <link rel="stylesheet" href="{{ asset('assets/fonts/basic/boxicons.min.css') }}" />

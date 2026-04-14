@@ -21,6 +21,7 @@ class Warehouse extends Model
     {
         return $this->hasMany(Shelve::class, 'warehouse_id', 'id');
     }
+
     public function products(): HasMany
     {
         return $this->hasMany(

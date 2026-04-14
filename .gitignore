@@ -6,3 +6,4 @@ data/redis/*
 data/app/*
 .skill
 .codex
+* copy.*

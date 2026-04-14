@@ -3,14 +3,6 @@ set -e
 
 if [ "$1" = "frankenphp" ]; then
 # Check if vendor folder exists, if not run composer install
-# 
-if [ ! -d "/var/www/html/public/build" ] || [ ! -f "/var/www/html/public/build/manifest.json" ]; then
-        echo "--- 📦 Build assets missing. Installing... ---"
-        # Note: Ensure 'npm' binary is available in the app image
-        npm install --prefer-offline && npm run build
-    else
-        echo "--- ✅ Build assets exist. ---"
-    fi
     sed -i "s/your_awesome_application_port/${NGINX_APP_PORT}/" /etc/frankenphp/Caddyfile
     # Ensure database exists
     echo "Checking database status..."
@@ -30,13 +22,17 @@ if [ ! -d "/var/www/html/public/build" ] || [ ! -f "/var/www/html/public/build/m
         frankenphp php-cli artisan migrate --force
     else
         echo "Running development migrations (migrate:fresh --seed)..."
-        # frankenphp php-cli artisan migrate:fresh --seed
+        frankenphp php-cli artisan migrate:fresh --seed
     fi
 
     # Discover packages and cache configuration for production
     if [ "${APP_ENV}" = "production" ]; then
         echo "Optimizing Laravel for production..."
         frankenphp php-cli artisan package:discover
+        frankenphp php-cli artisan config:cache
+        frankenphp php-cli artisan event:cache
+        frankenphp php-cli artisan route:cache
+        frankenphp php-cli artisan view:cache
     fi
 
     # Start FrankenPHP and Reverb server

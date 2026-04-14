@@ -16,15 +16,15 @@
 <script src="{{ asset('assets/js/pages-pricing.js') }}"></script>
 @stack('resource-js')
 @if (env('APP_ENV') === 'production')
-    <script>
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-        })
-    </script>
+<script>
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+    })
+</script>
 @endif
 <script>
     window.process_subscription = null;
-    window.serverTime = undefined;
+    window.serverTime = `{{ now()->createFromTimeString($serverTime)->format('Y-m-d') }}`;
     window.intervalTime = undefined;
     window.company = `{{ session('userLogged') ? buatSingkatan(session('userLogged')['company']['name']) : '' }}`;
 
@@ -295,14 +295,14 @@
     });
 </script>
 @if (session('lifetime') !== null)
-    <script>
-        const session_lifetime = `{{ session('lifetime') }}`;
-    </script>
+<script>
+    const session_lifetime = `{{ session('lifetime') }}`;
+</script>
 @else
-    <script>
-        $(function() {
-            lockscreenTrigger();
-        });
-    </script>
+<script>
+    $(function() {
+        lockscreenTrigger();
+    });
+</script>
 @endif
 @stack('js')
