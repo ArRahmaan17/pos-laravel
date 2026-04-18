@@ -6,7 +6,6 @@
 **/.env
 **/.phpunit.result.cache
 **/tests
-**/artisan
 **/phpunit.xml
 
 **/README.md
