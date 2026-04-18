@@ -2,15 +2,16 @@
 
 namespace App\Models\Inventory;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class InventoryMovement extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
     protected $fillable = [
         'transaction_item_id',
         'warehouse_id',
@@ -21,7 +22,7 @@ class InventoryMovement extends Model
         'company_id',
         'created_by',
         'updated_by',
-        'deleted_by'
+        'deleted_by',
     ];
 
     public function type(): HasOne

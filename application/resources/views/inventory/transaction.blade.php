@@ -1,19 +1,14 @@
 @extends('template.parent')
 @section('title', 'Product Transaction')
 @section('content')
-<div class="card mb-3">
-    <div class="card-body">
-        This is some text within a card body.
-    </div>
-</div>
 <div class="card">
     <div class="card-header d-flex align-middle">
         <div class="col-6">
             <h3>@yield('title')</h3>
         </div>
         <div class="col-6 text-end">
-            <button class="btn btn-outline-success" id="show-customer-company-transaction" data-bs-toggle="modal"
-                data-bs-target="#modal-customer-company-transaction">Show <i class='bx bx-folder-open pb-1'></i></button>
+            <button class="btn btn-outline-success" id="show-transaction" data-bs-toggle="modal"
+                data-bs-target="#modal-transaction">Show <i class='bx bx-folder-open pb-1'></i></button>
         </div>
     </div>
     <div class="card-body">
@@ -82,7 +77,7 @@
                                 <th>Name</th>
                                 <th>stock</th>
                                 <th>price</th>
-                                <th>unit</th>
+                                <th>Weight</th>
                                 <th>action</th>
                             </tr>
                         </thead>
@@ -120,16 +115,16 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modal-customer-company-transaction" tabindex="-1" aria-modal="true" role="dialog">
+<div class="modal fade" id="modal-transaction" tabindex="-1" aria-modal="true" role="dialog">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modal-customer-company-transaction-title">Modal Transaction</h5>
+                <h5 class="modal-title" id="modal-transaction-title">Modal Transaction</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
-                    <table id="table-customer-company-transaction" class="table">
+                    <table id="table-transaction" class="table">
                         <thead>
                             <tr>
                                 <th></th>
@@ -166,23 +161,23 @@
 
 <script>
     window.dataTableCustomerCompanyGood = null;
-    window.dataTableCustomerCompanyDiscount = null;
+    window.dataTableDiscount = null;
     window.discount = {}
 
     function actionCustomerDiscount() {
         $('.use-discount').click(function() {
-            if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length === 0) {
+            if (window.dataTableDiscount.rows('.selected').data().length === 0) {
                 $('#table-customer-product tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
-            var data = window.dataTableCustomerCompanyDiscount.rows('.selected').data()[0];
+            var data = window.dataTableDiscount.rows('.selected').data()[0];
             delete data.action;
             window.discount = data;
             $('#table-customer-discount tbody').find('tr').removeClass('selected');
             $('#discountCode').val(`${data.code}`);
             $('#modal-customer-discount').modal('hide');
             iziToast.success({
-                id: 'alert-customer-company-discount-action',
+                id: 'alert-discount-action',
                 title: 'Success',
                 message: 'Discount applied',
                 position: 'topRight',
@@ -374,13 +369,13 @@
     function actionCustomerProductTransaction() {
         $('.print-transaction').click(function() {
             if (window.dataTableCustomerProductTransaction.rows('.selected').data().length === 0) {
-                $('#table-customer-product-transaction tbody').find('tr').removeClass('selected');
+                $('#table-transaction tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
             var data = window.dataTableCustomerProductTransaction.rows('.selected').data()[0];
             const format = $(this).data('format') || 'pdf';
-            $('#table-customer-product-transaction tbody').find('tr').removeClass('selected');
-            $('#modal-customer-company-transaction').modal('hide');
+            $('#table-transaction tbody').find('tr').removeClass('selected');
+            $('#modal-transaction').modal('hide');
             loadTransactionReceipt(data.orderCode, format)
         });
     }
@@ -390,11 +385,11 @@
         if (discountCode != '' && Object.keys(window.discount).length === 0) {
             $.ajax({
                 type: "get",
-                url: `{{ route('man.customer-product-transaction.validate-discount-code') }}/${discountCode}`,
+                url: `{{ route('inventory.transaction.validate-discount-code') }}/${discountCode}`,
                 dataType: "JSON",
                 success: function(response) {
                     iziToast.success({
-                        id: 'alert-customer-company-discount-action',
+                        id: 'alert-discount-action',
                         title: 'Success',
                         message: 'Discount applied',
                         position: 'topRight',
@@ -412,7 +407,7 @@
                 },
                 error: function(error) {
                     iziToast.error({
-                        id: 'alert-customer-company-discount-action',
+                        id: 'alert-discount-action',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -443,7 +438,7 @@
             }
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-product-transaction.store') }}`,
+                url: `{{ route('inventory.transaction.store') }}`,
                 data: data,
                 dataType: "json",
                 success: function(response) {
@@ -455,7 +450,7 @@
                 },
                 error: function(error) {
                     iziToast.error({
-                        id: 'alert-customer-company-transaction-action',
+                        id: 'alert-transaction-action',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -499,7 +494,7 @@
             let discount = window.discount;
             $.ajax({
                 type: "POST",
-                url: `{{ route('man.customer-product-transaction.validate-transaction-items') }}`,
+                url: `{{ route('inventory.transaction.validate-transaction-items') }}`,
                 data: {
 
                     products: products.toArray(),
@@ -524,7 +519,7 @@
 
     function loadTransactionReceipt(orderCode, format = 'pdf') {
         const query = format === 'escpos' ? '?format=escpos' : '';
-        $('#transaction-receipt-container').prop('src', "{{ url('/man/customer-product-transaction/transaction-receipt') }}/" + orderCode + "/print" + query);
+        $('#transaction-receipt-container').prop('src', "{{ url('/man/transaction/transaction-receipt') }}/" + orderCode + "/print" + query);
         const modeTitle = format === 'escpos' ? 'ESC/POS' : 'PDF';
         $('#modal-customer-transaction-receipt').find('.modal-title').html(`Modal Transaction Receipt ${orderCode} (${modeTitle})`)
         $('#modal-customer-transaction-receipt').modal('show');
@@ -584,7 +579,7 @@
         $('#modal-customer-product').on('shown.bs.modal', function() {
             if (!$.fn.dataTable.isDataTable("#table-customer-product")) {
                 window.dataTableCustomerCompanyGood = $("#table-customer-product").DataTable({
-                    ajax: "{{ route('man.customer-product-transaction.product-data-table') }}",
+                    ajax: "{{ route('inventory.transaction.product-data-table') }}",
                     processing: true,
                     serverSide: true,
                     order: [
@@ -642,10 +637,10 @@
                 window.dataTableCustomerCompanyGood.ajax.reload();
             }
         });
-        $('#modal-customer-company-transaction').on('shown.bs.modal', function() {
-            if (!$.fn.dataTable.isDataTable("#table-customer-company-transaction")) {
-                window.dataTableCustomerProductTransaction = $("#table-customer-company-transaction").DataTable({
-                    ajax: "{{ route('man.customer-product-transaction.data-table') }}",
+        $('#modal-transaction').on('shown.bs.modal', function() {
+            if (!$.fn.dataTable.isDataTable("#table-transaction")) {
+                window.dataTableCustomerProductTransaction = $("#table-transaction").DataTable({
+                    ajax: "{{ route('inventory.transaction.data-table') }}",
                     processing: true,
                     serverSide: true,
                     order: [
@@ -732,8 +727,8 @@
         });
         $('#modal-customer-discount').on('shown.bs.modal', function() {
             if (!$.fn.dataTable.isDataTable("#table-customer-discount")) {
-                window.dataTableCustomerCompanyDiscount = $("#table-customer-discount").DataTable({
-                    ajax: "{{ route('man.customer-product-transaction.discount-data-table') }}",
+                window.dataTableDiscount = $("#table-customer-discount").DataTable({
+                    ajax: "{{ route('inventory.transaction.discount-data-table') }}",
                     processing: true,
                     serverSide: true,
                     order: [
@@ -791,13 +786,13 @@
                         }
                     }]
                 });
-                window.dataTableCustomerCompanyDiscount.on('draw.dt', function() {
+                window.dataTableDiscount.on('draw.dt', function() {
                     actionCustomerDiscount();
                 });
             } else {
                 $('.increase').off('click');
                 $('.decrease').off('click');
-                window.dataTableCustomerCompanyDiscount.ajax.reload();
+                window.dataTableDiscount.ajax.reload();
             }
         });
         $('.clear-cart').click(function() {

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
+use App\Models\Inventory\Product;
 use App\Models\Product\CustomerCompanyGood;
 use App\Models\Product\ProductCategory;
 use App\Models\Product\ProductWeight;
-use App\Models\Inventory\Product;
 use App\Traits\ImageHandler;
 use Exception;
 use Illuminate\Http\Request;
@@ -30,24 +30,24 @@ class TemporaryProductController extends Controller
 
     public function dataTable(Request $request)
     {
-        $totalData = Product::select('name','code','picture','price','buy_price','weight_id','category_id')->orderBy('created_at', 'desc')->where('company_id', session('userLogged')['company']['id'])->where('status', 'draft')->count();
+        $totalData = Product::select('name', 'code', 'picture', 'price', 'buy_price', 'weight_id', 'category_id')->orderBy('created_at', 'desc')->where('company_id', session('userLogged')['company']['id'])->where('status', 'draft')->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
             $assets = Product::with('weight', 'category')
-                ->select('name','code','picture','price','buy_price','weight_id','category_id');
+                ->select('name', 'code', 'picture', 'price', 'buy_price', 'weight_id', 'category_id');
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where('company_id', session('userLogged')['company']['id'])->where('status', 'draft')->get();
         } else {
-            $assets = Product::with('weight', 'category')->select('name','code','picture','price','buy_price','weight_id','category_id')->where('orderCode', 'like', '%' . $request['search']['value'] . '%')->orWhere('created_at', 'like', '%' . $request['search']['value'] . '%');
+            $assets = Product::with('weight', 'category')->select('name', 'code', 'picture', 'price', 'buy_price', 'weight_id', 'category_id')->where('orderCode', 'like', '%'.$request['search']['value'].'%')->orWhere('created_at', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -55,11 +55,11 @@ class TemporaryProductController extends Controller
             }
             $assets = $assets->where('company_id', session('userLogged')['company']['id'])->where('status', 'draft')->get();
 
-            $totalFiltered = Product::select('name','code','picture','price','buy_price','weight_id','category_id')->where('orderCode', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('created_at', 'like', '%' . $request['search']['value'] . '%');
+            $totalFiltered = Product::select('name', 'code', 'picture', 'price', 'buy_price', 'weight_id', 'category_id')->where('orderCode', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('created_at', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where('company_id', session('userLogged')['company']['id'])->where('status', 'draft')->count();
         }
@@ -68,12 +68,12 @@ class TemporaryProductController extends Controller
             $row = [];
             $row['name'] = $item->name;
             $row['code'] = $item->code;
-            $row['picture'] = "<button class='btn btn-icon btn-outline-info picture' data-temporary-product-picture='" . ($item->picture ? asset($item->picture) : asset('resources/default/product/default-product.png')) . "'><i class='bx bx-eye' ></i></button>";
+            $row['picture'] = "<button class='btn btn-icon btn-outline-info picture' data-temporary-product-picture='".($item->picture ? asset($item->picture) : asset('resources/default/product/default-product.png'))."'><i class='bx bx-eye' ></i></button>";
             $row['price'] = $item->price;
             $row['buy_price'] = $item->buy_price;
             $row['weight_id'] = $item->weight->name ?? '-';
             $row['category_id'] = $item->category->name ?? '-';
-            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-temporary-product='" . $item->code . "' ><i class='bx bx-pencil' ></i></button><button data-temporary-product='" . $item->code . "' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-temporary-product='".$item->code."' ><i class='bx bx-pencil' ></i></button><button data-temporary-product='".$item->code."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -171,7 +171,7 @@ class TemporaryProductController extends Controller
                     $resultTempProduct[$key][$indexDefault] = (! empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buy_price']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
                     if ($indexDefault === 'picture') {
                         if (! empty($request->products[$key][$indexDefault])) {
-                            $filename = md5($request->products[$key]['name'] . now()->format('Y-m-d h:i:s')) . '.' . $request->products[$key][$indexDefault]->extension();
+                            $filename = md5($request->products[$key]['name'].now()->format('Y-m-d h:i:s')).'.'.$request->products[$key][$indexDefault]->extension();
                             $this->uploadAndWatermark($request->products[$key][$indexDefault], '', 'temp-customer-product', $filename);
                             $resultTempProduct[$key][$indexDefault] = $filename;
                         } else {
@@ -250,16 +250,16 @@ class TemporaryProductController extends Controller
             if (! empty($dataInsert)) {
                 CustomerCompanyGood::insert($dataInsert);
                 foreach ($dataInsert as $index => $value) {
-                    Storage::disk('public-asset')->move('temp-customer-product/' . $value['picture'], 'customer-product/' . $value['picture']);
-                    Storage::disk('public-asset')->delete('temp-customer-product/' . $value['picture']);
+                    Storage::disk('public-asset')->move('temp-customer-product/'.$value['picture'], 'customer-product/'.$value['picture']);
+                    Storage::disk('public-asset')->delete('temp-customer-product/'.$value['picture']);
                 }
             }
             if (! empty($dataUpdate)) {
                 CustomerCompanyGood::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buy_price', 'weight_id', 'category_id']);
                 foreach ($dataUpdate as $index => $value) {
-                    if (Storage::disk('public-asset')->exists('temp-customer-product/' . $value['picture'])) {
-                        Storage::disk('public-asset')->move('temp-customer-product/' . $value['picture'], 'customer-product/' . $value['picture']);
-                        Storage::disk('public-asset')->delete('temp-customer-product/' . $value['picture']);
+                    if (Storage::disk('public-asset')->exists('temp-customer-product/'.$value['picture'])) {
+                        Storage::disk('public-asset')->move('temp-customer-product/'.$value['picture'], 'customer-product/'.$value['picture']);
+                        Storage::disk('public-asset')->delete('temp-customer-product/'.$value['picture']);
                     }
                 }
             }
@@ -282,7 +282,7 @@ class TemporaryProductController extends Controller
             DB::commit();
         } catch (Exception $th) {
             DB::rollBack();
-            $response = ['message' => 'failed creating resource' . ($th->getCode() === 0) ? ', ' . $th->getMessage() : ''];
+            $response = ['message' => 'failed creating resource'.($th->getCode() === 0) ? ', '.$th->getMessage() : ''];
             $code = 422;
         }
 
@@ -360,7 +360,7 @@ class TemporaryProductController extends Controller
             'products.*.price' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'products.*.buy_price' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
             'products.*.status' => 'required|in:IN,RESTOCK,REMOVE',
-            'products.*.company_id' => 'required|exists:companies,id|in:' . session('userLogged')['company']['id'],
+            'products.*.company_id' => 'required|exists:companies,id|in:'.session('userLogged')['company']['id'],
             'products.*.weight_id' => 'required_if:products.*.status,IN|required_if:products.*.status,RESTOCK|exists:product_weights,id',
             'products.*.customerCompanyGoodId' => 'required_if:products.*.status,REMOVE|required_if:products.*.status,RESTOCK|exists:products,id',
             'products.*.picture' => 'image|between:1,800|dimensions:ratio=1/1|mimes:png,jpg',
@@ -409,7 +409,7 @@ class TemporaryProductController extends Controller
                     $resultTempProduct[$key][$indexDefault] = (! empty($request->products[$key][$indexDefault])) ? (in_array($indexDefault, ['stock', 'price', 'buy_price']) ? str_replace(',', '.', str_replace('.', '', $request->products[$key][$indexDefault])) : $request->products[$key][$indexDefault]) : $valueDefault;
                     if ($indexDefault === 'picture') {
                         if (! empty($request->products[$key][$indexDefault])) {
-                            $filename = md5($request->products[$key]['name'] . now()->format('Y-m-d h:i:s')) . '.' . $request->products[$key][$indexDefault]->extension();
+                            $filename = md5($request->products[$key]['name'].now()->format('Y-m-d h:i:s')).'.'.$request->products[$key][$indexDefault]->extension();
                             $this->uploadAndWatermark($request->products[$key][$indexDefault], '', 'temp-customer-product', $filename);
                             $resultTempProduct[$key][$indexDefault] = $filename;
                         } else {

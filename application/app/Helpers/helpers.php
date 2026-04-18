@@ -49,44 +49,48 @@ function buatSingkatan($kalimat)
 }
 
 if (! function_exists('lastCompanyOrderCode')) {
+    // function lastCompanyOrderCode($transaction_status = 'OUT', $date = null)
+    // {
+    //     if (! $date) {
+    //         $date = now()->format('Y-m-d');
+    //     }
+    //     if ($transaction_status === 'OUT') {
+    //         $data = CustomerProductTransaction::where('orderCode', 'like', '%'.$transaction_status.'%')
+    //             ->where('company_id', session('userLogged')['company']['id'])->whereRaw("DATE(created_at) = '".$date."'")
+    //             ->orderBy('id', 'DESC')
+    //             ->first();
+    //     } else {
+    //         $data = TemporaryProduct::where('orderCode', 'like', '%'.$transaction_status.'%')
+    //             ->where('company_id', session('userLogged')['company']['id'])->where('transaction_created', $date)
+    //             ->orderBy('id', 'DESC')
+    //             ->first();
+    //     }
+    //     $lastOrder = buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-'.str_pad(1, 5, '0', STR_PAD_LEFT);
+    //     if ($data && explode(
+    //         buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-',
+    //         $data->orderCode
+    //     )) {
+    //         $lastOrder = buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-'.str_pad(
+    //             intval(
+    //                 implode(
+    //                     '',
+    //                     explode(
+    //                         buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-',
+    //                         $data->orderCode
+    //                     )
+    //                 )
+    //             ) + 1,
+    //             5,
+    //             '0',
+    //             STR_PAD_LEFT
+    //         );
+    //     }
+
+    //     return $lastOrder;
+    // }
     function lastCompanyOrderCode($transaction_status = 'OUT', $date = null)
     {
-        if (! $date) {
-            $date = now()->format('Y-m-d');
-        }
-        if ($transaction_status === 'OUT') {
-            $data = CustomerProductTransaction::where('orderCode', 'like', '%'.$transaction_status.'%')
-                ->where('company_id', session('userLogged')['company']['id'])->whereRaw("DATE(created_at) = '".$date."'")
-                ->orderBy('id', 'DESC')
-                ->first();
-        } else {
-            $data = TemporaryProduct::where('orderCode', 'like', '%'.$transaction_status.'%')
-                ->where('company_id', session('userLogged')['company']['id'])->where('transaction_created', $date)
-                ->orderBy('id', 'DESC')
-                ->first();
-        }
-        $lastOrder = buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-'.str_pad(1, 5, '0', STR_PAD_LEFT);
-        if ($data && explode(
-            buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-',
-            $data->orderCode
-        )) {
-            $lastOrder = buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-'.str_pad(
-                intval(
-                    implode(
-                        '',
-                        explode(
-                            buatSingkatan(session('userLogged')['company']['name']).'-'.$transaction_status.'-'.$date.'-',
-                            $data->orderCode
-                        )
-                    )
-                ) + 1,
-                5,
-                '0',
-                STR_PAD_LEFT
-            );
-        }
-
-        return $lastOrder;
+        return $transaction_status.now($date)->format('Y-M-D');
     }
 }
 

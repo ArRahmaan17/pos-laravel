@@ -9,13 +9,13 @@
                     <h3>@yield('title')</h3>
                 </div>
                 <div class="col-6 text-end">
-                    <button class="btn btn-outline-success" id="add-customer-company-discount" data-bs-toggle="modal"
-                        data-bs-target="#modal-customer-company-discount">Add <i class='bx bxs-file-plus pb-1'></i></button>
+                    <button class="btn btn-outline-success" id="add-discount" data-bs-toggle="modal"
+                        data-bs-target="#modal-discount">Add <i class='bx bxs-file-plus pb-1'></i></button>
                 </div>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table" id="table-customer-company-discount">
+                    <table class="table" id="table-discount">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
@@ -37,7 +37,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modal-customer-company-discount" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div class="modal fade" id="modal-discount" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -45,7 +45,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="#" id="form-customer-company-discount" method="POST" class="container mt-2">
+                <form action="#" id="form-discount" method="POST" class="container mt-2">
                     @csrf
                     <input type="hidden" name="id">
                     <div class="row">
@@ -101,9 +101,9 @@
                 <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">
                     Close
                 </button>
-                <button type="button" id="save-customer-company-discount" class="btn btn-outline-success">Save
+                <button type="button" id="save-discount" class="btn btn-outline-success">Save
                     changes</button>
-                <button type="button" id="edit-customer-company-discount" class="btn btn-warning d-none">Update
+                <button type="button" id="edit-discount" class="btn btn-warning d-none">Update
                     changes</button>
             </div>
         </div>
@@ -116,33 +116,33 @@
 
 <script src="{{ asset('assets/js/jquery.inputmask.js') }}"></script>
 <script>
-    window.dataTableCustomerCompanyDiscount = null;
+    window.dataTableDiscount = null;
     window.state = 'add';
 
     function actionData() {
         $('.edit').click(function() {
             window.state = 'update';
-            let idCustomerCompany = $(this).data("customer-company-discount");
-            $("#edit-customer-company-discount").data("customer-company-discount", idCustomerCompany);
-            if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length === 0) {
-                $('#table-customer-company-discount tbody').find('tr').removeClass('selected');
+            let idCustomerCompany = $(this).data("discount");
+            $("#edit-discount").data("discount", idCustomerCompany);
+            if (window.dataTableDiscount.rows('.selected').data().length === 0) {
+                $('#table-discount tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
 
-            var data = window.dataTableCustomerCompanyDiscount.rows('.selected').data()[0];
+            var data = window.dataTableDiscount.rows('.selected').data()[0];
 
-            $('#modal-customer-company-discount').modal('show');
-            $('#modal-customer-company-discount').find('.modal-title').html(`Edit @yield('title')`);
-            $('#save-customer-company-discount').addClass('d-none');
-            $('#edit-customer-company-discount').removeClass('d-none');
+            $('#modal-discount').modal('show');
+            $('#modal-discount').find('.modal-title').html(`Edit @yield('title')`);
+            $('#save-discount').addClass('d-none');
+            $('#edit-discount').removeClass('d-none');
 
             $.ajax({
                 type: "GET",
                 url: "{{ route('promo.discount.show') }}/" + idCustomerCompany,
                 dataType: "json",
                 success: function(response) {
-                    let formElement = $('#modal-customer-company-discount').find("form");
-                    $('#modal-customer-company-discount').find("form")
+                    let formElement = $('#modal-discount').find("form");
+                    $('#modal-discount').find("form")
                         .find('input:not(input[name=status])').map(function(index, element) {
                             formElement.find(`[name='${element.name}']`)
                                 .val((`${response.data[element.name]}`.split('.')
@@ -160,7 +160,7 @@
                 },
                 error: function(error) {
                     iziToast.error({
-                        id: 'alert-customer-company-discount-action',
+                        id: 'alert-discount-action',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -168,19 +168,19 @@
                         displayMode: 'replace'
                     });
                     setTimeout(() => {
-                        $('#modal-customer-company-discount').modal('hide');
+                        $('#modal-discount').modal('hide');
                     }, 400);
                 }
             });
         })
 
         $('.delete').click(function() {
-            if (window.dataTableCustomerCompanyDiscount.rows('.selected').data().length === 0) {
-                $('#table-customer-company-discount tbody').find('tr').removeClass('selected');
+            if (window.dataTableDiscount.rows('.selected').data().length === 0) {
+                $('#table-discount tbody').find('tr').removeClass('selected');
                 $(this).parents('tr').addClass('selected')
             }
-            let idCustomerCompany = $(this).data("customer-company-discount");
-            var data = window.dataTableCustomerCompanyDiscount.rows('.selected').data()[0];
+            let idCustomerCompany = $(this).data("discount");
+            var data = window.dataTableDiscount.rows('.selected').data()[0];
             iziToast.question({
                 timeout: 5000,
                 layout: 2,
@@ -209,19 +209,19 @@
                             dataType: "json",
                             success: function(response) {
                                 iziToast.success({
-                                    id: 'alert-customer-company-discount-action',
+                                    id: 'alert-discount-action',
                                     title: 'Success',
                                     message: response.message,
                                     position: 'topRight',
                                     layout: 2,
                                     displayMode: 'replace'
                                 });
-                                window.dataTableCustomerCompanyDiscount.ajax
+                                window.dataTableDiscount.ajax
                                     .reload()
                             },
                             error: function(error) {
                                 iziToast.error({
-                                    id: 'alert-customer-company-discount-action',
+                                    id: 'alert-discount-action',
                                     title: 'Error',
                                     message: error.responseJSON.message,
                                     position: 'topRight',
@@ -242,12 +242,12 @@
     }
 
     $(function() {
-        window.dataTableCustomerCompanyDiscount = $("#table-customer-company-discount").DataTable({
+        window.dataTableDiscount = $("#table-discount").DataTable({
             ajax: "{{ route('promo.discount.data-table') }}",
             processing: true,
             serverSide: true,
             order: [
-                [1, 'desc']
+                //[1, 'desc']
             ],
             columns: [{
                 target: 0,
@@ -330,30 +330,30 @@
                 }
             }]
         });
-        window.dataTableCustomerCompanyDiscount.on('draw.dt', function() {
+        window.dataTableDiscount.on('draw.dt', function() {
             actionData();
         });
-        $('#save-customer-company-discount').click(function() {
-            let data = serializeObject($('#form-customer-company-discount'));
+        $('#save-discount').click(function() {
+            let data = serializeObject($('#form-discount'));
             $.ajax({
                 type: "POST",
                 url: `{{ route('promo.discount.store') }}`,
                 data: data,
                 dataType: "json",
                 success: function(response) {
-                    $('#modal-customer-company-discount').modal('hide')
+                    $('#modal-discount').modal('hide')
                     iziToast.success({
-                        id: 'alert-customer-company-discount-form',
+                        id: 'alert-discount-form',
                         title: 'Success',
                         message: response.message,
                         position: 'topRight',
                         layout: 2,
                         displayMode: 'replace'
                     });
-                    window.dataTableCustomerCompanyDiscount.ajax.reload();
+                    window.dataTableDiscount.ajax.reload();
                 },
                 error: function(error) {
-                    $('#modal-customer-company-discount .is-invalid').removeClass(
+                    $('#modal-discount .is-invalid').removeClass(
                         'is-invalid')
                     $.each(error.responseJSON.errors, function(indexInArray,
                         valueOfElement) {
@@ -361,16 +361,16 @@
                                 .split('.').length > 1) ?
                             `${indexInArray.split('.').join('[')}]` :
                             indexInArray
-                        $('#modal-customer-company-discount').find("[name='" +
+                        $('#modal-discount').find("[name='" +
                             name +
                             "']").addClass('is-invalid');
-                        $('#modal-customer-company-discount').find("[name='" +
+                        $('#modal-discount').find("[name='" +
                             name +
                             "']").siblings('.invalid-feedback').html(
                             valueOfElement[0])
                     });
                     iziToast.error({
-                        id: 'alert-customer-company-discount-form',
+                        id: 'alert-discount-form',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -380,8 +380,8 @@
                 }
             });
         });
-        $('#edit-customer-company-discount').click(function() {
-            let data = serializeObject($('#form-customer-company-discount'));
+        $('#edit-discount').click(function() {
+            let data = serializeObject($('#form-discount'));
             $.ajax({
                 type: "PUT",
                 url: `{{ route('promo.discount.update') }}/${data.id}`,
@@ -391,19 +391,19 @@
                 },
                 dataType: "json",
                 success: function(response) {
-                    $('#modal-customer-company-discount').modal('hide')
+                    $('#modal-discount').modal('hide')
                     iziToast.success({
-                        id: 'alert-customer-company-discount-form',
+                        id: 'alert-discount-form',
                         title: 'Success',
                         message: response.message,
                         position: 'topRight',
                         layout: 2,
                         displayMode: 'replace'
                     });
-                    window.dataTableCustomerCompanyDiscount.ajax.reload()
+                    window.dataTableDiscount.ajax.reload()
                 },
                 error: function(error) {
-                    $('#modal-customer-company-discount .is-invalid').removeClass(
+                    $('#modal-discount .is-invalid').removeClass(
                         'is-invalid')
                     $.each(error.responseJSON.errors, function(indexInArray,
                         valueOfElement) {
@@ -411,16 +411,16 @@
                                 .split('.').length > 1) ?
                             `${indexInArray.split('.').join('[')}]` :
                             indexInArray
-                        $('#modal-customer-company-discount').find("[name='" +
+                        $('#modal-discount').find("[name='" +
                             name +
                             "']").addClass('is-invalid');
-                        $('#modal-customer-company-discount').find("[name='" +
+                        $('#modal-discount').find("[name='" +
                             name +
                             "']").siblings('.invalid-feedback').html(
                             valueOfElement[0])
                     });
                     iziToast.error({
-                        id: 'alert-customer-company-discount-form',
+                        id: 'alert-discount-form',
                         title: 'Error',
                         message: error.responseJSON.message,
                         position: 'topRight',
@@ -430,16 +430,16 @@
                 }
             });
         });
-        $('#modal-customer-company-discount').on('hidden.bs.modal', function() {
+        $('#modal-discount').on('hidden.bs.modal', function() {
             $(this).find('form')[0].reset();
             $(this).find('.modal-title').html(`Add New @yield('title')`);
-            $('#save-customer-company-discount').removeClass('d-none');
-            $('#edit-customer-company-discount').addClass('d-none');
-            $('#modal-customer-company-discount .is-invalid').removeClass('is-invalid')
-            $('#table-customer-company-discount tbody').find('tr').removeClass('selected');
+            $('#save-discount').removeClass('d-none');
+            $('#edit-discount').addClass('d-none');
+            $('#modal-discount .is-invalid').removeClass('is-invalid')
+            $('#table-discount tbody').find('tr').removeClass('selected');
             $('#uploadedAvatar').prop('src', `{{ asset('cp/default-company.png') }}`);
         });
-        $('#modal-customer-company-discount').on('shown.bs.modal', function() {
+        $('#modal-discount').on('shown.bs.modal', function() {
             setTimeout(() => {
                 $('.discount-code').inputmask({
                     regex: "{{ buatSingkatan(session('userLogged')['company']['name']) }}([A-Z]|[0-9]){1,20}$",

@@ -54,7 +54,7 @@
         <tr>
             <th>Product Name</th>
             <th>Category</th>
-            <th>Unit</th>
+            <th>Weight</th>
             <th class="text-right">Stock</th>
             <th class="text-right">Cost / Unit (Rp)</th>
             <th class="text-right">Total Value (Rp)</th>

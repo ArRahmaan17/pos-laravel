@@ -4,9 +4,11 @@ namespace App\Models\Inventory;
 
 use App\Models\Product\ProductCategory;
 use App\Models\Product\ProductWeight;
+use App\Models\Promo\Discount;
 use App\Traits\HasDefaultSearch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -35,6 +37,11 @@ class Product extends Model
     public function category(): HasOne
     {
         return $this->hasOne(ProductCategory::class, 'id', 'category_id');
+    }
+
+    public function discounts(): HasMany
+    {
+        return $this->hasMany(Discount::class, 'product_id');
     }
 
     public static function shelf_less($company_id)

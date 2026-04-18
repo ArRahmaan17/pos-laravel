@@ -688,7 +688,7 @@ class ReportController extends Controller
     {
         return DB::table('products as cpg')
             ->join('product_weights as agu', 'cpg.weight_id', '=', 'agu.id')
-            ->leftJoin('customer_company_stocktakings as cps', 'cpg.id', '=', 'cps.goodId')
+            ->leftJoin('stocktakings as cps', 'cpg.id', '=', 'cps.goodId')
             ->select([
                 'cpg.name',
                 'agu.name as unit_name',
@@ -870,7 +870,7 @@ class ReportController extends Controller
             ->where('ctp.company_id', session('userLogged')['company']['id'])
             ->whereBetween('ctp.created_at', [$startDate, $endDate]);
 
-        $stocktakingQuery = DB::table('customer_company_stocktakings as ccs')
+        $stocktakingQuery = DB::table('stocktakings as ccs')
             ->join('products as ccg', 'ccs.goodId', '=', 'ccg.id')
             ->select([
                 DB::raw('DATE(ccs.created_at) as created_at'),

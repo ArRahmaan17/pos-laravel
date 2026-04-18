@@ -9,8 +9,6 @@
                     <h3>@yield('title')</h3>
                 </div>
                 <div class="col-6 text-end">
-                    <button class="btn btn-outline-success" id="add-customer-company-good" data-bs-toggle="modal" data-bs-target="#modal-customer-company-good">
-                        Add <i class='bx bxs-file-plus pb-1'></i></button>
                     <button id="toggle-off-canvas-temporary-cart" class="btn btn-primary" type="button" data-bs-toggle="offcanvas"
                         data-bs-target="#off-canvas-temporary-cart" aria-controls="off-canvas-temporary-cart">
                         <i class='bx bxs-folder-open pb-1'></i>
@@ -92,7 +90,7 @@
                     </div>
                     <div class="row">
                         <div class="col mb-3">
-                            <label for="weight_id" class="form-label">Unit</label>
+                            <label for="weight_id" class="form-label">Weight</label>
                             <select class="form-control select2" name="weight_id" id="weight_id">
                                 <option value="">Not selected</option>
                                 @foreach ($units as $unit)
@@ -151,9 +149,9 @@
 </div>
 <div class="offcanvas offcanvas-end" tabindex="-1" id="off-canvas-temporary-cart" aria-labelledby="off-canvas-temporary-cart-label">
     <div class="offcanvas-header">
-        <h5 id="off-canvas-temporary-cart-label" class="offcanvas-title">Temporary Changed Product ({{ lastCompanyOrderCode('IN') }},
+        <!-- <h5 id="off-canvas-temporary-cart-label" class="offcanvas-title">Temporary Changed Product ({{ lastCompanyOrderCode('IN') }},
             {{ lastCompanyOrderCode('ADJ') }})
-        </h5>
+        </h5> -->
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body my-auto mx-0 flex-grow-0">
@@ -334,7 +332,7 @@
     function getAllTempProduct() {
         $.ajax({
             type: "GET",
-            url: "{{ route('inventory.your-products.temp-product') }}",
+            url: "{{ route('inventory.your-products.temporary-product') }}",
             dataType: "JSON",
             success: function({
                 data

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Man;
 
 use App\Http\Controllers\Controller;
-use App\Models\Inventory\Product;
 use App\Traits\ImageHandler;
 use Exception;
 use Illuminate\Http\Request;

@@ -7,10 +7,10 @@ use App\Http\Controllers\Company\UserController;
 use App\Http\Controllers\Company\WarehouseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Inventory\ProductController;
 use App\Http\Controllers\Inventory\StocktakingController;
 use App\Http\Controllers\Inventory\TemporaryProductController;
-use App\Http\Controllers\Inventory\ProductController;
-use App\Http\Controllers\Man\CustomerProductTransactionController;
+use App\Http\Controllers\Man\TransactionController;
 use App\Http\Controllers\Product\CategoryController;
 use App\Http\Controllers\Product\WeightController;
 use App\Http\Controllers\Promo\DiscountController;
@@ -270,14 +270,14 @@ Route::meta(['group' => 'web'], function () {
                 'name' => 'transaction',
                 'middleware' => [checkPageAuthorization::class],
             ], function () {
-                Route::get('/', [CustomerProductTransactionController::class, 'index'])->name('index');
-                Route::post('/', [CustomerProductTransactionController::class, 'store'])->name('store');
-                Route::post('/validate-transaction-items', [CustomerProductTransactionController::class, 'validateTransactionItems'])->name('validate-transaction-items');
-                Route::get('/transaction-receipt/{orderCode?}/print', [CustomerProductTransactionController::class, 'viewPdf'])->name('print-transaction-receipt');
-                Route::get('/product-data-table', [CustomerProductTransactionController::class, 'productDataTable'])->name('product-data-table');
-                Route::get('/data-table', [CustomerProductTransactionController::class, 'dataTable'])->name('data-table');
-                Route::get('/discount-data-table', [CustomerProductTransactionController::class, 'discountDataTable'])->name('discount-data-table');
-                Route::get('/validate-discount-code/{id?}', [CustomerProductTransactionController::class, 'validateDiscountCode'])->name('validate-discount-code');
+                Route::get('/', [TransactionController::class, 'index'])->name('index');
+                Route::post('/', [TransactionController::class, 'store'])->name('store');
+                Route::post('/validate-transaction-items', [TransactionController::class, 'validateTransactionItems'])->name('validate-transaction-items');
+                Route::get('/transaction-receipt/{orderCode?}/print', [TransactionController::class, 'viewPdf'])->name('print-transaction-receipt');
+                Route::get('/product-data-table', [TransactionController::class, 'productDataTable'])->name('product-data-table');
+                Route::get('/data-table', [TransactionController::class, 'dataTable'])->name('data-table');
+                Route::get('/discount-data-table', [TransactionController::class, 'discountDataTable'])->name('discount-data-table');
+                Route::get('/validate-discount-code/{id?}', [TransactionController::class, 'validateDiscountCode'])->name('validate-discount-code');
             });
             Route::meta([
                 'icon' => 'bx bxs-chart-bar-big-columns',

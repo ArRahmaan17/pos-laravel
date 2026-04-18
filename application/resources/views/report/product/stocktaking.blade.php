@@ -58,7 +58,7 @@
             <tr>
                 <th>No</th>
                 <th>Product Name</th>
-                <th>Unit</th>
+                <th>Weight</th>
                 <th class="text-right">System Stock</th>
                 <th class="text-right">Physical Stock</th>
                 <th class="text-right">Difference</th>
