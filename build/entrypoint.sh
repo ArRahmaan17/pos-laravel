@@ -25,16 +25,6 @@ if [ "$1" = "frankenphp" ]; then
         frankenphp php-cli artisan migrate:fresh --seed
     fi
 
-    # Discover packages and cache configuration for production
-    if [ "${APP_ENV}" = "production" ]; then
-        echo "Optimizing Laravel for production..."
-        frankenphp php-cli artisan package:discover
-        frankenphp php-cli artisan config:cache
-        frankenphp php-cli artisan event:cache
-        frankenphp php-cli artisan route:cache
-        frankenphp php-cli artisan view:cache
-    fi
-
     # Start FrankenPHP and Reverb server
     echo "Starting FrankenPHP & Reverb"
     exec frankenphp run -c /etc/frankenphp/Caddyfile --adapter caddyfile & frankenphp php-cli artisan reverb:start --host=0.0.0.0 --port=8001 --no-interaction
