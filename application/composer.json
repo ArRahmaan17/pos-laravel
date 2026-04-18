@@ -28,8 +28,7 @@
         "laravel/pint": "*",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
-        "phpunit/phpunit": "^12.5.22",
-        "spatie/laravel-ignition": "^2.4"
+        "phpunit/phpunit": "^12.5.22"
     },
     "autoload": {
         "psr-4": {

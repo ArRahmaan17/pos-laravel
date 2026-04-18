@@ -34,7 +34,7 @@ WORKDIR /app
 
 COPY application/composer.* ./
 
-RUN composer install --no-interaction --no-scripts --optimize-autoloader --prefer-dist --ignore-platform-req=*
+RUN composer update --no-interaction --no-scripts --optimize-autoloader --ignore-platform-req=*
 
 
 # Stage 3: FrankenPHP application image
