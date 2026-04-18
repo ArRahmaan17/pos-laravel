@@ -40,16 +40,16 @@ class ProductController extends Controller
                     ->offset($request['start']);
             }
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $assets = $assets->where('status', 'publish')->where('company_id', session('userLogged')['company']['id'])->get();
         } else {
             $assets = Product::with('weight', 'category')->select('*')
-                ->where('products.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('products.price', 'like', '%' . $request['search']['value'] . '%');
+                ->where('products.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('products.price', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $assets->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $assets->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -58,11 +58,11 @@ class ProductController extends Controller
             $assets = $assets->where('status', 'publish')->where('company_id', session('userLogged')['company']['id'])->get();
 
             $totalFiltered = Product::select('*')
-                ->where('products.name', 'like', '%' . $request['search']['value'] . '%')
-                ->orWhere('products.price', 'like', '%' . $request['search']['value'] . '%');
+                ->where('products.name', 'like', '%'.$request['search']['value'].'%')
+                ->orWhere('products.price', 'like', '%'.$request['search']['value'].'%');
 
             if (isset($request['order'][0]['column'])) {
-                $totalFiltered->orderByRaw($request['order'][0]['name'] . ' ' . $request['order'][0]['dir']);
+                $totalFiltered->orderByRaw($request['order'][0]['name'].' '.$request['order'][0]['dir']);
             }
             $totalFiltered = $totalFiltered->where('status', 'publish')->count();
         }
@@ -76,10 +76,10 @@ class ProductController extends Controller
             $row['buy_price'] = $item->buy_price;
             $row['weight_id'] = $item->weight->id;
             $row['category_id'] = $item->weight->id;
-            $row['status'] = ($item->status === 'archive') ? '<span class="badge bg-label-danger">' . $item->status . '</span>' : (($item->status === 'draft') ? '<span class="badge bg-label-warning">' . $item->status . '</span>' : '<span class="badge bg-label-success">' . $item->status . '</span>');
-            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
-            $row['action_temp'] = "<button class='btn btn-icon btn-outline-warning edit-temp' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='" . $item->id . "' class='btn btn-icon btn-outline-danger delete-temp'><i class='bx bxs-trash-alt' ></i></button>";
-            $row['action_stocktaking'] = "<button type='button' class='btn btn-icon btn-outline-warning edit-stock' data-customer-company-good='" . $item->id . "' ><i class='bx bx-pencil' ></i></button>";
+            $row['status'] = ($item->status === 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status === 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action_temp'] = "<button class='btn btn-icon btn-outline-warning edit-temp' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-good='".$item->id."' class='btn btn-icon btn-outline-danger delete-temp'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action_stocktaking'] = "<button type='button' class='btn btn-icon btn-outline-warning edit-stock' data-customer-company-good='".$item->id."' ><i class='bx bx-pencil' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -121,7 +121,7 @@ class ProductController extends Controller
             $data['price'] = str_replace(',', '.', str_replace('.', '', $request->price));
             $data['buy_price'] = str_replace(',', '.', str_replace('.', '', $request->buy_price));
             if ($request->picture) {
-                $filename = md5($request->name . now()->format('Y-m-d h:i:s')) . '.' . $request->file('picture')->clientExtension();
+                $filename = md5($request->name.now()->format('Y-m-d h:i:s')).'.'.$request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
                 $this->uploadAndWatermark($request->file('picture'), '', 'temp-customer-product', $filename);
             }
@@ -180,15 +180,15 @@ class ProductController extends Controller
             if (! empty($dataInsert)) {
                 Product::insert($dataInsert);
                 foreach ($dataInsert as $index => $value) {
-                    Storage::disk('public-asset')->move('temp-customer-product/' . $value['picture'], 'customer-product/' . $value['picture']);
+                    Storage::disk('public-asset')->move('temp-customer-product/'.$value['picture'], 'customer-product/'.$value['picture']);
                 }
             }
             if (! empty($dataUpdate)) {
                 Product::upsert($dataUpdate, ['id'], ['stock', 'name', 'picture', 'price', 'buy_price', 'weight_id']);
                 foreach ($dataUpdate as $index => $value) {
-                    if (Storage::disk('public-asset')->exists('temp-customer-product/' . $value['picture'])) {
-                        Storage::disk('public-asset')->move('temp-customer-product/' . $value['picture'], 'customer-product/' . $value['picture']);
-                        Storage::disk('public-asset')->delete('temp-customer-product/' . $value['picture']);
+                    if (Storage::disk('public-asset')->exists('temp-customer-product/'.$value['picture'])) {
+                        Storage::disk('public-asset')->move('temp-customer-product/'.$value['picture'], 'customer-product/'.$value['picture']);
+                        Storage::disk('public-asset')->delete('temp-customer-product/'.$value['picture']);
                     }
                 }
             }
@@ -211,7 +211,7 @@ class ProductController extends Controller
             DB::commit();
         } catch (Exception $th) {
             DB::rollBack();
-            $response = ['message' => 'failed creating resource' . ($th->getCode() === 0) ? ', ' . $th->getMessage() : ''];
+            $response = ['message' => 'failed creating resource'.($th->getCode() === 0) ? ', '.$th->getMessage() : ''];
             $code = 422;
         }
 
@@ -253,7 +253,7 @@ class ProductController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => 'required|min:6|max:40|unique:products,name,' . $id . '|unique:adjustment_products,name, ' . $id,
+            'name' => 'required|min:6|max:40|unique:products,name,'.$id.'|unique:adjustment_products,name, '.$id,
             'id' => 'required|numeric',
             'stock' => 'required|max:8',
             'price' => 'required|max:16|regex:/(\d{1,3}(?:\.\d{3})*)(?:,(\d{2}))/i',
@@ -274,7 +274,7 @@ class ProductController extends Controller
             $referenceProduct = Product::find($id);
             $data['picture'] = $referenceProduct->picture;
             if ($request->file('picture')) {
-                $filename = md5($request->name . now()->format('Y-m-d h:i:s')) . '.' . $request->file('picture')->clientExtension();
+                $filename = md5($request->name.now()->format('Y-m-d h:i:s')).'.'.$request->file('picture')->clientExtension();
                 $data['picture'] = $filename;
                 $this->uploadAndWatermark($request->file('picture'), '', 'temp-customer-product', $filename);
             }

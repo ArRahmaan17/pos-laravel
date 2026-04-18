@@ -138,7 +138,7 @@
             </div>
             <div class="row">
                 <div class="col mb-3">
-                    <label for="weight_id" class="form-label">Unit</label>
+                    <label for="weight_id" class="form-label">Weight</label>
                     <select class="form-control select2" name="weight_id" id="weight_id">
                         <option value="">Not selected</option>
                         @foreach ($units as $unit)
@@ -173,7 +173,7 @@
                         <th scope="col">Stock</th>
                         <th scope="col">Price</th>
                         <th scope="col">Buy Price</th>
-                        <th scope="col">Unit</th>
+                        <th scope="col">Weight</th>
                         <th scope="col">Accepted</th>
                         <th scope="col">Accepter</th>
                     </tr>

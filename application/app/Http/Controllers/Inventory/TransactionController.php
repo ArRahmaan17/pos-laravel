@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Man;
+namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerCompanyDiscount;
 use App\Models\CustomerCompanyGood;
 use App\Models\CustomerDetailProductTransaction;
 use App\Models\CustomerProductTransaction;
+use App\Models\Discount;
 use App\Services\TransactionReceiptEscposPrinter;
 use Exception;
 use Illuminate\Http\Request;
@@ -14,14 +14,14 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Mike42\Escpos\Printer;
 
-class CustomerProductTransactionController extends Controller
+class TransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('man.customer-product-transaction');
+        return view('inventory.transaction');
     }
 
     public function dataTable(Request $request)
@@ -84,8 +84,8 @@ class CustomerProductTransactionController extends Controller
             $row['discount'] = $item->discount;
             $row['name'] = $item->name;
             $row['details'] = $item->details;
-            $row['action'] = "<button class='btn btn-icon btn-outline-success print-transaction' data-format='pdf' data-customer-product-transaction='".$item->orderCode."' title='PDF receipt'><i class='bx bxs-file-pdf' ></i></button>
-            <button class='btn btn-icon btn-outline-dark print-transaction' data-format='escpos' data-customer-product-transaction='".$item->orderCode."' title='ESC/POS receipt'><i class='bx bxs-printer' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-success print-transaction' data-format='pdf' data-transaction='".$item->orderCode."' title='PDF receipt'><i class='bx bxs-file-pdf' ></i></button>
+            <button class='btn btn-icon btn-outline-dark print-transaction' data-format='escpos' data-transaction='".$item->orderCode."' title='ESC/POS receipt'><i class='bx bxs-printer' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -173,14 +173,14 @@ class CustomerProductTransactionController extends Controller
 
     public function discountDataTable(Request $request)
     {
-        $totalData = CustomerCompanyDiscount::where([
+        $totalData = Discount::where([
             ['status', '=', 'publish'],
             ['company_id', '=', session('userLogged')['company']['id']],
         ])->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompanyDiscount::select('*');
+            $assets = Discount::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -194,7 +194,7 @@ class CustomerProductTransactionController extends Controller
                 ['company_id', '=', session('userLogged')['company']['id']],
             ])->get();
         } else {
-            $assets = CustomerCompanyDiscount::select('*')
+            $assets = Discount::select('*')
                 ->where('code', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('max_transaction_discount', 'like', '%'.$request['search']['value'].'%')
@@ -214,7 +214,7 @@ class CustomerProductTransactionController extends Controller
                 ['company_id', '=', session('userLogged')['company']['id']],
             ])->get();
 
-            $totalFiltered = CustomerCompanyDiscount::select('*')
+            $totalFiltered = Discount::select('*')
                 ->where('code', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('max_transaction_discount', 'like', '%'.$request['search']['value'].'%')
@@ -233,7 +233,7 @@ class CustomerProductTransactionController extends Controller
         $dataFiltered = [];
         foreach ($assets as $index => $item) {
             $row = [];
-            $appliedDiscount = CustomerCompanyDiscount::appliedDiscounts($item->code);
+            $appliedDiscount = Discount::appliedDiscounts($item->code);
             $row['code'] = $item->code;
             $row['id'] = $item->id;
             $row['description'] = $item->description;
@@ -241,7 +241,7 @@ class CustomerProductTransactionController extends Controller
             $row['max_transaction_discount'] = $item->max_transaction_discount;
             $row['min_transaction_price'] = $item->min_transaction_price;
             $row['applyLeft'] = (($item->maxApply === 0) ? 'Unlimited' : ($appliedDiscount < $item->maxApply)) ? ($item->maxApply - $appliedDiscount).' x' : '0 x';
-            $row['action'] = (CustomerCompanyDiscount::appliedDiscounts($item->code) < $item->maxApply || $item->maxApply === 0) ? "<button class='btn btn-icon btn-outline-success use-discount' data-customer-company-discount='".$item->id."' ><i class='bx bx-check-double' ></i></button>" : "<button class='btn btn-icon btn-outline-danger disabled'><i class='bx bx-x' ></i></button>";
+            $row['action'] = (Discount::appliedDiscounts($item->code) < $item->maxApply || $item->maxApply === 0) ? "<button class='btn btn-icon btn-outline-success use-discount' data-discount='".$item->id."' ><i class='bx bx-check-double' ></i></button>" : "<button class='btn btn-icon btn-outline-danger disabled'><i class='bx bx-x' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -274,12 +274,12 @@ class CustomerProductTransactionController extends Controller
             $discount = 0;
             $discountId = null;
             if ($request->discount != null && $request->discount['id'] != null) {
-                $data_discount = CustomerCompanyDiscount::find($request->discount['id']);
-                $appliedDiscount = CustomerCompanyDiscount::appliedDiscounts($data_discount->code);
+                $data_discount = Discount::find($request->discount['id']);
+                $appliedDiscount = Discount::appliedDiscounts($data_discount->code);
                 if ($data_discount->maxApply != 0 && $data_discount->maxApply === $appliedDiscount) {
                     throw new Exception('Max applied discount already reached', 422);
                 }
-                if ($total >= $data_discount->min_transaction_price && ($data_discount->max_apply === 0 || $data_discount->max_apply >= CustomerCompanyDiscount::appliedDiscounts($data_discount->code))) {
+                if ($total >= $data_discount->min_transaction_price && ($data_discount->max_apply === 0 || $data_discount->max_apply >= Discount::appliedDiscounts($data_discount->code))) {
                     $discount = (
                         floatval($total)
                         - floatval(($data_discount->max_transaction_discount != null) ? ($data_discount->max_transaction_discount * $data_discount->percentage / 100) : 0)
@@ -352,9 +352,9 @@ class CustomerProductTransactionController extends Controller
 
     private function checkDiscountCode($code)
     {
-        $appliedDiscount = CustomerCompanyDiscount::appliedDiscounts($code);
+        $appliedDiscount = Discount::appliedDiscounts($code);
 
-        return CustomerCompanyDiscount::where([
+        return Discount::where([
             'company_id' => session('userLogged')['company']['id'],
             'code' => $code,
         ])->where('maxApply', '>', $appliedDiscount)->first();

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Models\CustomerCompanyGood;
-use App\Models\CustomerCompanyStocktaking;
+use App\Models\Inventory\Stocktaking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,12 +20,12 @@ class StocktakingController extends Controller
 
     public function dataTable(Request $request)
     {
-        $where = [['customer_company_stocktakings.company_id', '=', session('userLogged')['company']['id']]];
-        $totalData = CustomerCompanyStocktaking::join('products', 'products.id', '=', 'customer_company_stocktakings.goodId')->where($where)->orderBy('id', 'asc')
+        $where = [['stocktakings.company_id', '=', session('userLogged')['company']['id']]];
+        $totalData = Stocktaking::join('products', 'products.id', '=', 'stocktakings.goodId')->where($where)->orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompanyStocktaking::join('products', 'products.id', '=', 'customer_company_stocktakings.goodId')->select('customer_company_stocktakings.*', 'products.name');
+            $assets = Stocktaking::join('products', 'products.id', '=', 'stocktakings.goodId')->select('stocktakings.*', 'products.name');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -36,7 +36,7 @@ class StocktakingController extends Controller
             }
             $assets = $assets->where($where)->get();
         } else {
-            $assets = CustomerCompanyStocktaking::join('products', 'products.id', '=', 'customer_company_stocktakings.goodId')->select('customer_company_stocktakings.*', 'products.name')
+            $assets = Stocktaking::join('products', 'products.id', '=', 'stocktakings.goodId')->select('stocktakings.*', 'products.name')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -49,7 +49,7 @@ class StocktakingController extends Controller
             }
             $assets = $assets->where($where)->get();
 
-            $totalFiltered = CustomerCompanyStocktaking::join('products', 'products.id', '=', 'customer_company_stocktakings.goodId')->select('customer_company_stocktakings.*', 'products.name')
+            $totalFiltered = Stocktaking::join('products', 'products.id', '=', 'stocktakings.goodId')->select('stocktakings.*', 'products.name')
                 ->where('name', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%');
 
@@ -102,7 +102,7 @@ class StocktakingController extends Controller
                     'updated_at' => now(),
                 ];
             }, $request->product));
-            CustomerCompanyStocktaking::insert($data);
+            Stocktaking::insert($data);
             DB::commit();
             $status = 200;
             $message = ['message' => 'Successfully create resources'];
@@ -119,7 +119,7 @@ class StocktakingController extends Controller
     {
         DB::beginTransaction();
         try {
-            $builder = CustomerCompanyStocktaking::find($id);
+            $builder = Stocktaking::find($id);
             $builder->update(['status' => 1]);
             CustomerCompanyGood::find($builder->goodId)->update(['stock' => $builder->real_stock]);
             DB::commit();
@@ -139,7 +139,7 @@ class StocktakingController extends Controller
      */
     public function show(string $id)
     {
-        $data = CustomerCompanyStocktaking::join('products', 'customer_company_stocktakings.goodId', '=', 'products.id')->select('customer_company_stocktakings.*', 'products.name')->find($id);
+        $data = Stocktaking::join('products', 'stocktakings.goodId', '=', 'products.id')->select('stocktakings.*', 'products.name')->find($id);
         $status = 200;
         $message = ['message' => 'Successfully showing resources', 'data' => $data];
         if (! $data) {
@@ -163,7 +163,7 @@ class StocktakingController extends Controller
         $data = $request->product;
         DB::beginTransaction();
         try {
-            $dataStocktaking = CustomerCompanyStocktaking::where('status', 0)->whereIn('id', [array_map(function ($prd) {
+            $dataStocktaking = Stocktaking::where('status', 0)->whereIn('id', [array_map(function ($prd) {
                 return $prd['id'];
             }, $request->product)])->get();
             $dataStocktaking->map(function ($stock) use ($request) {
@@ -190,7 +190,7 @@ class StocktakingController extends Controller
     {
         $status = 422;
         $message = ['message' => 'Failed delete resource'];
-        if (CustomerCompanyStocktaking::where('status', 0)->where('id', $id)->delete()) {
+        if (Stocktaking::where('status', 0)->where('id', $id)->delete()) {
             $status = 200;
             $message = ['message' => 'Successfully delete resource'];
         }

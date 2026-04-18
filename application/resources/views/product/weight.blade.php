@@ -19,7 +19,7 @@
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Unit</th>
+                                <th scope="col">Weight</th>
                                 <th scope="col">Description</th>
                                 <th scope="col">Action</th>
                             </tr>

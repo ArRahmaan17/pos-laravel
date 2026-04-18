@@ -17,6 +17,7 @@
         "vite-plugin-inspect": "^11.3.3"
     },
     "dependencies": {
-        "html2canvas": "^1.4.1"
+        "html2canvas": "^1.4.1",
+        "onscan.js": "^1.5.2"
     }
 }

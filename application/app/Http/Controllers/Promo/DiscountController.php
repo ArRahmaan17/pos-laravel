@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Promo;
 
 use App\Http\Controllers\Controller;
-use App\Models\CustomerCompanyDiscount;
+use App\Models\Promo\Discount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,16 +14,16 @@ class DiscountController extends Controller
      */
     public function index()
     {
-        return view('product.discount');
+        return view('promo.discount');
     }
 
     public function dataTable(Request $request)
     {
-        $totalData = CustomerCompanyDiscount::orderBy('id', 'asc')
+        $totalData = Discount::orderBy('id', 'asc')
             ->count();
         $totalFiltered = $totalData;
         if (empty($request['search']['value'])) {
-            $assets = CustomerCompanyDiscount::select('*');
+            $assets = Discount::select('*');
 
             if ($request['length'] != '-1') {
                 $assets->limit($request['length'])
@@ -34,7 +34,7 @@ class DiscountController extends Controller
             }
             $assets = $assets->get();
         } else {
-            $assets = CustomerCompanyDiscount::select('*')
+            $assets = Discount::select('*')
                 ->where('code', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('max_transaction_discount', 'like', '%'.$request['search']['value'].'%')
@@ -52,7 +52,7 @@ class DiscountController extends Controller
             }
             $assets = $assets->get();
 
-            $totalFiltered = CustomerCompanyDiscount::select('*')
+            $totalFiltered = Discount::select('*')
                 ->where('code', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('description', 'like', '%'.$request['search']['value'].'%')
                 ->orWhere('max_transaction_discount', 'like', '%'.$request['search']['value'].'%')
@@ -77,7 +77,7 @@ class DiscountController extends Controller
             $row['min_transaction'] = $item->min_transaction_price;
             $row['max_apply'] = $item->maxApply === 0 ? 'Unlimited' : $item->maxApply.'x';
             $row['status'] = ($item->status === 'archive') ? '<span class="badge bg-label-danger">'.$item->status.'</span>' : (($item->status === 'draft') ? '<span class="badge bg-label-warning">'.$item->status.'</span>' : '<span class="badge bg-label-success">'.$item->status.'</span>');
-            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-customer-company-discount='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-customer-company-discount='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
+            $row['action'] = "<button class='btn btn-icon btn-outline-warning edit' data-discount='".$item->id."' ><i class='bx bx-pencil' ></i></button><button data-discount='".$item->id."' class='btn btn-icon btn-outline-danger delete'><i class='bx bxs-trash-alt' ></i></button>";
             $dataFiltered[] = $row;
         }
         $response = [
@@ -112,7 +112,7 @@ class DiscountController extends Controller
             $data['min_transaction_price'] = intval(convertStringToNumber($data['min_transaction_price']));
             $data['company_id'] = session('userLogged')['company']['id'];
             $data['maxApply'] = convertStringToNumber($data['maxApply']);
-            CustomerCompanyDiscount::create($data);
+            Discount::create($data);
             DB::commit();
             $response = ['message' => 'resources created successfully'];
             $code = 200;
@@ -130,7 +130,7 @@ class DiscountController extends Controller
      */
     public function show(string $id)
     {
-        $discount = CustomerCompanyDiscount::where('id', $id)->where('company_id', session('userLogged')['company']['id'])->first();
+        $discount = Discount::where('id', $id)->where('company_id', session('userLogged')['company']['id'])->first();
         $response = ['message' => 'failed showing resources', 'data' => $discount];
         $code = 404;
         if ($discount) {
@@ -162,7 +162,7 @@ class DiscountController extends Controller
             $data['min_transaction_price'] = intval(convertStringToNumber($data['min_transaction_price']));
             $data['company_id'] = session('userLogged')['company']['id'];
             $data['maxApply'] = convertStringToNumber($data['maxApply']);
-            CustomerCompanyDiscount::where(['id' => $id, 'company_id' => session('userLogged')['company']['id']])->update($data);
+            Discount::where(['id' => $id, 'company_id' => session('userLogged')['company']['id']])->update($data);
             DB::commit();
             $response = ['message' => 'resources updated successfully'];
             $code = 200;
@@ -182,7 +182,7 @@ class DiscountController extends Controller
     {
         DB::beginTransaction();
         try {
-            CustomerCompanyDiscount::where(['id' => $id, 'company_id' => session('userLogged')['company']['id']])->delete();
+            Discount::where(['id' => $id, 'company_id' => session('userLogged')['company']['id']])->delete();
             DB::commit();
             $response = ['message' => 'resources deleted successfully'];
             $code = 200;
