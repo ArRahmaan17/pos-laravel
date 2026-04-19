@@ -32,7 +32,7 @@ WORKDIR /app
 COPY application/composer.* ./
 
 # Install PHP dependencies
-RUN composer install --no-interaction --no-scripts --optimize-autoloader --ignore-platform-req=*
+RUN composer update --no-interaction --no-scripts --optimize-autoloader --ignore-platform-req=*
 
 
 # ==============================================================================

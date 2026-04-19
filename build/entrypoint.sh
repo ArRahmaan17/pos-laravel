@@ -8,7 +8,7 @@ if [ "$1" = "frankenphp" ]; then
     RESET_DB_ON_BOOT="${RESET_DB_ON_BOOT:-false}"
     SEED_DB_ON_BOOT="${SEED_DB_ON_BOOT:-false}"
 
-    sed -i "s/your_awesome_application_port/${NGINX_APP_PORT}/" /etc/frankenphp/Caddyfile
+    sed -i "s/your_awesome_application_port/${APP_PORT}/g" /etc/frankenphp/Caddyfile
 
     if [ "${RUN_DB_INIT}" = "true" ]; then
         echo "Ensuring database exists..."
