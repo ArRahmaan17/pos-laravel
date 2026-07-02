@@ -65,14 +65,8 @@ WORKDIR /app
 
 COPY application/composer.json ./
 
-RUN --mount=type=cache,target=/tmp/composer-cache \
-    COMPOSER_CACHE_DIR=/tmp/composer-cache composer update \
-        --no-dev \
-        --no-interaction \
-        --no-scripts \
-        --optimize-autoloader \
-        --prefer-dist \
-        --ignore-platform-reqs
+# Install PHP dependencies
+RUN composer install --no-interaction --no-scripts --optimize-autoloader --ignore-platform-req=*
 
 
 FROM node:22-alpine AS frontend-builder

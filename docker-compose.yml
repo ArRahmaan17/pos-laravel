@@ -19,10 +19,8 @@ services:
       DB_USERNAME: ${DB_USERNAME:-dpos}
       DB_PASSWORD: ${DB_PASSWORD:-pospassword}
       REDIS_HOST: redis
-      FRANKENPHP_PORT: 8000
-      INSTALL_DEPENDENCIES: "true"
-      START_REVERB: "false"
-      COMPOSER_CACHE_DIR: /tmp/composer-cache
+      APP_PORT: ${NGINX_APP_PORT:-80}
+      NGINX_APP_PORT: ${NGINX_APP_PORT:-80}
       RUN_DB_INIT: ${RUN_DB_INIT:-false}
       RUN_MIGRATIONS: ${RUN_MIGRATIONS:-false}
       # Destructive resets must be run explicitly with `artisan migrate:fresh`.
