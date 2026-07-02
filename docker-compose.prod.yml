@@ -19,14 +19,15 @@ services:
       REDIS_HOST: redis
       APP_PORT: ${APP_PORT:-80}
       NGINX_APP_PORT: ${NGINX_APP_PORT:-80}
+      FRANKENPHP_PORT: 80
       RUN_DB_INIT: ${RUN_DB_INIT:-false}
       RUN_MIGRATIONS: ${RUN_MIGRATIONS:-false}
       RESET_DB_ON_BOOT: ${RESET_DB_ON_BOOT:-false}
       SEED_DB_ON_BOOT: ${SEED_DB_ON_BOOT:-false}
       REVERB_HOST: reverb
       REVERB_SERVER_HOST: 0.0.0.0
-      REVERB_SERVER_PORT: ${REVERB_PORT:-8001}
-      REVERB_PORT: ${REVERB_PORT:-8001}
+      REVERB_SERVER_PORT: ${REVERB_PORT:-81}
+      REVERB_PORT: ${REVERB_PORT:-81}
     depends_on:
       mysql:
         condition: service_healthy

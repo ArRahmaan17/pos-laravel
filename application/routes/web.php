@@ -10,7 +10,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Inventory\ProductController;
 use App\Http\Controllers\Inventory\StocktakingController;
 use App\Http\Controllers\Inventory\TemporaryProductController;
-use App\Http\Controllers\Man\TransactionController;
+use App\Http\Controllers\Inventory\TransactionController;
 use App\Http\Controllers\Product\CategoryController;
 use App\Http\Controllers\Product\WeightController;
 use App\Http\Controllers\Promo\DiscountController;

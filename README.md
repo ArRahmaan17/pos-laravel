@@ -1,283 +1,123 @@
 # DPOS - Point of Sale System
 
-DPOS is a multi-company POS application built with Laravel, FrankenPHP, MySQL, Redis, and Vite. The repository is structured to run primarily through Docker Compose for both development and production-style deployments.
-
-## Features
-
-- Multi-company POS workflow
-- Product, warehouse, and stock management
-- Sales, discounts, payments, and receipts
-- Role and permission management
-- Reporting and export support
-- Realtime features through Laravel Reverb
-
-## Current Stack
-
-- Laravel 11
-- PHP 8.2+ at the application level
-- FrankenPHP `php8.4-alpine` in Docker
-- MySQL 8.0
-- Redis 7
-- Vite 7
-- Tailwind via Vite
+DPOS is a multi-company POS application built with Laravel 12, FrankenPHP, MySQL, Redis, Reverb, and Vite.
 
 ## Requirements
 
-### Recommended
+Development requires only Docker Engine and the Docker Compose plugin. PHP, Composer, and Node.js run inside containers.
 
-- Docker Engine
-- Docker Compose plugin (`docker compose`)
+## Development
 
-### Without Docker
-
-- PHP 8.2+
-- Composer
-- Node.js 22+
-- MySQL 8.0+
-- Redis 7+
-
-## Repository Layout
-
-```text
-.
-├── application/              # Laravel application
-├── build/
-│   ├── Dockerfile            # Default app image build
-│   ├── Dockerfile.multi-pm   # App image build with npm/yarn/pnpm lockfile support
-│   ├── entrypoint.sh         # Container startup logic
-│   ├── nginx/default.conf    # Nginx reverse proxy config
-│   └── php/
-│       ├── opcache.dev.ini   # Dev PHP cache settings
-│       └── opcache.ini       # Production PHP cache settings
-├── docker-compose.yml        # Development stack
-├── docker-compose.prod.yml   # Production-oriented stack
-├── .env.example              # Root compose environment template
-└── README.md
-```
-
-## Environment Variables
-
-The root `.env` file is consumed by Docker Compose.
-
-Create it from `.env.example`:
+Create the Compose environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-Example local values:
+At minimum, set the database credentials and local ports. A typical configuration is:
 
 ```env
-DB_CONNECTION=mysql
 DB_PORT=3306
 DB_FORWARD_PORT=3307
-DB_DATABASE=
-DB_USERNAME=
-DB_PASSWORD=
-APP_PATH=
-NGINX_APP_PORT=80
-APP_PORT=80
-REDIS_FORWARD_PORT=6380
-REVERB_CONNECTION=app
-REVERB_PORT=8001
+DB_DATABASE=dpos
+DB_USERNAME=dpos
+DB_PASSWORD=pospassword
+APP_PORT=8020
+VITE_PORT=5173
+REDIS_FORWARD_PORT=6381
+REVERB_PORT=81
 APP_ENV=local
+RUN_DB_INIT=true
+RUN_MIGRATIONS=true
+SEED_DB_ON_BOOT=false
 ```
 
-Important variables:
+The development Compose file always disables automatic database resets. Run
+`docker compose exec app frankenphp php-cli artisan migrate:fresh --seed`
+explicitly when a destructive reset is intended.
 
-- `APP_PORT`: host port exposed by Nginx
-- `DB_FORWARD_PORT`: host port exposed by MySQL in development
-- `REDIS_FORWARD_PORT`: host port exposed by Redis in development
-- `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`: database credentials used by both app and MySQL services
-
-## Development
-
-Start the local stack:
+Start the stack:
 
 ```bash
-docker compose up -d --build
+docker compose up --build
 ```
 
-Open:
+Open <http://127.0.0.1:8020>. Vite HMR is exposed on port `5173`, and Reverb is exposed on port `81`.
 
-```text
-http://127.0.0.1
-```
+The development stack is intentionally split by responsibility:
 
-Development stack behavior in [`docker-compose.yml`](docker-compose.yml):
+- `app` runs Laravel through FrankenPHP.
+- `vite` runs the frontend development server with HMR.
+- `reverb` runs the WebSocket server independently.
+- `mysql` and `redis` provide local persistence.
+- Composer and npm dependencies live in Docker volumes, not on the host.
+- Dependency installs run only when `composer.json` or `package.json` changes.
+- Download caches persist across container rebuilds.
+- PHP opcache revalidates source files immediately.
 
-- `app` is built from [`build/Dockerfile`](build/Dockerfile)
-- `application/` is bind-mounted into the container
-- `vendor`, `node_modules`, and `public/build` are stored in named volumes
-- PHP opcache is overridden with [`build/php/opcache.dev.ini`](build/php/opcache.dev.ini) so PHP file changes are revalidated
-- MySQL is exposed on `DB_FORWARD_PORT`
-- Redis is exposed on `REDIS_FORWARD_PORT`
+The project intentionally does not use `composer.lock` or `package-lock.json`. Dependency versions are resolved from the constraints in `composer.json` and `package.json`.
 
-### Important Development Behavior
-
-The app entrypoint in [`build/entrypoint.sh`](build/entrypoint.sh) currently does the following on container start:
-
-- ensures the database exists
-- clears Laravel caches
-- runs `php artisan migrate:fresh --seed` when `APP_ENV` is not `production`
-- starts FrankenPHP and Laravel Reverb
-
-This means restarting the `app` container in development resets the database.
-
-### Live Code Changes
-
-PHP file changes should be reflected without rebuilding because development opcache timestamp validation is enabled.
-
-If changes are not visible:
+### Common commands
 
 ```bash
-docker compose up -d --force-recreate app nginx
-docker compose exec app frankenphp php-cli artisan optimize:clear
+# Status and logs
+docker compose ps
+docker compose logs -f app vite reverb
+
+# Artisan
+docker compose exec app frankenphp php-cli artisan about
+docker compose exec app frankenphp php-cli artisan migrate
+docker compose exec app frankenphp php-cli artisan test
+
+# Code formatting
+docker compose exec app ./vendor/bin/pint
+
+# Shells
+docker compose exec app sh
+docker compose exec mysql mysql -u root -p
 ```
 
-### Frontend Assets
-
-Vite assets are expected at `application/public/build`.
-
-Current Docker behavior:
-
-- assets are built into the image during Docker build
-- the development stack keeps `public/build` in a named volume
-- the app container itself is not a Node runtime for day-to-day asset compilation
-
-If the Vite manifest is missing, rebuild the app image:
+When PHP dependencies change, restart `app`; when frontend dependencies change, restart `vite`:
 
 ```bash
-docker compose up -d --build app
+docker compose restart app
+docker compose restart vite
 ```
+
+To force a clean dependency reinstall without touching MySQL data:
+
+```bash
+docker compose down
+docker volume rm pos-laravel_vendor_data pos-laravel_node_modules_data
+docker compose up --build
+```
+
+Do not use `docker compose down -v` unless deleting the development database is intended.
 
 ## Production
 
-The production-oriented stack is defined in [`docker-compose.prod.yml`](docker-compose.prod.yml).
-
-Start it with a dedicated production env file:
+The production-oriented stack remains in `docker-compose.prod.yml`:
 
 ```bash
 docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
 ```
 
-Production stack behavior:
+Use deployment-specific secrets and keep `RESET_DB_ON_BOOT=false` in production.
 
-- `app` is built from [`build/Dockerfile.multi-pm`](build/Dockerfile.multi-pm)
-- no application source bind mount is used
-- MySQL and Redis use named volumes only
-- only the web port is published
-- `APP_ENV=production` and `APP_DEBUG=false` are forced in Compose
-- entrypoint runs `php artisan migrate --force` in production
+## Repository layout
 
-Do not reuse the local `.env` for production. Use a separate file such as `.env.production`.
-
-## Common Commands
-
-View service status:
-
-```bash
-docker compose ps
+```text
+application/                 Laravel application
+build/Dockerfile             Development and production image targets
+build/entrypoint.sh          PHP dependency and application startup logic
+build/frontend-entrypoint.sh Node dependency and Vite startup logic
+build/php/                    Development and production opcache settings
+docker-compose.yml           Development stack
+docker-compose.prod.yml      Production-oriented stack
 ```
-
-View logs:
-
-```bash
-docker compose logs -f
-docker compose logs -f app
-docker compose logs -f nginx
-```
-
-Run Artisan commands:
-
-```bash
-docker compose exec app frankenphp php-cli artisan about
-docker compose exec app frankenphp php-cli artisan optimize:clear
-```
-
-Open a shell in the app container:
-
-```bash
-docker compose exec app sh
-```
-
-Open MySQL:
-
-```bash
-docker compose exec mysql mysql -u root -p
-```
-
-## Testing
-
-Run tests inside the app container:
-
-```bash
-docker compose exec app frankenphp php-cli artisan test
-```
-
-Run Pint:
-
-```bash
-docker compose exec app ./vendor/bin/pint
-```
-
-## Troubleshooting
-
-### `/auth/login` or other pages return `500`
-
-Check that the Vite manifest exists:
-
-```bash
-docker compose exec app sh -lc 'ls -la /var/www/html/public/build && test -f /var/www/html/public/build/manifest.json && echo ok'
-```
-
-If it is missing, rebuild the app image:
-
-```bash
-docker compose up -d --build app
-```
-
-### Code changes do not appear
-
-Recreate the app and clear Laravel caches:
-
-```bash
-docker compose up -d --force-recreate app nginx
-docker compose exec app frankenphp php-cli artisan optimize:clear
-```
-
-### Database was unexpectedly reset
-
-This is current development behavior. The app entrypoint runs:
-
-```bash
-php artisan migrate:fresh --seed
-```
-
-when `APP_ENV` is not `production`.
-
-### Check Laravel logs
-
-```bash
-docker compose exec app sh -lc 'tail -f storage/logs/laravel.log'
-```
-
-## Notes
-
-- Use `docker compose`, not the legacy `docker-compose` command.
-- The development and production compose files are intentionally different.
-- The production stack should use a separate env file and deployment-specific secrets.
 
 ## License
 
 This software is licensed under the Academic-Commercial Dual License. See [LICENSE](LICENSE) for the full terms.
 
-For commercial licensing:
-
-- Email: `ardrah17@gmail.com`
-
-## Contact
-
-- Maintainer: Ardhi Rahmaan MS
-- GitHub: <https://github.com/ArRahmaan17>
-- Website: <https://dpos.rahmaanms.my.id>
+For commercial licensing, contact `ardrah17@gmail.com`.
