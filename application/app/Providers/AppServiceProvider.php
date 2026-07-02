@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
 
             return Route::group($attributes, $callback);
         });
-        if (config('app.env') !== 'local') {
+        if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
     }
