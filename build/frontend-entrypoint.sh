@@ -10,4 +10,4 @@ if [ ! -x node_modules/.bin/vite ] || [ "$manifest_hash" != "$installed_hash" ];
     printf '%s\n' "$manifest_hash" > node_modules/.package-manifest.sha256
 fi
 
-exec npm run dev -- --host 0.0.0.0
+exec npm run build
