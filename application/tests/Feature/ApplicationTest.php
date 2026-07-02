@@ -6,7 +6,6 @@ use App\Models\BusinessType;
 use App\Models\Company;
 use App\Models\User;
 use App\Models\UserManagement\Role;
-use App\Models\UserManagement\Role;
 use App\Models\UserRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;

@@ -1,114 +1,110 @@
-# Stage 1: Node — Build Vite / Tailwind CSS Assets
-# ==============================================================================
-FROM node:22-alpine AS node-builder
+# syntax=docker/dockerfile:1.7
 
-WORKDIR /build
+FROM node:22-alpine AS frontend-development
 
-# Copy manifest files specifically for caching
-COPY application/ .
-RUN if [ -f build/package-lock.json ]; then \
-        npm ci --prefer-offline && npm run build; \
-    else \
-        npm install --prefer-offline && npm run build; \
-    fi
+WORKDIR /var/www/html
 
-# Build production assets
-RUN if [ ! -f public/build/manifest.json ]; then \
-        echo "Error: manifest.json not found in public/build/"; \
-        ls -R public/build; \
-        exit 1; \
-    fi
+COPY build/frontend-entrypoint.sh /usr/local/bin/frontend-entrypoint.sh
+
+RUN chmod +x /usr/local/bin/frontend-entrypoint.sh \
+    && mkdir -p /var/www/html/node_modules /home/node/.npm \
+    && chown -R node:node /var/www/html /home/node/.npm
+
+USER node
+
+EXPOSE 5173
+
+ENTRYPOINT ["/usr/local/bin/frontend-entrypoint.sh"]
 
 
+FROM dunglas/frankenphp:php8.4-alpine AS php-base
 
-# ==============================================================================
-# Stage 2: Composer — Install PHP Dependencies
-# ==============================================================================
+RUN apk add --no-cache \
+        bash \
+        curl \
+        git \
+        unzip \
+        zip \
+    && install-php-extensions \
+        bcmath \
+        exif \
+        gd \
+        intl \
+        pcntl \
+        pdo_mysql \
+        zip
+
+WORKDIR /var/www/html
+
+
+FROM php-base AS development
+
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+COPY build/php/opcache.dev.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY application/example.CaddyFile /etc/frankenphp/Caddyfile
+COPY build/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN chmod +x /usr/local/bin/entrypoint.sh \
+    && mkdir -p \
+        bootstrap/cache \
+        storage/app/public \
+        storage/framework/cache \
+        storage/framework/sessions \
+        storage/framework/views \
+        storage/logs
+
+EXPOSE 8000 81
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["frankenphp"]
+
+
 FROM composer:2 AS composer-builder
 
 WORKDIR /app
 
-# Copy dependency files
-COPY application/composer.* ./
+COPY application/composer.json ./
 
 # Install PHP dependencies
 RUN composer install --no-interaction --no-scripts --optimize-autoloader --ignore-platform-req=*
 
 
-# ==============================================================================
-# Stage 3: FrankenPHP — Production Image
-# ==============================================================================
-FROM dunglas/frankenphp:php8.4-alpine AS app
+FROM node:22-alpine AS frontend-builder
 
-LABEL maintainer="Doglex"
-LABEL description="Laravel — FrankenPHP + Caddy"
+WORKDIR /build
 
-# ── System dependencies ──────────────────────────────────────────────────────
-RUN apk add --no-cache \
-    bash \
-    curl \
-    git \
-    zip \
-    unzip \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    libwebp-dev \
-    zlib-dev \
-    freetype-dev \
-    icu-dev \
-    oniguruma-dev \
-    libzip-dev
+COPY application/package.json application/.npmrc ./
 
-# ── PHP Extensions ────────────────────────────────────────────────────────────
-RUN install-php-extensions \
-    pdo \
-    pdo_mysql \
-    redis \
-    gd \
-    intl \
-    zip \
-    bcmath \
-    pcntl \
-    opcache \
-    mbstring \
-    exif \
-    fileinfo
+RUN --mount=type=cache,target=/root/.npm \
+    npm install --prefer-offline
 
-# ── OPcache tuning ────────────────────────────────────────────────────────────
-COPY ./build/php/opcache.dev.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY application/ ./
 
-# ── Working directory ─────────────────────────────────────────────────────────
-WORKDIR /var/www/html
-# ── Copy application source ───────────────────────────────────────────────────
-COPY --chown=www-data:www-data application/ .
+RUN npm run build
 
-# ── Remove stale cache files and vendor ──────────────────────────────────────────────────
-RUN rm -f bootstrap/cache/*.php
-# ── Bring in vendor from composer stage ──────────────────────────────────────
+
+FROM php-base AS app
+
+COPY build/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY --chown=www-data:www-data application/ ./
 COPY --from=composer-builder --chown=www-data:www-data /app/vendor ./vendor
+COPY --from=frontend-builder --chown=www-data:www-data /build/public/build ./public/build
+COPY application/example.CaddyFile /etc/frankenphp/Caddyfile
+COPY build/entrypoint.sh /usr/local/bin/entrypoint.sh
 
-# ── Bring in compiled assets from node stage ─────────────────────────────────
-COPY --from=node-builder --chown=www-data:www-data /build/public/build ./public/build/
-
-# ── CaddyFile (FrankenPHP embedded Caddy config) ─────────────────────────────
-COPY --chown=www-data:www-data application/example.CaddyFile /etc/frankenphp/Caddyfile
-
-# ── Storage & cache directories ───────────────────────────────────────────────
-RUN mkdir -p \
-        storage/logs/frankendata \
+RUN chmod +x /usr/local/bin/entrypoint.sh \
+    && rm -f bootstrap/cache/*.php \
+    && mkdir -p \
+        bootstrap/cache \
+        storage/app/public \
         storage/framework/cache \
         storage/framework/sessions \
         storage/framework/views \
-        storage/app/public \
-        bootstrap/cache && \
-    chown -R www-data:www-data storage bootstrap/cache && \
-    chmod -R 775 storage bootstrap/cache
+        storage/logs \
+    && chown -R www-data:www-data bootstrap/cache storage \
+    && chmod -R 775 bootstrap/cache storage
 
-# ── Entrypoint ────────────────────────────────────────────────────────────────
-COPY --chown=root:root build/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-EXPOSE 8000
+EXPOSE 8000 81
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["frankenphp"]

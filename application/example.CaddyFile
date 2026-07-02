@@ -1,16 +1,20 @@
-:your_awesome_application_port {
+:{$FRANKENPHP_PORT:8000} {
 	log {
-		level INFO
+		level {$CADDY_LOG_LEVEL:INFO}
 	}
-	root public/
+
+	root * /var/www/html/public
 	encode zstd br gzip
-	@blockPHP {
-        path_regexp blockphp .*\.php$
-    }
-    respond @blockPHP "Forbidden" 403
+
+	@health path /healthz
+	respond @health "OK" 200
+
+	@blockPHP path_regexp blockphp .*\.php$
+	respond @blockPHP "Forbidden" 403
+
 	php_server {
-		try_files {path} index.php	
+		try_files {path} index.php
 	}
-	header /assets/* Cache-Control "public, max-age=604800, immutable"
-	header /resouces/default/* Cache-Control "public, max-age=86400, immutable"
+
+	header /build/* Cache-Control "no-store"
 }
